@@ -1,0 +1,145 @@
+run:
+  # timeout for analysis, e.g. 30s, 5m, default is 1m
+  # this is timing out for trivial code in dispatch
+  timeout: 5m
+  skip-files:
+    - "zz_generated\\.deepcopy\\.go$"
+linters:
+  disable-all: true
+  enable:
+    # enabled by default
+    - deadcode
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - varcheck
+    # disabled by default
+    - dogsled
+    - dupl
+    - funlen
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - goimports
+    - golint
+    - gosec
+    - interfacer
+    - lll
+    - misspell
+    - nakedret
+    - prealloc
+    - scopelint
+    - stylecheck
+    - unconvert
+    - unparam
+    - whitespace
+
+# all available settings of specific linters
+linters-settings:
+  errcheck:
+    # report about not checking of errors in type assetions: `a := b.(MyStruct)`;
+    # default is false: such cases aren't reported by default.
+    check-type-assertions: false
+
+    # report about assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`;
+    # default is false: such cases aren't reported by default.
+    check-blank: false
+
+  funlen:
+    lines: 60
+    statements: 40
+
+  govet:
+    # report about shadowed variables
+    check-shadowing: true
+
+    # settings per analyzer
+    settings:
+      printf: # analyzer name, run `go tool vet help` to see all analyzers
+        funcs: # run `go tool vet help printf` to see available settings for `printf` analyzer
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Warnf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
+
+    # enable or disable analyzers by name
+    enable-all: true
+  golint:
+    # minimal confidence for issues, default is 0.8
+    min-confidence: 0.8
+  goimports:
+    # put imports beginning with prefix after 3rd-party packages;
+    # it's a comma-separated list of prefixes
+    local-prefixes:
+  gocyclo:
+    # minimal code complexity to report, 30 by default
+    min-complexity: 30
+  gocognit:
+    # minimal code complexity to report, 30 by default
+    min-complexity: 30
+  dupl:
+    # tokens count to trigger issue, 150 by default
+    threshold: 150
+  goconst:
+    # minimal length of string constant, 3 by default
+    min-len: 3
+    # minimal occurrences count to trigger, 3 by default
+    min-occurrences: 3
+  misspell:
+    # Correct spellings using locale preferences for US or UK.
+    # Default is to use a neutral variety of English.
+    # Setting locale to US will correct the British spelling of 'colour' to 'color'.
+    locale: US
+    ignore-words:
+  lll:
+    # max line length, lines longer will be reported. Default is 120.
+    # '\t' is counted as 1 character by default, and can be changed with the tab-width option
+    line-length: 150
+    # tab width in spaces. Default to 1.
+    tab-width: 1
+  unused:
+    # treat code as a program (not a library) and report unused exported identifiers; default is false.
+    # XXX: if you enable this setting, unused will report a lot of false-positives in text editors:
+    # if it's called for subdir of a project it can't find funcs usages. All text editor integrations
+    # with golangci-lint call it on a directory with the changed file.
+    check-exported: false
+  unparam:
+    # Inspect exported functions, default is false. Set to true if no external program/library imports your code.
+    # XXX: if you enable this setting, unparam will report a lot of false-positives in text editors:
+    # if it's called for subdir of a project it can't find external interfaces. All text editor integrations
+    # with golangci-lint call it on a directory with the changed file.
+    check-exported: false
+  nakedret:
+    # make an issue if func has more lines of code than this setting and it has naked returns; default is 30
+    max-func-lines: 30
+  prealloc:
+    # XXX: we don't recommend using this linter before doing performance profiling.
+    # For most programs usage of prealloc will be a premature optimization.
+
+    # Report preallocation suggestions only on simple loops that have no returns/breaks/continues/gotos in them.
+    # True by default.
+    simple: true
+    range-loops: true # Report preallocation suggestions on range loops, true by default
+    for-loops: false # Report preallocation suggestions on for loops, false by default
+  gocritic:
+  dogsled:
+    # checks assignments with too many blank identifiers; default is 2
+    max-blank-identifiers: 2
+  whitespace:
+    multi-if: false   # Enforces newlines (or comments) after every multi-line if statement
+    multi-func: false # Enforces newlines (or comments) after every multi-line function signature
+
+issues:
+  # golangci has it's own rules to ignore certain lint rules. See `golangci-lint run --help`.
+  # Default value for this option is true.
+  exclude-use-default: false
+
+  exclude-rules:
+    # ignore same receiver names due to zz_generated.deepcopy.go having a receiver `in`, which is unintuitive for coders
+    - path: api/
+      text: ST1016
+      linters:
+        - stylecheck
