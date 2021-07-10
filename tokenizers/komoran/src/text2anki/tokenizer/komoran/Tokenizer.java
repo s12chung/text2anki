@@ -12,22 +12,12 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class Tokenizer {
- public static String tokenList(String strToAnalyze) {
+ public static String getTokens(String strToAnalyze) {
    Komoran komoran = new Komoran(DEFAULT_MODEL.FULL);
    KomoranResult analyzeResultList = komoran.analyze(strToAnalyze);
 
-   System.out.println(analyzeResultList.getPlainText());
-   
-   List<Token> tokenList = analyzeResultList.getTokenList();
-   for (Token token : tokenList) {
-     System.out.format("(%2d, %2d) %s/%s\n", token.getBeginIndex(), token.getEndIndex(), token.getMorph(), token.getPos());
-   }
    Map<String, Object> map = new HashMap<>();
-   map.put("token_list", tokenList);
+   map.put("tokenList", analyzeResultList.getTokenList());
    return new JSONObject(map).toString();
- }
-
- public static String testy() {
-   return tokenList("대한민국은 민주공화국이다.");
  }
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -19,10 +20,15 @@ func run() error {
 	if err := tokenizer.Setup(); err != nil {
 		return err
 	}
-	tokens, err := tokenizer.GetTokens()
+	tokens, err := tokenizer.GetTokens("대한민국은 민주공화국이다.")
 	if err != nil {
 		return err
 	}
-	fmt.Println(tokens)
+	tokensJSON, err := json.MarshalIndent(tokens, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(tokensJSON))
 	return nil
 }

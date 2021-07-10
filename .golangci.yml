@@ -143,3 +143,7 @@ issues:
       text: ST1016
       linters:
         - stylecheck
+    # code for humans instead of machines until you scale up
+    - text: fieldalignment
+      linters:
+        - govet
