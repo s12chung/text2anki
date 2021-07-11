@@ -1,4 +1,5 @@
-package tokenizer
+// Package komoran is an interface to the Komoran Korean tokenizer
+package komoran
 
 import (
 	"encoding/json"
@@ -6,17 +7,19 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/s12chung/text2anki/pkg/java"
+	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"tekao.net/jnigi"
 )
 
 // NewKomoran returns a Komoran Korean tokenizer
-func NewKomoran() Tokenizer {
+func NewKomoran() tokenizer.Tokenizer {
 	return &Komoran{}
 }
 
 // Komoran is a Korean Tokenizer in java
 type Komoran struct {
-	javaInstance
+	javaInstance java.Instance
 }
 
 const jarPath = "tokenizers/build/komoran"
@@ -27,7 +30,17 @@ func (k *Komoran) Setup() error {
 	if err != nil {
 		return err
 	}
-	return k.javaInstance.setup(strings.Join(append(classPathArray, ""), ":"))
+	return k.javaInstance.Setup(strings.Join(append(classPathArray, ""), ":"))
+}
+
+// Cleanup cleans Komoran's resources
+func (k *Komoran) Cleanup() error {
+	return k.javaInstance.Cleanup()
+}
+
+// IsSetup returns true if Komoran is ready to execute
+func (k *Komoran) IsSetup() bool {
+	return k.javaInstance.IsSetup()
 }
 
 func jarPaths() ([]string, error) {
@@ -44,13 +57,13 @@ func jarPaths() ([]string, error) {
 }
 
 type komoranTokens struct {
-	TokenList []Token `json:"tokenList"`
+	TokenList []tokenizer.Token `json:"tokenList"`
 }
 
 // GetTokens returns the part of speech tokens of the given string
-func (k *Komoran) GetTokens(s string) ([]Token, error) {
-	if !k.IsSetup() {
-		return nil, &NotSetupError{}
+func (k *Komoran) GetTokens(s string) ([]tokenizer.Token, error) {
+	if !k.javaInstance.IsSetup() {
+		return nil, &tokenizer.NotSetupError{}
 	}
 	tokensJSON, err := k.callGetTokens(s)
 	if err != nil {
@@ -64,12 +77,12 @@ func (k *Komoran) GetTokens(s string) ([]Token, error) {
 }
 
 func (k *Komoran) callGetTokens(s string) (string, error) {
-	jS, err := k.env.NewObject("java/lang/String", []byte(s))
+	jS, err := k.javaInstance.Env.NewObject("java/lang/String", []byte(s))
 	if err != nil {
 		return "", err
 	}
 
-	jTokensString, err := k.env.CallStaticMethod("text2anki/tokenizer/komoran/Tokenizer",
+	jTokensString, err := k.javaInstance.Env.CallStaticMethod("text2anki/tokenizer/komoran/Tokenizer",
 		"getTokens",
 		jnigi.ObjectType("java/lang/String"),
 		jS,
@@ -77,5 +90,5 @@ func (k *Komoran) callGetTokens(s string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return k.jStringToString(jTokensString)
+	return k.javaInstance.JStringToString(jTokensString)
 }

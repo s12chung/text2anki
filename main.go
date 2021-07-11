@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/s12chung/text2anki/pkg/tokenizer"
+	"github.com/s12chung/text2anki/pkg/tokenizer/komoran"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 }
 
 func run() error {
-	tokenizer := tokenizer.NewKomoran()
+	tokenizer := komoran.NewKomoran()
 	if err := tokenizer.Setup(); err != nil {
 		return err
 	}
