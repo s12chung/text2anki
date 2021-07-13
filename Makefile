@@ -14,3 +14,9 @@ goimports:
 
 run:
 	go run .
+
+test:
+	go test ./...
+
+test.fixtures:
+	UPDATE_FIXTURES=true make test

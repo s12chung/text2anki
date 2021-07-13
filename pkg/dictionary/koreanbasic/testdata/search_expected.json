@@ -1,0 +1,583 @@
+{
+  "Items": [
+    {
+      "Word": "가다",
+      "WordGrade": "초급",
+      "Senses": [
+        {
+          "Translation": "go; travel",
+          "Explanation": "To move from one place to another place."
+        },
+        {
+          "Translation": "go; head for; be bound for",
+          "Explanation": "For ships, planes, cars, etc., to travel to or from a specific place."
+        },
+        {
+          "Translation": "go",
+          "Explanation": "To move to attend a certain meeting that has a specific purpose."
+        },
+        {
+          "Translation": "go",
+          "Explanation": "To move to a certain place with a specific purpose."
+        },
+        {
+          "Translation": "go; enter; join",
+          "Explanation": "To become a member of a certain group or organization."
+        },
+        {
+          "Translation": "go; transfer",
+          "Explanation": "To transfer to another place to undertake a specific work."
+        },
+        {
+          "Translation": "go",
+          "Explanation": "For objects, rights, etc., to belong to someone."
+        },
+        {
+          "Translation": "be drawn to; be attracted",
+          "Explanation": "For one's attention or gaze to be drawn to a certain object."
+        },
+        {
+          "Translation": "be sent; be delivered",
+          "Explanation": "For words, news, etc., to be known or delivered."
+        },
+        {
+          "Translation": "move toward; go toward",
+          "Explanation": "To move toward a certain state or situation."
+        },
+        {
+          "Translation": "reach; rank",
+          "Explanation": "To reach a certain level or degree."
+        },
+        {
+          "Translation": "reach; come",
+          "Explanation": "To reach a certain point of time or a place."
+        },
+        {
+          "Translation": "last; hold",
+          "Explanation": "For a certain phenomenon or state to be maintained."
+        },
+        {
+          "Translation": "go; walk; travel",
+          "Explanation": "To travel through a certain route."
+        },
+        {
+          "Translation": "go; move",
+          "Explanation": "To move to another place to do a certain task."
+        },
+        {
+          "Translation": "lead to",
+          "Explanation": "To head for or lead to a certain place."
+        },
+        {
+          "Translation": "be gone; vanish",
+          "Explanation": "To disappear and become invisible."
+        },
+        {
+          "Translation": "proceed",
+          "Explanation": "For a certain task or job to move forward."
+        },
+        {
+          "Translation": "be done; be inflicted; occur",
+          "Explanation": "For good or harm to be done to someone or something."
+        },
+        {
+          "Translation": "be done; be inflicted; occur",
+          "Explanation": "For harm to be done to someone's health."
+        },
+        {
+          "Translation": "require; necessitate",
+          "Explanation": "For certain work to require a lot of effort"
+        },
+        {
+          "Translation": "come into being",
+          "Explanation": "For lines, wrinkles, scratches, etc., to be formed."
+        },
+        {
+          "Translation": "occur; inspire; become possible",
+          "Explanation": "To come to think of or understand a certain thing."
+        },
+        {
+          "Translation": "go; be drawn to",
+          "Explanation": "To be applied to a certain object."
+        },
+        {
+          "Translation": "go; be drawn to",
+          "Explanation": "For efforts or force to reach a certain object."
+        },
+        {
+          "Translation": "pass; flow",
+          "Explanation": "For time to pass or flow."
+        },
+        {
+          "Translation": "work; operate; move",
+          "Explanation": "For machines, etc., to work or operate."
+        },
+        {
+          "Translation": "go bad; go sour",
+          "Explanation": "To go bad or spoil."
+        },
+        {
+          "Translation": "come off",
+          "Explanation": "For stains or spots to be easily removed."
+        },
+        {
+          "Translation": "be affected",
+          "Explanation": "To lose one's senses, being shocked or affected by something."
+        },
+        {
+          "Translation": "reach",
+          "Explanation": "To hear a signal sound indicating connection in communication."
+        },
+        {
+          "Translation": "go on; last; continue",
+          "Explanation": "To continue to be in a certain state."
+        },
+        {
+          "Translation": "die; pass away",
+          "Explanation": "For a person to die."
+        }
+      ]
+    },
+    {
+      "Word": "가다",
+      "WordGrade": "",
+      "Senses": [
+        {
+          "Translation": "become; turn",
+          "Explanation": "An auxiliary verb used to indicate the continuation or progress of a motion, state, or change of state in the preceding statement."
+        },
+        {
+          "Translation": "do something while doing something",
+          "Explanation": "An auxiliary verb used to indicate the occasional repetition of an action to the preceding statement."
+        }
+      ]
+    },
+    {
+      "Word": "가다듬다",
+      "WordGrade": "고급",
+      "Senses": [
+        {
+          "Translation": "brace; pull oneself together",
+          "Explanation": "To collect one's mind, spirit, etc. together."
+        },
+        {
+          "Translation": "adjust oneself",
+          "Explanation": "To straighten one's conduct, posture, etc."
+        },
+        {
+          "Translation": "clear; adjust",
+          "Explanation": "To clear one's throat or adjust one's breath. "
+        },
+        {
+          "Translation": "set in good order",
+          "Explanation": "To prepare to fight by adjusting a line, organization, etc."
+        }
+      ]
+    },
+    {
+      "Word": "가다가",
+      "WordGrade": "",
+      "Senses": [
+        {
+          "Translation": "sometimes; occasionally",
+          "Explanation": "Every now and then while doing something."
+        }
+      ]
+    },
+    {
+      "Word": "나가다",
+      "WordGrade": "초급",
+      "Senses": [
+        {
+          "Translation": "go out; leave",
+          "Explanation": "To move from the inside to the outside of an area or space.\n"
+        },
+        {
+          "Translation": "go forward",
+          "Explanation": "To move forward.\n"
+        },
+        {
+          "Translation": "be spread",
+          "Explanation": "For objects, etc., to be made and spread across the society.\n"
+        },
+        {
+          "Translation": "be revealed; become known",
+          "Explanation": "For something to be revealed or become known through media sources.\n"
+        },
+        {
+          "Translation": "become known",
+          "Explanation": "For words, facts, rumors, etc., to become known.\n"
+        },
+        {
+          "Translation": "begin action",
+          "Explanation": "To go into action in a new place, area, etc.\n"
+        },
+        {
+          "Translation": "work",
+          "Explanation": "To go to work at a certain place.\n"
+        },
+        {
+          "Translation": "go",
+          "Explanation": "To go to a place with a purpose.\n"
+        },
+        {
+          "Translation": "attend; participate; run for",
+          "Explanation": "To attend a meeting, participate in a sports game, or run for a candidate in an election, etc.\n"
+        },
+        {
+          "Translation": "leave",
+          "Explanation": "To leave or get out of an area, space, or a place that one belonged to.\n"
+        },
+        {
+          "Translation": "maintain a certain attitude",
+          "Explanation": "To do something or maintain a certain attitude.\n"
+        },
+        {
+          "Translation": "be worth; weigh",
+          "Explanation": "For a price, weight, etc., to reach a certain extent.\n"
+        },
+        {
+          "Translation": "spend; receive",
+          "Explanation": "For money, objects, etc., to be given or spent.\n"
+        },
+        {
+          "Translation": "be worn out",
+          "Explanation": "For clothes, shoes, socks, etc., to be worn out or torn.\n"
+        },
+        {
+          "Translation": "break; injure",
+          "Explanation": "For an object, etc., to be broken or for one's body part to be hurt.\n"
+        },
+        {
+          "Translation": "become unconscious",
+          "Explanation": "To lose one's consciousness or mind.\n"
+        },
+        {
+          "Translation": "recover",
+          "Explanation": "To recover from an illness such as a cold, etc.\n"
+        },
+        {
+          "Translation": "be taken; be sold",
+          "Explanation": "For the contract of a house, room, etc., on sale to be completed.\n"
+        },
+        {
+          "Translation": "go off; go out",
+          "Explanation": "For the electricity to be cut off or an electric light to go off.\n"
+        },
+        {
+          "Translation": "work well",
+          "Explanation": "For an object with a blade to work well.\n"
+        },
+        {
+          "Translation": "be sold",
+          "Explanation": "For an object to be sold well.\n"
+        },
+        {
+          "Translation": "go to work",
+          "Explanation": "To go to do something.\n"
+        },
+        {
+          "Translation": "move",
+          "Explanation": "To move from where one lived to another place.\n"
+        },
+        {
+          "Translation": "progress; proceed",
+          "Explanation": "For something to be proceeded to a certain extent.\n"
+        }
+      ]
+    },
+    {
+      "Word": "지나가다",
+      "WordGrade": "초급",
+      "Senses": [
+        {
+          "Translation": "pass; go by",
+          "Explanation": "For a certain period to end as time passes by."
+        },
+        {
+          "Translation": "pass; go by",
+          "Explanation": "For a certain task or event to end."
+        },
+        {
+          "Translation": "say in passing",
+          "Explanation": "To say something without any special meaning."
+        },
+        {
+          "Translation": "tolerate",
+          "Explanation": "To not make something a problem."
+        },
+        {
+          "Translation": "pass; cross",
+          "Explanation": "To go through a place."
+        },
+        {
+          "Translation": "pass by",
+          "Explanation": "To go past the surroundings of an object."
+        },
+        {
+          "Translation": "pass",
+          "Explanation": "For the wind to stop blowing, or for the rain to stop falling."
+        },
+        {
+          "Translation": "cross; pass",
+          "Explanation": "For a facial expression, idea, etc., to appear suddenly and then disappear."
+        },
+        {
+          "Translation": "pass by",
+          "Explanation": "To skip something."
+        }
+      ]
+    },
+    {
+      "Word": "들어가다",
+      "WordGrade": "초급",
+      "Senses": [
+        {
+          "Translation": "enter; go into",
+          "Explanation": "To go inside from outside."
+        },
+        {
+          "Translation": "be installed; be laid in place",
+          "Explanation": "For the hardware of utilities such as electricity, water, etc., to be installed."
+        },
+        {
+          "Translation": "start",
+          "Explanation": "For a new state or period to start."
+        },
+        {
+          "Translation": "be used",
+          "Explanation": "For money, effort, resources, etc., to be spent on a certain project."
+        },
+        {
+          "Translation": "be inserted",
+          "Explanation": "To be inserted in something."
+        },
+        {
+          "Translation": "be permeated",
+          "Explanation": "To be permeated to the inside."
+        },
+        {
+          "Translation": "be handed; be owned",
+          "Explanation": "For something to be delivered or owned by another person, organization, etc."
+        },
+        {
+          "Translation": "join; be employed; be accepted",
+          "Explanation": "To become a member of a certain group."
+        },
+        {
+          "Translation": "be included",
+          "Explanation": "To be included in a certain range or to meet a standard."
+        },
+        {
+          "Translation": "be understood",
+          "Explanation": "For certain content to be understood and kept in memory."
+        },
+        {
+          "Translation": "be sunken",
+          "Explanation": "For the surface of an object to become sunken."
+        },
+        {
+          "Translation": "disappear",
+          "Explanation": "For a clear phenomenon to disappear."
+        },
+        {
+          "Translation": "get to learn",
+          "Explanation": "To get to know a field of study or obtain knowledge, etc."
+        },
+        {
+          "Translation": "fit",
+          "Explanation": "For clothes, shoes, etc., to fit one's body."
+        }
+      ]
+    },
+    {
+      "Word": "올라가다",
+      "WordGrade": "초급",
+      "Senses": [
+        {
+          "Translation": "go up; rise; ascend",
+          "Explanation": "To move from the bottom to the top, or from a lower place to a higher one."
+        },
+        {
+          "Translation": "go up to the capital; go up to Seoul",
+          "Explanation": "To go to the capital city from a provincial area."
+        },
+        {
+          "Translation": "advance",
+          "Explanation": "To move one's position to a higher organization or department."
+        },
+        {
+          "Translation": "go northward; go up",
+          "Explanation": "To go from the south to the north."
+        },
+        {
+          "Translation": "go ashore; go on shore",
+          "Explanation": "To move from water to land."
+        },
+        {
+          "Translation": "go to heaven",
+          "Explanation": "(figurative) To die."
+        },
+        {
+          "Translation": "be submitted; be sent",
+          "Explanation": "For the document, etc., of a sub-organization to be submitted to an upper organization."
+        },
+        {
+          "Translation": "go up",
+          "Explanation": "To keep going from a certain point to a place that looks rather high."
+        },
+        {
+          "Translation": "go back; trace back",
+          "Explanation": "To go toward a source by going back to the past."
+        },
+        {
+          "Translation": "be promoted; be raised",
+          "Explanation": "For one's rank, position, etc., to become higher."
+        },
+        {
+          "Translation": "improve",
+          "Explanation": "For quality, a level, etc., to become higher."
+        },
+        {
+          "Translation": "go up; rise; soar",
+          "Explanation": "For a numerical value such as temperature, prices, etc., to increase or become higher."
+        },
+        {
+          "Translation": "go up; go upstream",
+          "Explanation": "To go against the current of water."
+        },
+        {
+          "Translation": "increase",
+          "Explanation": "For force, energy, passion, etc., to increase gradually."
+        },
+        {
+          "Translation": "be built; rise",
+          "Explanation": "For a building, etc., to be constructed."
+        },
+        {
+          "Translation": "climb; ascend",
+          "Explanation": "To go toward a high place."
+        }
+      ]
+    },
+    {
+      "Word": "돌아가다",
+      "WordGrade": "초급",
+      "Senses": [
+        {
+          "Translation": "spin; rotate",
+          "Explanation": "For an object to move in a circle around a point."
+        },
+        {
+          "Translation": "become",
+          "Explanation": "For a job or situation to reach a certain state."
+        },
+        {
+          "Translation": "be delivered",
+          "Explanation": "For something to be delivered within a certain range and in order."
+        },
+        {
+          "Translation": "take turns",
+          "Explanation": "To do something in an order, one after another."
+        },
+        {
+          "Translation": "work; function",
+          "Explanation": "To function properly."
+        },
+        {
+          "Translation": "be circulated",
+          "Explanation": "For money, goods, etc., to be circulated actively."
+        },
+        {
+          "Translation": "be dizzy; feel giddy",
+          "Explanation": "To be dizzy or giddy enough to lose one's senses."
+        },
+        {
+          "Translation": "die",
+          "Explanation": "(honorific) To die."
+        },
+        {
+          "Translation": "go back; return",
+          "Explanation": "To go back to where one was before, or to be in such a state again."
+        },
+        {
+          "Translation": "be given",
+          "Explanation": "For the result or responsibility of something to be given to an individual, group, organization, etc."
+        },
+        {
+          "Translation": "be distributed; be divided",
+          "Explanation": "To be divided and distributed."
+        },
+        {
+          "Translation": "end; finish",
+          "Explanation": "To finish in a certain state."
+        },
+        {
+          "Translation": "",
+          "Explanation": "For the direction to be changed or tilted to one side."
+        },
+        {
+          "Translation": "detour",
+          "Explanation": "To go the long way."
+        },
+        {
+          "Translation": "go around",
+          "Explanation": "To move around a location as if to draw a circle, or to pass by a curved path."
+        },
+        {
+          "Translation": "go around",
+          "Explanation": "To pace around a certain area."
+        }
+      ]
+    },
+    {
+      "Word": "내려가다",
+      "WordGrade": "초급",
+      "Senses": [
+        {
+          "Translation": "go down; step down; descend",
+          "Explanation": "To move from up to down."
+        },
+        {
+          "Translation": "go to a rural area",
+          "Explanation": "To move from a city or central area to a rural area."
+        },
+        {
+          "Translation": "go southward",
+          "Explanation": "To move from the north to the south."
+        },
+        {
+          "Translation": "drop; be degraded; be demoted",
+          "Explanation": "To move a level or grade from up to down."
+        },
+        {
+          "Translation": "be descended",
+          "Explanation": "To descend from or be a descendant of, and continue to exist in the future."
+        },
+        {
+          "Translation": "be digested",
+          "Explanation": "For food to be digested."
+        },
+        {
+          "Translation": "drop; fall; go down",
+          "Explanation": "For a value, statistical number, temperature, price, etc., to be lowered."
+        },
+        {
+          "Translation": "go down",
+          "Explanation": "For a musical note to go down."
+        },
+        {
+          "Translation": "walk down; step down",
+          "Explanation": "To walk down from a high place to a lower place."
+        },
+        {
+          "Translation": "carry down\t",
+          "Explanation": "To carry something from a high place to a lower place."
+        }
+      ]
+    }
+  ],
+  "Total": 81,
+  "Start": 1,
+  "Number": 10
+}

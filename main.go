@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
 	"github.com/s12chung/text2anki/pkg/tokenizer/komoran"
 )
 
@@ -24,11 +25,24 @@ func run() error {
 	if err != nil {
 		return err
 	}
+
 	tokensJSON, err := json.MarshalIndent(tokens, "", "  ")
 	if err != nil {
 		return err
 	}
-
 	fmt.Println(string(tokensJSON))
+
+	dict := koreanbasic.NewKoreanBasic(os.Getenv("KOREAN_BASIC_API_KEY"))
+	terms, err := dict.Search(tokens[0].Morph)
+	if err != nil {
+		return err
+	}
+
+	termsJSON, err := json.MarshalIndent(terms, "", "  ")
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(termsJSON))
+
 	return nil
 }
