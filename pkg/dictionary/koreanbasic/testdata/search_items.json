@@ -1,6 +1,7 @@
 [
   {
     "Text": "가다",
+    "PartOfSpeech": "Verb",
     "CommonLevel": 3,
     "Translations": [
       {
@@ -139,6 +140,7 @@
   },
   {
     "Text": "가다",
+    "PartOfSpeech": "AuxiliaryVerb",
     "CommonLevel": 0,
     "Translations": [
       {
@@ -153,6 +155,7 @@
   },
   {
     "Text": "가다듬다",
+    "PartOfSpeech": "Verb",
     "CommonLevel": 1,
     "Translations": [
       {
@@ -175,6 +178,7 @@
   },
   {
     "Text": "가다가",
+    "PartOfSpeech": "Adverb",
     "CommonLevel": 0,
     "Translations": [
       {
@@ -185,6 +189,7 @@
   },
   {
     "Text": "나가다",
+    "PartOfSpeech": "Verb",
     "CommonLevel": 3,
     "Translations": [
       {
@@ -287,6 +292,7 @@
   },
   {
     "Text": "지나가다",
+    "PartOfSpeech": "Verb",
     "CommonLevel": 3,
     "Translations": [
       {
@@ -329,6 +335,7 @@
   },
   {
     "Text": "들어가다",
+    "PartOfSpeech": "Verb",
     "CommonLevel": 3,
     "Translations": [
       {
@@ -391,6 +398,7 @@
   },
   {
     "Text": "올라가다",
+    "PartOfSpeech": "Verb",
     "CommonLevel": 3,
     "Translations": [
       {
@@ -461,6 +469,7 @@
   },
   {
     "Text": "돌아가다",
+    "PartOfSpeech": "Verb",
     "CommonLevel": 3,
     "Translations": [
       {
@@ -531,6 +540,7 @@
   },
   {
     "Text": "내려가다",
+    "PartOfSpeech": "Verb",
     "CommonLevel": 3,
     "Translations": [
       {

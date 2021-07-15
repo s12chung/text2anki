@@ -3,6 +3,7 @@
     {
       "Word": "가다",
       "WordGrade": "초급",
+      "PartOfSpeech": "동사",
       "Senses": [
         {
           "Translation": "go; travel",
@@ -141,6 +142,7 @@
     {
       "Word": "가다",
       "WordGrade": "",
+      "PartOfSpeech": "보조 동사",
       "Senses": [
         {
           "Translation": "become; turn",
@@ -155,6 +157,7 @@
     {
       "Word": "가다듬다",
       "WordGrade": "고급",
+      "PartOfSpeech": "동사",
       "Senses": [
         {
           "Translation": "brace; pull oneself together",
@@ -177,6 +180,7 @@
     {
       "Word": "가다가",
       "WordGrade": "",
+      "PartOfSpeech": "부사",
       "Senses": [
         {
           "Translation": "sometimes; occasionally",
@@ -187,6 +191,7 @@
     {
       "Word": "나가다",
       "WordGrade": "초급",
+      "PartOfSpeech": "동사",
       "Senses": [
         {
           "Translation": "go out; leave",
@@ -289,6 +294,7 @@
     {
       "Word": "지나가다",
       "WordGrade": "초급",
+      "PartOfSpeech": "동사",
       "Senses": [
         {
           "Translation": "pass; go by",
@@ -331,6 +337,7 @@
     {
       "Word": "들어가다",
       "WordGrade": "초급",
+      "PartOfSpeech": "동사",
       "Senses": [
         {
           "Translation": "enter; go into",
@@ -393,6 +400,7 @@
     {
       "Word": "올라가다",
       "WordGrade": "초급",
+      "PartOfSpeech": "동사",
       "Senses": [
         {
           "Translation": "go up; rise; ascend",
@@ -463,6 +471,7 @@
     {
       "Word": "돌아가다",
       "WordGrade": "초급",
+      "PartOfSpeech": "동사",
       "Senses": [
         {
           "Translation": "spin; rotate",
@@ -533,6 +542,7 @@
     {
       "Word": "내려가다",
       "WordGrade": "초급",
+      "PartOfSpeech": "동사",
       "Senses": [
         {
           "Translation": "go down; step down; descend",

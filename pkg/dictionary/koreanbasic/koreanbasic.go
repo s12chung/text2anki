@@ -39,7 +39,7 @@ func (k *KoreanBasic) Search(q string) ([]dictionary.Term, error) {
 	if err != nil {
 		return nil, err
 	}
-	return itemsToTerms(channel.Items), nil
+	return itemsToTerms(channel.Items)
 }
 
 const apiURLString = "https://krdict.korean.go.kr/api/search?sort=popular&translated=y&trans_lang=1&q=%s&key=%s"
@@ -63,12 +63,34 @@ var wordGradeToCommonLevel = map[string]dictionary.CommonLevel{
 	"초급": dictionary.CommonLevelCommon,
 }
 
-func itemsToTerms(items []item) []dictionary.Term {
+var partOfSpeechMap = map[string]dictionary.PartOfSpeech{
+	"명사":     dictionary.PartOfSpeechNoun,
+	"대명사":    dictionary.PartOfSpeechPronoun,
+	"수사":     dictionary.PartOfSpeechNumeral,
+	"조사":     dictionary.PartOfSpeechPostposition,
+	"동사":     dictionary.PartOfSpeechVerb,
+	"형용사":    dictionary.PartOfSpeechAdjective,
+	"관형사":    dictionary.PartOfSpeechPrenoun,
+	"부사":     dictionary.PartOfSpeechAdverb,
+	"감탄사":    dictionary.PartOfSpeechInterjection,
+	"접사":     dictionary.PartOfSpeechAffix,
+	"의존 명사":  dictionary.PartOfSpeechDependentNoun,
+	"보조 동사":  dictionary.PartOfSpeechAuxiliaryVerb,
+	"보조 형용사": dictionary.PartOfSpeechAuxiliaryAdjective,
+	"어미":     dictionary.PartOfSpeechEnding,
+	"품사 없음":  dictionary.PartOfSpeechNone,
+}
+
+func itemsToTerms(items []item) ([]dictionary.Term, error) {
 	terms := make([]dictionary.Term, len(items))
 	for i, item := range items {
+		if _, exists := partOfSpeechMap[item.PartOfSpeech]; !exists {
+			return nil, fmt.Errorf("part of speech not found: %v, %v", item.Word, item.PartOfSpeech)
+		}
 		terms[i] = dictionary.Term{
-			Text:        item.Word,
-			CommonLevel: wordGradeToCommonLevel[item.WordGrade],
+			Text:         item.Word,
+			CommonLevel:  wordGradeToCommonLevel[item.WordGrade],
+			PartOfSpeech: partOfSpeechMap[item.PartOfSpeech],
 		}
 		terms[i].Translations = make([]dictionary.Translation, len(item.Senses))
 		for j, sense := range item.Senses {
@@ -78,7 +100,7 @@ func itemsToTerms(items []item) []dictionary.Term {
 			}
 		}
 	}
-	return terms
+	return terms, nil
 }
 
 type channel struct {
@@ -89,9 +111,10 @@ type channel struct {
 }
 
 type item struct {
-	Word      string  `xml:"word"`
-	WordGrade string  `xml:"word_grade"`
-	Senses    []sense `xml:"sense"`
+	Word         string  `xml:"word"`
+	WordGrade    string  `xml:"word_grade"`
+	PartOfSpeech string  `xml:"pos"`
+	Senses       []sense `xml:"sense"`
 }
 
 type sense struct {

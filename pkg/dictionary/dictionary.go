@@ -17,9 +17,32 @@ const (
 	CommonLevelCommon
 )
 
+// PartOfSpeech are representations of part of speech
+type PartOfSpeech string
+
+// PartOfSpeech types
+const (
+	PartOfSpeechNoun               PartOfSpeech = "Noun"
+	PartOfSpeechPronoun            PartOfSpeech = "Pronoun"
+	PartOfSpeechNumeral            PartOfSpeech = "Numberal"
+	PartOfSpeechPostposition       PartOfSpeech = "Postposition"
+	PartOfSpeechVerb               PartOfSpeech = "Verb"
+	PartOfSpeechAdjective          PartOfSpeech = "Adjective"
+	PartOfSpeechPrenoun            PartOfSpeech = "Prenoun"
+	PartOfSpeechAdverb             PartOfSpeech = "Adverb"
+	PartOfSpeechInterjection       PartOfSpeech = "Interjection"
+	PartOfSpeechAffix              PartOfSpeech = "Affix"
+	PartOfSpeechDependentNoun      PartOfSpeech = "DependentNoun"
+	PartOfSpeechAuxiliaryVerb      PartOfSpeech = "AuxiliaryVerb"
+	PartOfSpeechAuxiliaryAdjective PartOfSpeech = "AuxiliaryAdjective"
+	PartOfSpeechEnding             PartOfSpeech = "Ending"
+	PartOfSpeechNone               PartOfSpeech = "None"
+)
+
 // Term is a word or phrase
 type Term struct {
 	Text         string
+	PartOfSpeech PartOfSpeech
 	CommonLevel  CommonLevel
 	Translations []Translation
 }

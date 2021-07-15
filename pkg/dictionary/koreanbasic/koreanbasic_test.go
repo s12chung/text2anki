@@ -29,7 +29,8 @@ func TestItemsToTerms(t *testing.T) {
 
 	channel, err := parseSearch(bytes)
 	require.Nil(err)
-	terms := itemsToTerms(channel.Items)
+	terms, err := itemsToTerms(channel.Items)
+	require.Nil(err)
 	resultBytes, err := json.MarshalIndent(terms, "", "  ")
 	require.Nil(err)
 
