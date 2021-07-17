@@ -22,7 +22,7 @@ type Komoran struct {
 	javaInstance java.Instance
 }
 
-const jarPath = "tokenizers/build/komoran"
+const jarPath = "tokenizers/dist/komoran"
 
 // Setup setups up the JVM for Komoran to run
 func (k *Komoran) Setup() error {

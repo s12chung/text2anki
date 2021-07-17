@@ -1,8 +1,8 @@
-BUILD_DIR := build
+DIST_DIR := dist
 
 build: clean
-	mkdir -p $(BUILD_DIR)
-	mkdir -p $(BUILD_DIR)/komoran; cd komoran; make jar; cp build/export/*.jar ../$(BUILD_DIR)/komoran
+	mkdir -p $(DIST_DIR)
+	mkdir -p $(DIST_DIR)/komoran; cd komoran; make jar; cp $(DIST_DIR)/*.jar ../$(DIST_DIR)/komoran
 
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(DIST_DIR)
