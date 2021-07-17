@@ -2,7 +2,6 @@ package koreanbasic
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"testing"
 
 	"github.com/s12chung/text2anki/pkg/test/fixture"
@@ -11,28 +10,22 @@ import (
 
 func TestParseSearch(t *testing.T) {
 	require := require.New(t)
-	bytes, err := ioutil.ReadFile("testdata/search.xml")
-	require.Nil(err)
 
-	channel, err := parseSearch(bytes)
+	channel, err := unmarshallSearch(fixture.Read(t, "search.xml"))
 	require.Nil(err)
 	resultBytes, err := json.MarshalIndent(channel, "", "  ")
 	require.Nil(err)
 
-	fixture.CompareReadOrUpdate(t, "testdata/search_expected.json", resultBytes)
+	fixture.CompareReadOrUpdate(t, "search_expected.json", resultBytes)
 }
 
-func TestItemsToTerms(t *testing.T) {
+func TestSearchTerms(t *testing.T) {
 	require := require.New(t)
-	bytes, err := ioutil.ReadFile("testdata/search.xml")
-	require.Nil(err)
 
-	channel, err := parseSearch(bytes)
-	require.Nil(err)
-	terms, err := itemsToTerms(channel.Items)
+	terms, err := SearchTerms(fixture.Read(t, "search.xml"))
 	require.Nil(err)
 	resultBytes, err := json.MarshalIndent(terms, "", "  ")
 	require.Nil(err)
 
-	fixture.CompareReadOrUpdate(t, "testdata/search_items.json", resultBytes)
+	fixture.CompareReadOrUpdate(t, "search_terms.json", resultBytes)
 }

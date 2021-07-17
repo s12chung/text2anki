@@ -136,7 +136,8 @@
         "Text": "die; pass away",
         "Explanation": "For a person to die."
       }
-    ]
+    ],
+    "DictionarySource": "Korean Basic Dictionary"
   },
   {
     "Text": "가다",
@@ -151,7 +152,8 @@
         "Text": "do something while doing something",
         "Explanation": "An auxiliary verb used to indicate the occasional repetition of an action to the preceding statement."
       }
-    ]
+    ],
+    "DictionarySource": "Korean Basic Dictionary"
   },
   {
     "Text": "가다듬다",
@@ -174,7 +176,8 @@
         "Text": "set in good order",
         "Explanation": "To prepare to fight by adjusting a line, organization, etc."
       }
-    ]
+    ],
+    "DictionarySource": "Korean Basic Dictionary"
   },
   {
     "Text": "가다가",
@@ -185,7 +188,8 @@
         "Text": "sometimes; occasionally",
         "Explanation": "Every now and then while doing something."
       }
-    ]
+    ],
+    "DictionarySource": "Korean Basic Dictionary"
   },
   {
     "Text": "나가다",
@@ -288,7 +292,8 @@
         "Text": "progress; proceed",
         "Explanation": "For something to be proceeded to a certain extent.\n"
       }
-    ]
+    ],
+    "DictionarySource": "Korean Basic Dictionary"
   },
   {
     "Text": "지나가다",
@@ -331,7 +336,8 @@
         "Text": "pass by",
         "Explanation": "To skip something."
       }
-    ]
+    ],
+    "DictionarySource": "Korean Basic Dictionary"
   },
   {
     "Text": "들어가다",
@@ -394,7 +400,8 @@
         "Text": "fit",
         "Explanation": "For clothes, shoes, etc., to fit one's body."
       }
-    ]
+    ],
+    "DictionarySource": "Korean Basic Dictionary"
   },
   {
     "Text": "올라가다",
@@ -465,7 +472,8 @@
         "Text": "climb; ascend",
         "Explanation": "To go toward a high place."
       }
-    ]
+    ],
+    "DictionarySource": "Korean Basic Dictionary"
   },
   {
     "Text": "돌아가다",
@@ -536,7 +544,8 @@
         "Text": "go around",
         "Explanation": "To pace around a certain area."
       }
-    ]
+    ],
+    "DictionarySource": "Korean Basic Dictionary"
   },
   {
     "Text": "내려가다",
@@ -583,6 +592,7 @@
         "Text": "carry down\t",
         "Explanation": "To carry something from a high place to a lower place."
       }
-    ]
+    ],
+    "DictionarySource": "Korean Basic Dictionary"
   }
 ]

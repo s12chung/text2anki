@@ -11,6 +11,9 @@ import (
 	"github.com/s12chung/text2anki/pkg/dictionary"
 )
 
+// DictionarySource is the name of the dictionary
+const DictionarySource = "Korean Basic Dictionary"
+
 // KoreanBasic is a Korean Basic dictionary API wrapper
 type KoreanBasic struct {
 	apiKey string
@@ -35,7 +38,12 @@ func (k *KoreanBasic) Search(q string) ([]dictionary.Term, error) {
 	if err != nil {
 		return nil, err
 	}
-	channel, err := parseSearch(bytes)
+	return SearchTerms(bytes)
+}
+
+// SearchTerms returns the search terms given a search response
+func SearchTerms(searchResponse []byte) ([]dictionary.Term, error) {
+	channel, err := unmarshallSearch(searchResponse)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +56,7 @@ func apiURL(q, apiKey string) string {
 	return fmt.Sprintf(apiURLString, url.QueryEscape(q), apiKey)
 }
 
-func parseSearch(data []byte) (*channel, error) {
+func unmarshallSearch(data []byte) (*channel, error) {
 	ch := &channel{}
 	if err := xml.Unmarshal(data, ch); err != nil {
 		return nil, err
@@ -88,9 +96,10 @@ func itemsToTerms(items []item) ([]dictionary.Term, error) {
 			return nil, fmt.Errorf("part of speech not found: %v, %v", item.Word, item.PartOfSpeech)
 		}
 		terms[i] = dictionary.Term{
-			Text:         item.Word,
-			CommonLevel:  wordGradeToCommonLevel[item.WordGrade],
-			PartOfSpeech: partOfSpeechMap[item.PartOfSpeech],
+			Text:             item.Word,
+			CommonLevel:      wordGradeToCommonLevel[item.WordGrade],
+			PartOfSpeech:     partOfSpeechMap[item.PartOfSpeech],
+			DictionarySource: DictionarySource,
 		}
 		terms[i].Translations = make([]dictionary.Translation, len(item.Senses))
 		for j, sense := range item.Senses {

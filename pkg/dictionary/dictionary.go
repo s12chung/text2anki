@@ -37,6 +37,7 @@ const (
 	PartOfSpeechAuxiliaryAdjective PartOfSpeech = "AuxiliaryAdjective"
 	PartOfSpeechEnding             PartOfSpeech = "Ending"
 	PartOfSpeechNone               PartOfSpeech = "None"
+	PartOfSpeechInvalid            PartOfSpeech = ""
 )
 
 // Term is a word or phrase
@@ -45,6 +46,8 @@ type Term struct {
 	PartOfSpeech PartOfSpeech
 	CommonLevel  CommonLevel
 	Translations []Translation
+
+	DictionarySource string
 }
 
 // Translation is a translation of a word or phrase
