@@ -15,7 +15,7 @@ import (
 const serachXML = "search.xml"
 
 func init() {
-	if fixture.WillUpdate() {
+	if fixture.WillUpdateAPI() {
 		koreanBasic := &KoreanBasic{apiKey: os.Getenv("KOREAN_BASIC_API_KEY")}
 		bytes, err := koreanBasic.getSearch("가다")
 		if err != nil {

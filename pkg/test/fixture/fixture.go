@@ -17,6 +17,7 @@ import (
 
 // TestDataDir returns the testdata dir
 const TestDataDir = "testdata"
+const envTrue = "true"
 
 // JoinTestData joins the elem path to the testdata dir
 func JoinTestData(elem ...string) string {
@@ -35,7 +36,12 @@ func Read(t *testing.T, fixtureFilename string) []byte {
 
 // WillUpdate returns true if the fixtures will be updated from ReadOrWrite
 func WillUpdate() bool {
-	return os.Getenv("UPDATE_FIXTURES") == "true"
+	return os.Getenv("UPDATE_FIXTURES") == envTrue
+}
+
+// WillUpdateAPI returns true if the fixtures will be updated from API calls
+func WillUpdateAPI() bool {
+	return os.Getenv("UPDATE_FIXTURES") == envTrue && os.Getenv("API_UPDATE_FIXTURES") == envTrue
 }
 
 // ReadOrUpdate reads the fixture or updates it if WillUpdate is true

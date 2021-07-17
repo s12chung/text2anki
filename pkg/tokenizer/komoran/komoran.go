@@ -22,8 +22,6 @@ type Komoran struct {
 	javaInstance java.Instance
 }
 
-const jarPath = "tokenizers/dist/komoran"
-
 // Setup setups up the JVM for Komoran to run
 func (k *Komoran) Setup() error {
 	classPathArray, err := jarPaths()
@@ -43,23 +41,6 @@ func (k *Komoran) IsSetup() bool {
 	return k.javaInstance.IsSetup()
 }
 
-func jarPaths() ([]string, error) {
-	files, err := ioutil.ReadDir(jarPath)
-	if err != nil {
-		return nil, err
-	}
-
-	a := make([]string, len(files))
-	for i, f := range files {
-		a[i] = filepath.Join(jarPath, f.Name())
-	}
-	return a, nil
-}
-
-type komoranTokens struct {
-	TokenList []tokenizer.Token `json:"tokenList"`
-}
-
 // GetTokens returns the part of speech tokens of the given string
 func (k *Komoran) GetTokens(s string) ([]tokenizer.Token, error) {
 	if !k.javaInstance.IsSetup() {
@@ -74,6 +55,10 @@ func (k *Komoran) GetTokens(s string) ([]tokenizer.Token, error) {
 		return nil, err
 	}
 	return tokens.TokenList, nil
+}
+
+type komoranTokens struct {
+	TokenList []tokenizer.Token `json:"tokenList"`
 }
 
 func (k *Komoran) callGetTokens(s string) (string, error) {
@@ -91,4 +76,19 @@ func (k *Komoran) callGetTokens(s string) (string, error) {
 		return "", err
 	}
 	return k.javaInstance.JStringToString(jTokensString)
+}
+
+var jarPath = "tokenizers/dist/komoran"
+
+func jarPaths() ([]string, error) {
+	files, err := ioutil.ReadDir(jarPath)
+	if err != nil {
+		return nil, err
+	}
+
+	a := make([]string, len(files))
+	for i, f := range files {
+		a[i] = filepath.Join(jarPath, f.Name())
+	}
+	return a, nil
 }

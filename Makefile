@@ -2,7 +2,6 @@ JDK_PATH := /Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home
 export JAVA_HOME := $(JDK_PATH)/jre
 export CGO_CFLAGS := -I$(JDK_PATH)/include -I$(JDK_PATH)/include/darwin
 
-
 setup:
 	cd tokenizers; make build
 
@@ -18,7 +17,8 @@ run:
 test:
 	go test ./...
 
+# run with API_UPDATE_FIXTURES=true to update API fixtures
 test.fixtures:
-	UPDATE_FIXTURES=true make test || true # ensure true to run below
+	API_UPDATE_FIXTURES=$(API_UPDATE_FIXTURES) UPDATE_FIXTURES=true make test || true
 	cp pkg/dictionary/koreanbasic/testdata/search.xml pkg/anki/testdata/koreanbasic.xml
-	false
+	false # always fail

@@ -1,0 +1,38 @@
+[
+  {
+    "pos": "NNP",
+    "endIndex": 4,
+    "beginIndex": 0,
+    "morph": "대한민국"
+  },
+  {
+    "pos": "JX",
+    "endIndex": 5,
+    "beginIndex": 4,
+    "morph": "은"
+  },
+  {
+    "pos": "NNP",
+    "endIndex": 11,
+    "beginIndex": 6,
+    "morph": "민주공화국"
+  },
+  {
+    "pos": "VCP",
+    "endIndex": 12,
+    "beginIndex": 11,
+    "morph": "이"
+  },
+  {
+    "pos": "EF",
+    "endIndex": 13,
+    "beginIndex": 12,
+    "morph": "다"
+  },
+  {
+    "pos": "SF",
+    "endIndex": 14,
+    "beginIndex": 13,
+    "morph": "."
+  }
+]
