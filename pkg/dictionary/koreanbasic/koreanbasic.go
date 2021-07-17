@@ -26,6 +26,14 @@ func NewKoreanBasic(apiKey string) dictionary.Dicionary {
 
 // Search returns the search results of the query
 func (k *KoreanBasic) Search(q string) ([]dictionary.Term, error) {
+	bytes, err := k.getSearch(q)
+	if err != nil {
+		return nil, err
+	}
+	return SearchTerms(bytes)
+}
+
+func (k *KoreanBasic) getSearch(q string) ([]byte, error) {
 	resp, err := http.Get(apiURL(q, k.apiKey))
 	if err != nil {
 		return nil, err
@@ -34,11 +42,7 @@ func (k *KoreanBasic) Search(q string) ([]dictionary.Term, error) {
 		return nil, fmt.Errorf("response from API is not OK (200), got: %v (%v)", resp.Status, resp.StatusCode)
 	}
 
-	bytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	return SearchTerms(bytes)
+	return ioutil.ReadAll(resp.Body)
 }
 
 // SearchTerms returns the search terms given a search response

@@ -19,4 +19,6 @@ test:
 	go test ./...
 
 test.fixtures:
-	UPDATE_FIXTURES=true make test
+	UPDATE_FIXTURES=true make test || true # ensure true to run below
+	cp pkg/dictionary/koreanbasic/testdata/search.xml pkg/anki/testdata/koreanbasic.xml
+	false

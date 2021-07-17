@@ -1,7 +1,9 @@
+<!-- DO NOT EDIT. Generated in koreanbasic_test.go -->
 
 
 
-<!-- curl "https://krdict.korean.go.kr/api/search?q=%EA%B0%80%EB%8B%A4&sort=popular&translated=y&trans_lang=1&key=API_KEY" > search.xml -->
+
+
 
 
 
@@ -9,7 +11,7 @@
 	<title>한국어 기초사전 개발 지원(Open API) - 사전 검색</title>
 	<link>https://krdict.korean.go.kr</link>
 	<description>한국어 기초사전 개발 지원(Open API) - 사전 검색 결과</description>
-	<lastBuildDate>20210711100730</lastBuildDate> 
+	<lastBuildDate>20210717110012</lastBuildDate> 
 	<total>81</total>
 	<start>1</start>
 	<num>10</num>
@@ -28184,8 +28186,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[go out; leave]]></trans_word>
-				<trans_dfn><![CDATA[To move from the inside to the outside of an area or space.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To move from the inside to the outside of an area or space.]]></trans_dfn>
 			</translation>
 			
 			
@@ -28819,8 +28820,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[go forward]]></trans_word>
-				<trans_dfn><![CDATA[To move forward.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To move forward.]]></trans_dfn>
 			</translation>
 			
 			
@@ -29454,8 +29454,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[be spread]]></trans_word>
-				<trans_dfn><![CDATA[For objects, etc., to be made and spread across the society.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For objects, etc., to be made and spread across the society.]]></trans_dfn>
 			</translation>
 			
 			
@@ -30089,8 +30088,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[be revealed; become known]]></trans_word>
-				<trans_dfn><![CDATA[For something to be revealed or become known through media sources.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For something to be revealed or become known through media sources.]]></trans_dfn>
 			</translation>
 			
 			
@@ -30724,8 +30722,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[become known]]></trans_word>
-				<trans_dfn><![CDATA[For words, facts, rumors, etc., to become known.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For words, facts, rumors, etc., to become known.]]></trans_dfn>
 			</translation>
 			
 			
@@ -31359,8 +31356,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[begin action]]></trans_word>
-				<trans_dfn><![CDATA[To go into action in a new place, area, etc.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To go into action in a new place, area, etc.]]></trans_dfn>
 			</translation>
 			
 			
@@ -31994,8 +31990,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[work]]></trans_word>
-				<trans_dfn><![CDATA[To go to work at a certain place.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To go to work at a certain place.]]></trans_dfn>
 			</translation>
 			
 			
@@ -32629,8 +32624,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[go]]></trans_word>
-				<trans_dfn><![CDATA[To go to a place with a purpose.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To go to a place with a purpose.]]></trans_dfn>
 			</translation>
 			
 			
@@ -33264,8 +33258,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[attend; participate; run for]]></trans_word>
-				<trans_dfn><![CDATA[To attend a meeting, participate in a sports game, or run for a candidate in an election, etc.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To attend a meeting, participate in a sports game, or run for a candidate in an election, etc.]]></trans_dfn>
 			</translation>
 			
 			
@@ -33899,8 +33892,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[leave]]></trans_word>
-				<trans_dfn><![CDATA[To leave or get out of an area, space, or a place that one belonged to.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To leave or get out of an area, space, or a place that one belonged to.]]></trans_dfn>
 			</translation>
 			
 			
@@ -34534,8 +34526,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[maintain a certain attitude]]></trans_word>
-				<trans_dfn><![CDATA[To do something or maintain a certain attitude.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To do something or maintain a certain attitude.]]></trans_dfn>
 			</translation>
 			
 			
@@ -35169,8 +35160,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[be worth; weigh]]></trans_word>
-				<trans_dfn><![CDATA[For a price, weight, etc., to reach a certain extent.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For a price, weight, etc., to reach a certain extent.]]></trans_dfn>
 			</translation>
 			
 			
@@ -35804,8 +35794,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[spend; receive]]></trans_word>
-				<trans_dfn><![CDATA[For money, objects, etc., to be given or spent.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For money, objects, etc., to be given or spent.]]></trans_dfn>
 			</translation>
 			
 			
@@ -36439,8 +36428,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[be worn out]]></trans_word>
-				<trans_dfn><![CDATA[For clothes, shoes, socks, etc., to be worn out or torn.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For clothes, shoes, socks, etc., to be worn out or torn.]]></trans_dfn>
 			</translation>
 			
 			
@@ -37074,8 +37062,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[break; injure]]></trans_word>
-				<trans_dfn><![CDATA[For an object, etc., to be broken or for one's body part to be hurt.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For an object, etc., to be broken or for one's body part to be hurt.]]></trans_dfn>
 			</translation>
 			
 			
@@ -37709,8 +37696,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[become unconscious]]></trans_word>
-				<trans_dfn><![CDATA[To lose one's consciousness or mind.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To lose one's consciousness or mind.]]></trans_dfn>
 			</translation>
 			
 			
@@ -38344,8 +38330,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[recover]]></trans_word>
-				<trans_dfn><![CDATA[To recover from an illness such as a cold, etc.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To recover from an illness such as a cold, etc.]]></trans_dfn>
 			</translation>
 			
 			
@@ -38979,8 +38964,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[be taken; be sold]]></trans_word>
-				<trans_dfn><![CDATA[For the contract of a house, room, etc., on sale to be completed.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For the contract of a house, room, etc., on sale to be completed.]]></trans_dfn>
 			</translation>
 			
 			
@@ -39614,8 +39598,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[go off; go out]]></trans_word>
-				<trans_dfn><![CDATA[For the electricity to be cut off or an electric light to go off.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For the electricity to be cut off or an electric light to go off.]]></trans_dfn>
 			</translation>
 			
 			
@@ -40249,8 +40232,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[work well]]></trans_word>
-				<trans_dfn><![CDATA[For an object with a blade to work well.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For an object with a blade to work well.]]></trans_dfn>
 			</translation>
 			
 			
@@ -40884,8 +40866,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[be sold]]></trans_word>
-				<trans_dfn><![CDATA[For an object to be sold well.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For an object to be sold well.]]></trans_dfn>
 			</translation>
 			
 			
@@ -41519,8 +41500,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[go to work]]></trans_word>
-				<trans_dfn><![CDATA[To go to do something.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To go to do something.]]></trans_dfn>
 			</translation>
 			
 			
@@ -42154,8 +42134,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[move]]></trans_word>
-				<trans_dfn><![CDATA[To move from where one lived to another place.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[To move from where one lived to another place.]]></trans_dfn>
 			</translation>
 			
 			
@@ -42789,8 +42768,7 @@
 				
 				</trans_lang>
 				<trans_word><![CDATA[progress; proceed]]></trans_word>
-				<trans_dfn><![CDATA[For something to be proceeded to a certain extent.
-]]></trans_dfn>
+				<trans_dfn><![CDATA[For something to be proceeded to a certain extent.]]></trans_dfn>
 			</translation>
 			
 			
