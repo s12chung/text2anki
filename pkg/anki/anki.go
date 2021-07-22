@@ -10,17 +10,18 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/s12chung/text2anki/pkg/dictionary"
+	"github.com/s12chung/text2anki/pkg/lang"
+
 	"github.com/s12chung/text2anki/pkg/iotools"
 )
 
 // Note is a Anki Note, which contains data to create cards from
 type Note struct {
-	Term string
-	dictionary.PartOfSpeech
+	Text string
+	lang.PartOfSpeech
 	Translation string
 
-	dictionary.CommonLevel
+	lang.CommonLevel
 	Explanation      string
 	ShowExplanation  bool
 	DictionarySource string
@@ -31,23 +32,9 @@ type Note struct {
 	Notes string
 }
 
-// NewNoteFromTerm returns a note given the Term and index
-func NewNoteFromTerm(term dictionary.Term, translationIndex uint) Note {
-	translation := term.Translations[translationIndex]
-	return Note{
-		Term:         term.Text,
-		PartOfSpeech: term.PartOfSpeech,
-		Translation:  translation.Text,
-
-		CommonLevel:      term.CommonLevel,
-		Explanation:      translation.Explanation,
-		DictionarySource: term.DictionarySource,
-	}
-}
-
 // Valid returns true when the Note is valid
 func (n *Note) Valid() bool {
-	return n.Term != "" && n.PartOfSpeech != dictionary.PartOfSpeechInvalid && n.Translation != ""
+	return n.Text != "" && n.PartOfSpeech != lang.PartOfSpeechInvalid && n.Translation != ""
 }
 
 // SetSound sets the sound for the note
@@ -68,7 +55,7 @@ func (n *Note) CSV() []string {
 		soundFilename = "[sound:" + n.soundFilename() + "]"
 	}
 	return []string{
-		n.Term,
+		n.Text,
 		string(n.PartOfSpeech),
 		strconv.FormatUint(uint64(n.CommonLevel), 10),
 		n.Translation,
@@ -81,7 +68,7 @@ func (n *Note) CSV() []string {
 }
 
 func (n *Note) soundFilename() string {
-	return config.ExportPrefix + n.Term + ".mp3"
+	return config.ExportPrefix + n.Text + ".mp3"
 }
 
 // ExportFiles exports all files into the given dst
@@ -114,7 +101,7 @@ func ExportSounds(notes []Note, dst string) error {
 	return nil
 }
 
-// ExportCSVFile exporst the Note CSV as a file
+// ExportCSVFile exports the Note CSV as a file
 func ExportCSVFile(notes []Note, dst string) error {
 	f, err := os.Create(dst)
 	if err != nil {

@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const serachXML = "search.xml"
+const searchXML = "search.xml"
 
 func init() {
 	if fixture.WillUpdateAPI() {
@@ -23,7 +23,7 @@ func init() {
 		}
 		bytes = []byte("<!-- DO NOT EDIT. Generated in koreanbasic_test.go -->\n\n" + string(bytes))
 
-		err = ioutil.WriteFile(fixture.JoinTestData(serachXML), bytes, 0600)
+		err = ioutil.WriteFile(fixture.JoinTestData(searchXML), bytes, 0600)
 		if err != nil {
 			log.Panic(fmt.Errorf("error while writing fixture: %w", err))
 		}
@@ -33,7 +33,7 @@ func init() {
 func TestParseSearch(t *testing.T) {
 	require := require.New(t)
 
-	channel, err := unmarshallSearch(fixture.Read(t, serachXML))
+	channel, err := unmarshallSearch(fixture.Read(t, searchXML))
 	require.Nil(err)
 	resultBytes, err := json.MarshalIndent(channel, "", "  ")
 	require.Nil(err)
@@ -44,7 +44,7 @@ func TestParseSearch(t *testing.T) {
 func TestSearchTerms(t *testing.T) {
 	require := require.New(t)
 
-	terms, err := SearchTerms(fixture.Read(t, serachXML))
+	terms, err := SearchTerms(fixture.Read(t, searchXML))
 	require.Nil(err)
 	resultBytes, err := json.MarshalIndent(terms, "", "  ")
 	require.Nil(err)

@@ -2,6 +2,7 @@ package anki
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -9,7 +10,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
+	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/test/fixture"
 	"github.com/stretchr/testify/require"
 )
@@ -33,15 +34,27 @@ func TestMain(m *testing.M) {
 	os.Exit(exit)
 }
 
+// NewNoteFromTerm returns a note given the Term and index
+func NewNoteFromTerm(term dictionary.Term, translationIndex uint) Note {
+	translation := term.Translations[translationIndex]
+	return Note{
+		Text:         term.Text,
+		PartOfSpeech: term.PartOfSpeech,
+		Translation:  translation.Text,
+
+		CommonLevel:      term.CommonLevel,
+		Explanation:      translation.Explanation,
+		DictionarySource: term.DictionarySource,
+	}
+}
+
 func koreanBasicNotes(t *testing.T) []Note {
 	require := require.New(t)
-	terms, err := koreanbasic.SearchTerms(fixture.Read(t, "koreanbasic.xml"))
-	require.Nil(err)
 
-	notes := make([]Note, len(terms))
-	for i, term := range terms {
-		notes[i] = NewNoteFromTerm(term, 0)
-	}
+	var notes []Note
+	bytes := fixture.Read(t, "notes.json")
+	require.Nil(json.Unmarshal(bytes, &notes))
+
 	return notes
 }
 

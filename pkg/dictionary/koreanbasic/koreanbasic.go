@@ -9,6 +9,7 @@ import (
 	"net/url"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
+	"github.com/s12chung/text2anki/pkg/lang"
 )
 
 // DictionarySource is the name of the dictionary
@@ -68,29 +69,29 @@ func unmarshallSearch(data []byte) (*channel, error) {
 	return ch, nil
 }
 
-var wordGradeToCommonLevel = map[string]dictionary.CommonLevel{
-	"":   dictionary.CommonLevelUnique,
-	"고급": dictionary.CommonLevelRare,
-	"중급": dictionary.CommonLevelMedium,
-	"초급": dictionary.CommonLevelCommon,
+var wordGradeToCommonLevel = map[string]lang.CommonLevel{
+	"":   lang.CommonLevelUnique,
+	"고급": lang.CommonLevelRare,
+	"중급": lang.CommonLevelMedium,
+	"초급": lang.CommonLevelCommon,
 }
 
-var partOfSpeechMap = map[string]dictionary.PartOfSpeech{
-	"명사":     dictionary.PartOfSpeechNoun,
-	"대명사":    dictionary.PartOfSpeechPronoun,
-	"수사":     dictionary.PartOfSpeechNumeral,
-	"조사":     dictionary.PartOfSpeechPostposition,
-	"동사":     dictionary.PartOfSpeechVerb,
-	"형용사":    dictionary.PartOfSpeechAdjective,
-	"관형사":    dictionary.PartOfSpeechPrenoun,
-	"부사":     dictionary.PartOfSpeechAdverb,
-	"감탄사":    dictionary.PartOfSpeechInterjection,
-	"접사":     dictionary.PartOfSpeechAffix,
-	"의존 명사":  dictionary.PartOfSpeechDependentNoun,
-	"보조 동사":  dictionary.PartOfSpeechAuxiliaryVerb,
-	"보조 형용사": dictionary.PartOfSpeechAuxiliaryAdjective,
-	"어미":     dictionary.PartOfSpeechEnding,
-	"품사 없음":  dictionary.PartOfSpeechNone,
+var partOfSpeechMap = map[string]lang.PartOfSpeech{
+	"명사":     lang.PartOfSpeechNoun,
+	"대명사":    lang.PartOfSpeechPronoun,
+	"수사":     lang.PartOfSpeechNumeral,
+	"조사":     lang.PartOfSpeechPostposition,
+	"동사":     lang.PartOfSpeechVerb,
+	"형용사":    lang.PartOfSpeechAdjective,
+	"관형사":    lang.PartOfSpeechPrenoun,
+	"부사":     lang.PartOfSpeechAdverb,
+	"감탄사":    lang.PartOfSpeechInterjection,
+	"접사":     lang.PartOfSpeechAffix,
+	"의존 명사":  lang.PartOfSpeechDependentNoun,
+	"보조 동사":  lang.PartOfSpeechAuxiliaryVerb,
+	"보조 형용사": lang.PartOfSpeechAuxiliaryAdjective,
+	"어미":     lang.PartOfSpeechEnding,
+	"품사 없음":  lang.PartOfSpeechNone,
 }
 
 func itemsToTerms(items []item) ([]dictionary.Term, error) {

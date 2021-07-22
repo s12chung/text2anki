@@ -19,6 +19,4 @@ test:
 
 # run with API_UPDATE_FIXTURES=true to update API fixtures
 test.fixtures:
-	API_UPDATE_FIXTURES=$(API_UPDATE_FIXTURES) UPDATE_FIXTURES=true make test || true
-	cp pkg/dictionary/koreanbasic/testdata/search.xml pkg/anki/testdata/koreanbasic.xml
-	false # always fail
+	API_UPDATE_FIXTURES=$(API_UPDATE_FIXTURES) UPDATE_FIXTURES=true make test

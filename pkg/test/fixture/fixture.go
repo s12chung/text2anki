@@ -34,6 +34,20 @@ func Read(t *testing.T, fixtureFilename string) []byte {
 	return expected
 }
 
+// Update updates fixture, used externally initial creation of test only
+func Update(t *testing.T, fixtureFilename string, resultBytes []byte) {
+	require := require.New(t)
+
+	err := ioutil.WriteFile(JoinTestData(fixtureFilename), resultBytes, 0600)
+	require.Nil(err)
+
+	if WillUpdate() {
+		require.FailNow("UPDATE_FIXTURES=true, fixtures are updated, turn off ENV var to run test")
+	} else {
+		require.FailNow("fixtures.Update() is called, please remove this direct call")
+	}
+}
+
 // WillUpdate returns true if the fixtures will be updated from ReadOrWrite
 func WillUpdate() bool {
 	return os.Getenv("UPDATE_FIXTURES") == envTrue
@@ -46,11 +60,8 @@ func WillUpdateAPI() bool {
 
 // ReadOrUpdate reads the fixture or updates it if WillUpdate is true
 func ReadOrUpdate(t *testing.T, fixtureFilename string, resultBytes []byte) []byte {
-	require := require.New(t)
 	if WillUpdate() {
-		err := ioutil.WriteFile(JoinTestData(fixtureFilename), resultBytes, 0600)
-		require.Nil(err)
-		require.FailNow("UPDATE_FIXTURES=true, fixtures are updated, turn off ENV var to run test")
+		Update(t, fixtureFilename, resultBytes)
 	}
 	return []byte(strings.TrimSpace(string(Read(t, fixtureFilename))))
 }
