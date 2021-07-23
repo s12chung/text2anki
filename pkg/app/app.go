@@ -60,7 +60,7 @@ func NewNoteFromTerm(term dictionary.Term, translationIndex uint) anki.Note {
 func NewNoteFromText(text text.Text) anki.Note {
 	return anki.Note{
 		Text:             text.Text,
-		PartOfSpeech:     lang.PartOfSpeechNone,
+		PartOfSpeech:     lang.PartOfSpeechUnknown,
 		Translation:      text.Translation,
 		DictionarySource: "Text2Anki Imported Text",
 	}

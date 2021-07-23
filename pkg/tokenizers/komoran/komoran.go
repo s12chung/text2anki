@@ -50,15 +50,11 @@ func (k *Komoran) GetTokens(s string) ([]tokenizers.Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	tokens := &komoranTokens{}
-	if err := json.Unmarshal([]byte(tokensJSON), tokens); err != nil {
+	resp := &response{}
+	if err := json.Unmarshal([]byte(tokensJSON), resp); err != nil {
 		return nil, err
 	}
-	return tokens.TokenList, nil
-}
-
-type komoranTokens struct {
-	TokenList []tokenizers.Token `json:"tokenList"`
+	return resp.toTokenizerTokens(), nil
 }
 
 func (k *Komoran) callGetTokens(s string) (string, error) {

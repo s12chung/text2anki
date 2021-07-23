@@ -1,6 +1,8 @@
 // Package tokenizers contains tokenizers
 package tokenizers
 
+import "github.com/s12chung/text2anki/pkg/lang"
+
 // Tokenizer takes a string and gets it's part of speech tokens
 type Tokenizer interface {
 	Setup() error
@@ -12,10 +14,10 @@ type Tokenizer interface {
 
 // Token is a part of speech token
 type Token struct {
-	POS        string `json:"pos"`
-	EndIndex   uint   `json:"endIndex"`
-	BeginIndex uint   `json:"beginIndex"`
-	Morph      string `json:"morph"`
+	Text         string
+	PartOfSpeech lang.PartOfSpeech
+	StartIndex   uint
+	EndIndex     uint
 }
 
 // NotSetupError is returned when a tokenizer function runs when it is not setup

@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/s12chung/text2anki/pkg/lang"
+
 	"github.com/manifoldco/promptui"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/app"
@@ -45,24 +47,23 @@ func (p *prompt) revolve() ([]anki.Note, error) {
 	return p.notes, nil
 }
 
-// TODO: clean up POS types from tokenizer
-var ignorePOS = map[string]bool{
-	"SF": true,
-	"SP": true,
-	"SL": true,
+var ignorePOS = map[lang.PartOfSpeech]bool{
+	lang.PartOfSpeechPunctuation: true,
+	lang.PartOfSpeechOther:       true,
+	lang.PartOfSpeechUnknown:     true,
 }
 
 func (p *prompt) promptCurrent() error {
-	if ignorePOS[p.currentToken().POS] {
+	if ignorePOS[p.currentToken().PartOfSpeech] {
 		return nil
 	}
 
-	terms, err := p.dictionary.Search(p.currentToken().Morph)
+	terms, err := p.dictionary.Search(p.currentToken().Text)
 	if err != nil {
 		return err
 	}
 	if len(terms) == 0 {
-		fmt.Printf("Skipping %v (%v), due to no search results\n", p.currentLabel(), p.currentToken().POS)
+		fmt.Printf("Skipping %v (%v), due to no search results\n", p.currentLabel(), p.currentToken().PartOfSpeech)
 		return nil
 	}
 	prompt := promptui.Select{
@@ -124,7 +125,7 @@ func (p *prompt) currentLabel() string {
 	label = append(label[:endIndex+1], label[endIndex:]...)
 	label[endIndex] = ']'
 
-	beginIndex := p.currentToken().BeginIndex
+	beginIndex := p.currentToken().StartIndex
 	label = append(label[:beginIndex+1], label[beginIndex:]...)
 	label[beginIndex] = '['
 

@@ -1,38 +1,38 @@
 [
   {
-    "pos": "NNP",
-    "endIndex": 4,
-    "beginIndex": 0,
-    "morph": "대한민국"
+    "Text": "대한민국",
+    "PartOfSpeech": "Noun",
+    "StartIndex": 0,
+    "EndIndex": 4
   },
   {
-    "pos": "JX",
-    "endIndex": 5,
-    "beginIndex": 4,
-    "morph": "은"
+    "Text": "은",
+    "PartOfSpeech": "Postposition",
+    "StartIndex": 4,
+    "EndIndex": 5
   },
   {
-    "pos": "NNP",
-    "endIndex": 11,
-    "beginIndex": 6,
-    "morph": "민주공화국"
+    "Text": "민주공화국",
+    "PartOfSpeech": "Noun",
+    "StartIndex": 6,
+    "EndIndex": 11
   },
   {
-    "pos": "VCP",
-    "endIndex": 12,
-    "beginIndex": 11,
-    "morph": "이"
+    "Text": "이",
+    "PartOfSpeech": "Copula",
+    "StartIndex": 11,
+    "EndIndex": 12
   },
   {
-    "pos": "EF",
-    "endIndex": 13,
-    "beginIndex": 12,
-    "morph": "다"
+    "Text": "다",
+    "PartOfSpeech": "Ending",
+    "StartIndex": 12,
+    "EndIndex": 13
   },
   {
-    "pos": "SF",
-    "endIndex": 14,
-    "beginIndex": 13,
-    "morph": "."
+    "Text": ".",
+    "PartOfSpeech": "Punctuation",
+    "StartIndex": 13,
+    "EndIndex": 14
   }
 ]

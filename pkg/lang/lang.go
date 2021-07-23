@@ -17,20 +17,32 @@ type PartOfSpeech string
 
 // PartOfSpeech types
 const (
-	PartOfSpeechNoun               PartOfSpeech = "Noun"
-	PartOfSpeechPronoun            PartOfSpeech = "Pronoun"
-	PartOfSpeechNumeral            PartOfSpeech = "Numberal"
-	PartOfSpeechPostposition       PartOfSpeech = "Postposition"
-	PartOfSpeechVerb               PartOfSpeech = "Verb"
-	PartOfSpeechAdjective          PartOfSpeech = "Adjective"
-	PartOfSpeechPrenoun            PartOfSpeech = "Prenoun"
-	PartOfSpeechAdverb             PartOfSpeech = "Adverb"
-	PartOfSpeechInterjection       PartOfSpeech = "Interjection"
-	PartOfSpeechAffix              PartOfSpeech = "Affix"
-	PartOfSpeechDependentNoun      PartOfSpeech = "DependentNoun"
+	PartOfSpeechNoun         PartOfSpeech = "Noun"
+	PartOfSpeechPronoun      PartOfSpeech = "Pronoun"
+	PartOfSpeechNumeral      PartOfSpeech = "Numeral"
+	PartOfSpeechPostposition PartOfSpeech = "Postposition"
+	PartOfSpeechVerb         PartOfSpeech = "Verb"
+	PartOfSpeechAdjective    PartOfSpeech = "Adjective"
+	PartOfSpeechDeterminer   PartOfSpeech = "Determiner"
+	PartOfSpeechAdverb       PartOfSpeech = "Adverb"
+	PartOfSpeechInterjection PartOfSpeech = "Interjection"
+
+	PartOfSpeechAffix  PartOfSpeech = "Affix" // General
+	PartOfSpeechPrefix PartOfSpeech = "Prefix"
+	PartOfSpeechInfix  PartOfSpeech = "Infix"
+	PartOfSpeechSuffix PartOfSpeech = "Suffix"
+
+	PartOfSpeechDependentNoun PartOfSpeech = "DependentNoun"
+
+	PartOfSpeechAuxiliaryPredicate PartOfSpeech = "AuxiliaryPredicate" // General
 	PartOfSpeechAuxiliaryVerb      PartOfSpeech = "AuxiliaryVerb"
 	PartOfSpeechAuxiliaryAdjective PartOfSpeech = "AuxiliaryAdjective"
-	PartOfSpeechEnding             PartOfSpeech = "Ending"
-	PartOfSpeechNone               PartOfSpeech = "None"
-	PartOfSpeechInvalid            PartOfSpeech = ""
+
+	PartOfSpeechEnding      PartOfSpeech = "Ending"
+	PartOfSpeechCopula      PartOfSpeech = "Copula"
+	PartOfSpeechPunctuation PartOfSpeech = "Punctuation"
+
+	PartOfSpeechOther   PartOfSpeech = "Other"
+	PartOfSpeechUnknown PartOfSpeech = "Unknown"
+	PartOfSpeechInvalid PartOfSpeech = ""
 )

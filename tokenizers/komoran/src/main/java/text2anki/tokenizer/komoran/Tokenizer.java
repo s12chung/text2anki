@@ -17,7 +17,7 @@ public class Tokenizer {
    KomoranResult analyzeResultList = komoran.analyze(strToAnalyze);
 
    Map<String, Object> map = new HashMap<>();
-   map.put("tokenList", analyzeResultList.getTokenList());
+   map.put("tokens", analyzeResultList.getTokenList());
    return new JSONObject(map).toString();
  }
 }
