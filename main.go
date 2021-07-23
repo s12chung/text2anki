@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"time"
 
 	"github.com/s12chung/text2anki/cmd/prompt"
 	"github.com/s12chung/text2anki/pkg/anki"
@@ -14,22 +13,20 @@ import (
 )
 
 func main() {
-	if err := run(); err != nil {
+	if len(os.Args) != 3 {
+		fmt.Printf("Usage: %v textStringFilename exportDir\n", os.Args[0])
+		os.Exit(-1)
+	}
+
+	textStringFilename, exportDir := os.Args[1], os.Args[2]
+
+	if err := run(textStringFilename, exportDir); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
 }
 
-func run() error {
-	// TODO: clean this up
-	unixTimeMs := time.Now().UnixNano() / int64(time.Millisecond)
-	dir := fmt.Sprintf("tmp/%v", unixTimeMs)
-	err := os.Mkdir(dir, 0750)
-	if err != nil {
-		return err
-	}
-	textStringFilename, exportDir := "tmp/in.txt", dir
-
+func run(textStringFilename, exportDir string) error {
 	tokenizedTexts, err := tokenizeTexts(textStringFilename)
 	if err != nil {
 		return err
@@ -40,10 +37,7 @@ func run() error {
 		return err
 	}
 
-	if err := anki.ExportFiles(notes, exportDir); err != nil {
-		return err
-	}
-	return nil
+	return exportFiles(notes, exportDir)
 }
 
 func tokenizeTexts(textStringFilename string) ([]app.TokenizedText, error) {
@@ -75,4 +69,16 @@ func runUI(tokenizedTexts []app.TokenizedText) ([]anki.Note, error) {
 		return nil, err
 	}
 	return notes, nil
+}
+
+func exportFiles(notes []anki.Note, exportDir string) error {
+	err := os.Mkdir(exportDir, 0750)
+	if err != nil {
+		return err
+	}
+
+	if err := anki.ExportFiles(notes, exportDir); err != nil {
+		return err
+	}
+	return nil
 }
