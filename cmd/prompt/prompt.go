@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/AlecAivazis/survey/v2/terminal"
+
 	"github.com/s12chung/text2anki/cmd/survey"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/app"
@@ -67,18 +69,31 @@ func (p *prompt) promptCurrent() error {
 	}
 
 	var termIndex int
+	var keyPress string
 	prompt := &survey.Select{
 		Message:  p.currentLabel(),
 		Options:  itemStringsFromTerms(terms),
 		PageSize: 10,
+		KeyPressMap: map[rune]string{
+			terminal.KeyEscape: "Back to Select Token",
+		},
 	}
 	err = survey.AskOne(prompt, &termIndex)
-
-	if err != nil {
+	if survey.IsKeyPressError(err) {
+		key := survey.KeyFromKeyPressError(err)
+		keyPress = string(key)
+		if _, exists := survey.RuneToKeyString[key]; exists {
+			keyPress = survey.RuneToKeyString[key]
+		}
+	} else if err != nil {
 		return err
 	}
 
-	p.notes = append(p.notes, app.NewNoteFromTerm(terms[termIndex], 0))
+	if keyPress == "" {
+		p.notes = append(p.notes, app.NewNoteFromTerm(terms[termIndex], 0))
+	} else {
+		fmt.Printf("PRESSED %v\n", keyPress)
+	}
 	return nil
 }
 

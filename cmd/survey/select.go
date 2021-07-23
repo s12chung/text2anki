@@ -2,6 +2,8 @@ package survey
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/AlecAivazis/survey/v2/core"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -20,14 +22,14 @@ for them to select using the arrow keys and enter. Response type is a string.
 */
 type Select struct {
 	Renderer
-	Message       string
-	Options       []string
-	Default       interface{}
-	Help          string
-	PageSize      int
-	selectedIndex int
-	useDefault    bool
-	showingHelp   bool
+	Message           string
+	Options           []string
+	Default           interface{}
+	PageSize          int
+	KeyPressMap       map[rune]string
+	selectedIndex     int
+	useDefault        bool
+	resultingKeyPress rune
 }
 
 // SelectTemplateData is the data available to the templates when processing
@@ -37,17 +39,20 @@ type SelectTemplateData struct {
 	SelectedIndex int
 	Answer        string
 	ShowAnswer    bool
-	ShowHelp      bool
 	Config        *PromptConfig
+	KeyPressText  string
+}
+
+var RuneToKeyString = map[rune]string{
+	terminal.KeyEscape: "ESC",
 }
 
 var SelectQuestionTemplate = `
-{{- if .ShowHelp }}{{- color .Config.Icons.Help.Format }}{{ .Config.Icons.Help.Text }} {{ .Help }}{{color "reset"}}{{"\n"}}{{end}}
 {{- color .Config.Icons.Question.Format }}{{ .Config.Icons.Question.Text }} {{color "reset"}}
 {{- color "default+hb"}}{{ .Message }}{{color "reset"}}
 {{- if .ShowAnswer}}{{color "cyan"}} {{.Answer}}{{color "reset"}}{{"\n"}}
 {{- else}}
-  {{- "  "}}{{- color "cyan"}}[Use arrows to move{{- if and .Help (not .ShowHelp)}}, {{ .Config.HelpInput }} for more help{{end}}]{{color "reset"}}
+  {{- "  "}}{{- color "cyan"}}[Arrows=Move{{ .KeyPressText }}]{{color "reset"}}
   {{- "\n"}}
   {{- range $ix, $choice := .PageEntries}}
     {{- if eq $ix $.SelectedIndex }}{{color $.Config.Icons.SelectFocus.Format }}{{ $.Config.Icons.SelectFocus.Text }} {{else}}{{color "default"}}  {{end}}
@@ -97,9 +102,9 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 			s.selectedIndex++
 		}
 		// only show the help message if we have one
-	} else if string(key) == config.HelpInput && s.Help != "" {
-		s.showingHelp = true
-		// if the user wants to toggle vim mode on/off
+	} else if _, exists := s.KeyPressMap[key]; exists {
+		s.resultingKeyPress = key
+		return true
 	}
 
 	// figure out the options and index to render
@@ -121,14 +126,26 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 		SelectTemplateData{
 			Select:        *s,
 			SelectedIndex: idx,
-			ShowHelp:      s.showingHelp,
 			PageEntries:   opts,
 			Config:        config,
+			KeyPressText:  s.keyPressText(),
 		},
 	)
 
 	// keep prompting
 	return false
+}
+
+func (s *Select) keyPressText() string {
+	keyPressText := make([]string, len(s.KeyPressMap))
+	for r, help := range s.KeyPressMap {
+		k := string(r)
+		if _, exists := RuneToKeyString[r]; exists {
+			k = RuneToKeyString[r]
+		}
+		keyPressText = append(keyPressText, fmt.Sprintf("%v=%v", k, help))
+	}
+	return strings.Join(keyPressText, ", ")
 }
 
 func (s *Select) filterOptions(config *PromptConfig) []core.OptionAnswer {
@@ -179,6 +196,7 @@ func (s *Select) Prompt(config *PromptConfig) (interface{}, error) {
 			PageEntries:   opts,
 			SelectedIndex: idx,
 			Config:        config,
+			KeyPressText:  s.keyPressText(),
 		},
 	)
 	if err != nil {
@@ -248,17 +266,38 @@ func (s *Select) Prompt(config *PromptConfig) (interface{}, error) {
 		}
 	}
 
+	if s.resultingKeyPress != rune(0) {
+		err = &KeyPressError{Key: s.resultingKeyPress}
+	}
 	return core.OptionAnswer{Value: val, Index: idx}, err
+}
+
+type KeyPressError struct {
+	Key rune
+}
+
+func (k *KeyPressError) Error() string {
+	return fmt.Sprintf("user pressed %v, select exited", k.Key)
+}
+
+func IsKeyPressError(err error) bool {
+	_, ok := err.(*KeyPressError)
+	return ok
+}
+func KeyFromKeyPressError(err error) rune {
+	e := err.(*KeyPressError)
+	return e.Key
 }
 
 func (s *Select) Cleanup(config *PromptConfig, val interface{}) error {
 	return s.Render(
 		SelectQuestionTemplate,
 		SelectTemplateData{
-			Select:     *s,
-			Answer:     val.(core.OptionAnswer).Value,
-			ShowAnswer: true,
-			Config:     config,
+			Select:       *s,
+			Answer:       val.(core.OptionAnswer).Value,
+			ShowAnswer:   true,
+			Config:       config,
+			KeyPressText: s.keyPressText(),
 		},
 	)
 }
