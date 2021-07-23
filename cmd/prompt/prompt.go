@@ -6,12 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/s12chung/text2anki/pkg/lang"
+	"github.com/AlecAivazis/survey/v2"
 
-	"github.com/manifoldco/promptui"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/app"
 	"github.com/s12chung/text2anki/pkg/dictionary"
+	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
 )
 
@@ -66,18 +66,20 @@ func (p *prompt) promptCurrent() error {
 		fmt.Printf("Skipping %v (%v), due to no search results\n", p.currentLabel(), p.currentToken().PartOfSpeech)
 		return nil
 	}
-	prompt := promptui.Select{
-		Label:  p.currentLabel(),
-		Items:  itemStringsFromTerms(terms),
-		Size:   10,
-		Stdout: &bellSkipper{},
+
+	var termIndex int
+	prompt := &survey.Select{
+		Message:  p.currentLabel(),
+		Options:  itemStringsFromTerms(terms),
+		PageSize: 10,
 	}
-	i, _, err := prompt.Run()
+	err = survey.AskOne(prompt, &termIndex)
+
 	if err != nil {
 		return err
 	}
 
-	p.notes = append(p.notes, app.NewNoteFromTerm(terms[i], 0))
+	p.notes = append(p.notes, app.NewNoteFromTerm(terms[termIndex], 0))
 	return nil
 }
 
@@ -88,7 +90,10 @@ func itemStringsFromTerms(terms []dictionary.Term) []string {
 	for i, term := range terms {
 		translationTextsMap := map[string]bool{}
 		translationTextsA := make([]string, 0, translationMaxLen)
-		for _, translation := range term.Translations {
+		for j, translation := range term.Translations {
+			if j == 0 {
+				continue
+			}
 			text := strings.TrimSpace(translation.Text)
 			if text == "" || translationTextsMap[text] {
 				continue
@@ -100,10 +105,12 @@ func itemStringsFromTerms(terms []dictionary.Term) []string {
 			}
 		}
 
-		itemStrings[i] = fmt.Sprintf("%v %v %v - %v",
+		itemStrings[i] = fmt.Sprintf("%v %v %v: %v - %v\n        %v",
 			term.Text,
 			term.PartOfSpeech,
 			strings.Repeat("*", int(term.CommonLevel)),
+			term.Translations[0].Text,
+			term.Translations[0].Explanation,
 			strings.Join(translationTextsA, "; "),
 		)
 	}
