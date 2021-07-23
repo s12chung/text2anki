@@ -25,10 +25,6 @@ type Select struct {
 	Default       interface{}
 	Help          string
 	PageSize      int
-	VimMode       bool
-	FilterMessage string
-	Filter        func(filter string, value string, index int) bool
-	filter        string
 	selectedIndex int
 	useDefault    bool
 	showingHelp   bool
@@ -48,10 +44,10 @@ type SelectTemplateData struct {
 var SelectQuestionTemplate = `
 {{- if .ShowHelp }}{{- color .Config.Icons.Help.Format }}{{ .Config.Icons.Help.Text }} {{ .Help }}{{color "reset"}}{{"\n"}}{{end}}
 {{- color .Config.Icons.Question.Format }}{{ .Config.Icons.Question.Text }} {{color "reset"}}
-{{- color "default+hb"}}{{ .Message }}{{ .FilterMessage }}{{color "reset"}}
+{{- color "default+hb"}}{{ .Message }}{{color "reset"}}
 {{- if .ShowAnswer}}{{color "cyan"}} {{.Answer}}{{color "reset"}}{{"\n"}}
 {{- else}}
-  {{- "  "}}{{- color "cyan"}}[Use arrows to move, type to filter{{- if and .Help (not .ShowHelp)}}, {{ .Config.HelpInput }} for more help{{end}}]{{color "reset"}}
+  {{- "  "}}{{- color "cyan"}}[Use arrows to move{{- if and .Help (not .ShowHelp)}}, {{ .Config.HelpInput }} for more help{{end}}]{{color "reset"}}
   {{- "\n"}}
   {{- range $ix, $choice := .PageEntries}}
     {{- if eq $ix $.SelectedIndex }}{{color $.Config.Icons.SelectFocus.Format }}{{ $.Config.Icons.SelectFocus.Text }} {{else}}{{color "default"}}  {{end}}
@@ -63,7 +59,6 @@ var SelectQuestionTemplate = `
 // OnChange is called on every keypress.
 func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 	options := s.filterOptions(config)
-	oldFilter := s.filter
 
 	// if the user pressed the enter key and the index is a valid option
 	if key == terminal.KeyEnter || key == '\n' {
@@ -78,7 +73,7 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 		return false
 
 		// if the user pressed the up arrow or 'k' to emulate vim
-	} else if (key == terminal.KeyArrowUp || (s.VimMode && key == 'k')) && len(options) > 0 {
+	} else if key == terminal.KeyArrowUp && len(options) > 0 {
 		s.useDefault = false
 
 		// if we are at the top of the list
@@ -91,7 +86,7 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 		}
 
 		// if the user pressed down or 'j' to emulate vim
-	} else if (key == terminal.KeyTab || key == terminal.KeyArrowDown || (s.VimMode && key == 'j')) && len(options) > 0 {
+	} else if (key == terminal.KeyTab || key == terminal.KeyArrowDown) && len(options) > 0 {
 		s.useDefault = false
 		// if we are at the bottom of the list
 		if s.selectedIndex == len(options)-1 {
@@ -105,38 +100,6 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 	} else if string(key) == config.HelpInput && s.Help != "" {
 		s.showingHelp = true
 		// if the user wants to toggle vim mode on/off
-	} else if key == terminal.KeyEscape {
-		s.VimMode = !s.VimMode
-		// if the user hits any of the keys that clear the filter
-	} else if key == terminal.KeyDeleteWord || key == terminal.KeyDeleteLine {
-		s.filter = ""
-		// if the user is deleting a character in the filter
-	} else if key == terminal.KeyDelete || key == terminal.KeyBackspace {
-		// if there is content in the filter to delete
-		if s.filter != "" {
-			runeFilter := []rune(s.filter)
-			// subtract a line from the current filter
-			s.filter = string(runeFilter[0 : len(runeFilter)-1])
-			// we removed the last value in the filter
-		}
-	} else if key >= terminal.KeySpace {
-		s.filter += string(key)
-		// make sure vim mode is disabled
-		s.VimMode = false
-		// make sure that we use the current value in the filtered list
-		s.useDefault = false
-	}
-
-	s.FilterMessage = ""
-	if s.filter != "" {
-		s.FilterMessage = " " + s.filter
-	}
-	if oldFilter != s.filter {
-		// filter changed
-		options = s.filterOptions(config)
-		if len(options) > 0 && len(options) <= s.selectedIndex {
-			s.selectedIndex = len(options) - 1
-		}
 	}
 
 	// figure out the options and index to render
@@ -169,33 +132,7 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 }
 
 func (s *Select) filterOptions(config *PromptConfig) []core.OptionAnswer {
-	// the filtered list
-	answers := []core.OptionAnswer{}
-
-	// if there is no filter applied
-	if s.filter == "" {
-		return core.OptionAnswerList(s.Options)
-	}
-
-	// the filter to apply
-	filter := s.Filter
-	if filter == nil {
-		filter = config.Filter
-	}
-
-	//
-	for i, opt := range s.Options {
-		// i the filter says to include the option
-		if filter(s.filter, opt, i) {
-			answers = append(answers, core.OptionAnswer{
-				Index: i,
-				Value: opt,
-			})
-		}
-	}
-
-	// return the list of answers
-	return answers
+	return core.OptionAnswerList(s.Options)
 }
 
 func (s *Select) Prompt(config *PromptConfig) (interface{}, error) {
@@ -276,8 +213,6 @@ func (s *Select) Prompt(config *PromptConfig) (interface{}, error) {
 		}
 	}
 	options := s.filterOptions(config)
-	s.filter = ""
-	s.FilterMessage = ""
 
 	// the index to report
 	var val string
