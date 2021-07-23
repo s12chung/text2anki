@@ -8,12 +8,12 @@ import (
 	"strings"
 
 	"github.com/s12chung/text2anki/pkg/java"
-	"github.com/s12chung/text2anki/pkg/tokenizer"
+	"github.com/s12chung/text2anki/pkg/tokenizers"
 	"tekao.net/jnigi"
 )
 
 // NewKomoran returns a Komoran Korean tokenizer
-func NewKomoran() tokenizer.Tokenizer {
+func NewKomoran() tokenizers.Tokenizer {
 	return &Komoran{}
 }
 
@@ -42,9 +42,9 @@ func (k *Komoran) IsSetup() bool {
 }
 
 // GetTokens returns the part of speech tokens of the given string
-func (k *Komoran) GetTokens(s string) ([]tokenizer.Token, error) {
+func (k *Komoran) GetTokens(s string) ([]tokenizers.Token, error) {
 	if !k.javaInstance.IsSetup() {
-		return nil, &tokenizer.NotSetupError{}
+		return nil, &tokenizers.NotSetupError{}
 	}
 	tokensJSON, err := k.callGetTokens(s)
 	if err != nil {
@@ -58,7 +58,7 @@ func (k *Komoran) GetTokens(s string) ([]tokenizer.Token, error) {
 }
 
 type komoranTokens struct {
-	TokenList []tokenizer.Token `json:"tokenList"`
+	TokenList []tokenizers.Token `json:"tokenList"`
 }
 
 func (k *Komoran) callGetTokens(s string) (string, error) {

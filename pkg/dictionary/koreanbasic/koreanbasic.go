@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
@@ -14,6 +15,11 @@ import (
 
 // DictionarySource is the name of the dictionary
 const DictionarySource = "Korean Basic Dictionary"
+
+// GetAPIKeyFromEnv gets the API key from the default ENV var
+func GetAPIKeyFromEnv() string {
+	return os.Getenv("KOREAN_BASIC_API_KEY")
+}
 
 // KoreanBasic is a Korean Basic dictionary API wrapper
 type KoreanBasic struct {
@@ -92,27 +98,33 @@ var partOfSpeechMap = map[string]lang.PartOfSpeech{
 	"보조 형용사": lang.PartOfSpeechAuxiliaryAdjective,
 	"어미":     lang.PartOfSpeechEnding,
 	"품사 없음":  lang.PartOfSpeechNone,
+	"":       lang.PartOfSpeechNone,
 }
 
 func itemsToTerms(items []item) ([]dictionary.Term, error) {
-	terms := make([]dictionary.Term, len(items))
-	for i, item := range items {
+	terms := make([]dictionary.Term, 0, len(items))
+	for _, item := range items {
 		if _, exists := partOfSpeechMap[item.PartOfSpeech]; !exists {
 			return nil, fmt.Errorf("part of speech not found: %v, %v", item.Word, item.PartOfSpeech)
 		}
-		terms[i] = dictionary.Term{
+		if len(item.Senses) == 0 {
+			continue
+		}
+
+		term := dictionary.Term{
 			Text:             item.Word,
 			CommonLevel:      wordGradeToCommonLevel[item.WordGrade],
 			PartOfSpeech:     partOfSpeechMap[item.PartOfSpeech],
 			DictionarySource: DictionarySource,
 		}
-		terms[i].Translations = make([]dictionary.Translation, len(item.Senses))
+		term.Translations = make([]dictionary.Translation, len(item.Senses))
 		for j, sense := range item.Senses {
-			terms[i].Translations[j] = dictionary.Translation{
+			term.Translations[j] = dictionary.Translation{
 				Text:        sense.Translation,
 				Explanation: sense.Explanation,
 			}
 		}
+		terms = append(terms, term)
 	}
 	return terms, nil
 }

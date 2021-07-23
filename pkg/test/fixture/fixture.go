@@ -12,6 +12,7 @@ import (
 	"testing"
 	"unicode/utf8"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -36,15 +37,15 @@ func Read(t *testing.T, fixtureFilename string) []byte {
 
 // Update updates fixture, used externally initial creation of test only
 func Update(t *testing.T, fixtureFilename string, resultBytes []byte) {
-	require := require.New(t)
+	assert := assert.New(t)
 
 	err := ioutil.WriteFile(JoinTestData(fixtureFilename), resultBytes, 0600)
-	require.Nil(err)
+	assert.Nil(err)
 
 	if WillUpdate() {
-		require.FailNow("UPDATE_FIXTURES=true, fixtures are updated, turn off ENV var to run test")
+		assert.Fail("UPDATE_FIXTURES=true, fixtures are updated, turn off ENV var to run test")
 	} else {
-		require.FailNow("fixtures.Update() is called, please remove this direct call")
+		assert.Fail("fixtures.Update() is called, please remove this direct call")
 	}
 }
 

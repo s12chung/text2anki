@@ -1,5 +1,5 @@
-// Package tokenizer contains tokenizers
-package tokenizer
+// Package tokenizers contains tokenizers
+package tokenizers
 
 // Tokenizer takes a string and gets it's part of speech tokens
 type Tokenizer interface {
