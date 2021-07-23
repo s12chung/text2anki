@@ -6,8 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AlecAivazis/survey/v2"
-
+	"github.com/s12chung/text2anki/cmd/survey"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/app"
 	"github.com/s12chung/text2anki/pkg/dictionary"

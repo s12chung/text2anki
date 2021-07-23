@@ -4,6 +4,7 @@ run:
   timeout: 5m
   skip-files:
     - "zz_generated\\.deepcopy\\.go$"
+    - "cmd/survey/*"
 linters:
   disable-all: true
   enable:
