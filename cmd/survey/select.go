@@ -3,7 +3,9 @@ package survey
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
+	"unicode"
 
 	"github.com/AlecAivazis/survey/v2/core"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -41,10 +43,6 @@ type SelectTemplateData struct {
 	ShowAnswer    bool
 	Config        *PromptConfig
 	KeyPressText  string
-}
-
-var RuneToKeyString = map[rune]string{
-	terminal.KeyEscape: "ESC",
 }
 
 var SelectQuestionTemplate = `
@@ -102,8 +100,8 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 			s.selectedIndex++
 		}
 		// only show the help message if we have one
-	} else if _, exists := s.KeyPressMap[key]; exists {
-		s.resultingKeyPress = key
+	} else if _, exists := s.KeyPressMap[unicode.ToUpper(key)]; exists {
+		s.resultingKeyPress = unicode.ToUpper(key)
 		return true
 	}
 
@@ -136,16 +134,25 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 	return false
 }
 
+var RuneToKeyString = map[rune]string{
+	terminal.KeyEscape:     "ESC",
+	terminal.KeyArrowLeft:  "←",
+	terminal.KeyArrowRight: "→",
+}
+
 func (s *Select) keyPressText() string {
 	keyPressText := make([]string, len(s.KeyPressMap))
+	i := 0
 	for r, help := range s.KeyPressMap {
 		k := string(r)
 		if _, exists := RuneToKeyString[r]; exists {
 			k = RuneToKeyString[r]
 		}
-		keyPressText = append(keyPressText, fmt.Sprintf("%v=%v", k, help))
+		keyPressText[i] = fmt.Sprintf("%v=%v", k, help)
+		i++
 	}
-	return strings.Join(keyPressText, ", ")
+	sort.Strings(keyPressText)
+	return ", " + strings.Join(keyPressText, ", ")
 }
 
 func (s *Select) filterOptions(config *PromptConfig) []core.OptionAnswer {
@@ -284,7 +291,11 @@ func IsKeyPressError(err error) bool {
 	_, ok := err.(*KeyPressError)
 	return ok
 }
+
 func KeyFromKeyPressError(err error) rune {
+	if !IsKeyPressError(err) {
+		return rune(0)
+	}
 	e := err.(*KeyPressError)
 	return e.Key
 }

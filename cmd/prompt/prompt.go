@@ -3,49 +3,104 @@ package prompt
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"os/exec"
 	"strings"
-	"time"
 
 	"github.com/AlecAivazis/survey/v2/terminal"
+	"gopkg.in/yaml.v3"
 
 	"github.com/s12chung/text2anki/cmd/survey"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/app"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
-	"github.com/s12chung/text2anki/pkg/tokenizers"
 )
 
-// Revolve revolves through a set of tokenizedTexts to create a set of notes
-func Revolve(tokenizedTexts []app.TokenizedText, dict dictionary.Dicionary) ([]anki.Note, error) {
-	return (&prompt{
+// CreateCards initializes the create card UI prompt
+func CreateCards(tokenizedTexts []app.TokenizedText, dict dictionary.Dicionary) ([]anki.Note, error) {
+	return (&createCards{
 		tokenizedTexts: tokenizedTexts,
 		dictionary:     dict,
-	}).revolve()
+	}).start()
 }
 
-type prompt struct {
+type createCards struct {
 	tokenizedTexts []app.TokenizedText
 	dictionary     dictionary.Dicionary
 
 	tokenizedTextIndex int
-	tokenIndex         int
 
 	notes []anki.Note
 }
 
-func (p *prompt) revolve() ([]anki.Note, error) {
-	for {
-		if err := p.promptCurrent(); err != nil {
-			return nil, fmt.Errorf("error showing next token: %w", err)
-		}
-		if !p.increment() {
-			break
-		}
-		time.Sleep(1000)
-	}
+type transition string
 
-	return p.notes, nil
+const previousTransition transition = "Previous"
+const nextTransition transition = "Next"
+const finishedTransition transition = "Finished"
+const noneTransition transition = "None"
+
+const searchToken = 'S'
+
+func (c *createCards) start() ([]anki.Note, error) {
+	for {
+		trans, err := c.showTokenizedText(c.tokenizedTexts[c.tokenizedTextIndex])
+		if err != nil {
+			return nil, err
+		}
+		switch trans {
+		case previousTransition:
+			c.tokenizedTextIndex = (c.tokenizedTextIndex + len(c.tokenizedTexts) - 1) % len(c.tokenizedTexts)
+		case nextTransition:
+			c.tokenizedTextIndex = (c.tokenizedTextIndex + 1) % len(c.tokenizedTexts)
+		case finishedTransition:
+			return c.notes, nil
+		}
+	}
+}
+
+func (c *createCards) showTokenizedText(tokenizedText app.TokenizedText) (transition, error) {
+	for {
+		context := tokenizedText.Text.Text
+		options, noValidTokens := tokenOptions(tokenizedText)
+
+		var token string
+		keyPress, err := showSelect(context, options, &token, map[rune]string{
+			terminal.KeyEscape:     "Finish and Export",
+			terminal.KeyArrowLeft:  "Prev Text",
+			terminal.KeyArrowRight: "Next Text",
+			searchToken:            "Search Dictionary",
+		})
+		if !survey.IsKeyPressError(err) && err != nil {
+			return noneTransition, err
+		}
+
+		switch keyPress {
+		case terminal.KeyEscape:
+			return finishedTransition, nil
+		case terminal.KeyArrowLeft:
+			return previousTransition, nil
+		case terminal.KeyArrowRight:
+			return nextTransition, nil
+		case searchToken:
+			if err := c.showSearchInput(context); err != nil {
+				return noneTransition, err
+			}
+		default:
+			if noValidTokens {
+				if err := c.showCreateNote(nil); err != nil {
+					return noneTransition, err
+				}
+			} else {
+				if err := c.showSearch(context, token); err != nil {
+					return noneTransition, err
+				}
+			}
+		}
+	}
 }
 
 var ignorePOS = map[lang.PartOfSpeech]bool{
@@ -54,52 +109,202 @@ var ignorePOS = map[lang.PartOfSpeech]bool{
 	lang.PartOfSpeechUnknown:     true,
 }
 
-func (p *prompt) promptCurrent() error {
-	if ignorePOS[p.currentToken().PartOfSpeech] {
-		return nil
+func tokenOptions(tokenizedText app.TokenizedText) ([]string, bool) {
+	options := make([]string, 0, len(tokenizedText.Tokens))
+	for _, token := range tokenizedText.Tokens {
+		if ignorePOS[token.PartOfSpeech] {
+			continue
+		}
+		options = append(options, token.Text)
 	}
+	if len(options) == 0 {
+		return []string{"No valid token, create from empty card"}, true
+	}
+	return options, false
+}
 
-	terms, err := p.dictionary.Search(p.currentToken().Text)
+func (c *createCards) showSearchInput(context string) error {
+	query := ""
+	prompt := &survey.Input{
+		Message: "Search Dictionary:",
+	}
+	if err := survey.AskOne(prompt, &query); err != nil {
+		return err
+	}
+	return c.showSearch(context, query)
+}
+
+func (c *createCards) showSearch(context, query string) error {
+	for {
+		terms, err := c.dictionary.Search(query)
+		if err != nil {
+			return err
+		}
+
+		options, noSearchResults := itemStringsFromTerms(terms)
+		var termIndex int
+		keyPress, err := showSelect(context, options, &termIndex, map[rune]string{
+			terminal.KeyEscape: "Back to Select Token",
+			searchToken:        "Search Dictionary",
+		})
+		if !survey.IsKeyPressError(err) && err != nil {
+			return err
+		}
+
+		switch keyPress {
+		case terminal.KeyEscape:
+			return nil
+		case searchToken:
+			if err := c.showSearchInput(context); err != nil {
+				return err
+			}
+		default:
+			if noSearchResults {
+				if err := c.showCreateNote(nil); err != nil {
+					return err
+				}
+			} else if err := c.showCreateNote(&terms[termIndex]); err != nil {
+				return err
+			}
+		}
+	}
+}
+
+var posTypes = []lang.PartOfSpeech{
+	lang.PartOfSpeechNoun,
+	lang.PartOfSpeechPronoun,
+	lang.PartOfSpeechNumeral,
+	lang.PartOfSpeechPostposition,
+	lang.PartOfSpeechVerb,
+	lang.PartOfSpeechAdjective,
+	lang.PartOfSpeechDeterminer,
+	lang.PartOfSpeechAdverb,
+	lang.PartOfSpeechInterjection,
+
+	lang.PartOfSpeechAffix,
+	lang.PartOfSpeechPrefix,
+	lang.PartOfSpeechInfix,
+	lang.PartOfSpeechSuffix,
+
+	lang.PartOfSpeechDependentNoun,
+
+	lang.PartOfSpeechAuxiliaryPredicate,
+	lang.PartOfSpeechAuxiliaryVerb,
+	lang.PartOfSpeechAuxiliaryAdjective,
+
+	lang.PartOfSpeechEnding,
+	lang.PartOfSpeechCopula,
+	lang.PartOfSpeechPunctuation,
+
+	lang.PartOfSpeechOther,
+	lang.PartOfSpeechUnknown,
+	lang.PartOfSpeechInvalid,
+}
+
+func (c *createCards) showCreateNote(term *dictionary.Term) error {
+	filename, err := createNoteTempfile(term)
 	if err != nil {
 		return err
 	}
-	if len(terms) == 0 {
-		fmt.Printf("Skipping %v (%v), due to no search results\n", p.currentLabel(), p.currentToken().PartOfSpeech)
-		return nil
-	}
-
-	var termIndex int
-	var keyPress string
-	prompt := &survey.Select{
-		Message:  p.currentLabel(),
-		Options:  itemStringsFromTerms(terms),
-		PageSize: 10,
-		KeyPressMap: map[rune]string{
-			terminal.KeyEscape: "Back to Select Token",
-		},
-	}
-	err = survey.AskOne(prompt, &termIndex)
-	if survey.IsKeyPressError(err) {
-		key := survey.KeyFromKeyPressError(err)
-		keyPress = string(key)
-		if _, exists := survey.RuneToKeyString[key]; exists {
-			keyPress = survey.RuneToKeyString[key]
-		}
-	} else if err != nil {
+	if err = openEditor(filename); err != nil {
 		return err
 	}
+	note, err := noteFromFile(filename)
+	if err != nil {
+		return err
+	}
+	c.notes = append(c.notes, *note)
+	return nil
+}
 
-	if keyPress == "" {
-		p.notes = append(p.notes, app.NewNoteFromTerm(terms[termIndex], 0))
-	} else {
-		fmt.Printf("PRESSED %v\n", keyPress)
+func createNoteTempfile(term *dictionary.Term) (string, error) {
+	f, err := ioutil.TempFile("", "text2anki-showCreateNote-*.yaml")
+	if err != nil {
+		return "", err
+	}
+	var err2 error
+	defer func() { err2 = f.Close() }()
+	if err := addCreateNoteHeaders(f, term); err != nil {
+		return "", err
+	}
+	if err := addNote(f, term); err != nil {
+		return "", err
+	}
+	return f.Name(), err2
+}
+
+func openEditor(filename string) error {
+	//nolint:gosec // can't get around it for now
+	cmd := exec.Command("vim", filename)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func noteFromFile(filename string) (*anki.Note, error) {
+	//nolint:gosec // always writing to tempfile
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	note := &anki.Note{}
+	if err = yaml.Unmarshal(bytes, note); err != nil {
+		return nil, err
+	}
+	return note, err
+}
+
+func addCreateNoteHeaders(f io.Writer, term *dictionary.Term) error {
+	if term != nil {
+		bytes, err := yaml.Marshal(term)
+		if err != nil {
+			return err
+		}
+		termString := string(bytes)
+		termString = "# " + strings.ReplaceAll(termString, "\n", "\n# ") + "\n"
+		if _, err := f.Write([]byte(termString)); err != nil {
+			return err
+		}
+	}
+
+	a := make([]string, len(posTypes))
+	for i, posType := range posTypes {
+		a[i] = string(posType)
+	}
+	postTypesString := fmt.Sprintf("#\n# %v\n# \n# \n", strings.Join(a, ", "))
+	if _, err := f.Write([]byte(postTypesString)); err != nil {
+		return err
+	}
+	return nil
+}
+
+func addNote(f io.Writer, term *dictionary.Term) error {
+	note := anki.Note{}
+	if term != nil {
+		note = app.NewNoteFromTerm(*term, 0)
+	}
+	bytes, err := yaml.Marshal(&note)
+	if err != nil {
+		return err
+	}
+	if _, err := f.Write(bytes); err != nil {
+		return err
 	}
 	return nil
 }
 
 const translationMaxLen = 5
 
-func itemStringsFromTerms(terms []dictionary.Term) []string {
+func itemStringsFromTerms(terms []dictionary.Term) ([]string, bool) {
+	if len(terms) == 0 {
+		return []string{"No Search Results, create from empty card"}, true
+	}
+
 	itemStrings := make([]string, len(terms))
 	for i, term := range terms {
 		translationTextsMap := map[string]bool{}
@@ -128,41 +333,16 @@ func itemStringsFromTerms(terms []dictionary.Term) []string {
 			strings.Join(translationTextsA, "; "),
 		)
 	}
-	return itemStrings
+	return itemStrings, false
 }
 
-func (p *prompt) currentTokenizedText() app.TokenizedText {
-	return p.tokenizedTexts[p.tokenizedTextIndex]
-}
-
-func (p *prompt) currentToken() tokenizers.Token {
-	return p.currentTokenizedText().Tokens[p.tokenIndex]
-}
-
-func (p *prompt) currentLabel() string {
-	label := []rune(p.currentTokenizedText().Text.Text)
-
-	endIndex := p.currentToken().EndIndex
-	label = append(label[:endIndex+1], label[endIndex:]...)
-	label[endIndex] = ']'
-
-	beginIndex := p.currentToken().StartIndex
-	label = append(label[:beginIndex+1], label[beginIndex:]...)
-	label[beginIndex] = '['
-
-	return string(label)
-}
-
-func (p *prompt) increment() bool {
-	if p.tokenizedTextIndex < len(p.tokenizedTexts) &&
-		p.tokenIndex+1 < len(p.currentTokenizedText().Tokens) {
-		p.tokenIndex++
-		return true
+func showSelect(message string, options []string, resp interface{}, keyPressMap map[rune]string) (rune, error) {
+	sel := &survey.Select{
+		Message:     message,
+		Options:     options,
+		PageSize:    10,
+		KeyPressMap: keyPressMap,
 	}
-	if p.tokenizedTextIndex+1 < len(p.tokenizedTexts) {
-		p.tokenizedTextIndex++
-		p.tokenIndex = 0
-		return true
-	}
-	return false
+	err := survey.AskOne(sel, resp)
+	return survey.KeyFromKeyPressError(err), err
 }

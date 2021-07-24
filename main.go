@@ -64,7 +64,7 @@ func readTextString(filename string) (string, error) {
 
 func runUI(tokenizedTexts []app.TokenizedText) ([]anki.Note, error) {
 	dictionary := koreanbasic.NewKoreanBasic(koreanbasic.GetAPIKeyFromEnv())
-	notes, err := prompt.Revolve(tokenizedTexts, dictionary)
+	notes, err := prompt.CreateCards(tokenizedTexts, dictionary)
 	if err != nil {
 		return nil, err
 	}
