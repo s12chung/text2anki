@@ -1,7 +1,10 @@
 // Package java contains Java integration helpers
 package java
 
-import "tekao.net/jnigi"
+import (
+	"fmt"
+	"tekao.net/jnigi"
+)
 
 // Instance is an instance of java running
 type Instance struct {
@@ -30,7 +33,9 @@ func (i *Instance) Setup(classPath string) error {
 
 // Cleanup cleans up the java instance
 func (i *Instance) Cleanup() error {
-	if err := i.JVM.Destroy(); err != nil {
+	err := i.JVM.Destroy()
+	fmt.Println("") // space out the JVM stuff
+	if err != nil {
 		return err
 	}
 	i.JVM, i.Env = nil, nil
