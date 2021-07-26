@@ -10,7 +10,7 @@ interactions:
   response:
     body: "\r\n\r\n\r\n\r\n\r\n\r\n\r\n<channel>\r\n\t<title>한국어 기초사전 개발 지원(Open API)
       - 사전 검색</title>\r\n\t<link>https://krdict.korean.go.kr</link>\r\n\t<description>한국어
-      기초사전 개발 지원(Open API) - 사전 검색 결과</description>\r\n\t<lastBuildDate>20210726133931</lastBuildDate>
+      기초사전 개발 지원(Open API) - 사전 검색 결과</description>\r\n\t<lastBuildDate>20210726142620</lastBuildDate>
       \r\n\t<total>81</total>\r\n\t<start>1</start>\r\n\t<num>10</num>\r\n\t\r\n\t\r\n\t\r\n\t<item>\r\n\t\t\r\n\t\t\r\n\t\t<target_code>27500</target_code>\r\n\t\t<word>가다</word>\r\n\t\t<sup_no>1</sup_no>\r\n\t\t\r\n\t\t\r\n\t\t<pronunciation>가다</pronunciation>\r\n\t\t\r\n\t\t\r\n\t\t<word_grade>초급</word_grade>\r\n\t\t\r\n\t\t<pos>동사</pos>\r\n\t\t<link>https://krdict.korean.go.kr/dicSearch/SearchView?ParaWordNo=27500</link>\r\n\t\t\r\n\t\t\r\n\t\t<sense>\r\n\t\t\t<sense_order>1</sense_order>\r\n\t\t\t<definition>한
       곳에서 다른 곳으로 장소를 이동하다.</definition>\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t<translation>\r\n\t\t\t\t<trans_lang>\r\n\t\t\t\t\r\n\t\t\t\t\r\n\t\t\t\t\r\n\t\t\t\t\r\n\t\t\t\t\r\n\t\t\t\t\r\n\t\t\t\t영어\r\n\t\t\t\t\r\n\t\t\t\t\r\n\t\t\t\t\r\n\t\t\t\t\r\n\t\t\t\t\r\n\t\t\t\t</trans_lang>\r\n\t\t\t\t<trans_word><![CDATA[go;
       travel]]></trans_word>\r\n\t\t\t\t<trans_dfn><![CDATA[To move from one place
@@ -372,17 +372,46 @@ interactions:
       Content-Type:
       - text/xml; charset=UTF-8
       Date:
-      - Mon, 26 Jul 2021 04:45:46 GMT
+      - Mon, 26 Jul 2021 05:31:22 GMT
       Server:
       - Apache
       Set-Cookie:
-      - BSDID=BSD2&&Xvr5g28DQZxX2ThM5qM82NJnZLJTVnrj9TXsHD8yVK21QzNJzynG!737015972!1627274371083;
+      - BSDID=BSD1&&GmzhRzy_v8WW1KdSNUEm32eW_AfVGzG9DmrHIN2TNVl0HmdLJHfc!320139568!1627277180095;
         path=/; HttpOnly
-      - WMONID=zpTXwD5qIHU; Expires=Tue, 26-Jul-2022 13:39:31 GMT; Path=/
-      - basedic=Xvr5g28DQZxX2ThM5qM82NJnZLJTVnrj9TXsHD8yVK21QzNJzynG!737015972; path=/;
+      - WMONID=Qcd7po-U4i5; Expires=Tue, 26-Jul-2022 14:26:20 GMT; Path=/
+      - basedic=GmzhRzy_v8WW1KdSNUEm32eW_AfVGzG9DmrHIN2TNVl0HmdLJHfc!320139568; path=/;
+        HttpOnly
+    status: 200 OK
+    code: 200
+    duration: 2.057224004s
+- request:
+    body: ""
+    form: {}
+    headers: {}
+    url: https://krdict.korean.go.kr/api/search?sort=popular&translated=y&trans_lang=1&q=%EC%95%88%EB%85%95%ED%95%98%EC%84%B8%EC%9A%94&key=REDACTED
+    method: GET
+  response:
+    body: "\r\n\r\n\r\n\r\n\r\n\r\n\r\n<channel>\r\n\t<title>한국어 기초사전 개발 지원(Open API)
+      - 사전 검색</title>\r\n\t<link>https://krdict.korean.go.kr</link>\r\n\t<description>한국어
+      기초사전 개발 지원(Open API) - 사전 검색 결과</description>\r\n\t<lastBuildDate>20210726142441</lastBuildDate>
+      \r\n\t<total>0</total>\r\n\t<start>1</start>\r\n\t<num>10</num>\r\n\t\r\n\t\r\n\t\r\n</channel>\r\n\r\n\r\n"
+    headers:
+      Content-Length:
+      - "375"
+      Content-Type:
+      - text/xml; charset=UTF-8
+      Date:
+      - Mon, 26 Jul 2021 05:31:25 GMT
+      Server:
+      - Apache
+      Set-Cookie:
+      - BSDID=BSD2&&LQ7kg2HZd4p0JfBlDZN28Rh9kvstZTvZ22vnPtLNk9qspG6Dmprb!737015972!1627277081485;
+        path=/; HttpOnly
+      - WMONID=5vxE3YhX1Kr; Expires=Tue, 26-Jul-2022 14:24:41 GMT; Path=/
+      - basedic=LQ7kg2HZd4p0JfBlDZN28Rh9kvstZTvZ22vnPtLNk9qspG6Dmprb!737015972; path=/;
         HttpOnly
       X-Powered-By:
       - Servlet/2.5 JSP/2.1
     status: 200 OK
     code: 200
-    duration: 1.814626879s
+    duration: 242.308488ms
