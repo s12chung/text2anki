@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/s12chung/text2anki/pkg/anki"
-	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
+	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/test/fixture"
 )
 
@@ -22,14 +22,14 @@ func init() {
 // updateAnkiNotesTestdata syncs the anki testdata to match with the korean dictionary ones, so that they match without
 // being dependent on each other
 func updateAnkiNotesTestdata() {
-	sourcePath := path.Join("..", "dictionary", "koreanbasic", fixture.TestDataDir, "search.xml")
+	sourcePath := path.Join("..", "dictionary", "koreanbasic", fixture.TestDataDir, "search_expected.json")
 	//nolint:gosec // for tests
 	sourceBytes, err := ioutil.ReadFile(sourcePath)
 	if err != nil {
 		log.Panic(fmt.Errorf("error while reading source fixture: %w", err))
 	}
-	terms, err := koreanbasic.SearchTerms(sourceBytes)
-	if err != nil {
+	var terms []dictionary.Term
+	if err = json.Unmarshal(sourceBytes, &terms); err != nil {
 		log.Panic(fmt.Errorf("error while parsing source fixture: %w", err))
 	}
 

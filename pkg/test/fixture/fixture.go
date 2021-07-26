@@ -18,7 +18,6 @@ import (
 
 // TestDataDir returns the testdata dir
 const TestDataDir = "testdata"
-const envTrue = "true"
 
 // JoinTestData joins the elem path to the testdata dir
 func JoinTestData(elem ...string) string {
@@ -43,20 +42,18 @@ func Update(t *testing.T, fixtureFilename string, resultBytes []byte) {
 	assert.Nil(err)
 
 	if WillUpdate() {
-		assert.Fail("UPDATE_FIXTURES=true, fixtures are updated, turn off ENV var to run test")
+		assert.Fail(fmt.Sprintf("%v=true, fixtures are updated, turn off ENV var to run test", updateFixturesEnv))
 	} else {
 		assert.Fail("fixtures.Update() is called, please remove this direct call")
 	}
 }
 
+const envTrue = "true"
+const updateFixturesEnv = "UPDATE_FIXTURES"
+
 // WillUpdate returns true if the fixtures will be updated from ReadOrWrite
 func WillUpdate() bool {
-	return os.Getenv("UPDATE_FIXTURES") == envTrue
-}
-
-// WillUpdateAPI returns true if the fixtures will be updated from API calls
-func WillUpdateAPI() bool {
-	return os.Getenv("UPDATE_FIXTURES") == envTrue && os.Getenv("API_UPDATE_FIXTURES") == envTrue
+	return os.Getenv(updateFixturesEnv) == envTrue
 }
 
 // ReadOrUpdate reads the fixture or updates it if WillUpdate is true

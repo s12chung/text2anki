@@ -26,6 +26,5 @@ run: build
 test:
 	go test ./...
 
-# run with API_UPDATE_FIXTURES=true to update API fixtures
 test.fixtures:
-	API_UPDATE_FIXTURES=$(API_UPDATE_FIXTURES) UPDATE_FIXTURES=true make test
+	UPDATE_FIXTURES=true make test

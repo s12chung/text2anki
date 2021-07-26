@@ -24,11 +24,13 @@ func GetAPIKeyFromEnv() string {
 // KoreanBasic is a Korean Basic dictionary API wrapper
 type KoreanBasic struct {
 	apiKey string
+
+	client *http.Client
 }
 
 // NewKoreanBasic returns a KoreanBasic dictionary
 func NewKoreanBasic(apiKey string) dictionary.Dicionary {
-	return &KoreanBasic{apiKey: apiKey}
+	return &KoreanBasic{apiKey: apiKey, client: http.DefaultClient}
 }
 
 // Search returns the search results of the query
@@ -37,11 +39,15 @@ func (k *KoreanBasic) Search(q string) ([]dictionary.Term, error) {
 	if err != nil {
 		return nil, err
 	}
-	return SearchTerms(bytes)
+	channel, err := unmarshallSearch(bytes)
+	if err != nil {
+		return nil, err
+	}
+	return itemsToTerms(channel.Items)
 }
 
 func (k *KoreanBasic) getSearch(q string) ([]byte, error) {
-	resp, err := http.Get(apiURL(q, k.apiKey))
+	resp, err := k.client.Get(apiURL(q, k.apiKey))
 	if err != nil {
 		return nil, err
 	}
@@ -52,13 +58,9 @@ func (k *KoreanBasic) getSearch(q string) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-// SearchTerms returns the search terms given a search response
-func SearchTerms(searchResponse []byte) ([]dictionary.Term, error) {
-	channel, err := unmarshallSearch(searchResponse)
-	if err != nil {
-		return nil, err
-	}
-	return itemsToTerms(channel.Items)
+// SetClient sets the client for API requests
+func (k *KoreanBasic) SetClient(c *http.Client) {
+	k.client = c
 }
 
 const apiURLString = "https://krdict.korean.go.kr/api/search?sort=popular&translated=y&trans_lang=1&q=%s&key=%s"

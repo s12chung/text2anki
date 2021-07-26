@@ -138,3 +138,8 @@ func (a *Azure) setupToken() error {
 func (a *Azure) addToken(header http.Header) {
 	header.Add(tokenHeader, "Bearer "+a.token)
 }
+
+// SetClient sets the client for API requests
+func (a *Azure) SetClient(c *http.Client) {
+	a.client = c
+}
