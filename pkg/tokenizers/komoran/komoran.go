@@ -12,8 +12,8 @@ import (
 	"tekao.net/jnigi"
 )
 
-// NewKomoran returns a Komoran Korean tokenizer
-func NewKomoran() tokenizers.Tokenizer {
+// New returns a Komoran Korean tokenizer
+func New() tokenizers.Tokenizer {
 	return &Komoran{}
 }
 

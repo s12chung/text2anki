@@ -16,7 +16,7 @@ import (
 )
 
 func TestSearch(t *testing.T) {
-	dict := NewKoreanBasic(GetAPIKeyFromEnv())
+	dict := New(GetAPIKeyFromEnv())
 	clean := setupVCR(t, "TestSearch", dict)
 	defer clean()
 
@@ -24,7 +24,7 @@ func TestSearch(t *testing.T) {
 }
 
 func TestSearchFail(t *testing.T) {
-	dict := NewKoreanBasic(GetAPIKeyFromEnv())
+	dict := New(GetAPIKeyFromEnv())
 	clean := setupVCR(t, "TestSearchFail", dict)
 	defer clean()
 

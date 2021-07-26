@@ -18,7 +18,7 @@ type TokenizedText struct {
 
 // TokenizeTexts takes the texts and tokenizes them
 func TokenizeTexts(texts []text.Text) ([]TokenizedText, error) {
-	tokenizer := komoran.NewKomoran()
+	tokenizer := komoran.New()
 	var err2 error
 	if err := tokenizer.Setup(); err != nil {
 		return nil, err

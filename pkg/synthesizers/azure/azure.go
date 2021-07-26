@@ -55,8 +55,8 @@ const (
 	UKSouthRegion          Region = "uksouth"
 )
 
-// NewAzure returns a new Azure API struct
-func NewAzure(apiKey string, region Region) synthesizers.Synthesizer {
+// New returns a new Azure API struct
+func New(apiKey string, region Region) synthesizers.Synthesizer {
 	return &Azure{apiKey: apiKey, region: region, client: http.DefaultClient}
 }
 

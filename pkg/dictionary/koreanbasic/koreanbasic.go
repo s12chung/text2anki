@@ -28,8 +28,8 @@ type KoreanBasic struct {
 	client *http.Client
 }
 
-// NewKoreanBasic returns a KoreanBasic dictionary
-func NewKoreanBasic(apiKey string) dictionary.Dicionary {
+// New returns a KoreanBasic dictionary
+func New(apiKey string) dictionary.Dicionary {
 	return &KoreanBasic{apiKey: apiKey, client: http.DefaultClient}
 }
 

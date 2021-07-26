@@ -13,7 +13,7 @@ func TestGetTokens(t *testing.T) {
 
 	require := require.New(t)
 
-	tokenizer := NewKomoran()
+	tokenizer := New()
 	err := tokenizer.Setup()
 	defer func() {
 		err = tokenizer.Cleanup()
