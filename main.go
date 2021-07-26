@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
+
 	"github.com/s12chung/text2anki/cmd/prompt"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/app"
@@ -27,6 +29,11 @@ func main() {
 }
 
 func run(textStringFilename, exportDir string) error {
+	err := anki.SetupDefaultConfig()
+	if err != nil {
+		return err
+	}
+
 	tokenizedTexts, err := tokenizeTexts(textStringFilename)
 	if err != nil {
 		return err
@@ -34,6 +41,9 @@ func run(textStringFilename, exportDir string) error {
 
 	notes, err := runUI(tokenizedTexts)
 	if err != nil {
+		return err
+	}
+	if err = createAudio(notes); err != nil {
 		return err
 	}
 
@@ -69,6 +79,21 @@ func runUI(tokenizedTexts []app.TokenizedText) ([]anki.Note, error) {
 		return nil, err
 	}
 	return notes, nil
+}
+
+func createAudio(notes []anki.Note) error {
+	synth := azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
+	for i := range notes {
+		note := &notes[i]
+		speech, err := synth.TextToSpeech(note.Text)
+		if err != nil {
+			fmt.Printf("error creating audio for note (%v): %v\n", note.Text, err)
+		}
+		if err = note.SetSound(speech, synth.SourceName()); err != nil {
+			fmt.Printf("error setting audio for note (%v): %v\n", note.Text, err)
+		}
+	}
+	return nil
 }
 
 func exportFiles(notes []anki.Note, exportDir string) error {

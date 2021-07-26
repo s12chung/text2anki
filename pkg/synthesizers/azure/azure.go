@@ -60,6 +60,14 @@ func New(apiKey string, region Region) synthesizers.Synthesizer {
 	return &Azure{apiKey: apiKey, region: region, client: http.DefaultClient}
 }
 
+// SourceName is the source name of this synthesizer
+const SourceName = "Azure Text-to-speech REST API"
+
+// SourceName returns the source name of this synthesizer
+func (a *Azure) SourceName() string {
+	return SourceName
+}
+
 //nolint:gosec // no creds here
 const tokenURL = "https://%v.api.cognitive.microsoft.com/sts/v1.0/issueToken"
 

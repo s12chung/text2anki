@@ -16,20 +16,26 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	config := DefaultConfig()
-	dir, err := os.MkdirTemp("", "text2anki-TestMain-")
+	config, err := DefaultConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	dir, err := os.MkdirTemp("", "text2anki-anki.TestMain-")
 	if err != nil {
 		log.Fatal(err)
 	}
 	config.NotesCacheDir = path.Join(dir, "files")
-	if err := os.Mkdir(path.Join(dir, "files"), 0750); err != nil {
+	if err = os.Mkdir(path.Join(dir, "files"), 0750); err != nil {
 		log.Fatal(err)
 	}
 	SetConfig(config)
 
 	exit := m.Run()
 
-	config = DefaultConfig()
+	config, err = DefaultConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
 	SetConfig(config)
 	os.Exit(exit)
 }

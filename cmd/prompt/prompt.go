@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2/terminal"
-	"gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 
 	"github.com/s12chung/text2anki/cmd/survey"
 	"github.com/s12chung/text2anki/pkg/anki"
