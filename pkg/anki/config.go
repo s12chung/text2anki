@@ -44,7 +44,7 @@ func SetupDefaultConfig() error {
 	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll(config.NotesCacheDir, 0750); err != nil {
+	if err := os.MkdirAll(c.NotesCacheDir, 0750); err != nil {
 		return err
 	}
 	SetConfig(c)
