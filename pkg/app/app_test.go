@@ -37,6 +37,10 @@ func updateAnkiNotesTestdata() {
 	for i, term := range terms {
 		notes[i] = NewNoteFromTerm(term, 0)
 	}
+	for _, testIndex := range []uint{0, 2, 4} {
+		notes[testIndex].Usage = fmt.Sprintf("Test usage, index: %v", testIndex)
+	}
+
 	fixtureBytes, err := json.MarshalIndent(notes, "", "  ")
 	if err != nil {
 		log.Panic(fmt.Errorf("error while creating fixture: %w", err))

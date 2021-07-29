@@ -5,7 +5,7 @@
     "Translation": "go; travel",
     "CommonLevel": 3,
     "Explanation": "To move from one place to another place.",
-    "ShowExplanation": false,
+    "Usage": "Test usage, index: 0",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -15,7 +15,7 @@
     "Translation": "become; turn",
     "CommonLevel": 0,
     "Explanation": "An auxiliary verb used to indicate the continuation or progress of a motion, state, or change of state in the preceding statement.",
-    "ShowExplanation": false,
+    "Usage": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -25,7 +25,7 @@
     "Translation": "brace; pull oneself together",
     "CommonLevel": 1,
     "Explanation": "To collect one's mind, spirit, etc. together.",
-    "ShowExplanation": false,
+    "Usage": "Test usage, index: 2",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -35,7 +35,7 @@
     "Translation": "sometimes; occasionally",
     "CommonLevel": 0,
     "Explanation": "Every now and then while doing something.",
-    "ShowExplanation": false,
+    "Usage": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -45,7 +45,7 @@
     "Translation": "go out; leave",
     "CommonLevel": 3,
     "Explanation": "To move from the inside to the outside of an area or space.\n",
-    "ShowExplanation": false,
+    "Usage": "Test usage, index: 4",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -55,7 +55,7 @@
     "Translation": "pass; go by",
     "CommonLevel": 3,
     "Explanation": "For a certain period to end as time passes by.",
-    "ShowExplanation": false,
+    "Usage": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -65,7 +65,7 @@
     "Translation": "enter; go into",
     "CommonLevel": 3,
     "Explanation": "To go inside from outside.",
-    "ShowExplanation": false,
+    "Usage": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -75,7 +75,7 @@
     "Translation": "go up; rise; ascend",
     "CommonLevel": 3,
     "Explanation": "To move from the bottom to the top, or from a lower place to a higher one.",
-    "ShowExplanation": false,
+    "Usage": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -85,7 +85,7 @@
     "Translation": "spin; rotate",
     "CommonLevel": 3,
     "Explanation": "For an object to move in a circle around a point.",
-    "ShowExplanation": false,
+    "Usage": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -95,7 +95,7 @@
     "Translation": "go down; step down; descend",
     "CommonLevel": 3,
     "Explanation": "To move from up to down.",
-    "ShowExplanation": false,
+    "Usage": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   }

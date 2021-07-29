@@ -10,7 +10,6 @@ import (
 	"path"
 	"testing"
 
-	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/test/fixture"
 	"github.com/stretchr/testify/require"
 )
@@ -38,20 +37,6 @@ func TestMain(m *testing.M) {
 	}
 	SetConfig(config)
 	os.Exit(exit)
-}
-
-// NewNoteFromTerm returns a note given the Term and index
-func NewNoteFromTerm(term dictionary.Term, translationIndex uint) Note {
-	translation := term.Translations[translationIndex]
-	return Note{
-		Text:         term.Text,
-		PartOfSpeech: term.PartOfSpeech,
-		Translation:  translation.Text,
-
-		CommonLevel:      term.CommonLevel,
-		Explanation:      translation.Explanation,
-		DictionarySource: term.DictionarySource,
-	}
 }
 
 func koreanBasicNotes(t *testing.T) []Note {

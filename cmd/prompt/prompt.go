@@ -65,10 +65,11 @@ func (c *createCards) start() ([]anki.Note, error) {
 func (c *createCards) showTokenizedText(tokenizedText app.TokenizedText) (transition, error) {
 	for {
 		context := tokenizedText.Text.Text
+		selectText := fmt.Sprintf("%v/%v: %v", c.tokenizedTextIndex+1, len(c.tokenizedTexts), context)
 		options, noValidTokens := tokenOptions(tokenizedText)
 
 		var token string
-		keyPress, err := showSelect(context, options, &token, map[rune]string{
+		keyPress, err := showSelect(selectText, options, &token, map[rune]string{
 			terminal.KeyEscape:     "Finish and Export",
 			terminal.KeyArrowLeft:  "Prev Text",
 			terminal.KeyArrowRight: "Next Text",
@@ -202,7 +203,7 @@ var posTypes = []lang.PartOfSpeech{
 }
 
 func (c *createCards) showCreateNote(term *dictionary.Term) error {
-	filename, err := createNoteTempfile(term)
+	filename, err := createNoteTempfile(term, c.tokenizedTexts[c.tokenizedTextIndex].Text.Text)
 	if err != nil {
 		return err
 	}
@@ -217,7 +218,7 @@ func (c *createCards) showCreateNote(term *dictionary.Term) error {
 	return nil
 }
 
-func createNoteTempfile(term *dictionary.Term) (string, error) {
+func createNoteTempfile(term *dictionary.Term, context string) (string, error) {
 	f, err := ioutil.TempFile("", "text2anki-showCreateNote-*.yaml")
 	if err != nil {
 		return "", err
@@ -227,7 +228,7 @@ func createNoteTempfile(term *dictionary.Term) (string, error) {
 	if err := addCreateNoteHeaders(f, term); err != nil {
 		return "", err
 	}
-	if err := addNote(f, term); err != nil {
+	if err := addNote(f, term, context); err != nil {
 		return "", err
 	}
 	return f.Name(), err2
@@ -235,7 +236,7 @@ func createNoteTempfile(term *dictionary.Term) (string, error) {
 
 func openEditor(filename string) error {
 	//nolint:gosec // can't get around it for now
-	cmd := exec.Command("vim", filename)
+	cmd := exec.Command("micro", filename)
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
@@ -283,11 +284,12 @@ func addCreateNoteHeaders(f io.Writer, term *dictionary.Term) error {
 	return nil
 }
 
-func addNote(f io.Writer, term *dictionary.Term) error {
+func addNote(f io.Writer, term *dictionary.Term, context string) error {
 	note := anki.Note{}
 	if term != nil {
 		note = app.NewNoteFromTerm(*term, 0)
 	}
+	note.Usage = context
 	bytes, err := yaml.Marshal(&note)
 	if err != nil {
 		return err

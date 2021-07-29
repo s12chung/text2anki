@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"strconv"
+	"strings"
 
 	"github.com/s12chung/text2anki/pkg/lang"
 
@@ -23,7 +23,7 @@ type Note struct {
 
 	lang.CommonLevel
 	Explanation      string
-	ShowExplanation  bool
+	Usage            string
 	DictionarySource string
 
 	hasSound    bool
@@ -57,12 +57,16 @@ func (n *Note) CSV() []string {
 	return []string{
 		n.Text,
 		string(n.PartOfSpeech),
-		strconv.FormatUint(uint64(n.CommonLevel), 10),
 		n.Translation,
+
+		strings.Repeat("*", int(n.CommonLevel)),
 		n.Explanation,
+		n.Usage,
 		n.DictionarySource,
+
 		soundFilename,
 		n.soundSource,
+
 		n.Notes,
 	}
 }
