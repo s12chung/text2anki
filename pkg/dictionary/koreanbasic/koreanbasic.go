@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
@@ -114,7 +115,7 @@ func itemsToTerms(items []item) ([]dictionary.Term, error) {
 		}
 
 		term := dictionary.Term{
-			Text:             item.Word,
+			Text:             strings.TrimSpace(item.Word),
 			CommonLevel:      wordGradeToCommonLevel[item.WordGrade],
 			PartOfSpeech:     partOfSpeechMap[item.PartOfSpeech],
 			DictionarySource: DictionarySource,
@@ -122,8 +123,8 @@ func itemsToTerms(items []item) ([]dictionary.Term, error) {
 		term.Translations = make([]dictionary.Translation, len(item.Senses))
 		for j, sense := range item.Senses {
 			term.Translations[j] = dictionary.Translation{
-				Text:        sense.Translation,
-				Explanation: sense.Explanation,
+				Text:        strings.TrimSpace(sense.Translation),
+				Explanation: strings.TrimSpace(sense.Explanation),
 			}
 		}
 		terms = append(terms, term)
