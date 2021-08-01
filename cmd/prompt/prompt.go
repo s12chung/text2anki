@@ -17,6 +17,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/app"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
+	"github.com/s12chung/text2anki/pkg/text"
 )
 
 // CreateCards initializes the create card UI prompt
@@ -64,8 +65,9 @@ func (c *createCards) start() ([]anki.Note, error) {
 
 func (c *createCards) showTokenizedText(tokenizedText app.TokenizedText) (transition, error) {
 	for {
-		context := tokenizedText.Text.Text
-		selectText := fmt.Sprintf("%v/%v: %v", c.tokenizedTextIndex+1, len(c.tokenizedTexts), context)
+		context := tokenizedText.Text
+		selectText := fmt.Sprintf("%v/%v: %v\n%v\n",
+			c.tokenizedTextIndex+1, len(c.tokenizedTexts), context.Text, context.Translation)
 		options, noValidTokens := tokenOptions(tokenizedText)
 
 		var token string
@@ -124,7 +126,7 @@ func tokenOptions(tokenizedText app.TokenizedText) ([]string, bool) {
 	return options, false
 }
 
-func (c *createCards) showSearchInput(context string) error {
+func (c *createCards) showSearchInput(context text.Text) error {
 	query := ""
 	prompt := &survey.Input{
 		Message: "Search Dictionary:",
@@ -135,7 +137,7 @@ func (c *createCards) showSearchInput(context string) error {
 	return c.showSearch(context, query)
 }
 
-func (c *createCards) showSearch(context, query string) error {
+func (c *createCards) showSearch(context text.Text, query string) error {
 	for {
 		terms, err := c.dictionary.Search(query)
 		if err != nil {
@@ -144,7 +146,8 @@ func (c *createCards) showSearch(context, query string) error {
 
 		options, noSearchResults := itemStringsFromTerms(terms)
 		var termIndex int
-		keyPress, err := showSelect(context, options, &termIndex, map[rune]string{
+		selectText := context.Text + "\n" + context.Translation
+		keyPress, err := showSelect(selectText, options, &termIndex, map[rune]string{
 			terminal.KeyEscape: "Back to Select Token",
 			searchToken:        "Search Dictionary",
 		})
@@ -203,7 +206,7 @@ var posTypes = []lang.PartOfSpeech{
 }
 
 func (c *createCards) showCreateNote(term *dictionary.Term) error {
-	filename, err := createNoteTempfile(term, c.tokenizedTexts[c.tokenizedTextIndex].Text.Text)
+	filename, err := createNoteTempfile(term, c.tokenizedTexts[c.tokenizedTextIndex].Text)
 	if err != nil {
 		return err
 	}
@@ -218,7 +221,7 @@ func (c *createCards) showCreateNote(term *dictionary.Term) error {
 	return nil
 }
 
-func createNoteTempfile(term *dictionary.Term, context string) (string, error) {
+func createNoteTempfile(term *dictionary.Term, context text.Text) (string, error) {
 	f, err := ioutil.TempFile("", "text2anki-showCreateNote-*.yaml")
 	if err != nil {
 		return "", err
@@ -284,12 +287,13 @@ func addCreateNoteHeaders(f io.Writer, term *dictionary.Term) error {
 	return nil
 }
 
-func addNote(f io.Writer, term *dictionary.Term, context string) error {
+func addNote(f io.Writer, term *dictionary.Term, context text.Text) error {
 	note := anki.Note{}
 	if term != nil {
 		note = app.NewNoteFromTerm(*term, 0)
 	}
-	note.Usage = context
+	note.Usage = context.Text
+	note.UsageTranslation = context.Translation
 	bytes, err := yaml.Marshal(&note)
 	if err != nil {
 		return err

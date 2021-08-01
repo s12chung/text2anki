@@ -6,6 +6,7 @@
     "CommonLevel": 3,
     "Explanation": "To move from one place to another place.",
     "Usage": "Test usage, index: 0",
+    "UsageTranslation": "Test usage translation, index: 0",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -16,6 +17,7 @@
     "CommonLevel": 0,
     "Explanation": "An auxiliary verb used to indicate the continuation or progress of a motion, state, or change of state in the preceding statement.",
     "Usage": "",
+    "UsageTranslation": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -26,6 +28,7 @@
     "CommonLevel": 1,
     "Explanation": "To collect one's mind, spirit, etc. together.",
     "Usage": "Test usage, index: 2",
+    "UsageTranslation": "Test usage translation, index: 2",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -36,6 +39,7 @@
     "CommonLevel": 0,
     "Explanation": "Every now and then while doing something.",
     "Usage": "",
+    "UsageTranslation": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -46,6 +50,7 @@
     "CommonLevel": 3,
     "Explanation": "To move from the inside to the outside of an area or space.",
     "Usage": "Test usage, index: 4",
+    "UsageTranslation": "Test usage translation, index: 4",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -56,6 +61,7 @@
     "CommonLevel": 3,
     "Explanation": "For a certain period to end as time passes by.",
     "Usage": "",
+    "UsageTranslation": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -66,6 +72,7 @@
     "CommonLevel": 3,
     "Explanation": "To go inside from outside.",
     "Usage": "",
+    "UsageTranslation": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -76,6 +83,7 @@
     "CommonLevel": 3,
     "Explanation": "To move from the bottom to the top, or from a lower place to a higher one.",
     "Usage": "",
+    "UsageTranslation": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -86,6 +94,7 @@
     "CommonLevel": 3,
     "Explanation": "For an object to move in a circle around a point.",
     "Usage": "",
+    "UsageTranslation": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   },
@@ -96,6 +105,7 @@
     "CommonLevel": 3,
     "Explanation": "To move from up to down.",
     "Usage": "",
+    "UsageTranslation": "",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
   }

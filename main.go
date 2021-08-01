@@ -86,7 +86,7 @@ func createAudio(notes []anki.Note) error {
 	synth := azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
 	for i := range notes {
 		note := &notes[i]
-		speech, err := synth.TextToSpeech(note.Text)
+		speech, err := synth.TextToSpeech(note.Usage)
 		if err != nil {
 			fmt.Printf("error creating audio for note (%v): %v\n", note.Text, err)
 		}

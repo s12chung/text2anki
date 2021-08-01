@@ -40,6 +40,9 @@ func updateAnkiNotesTestdata() {
 	for _, testIndex := range []uint{0, 2, 4} {
 		notes[testIndex].Usage = fmt.Sprintf("Test usage, index: %v", testIndex)
 	}
+	for _, testIndex := range []uint{0, 2, 4} {
+		notes[testIndex].UsageTranslation = fmt.Sprintf("Test usage translation, index: %v", testIndex)
+	}
 
 	fixtureBytes, err := json.MarshalIndent(notes, "", "  ")
 	if err != nil {

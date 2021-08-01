@@ -4,7 +4,6 @@ package app
 import (
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/dictionary"
-	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
 	"github.com/s12chung/text2anki/pkg/tokenizers/komoran"
@@ -53,15 +52,5 @@ func NewNoteFromTerm(term dictionary.Term, translationIndex uint) anki.Note {
 		CommonLevel:      term.CommonLevel,
 		Explanation:      translation.Explanation,
 		DictionarySource: term.DictionarySource,
-	}
-}
-
-// NewNoteFromText returns a Note given the given Text
-func NewNoteFromText(text text.Text) anki.Note {
-	return anki.Note{
-		Text:             text.Text,
-		PartOfSpeech:     lang.PartOfSpeechUnknown,
-		Translation:      text.Translation,
-		DictionarySource: "Text2Anki Imported Text",
 	}
 }
