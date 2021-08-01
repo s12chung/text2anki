@@ -95,7 +95,9 @@ const textToSpeechURL = "https://%v.tts.speech.microsoft.com/cognitiveservices/v
 const textToSpeechBody = `
 <speak version='1.0' xml:lang='ko-KR'>
 <voice xml:lang='ko-KR' xml:gender='Female' name='ko-KR-SunHiNeural'>
+<prosody rate="0.75">
 %v
+</prosody>
 </voice>
 </speak>
 `
