@@ -71,7 +71,14 @@ func (k *Komoran) callGetTokens(s string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return k.javaInstance.JStringToString(jTokensString)
+	k.javaInstance.Env.DeleteLocalRef(jS)
+
+	ret, err := k.javaInstance.JStringToString(jTokensString)
+	if err != nil {
+		return "", err
+	}
+	k.javaInstance.Env.DeleteLocalRef(jTokensString.(*jnigi.ObjectRef))
+	return ret, nil
 }
 
 var jarPath = "tokenizers/dist/komoran"
