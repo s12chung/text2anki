@@ -55,7 +55,8 @@ func tokenizeTexts(textStringFilename string) ([]app.TokenizedText, error) {
 	if err != nil {
 		return nil, err
 	}
-	texts := text.TextsFromString(textString)
+	parser := text.NewParser(text.Korean, text.English)
+	texts := parser.TextsFromString(textString)
 	tokenizedTexts, err := app.TokenizeTexts(texts)
 	if err != nil {
 		return nil, err
