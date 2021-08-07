@@ -54,9 +54,11 @@ func koreanBasicNotesWithSounds(t *testing.T) []Note {
 
 	notes := koreanBasicNotes(t)
 	sound := fixture.Read(t, "sound.mp3")
-	for _, testIndex := range []uint{1, 3, 7} {
-		err := notes[testIndex].SetSound(sound, fmt.Sprintf("Naver CLOVA Speech Synthesis - %v", testIndex))
-		require.Nil(err)
+	for i, note := range notes {
+		if note.Usage != "" {
+			err := notes[i].SetSound(sound, fmt.Sprintf("Naver CLOVA Speech Synthesis - %v", i))
+			require.Nil(err)
+		}
 	}
 	return notes
 }
@@ -87,7 +89,7 @@ func TestExportSounds(t *testing.T) {
 		dirEntryNames[i] = dirEntry.Name()
 	}
 
-	require.Equal([]string{"t2a-가다.mp3", "t2a-가다가.mp3", "t2a-올라가다.mp3"}, dirEntryNames)
+	require.Equal([]string{"t2a-소풍: usage0.mp3", "t2a-소풍: usage2.mp3", "t2a-소풍: usage4.mp3"}, dirEntryNames)
 }
 
 func TestExportCSVFile(t *testing.T) {

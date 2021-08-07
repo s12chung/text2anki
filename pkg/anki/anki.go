@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"regexp"
 	"strconv"
 
 	"github.com/s12chung/text2anki/pkg/lang"
@@ -73,8 +74,10 @@ func (n *Note) CSV() []string {
 	}
 }
 
+var invalidFilenameRegex = regexp.MustCompile("/\\\\")
+
 func (n *Note) soundFilename() string {
-	return config.ExportPrefix + n.Text + ".mp3"
+	return config.ExportPrefix + invalidFilenameRegex.ReplaceAllString(n.Usage, "") + ".mp3"
 }
 
 // ExportFiles exports all files into the given dst

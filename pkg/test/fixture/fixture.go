@@ -94,6 +94,9 @@ func CompareOrUpdateDir(t *testing.T, fixtureDir, resultDir string) {
 		return nil
 	})
 	require.Nil(err)
+	if WillUpdate() {
+		require.Fail(fmt.Sprintf("%v=true, fixtures are updated, turn off ENV var to run test", updateFixturesEnv))
+	}
 }
 
 func compareOrUpdateDirName(t *testing.T, expected, result string) {

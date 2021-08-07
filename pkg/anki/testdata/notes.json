@@ -5,7 +5,7 @@
     "Translation": "go; travel",
     "CommonLevel": 3,
     "Explanation": "To move from one place to another place.",
-    "Usage": "Test usage, index: 0",
+    "Usage": "소풍: /\\usage0",
     "UsageTranslation": "Test usage translation, index: 0",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
@@ -27,7 +27,7 @@
     "Translation": "brace; pull oneself together",
     "CommonLevel": 1,
     "Explanation": "To collect one's mind, spirit, etc. together.",
-    "Usage": "Test usage, index: 2",
+    "Usage": "소풍: /\\usage2",
     "UsageTranslation": "Test usage translation, index: 2",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
@@ -49,7 +49,7 @@
     "Translation": "go out; leave",
     "CommonLevel": 3,
     "Explanation": "To move from the inside to the outside of an area or space.",
-    "Usage": "Test usage, index: 4",
+    "Usage": "소풍: /\\usage4",
     "UsageTranslation": "Test usage translation, index: 4",
     "DictionarySource": "Korean Basic Dictionary",
     "Notes": ""
