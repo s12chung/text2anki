@@ -2,7 +2,6 @@
 package text
 
 import (
-	"fmt"
 	"strings"
 
 	lingua "github.com/pemistahl/lingua-go"
@@ -162,9 +161,6 @@ func (p *Parser) TextsFromString(s string) []Text {
 				texts = append(texts, text)
 			}
 		case splittingTranslation:
-			fmt.Println(nonEmptyIndex)
-			fmt.Println(texts[nonEmptyIndex].Text)
-			fmt.Println(line)
 			texts[nonEmptyIndex].Translation = line
 		}
 		nonEmptyIndex++
