@@ -27,8 +27,6 @@ func TestSearch(t *testing.T) {
 	})
 	defer clean()
 
-	require := require.New(t)
-
 	tcs := []struct {
 		searchTerm string
 		expected   string
@@ -38,12 +36,17 @@ func TestSearch(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		terms, err := dict.Search(tc.searchTerm)
-		require.Nil(err)
-		resultBytes, err := json.MarshalIndent(terms, "", "  ")
-		require.Nil(err)
+		tc := tc
+		t.Run(tc.expected, func(t *testing.T) {
+			require := require.New(t)
 
-		fixture.CompareReadOrUpdate(t, tc.expected, resultBytes)
+			terms, err := dict.Search(tc.searchTerm)
+			require.Nil(err)
+			resultBytes, err := json.MarshalIndent(terms, "", "  ")
+			require.Nil(err)
+
+			fixture.CompareReadOrUpdate(t, tc.expected, resultBytes)
+		})
 	}
 }
 

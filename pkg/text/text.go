@@ -2,6 +2,7 @@
 package text
 
 import (
+	"fmt"
 	"strings"
 
 	lingua "github.com/pemistahl/lingua-go"
@@ -111,12 +112,16 @@ type parseMode int
 
 const (
 	noTranslation parseMode = iota
-	splittingTranslation
+	splitTranslation
 	weaveTranslation
 )
 
+var errExtraTextLine = fmt.Errorf("there are more text lines than translation lines")
+var errExtraTranslationLine = fmt.Errorf("there are more translation lines than text lines")
+
+//nolint:gocognit // too many states for simplification at O(n) time
 // TextsFromString returns an array of Texts from the given string
-func (p *Parser) TextsFromString(s string) []Text {
+func (p *Parser) TextsFromString(s string) ([]Text, error) {
 	lines := strings.Split(strings.ReplaceAll(s, "\r\n", "\n"), "\n")
 	detector := lingua.NewLanguageDetectorBuilder().
 		FromLanguages(lingua.Language(p.SourceLanguage), lingua.Language(p.TranslationLanguage)).
@@ -133,8 +138,11 @@ func (p *Parser) TextsFromString(s string) []Text {
 		}
 		if mode == noTranslation {
 			if l == "===" {
+				if nonEmptyIndex == 1 {
+					texts = append(texts, text)
+				}
 				nonEmptyIndex = 0
-				mode = splittingTranslation
+				mode = splitTranslation
 				continue
 			}
 			if nonEmptyIndex == 1 {
@@ -160,10 +168,17 @@ func (p *Parser) TextsFromString(s string) []Text {
 			if nonEmptyIndex != 0 {
 				texts = append(texts, text)
 			}
-		case splittingTranslation:
+		case splitTranslation:
+			if len(texts) <= nonEmptyIndex {
+				return texts, errExtraTranslationLine
+			}
 			texts[nonEmptyIndex].Translation = line
 		}
 		nonEmptyIndex++
 	}
-	return texts
+	if mode == splitTranslation && len(texts) != nonEmptyIndex {
+		return texts, errExtraTextLine
+	}
+
+	return texts, nil
 }
