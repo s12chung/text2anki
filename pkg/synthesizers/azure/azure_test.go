@@ -25,6 +25,10 @@ func TestTextToSpeech(t *testing.T) {
 	mtype := mimetype.Detect(speech)
 	require.Equal(".mp3", mtype.Extension())
 	require.Equal("audio/mpeg", mtype.String())
+
+	// use cache
+	_, err = synth.TextToSpeech("안녕")
+	require.Nil(err)
 }
 
 func setupVCR(t *testing.T, testName string, hasClient interface{}) func() {

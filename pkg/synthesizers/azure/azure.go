@@ -24,6 +24,7 @@ type Azure struct {
 	token string
 
 	client *http.Client
+	cache  map[string][]byte
 }
 
 // Region are region identifiers for the API
@@ -57,7 +58,7 @@ const (
 
 // New returns a new Azure API struct
 func New(apiKey string, region Region) synthesizers.Synthesizer {
-	return &Azure{apiKey: apiKey, region: region, client: http.DefaultClient}
+	return &Azure{apiKey: apiKey, region: region, client: http.DefaultClient, cache: map[string][]byte{}}
 }
 
 // SourceName is the source name of this synthesizer
@@ -104,12 +105,17 @@ const textToSpeechBody = `
 
 // TextToSpeech returns the speech audio of the given string
 func (a *Azure) TextToSpeech(s string) ([]byte, error) {
+	reqBodyString := fmt.Sprintf(textToSpeechBody, s)
+	if bytes, exists := a.cache[reqBodyString]; exists {
+		return bytes, nil
+	}
+
 	if err := a.setupToken(); err != nil {
 		return nil, err
 	}
 
-	body := bytes.NewBufferString(fmt.Sprintf(textToSpeechBody, s))
-	request, err := http.NewRequest(http.MethodPost, fmt.Sprintf(textToSpeechURL, a.region), body)
+	reqBody := bytes.NewBufferString(reqBodyString)
+	request, err := http.NewRequest(http.MethodPost, fmt.Sprintf(textToSpeechURL, a.region), reqBody)
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +132,7 @@ func (a *Azure) TextToSpeech(s string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	a.cache[reqBodyString] = speech
 	return speech, nil
 }
 
