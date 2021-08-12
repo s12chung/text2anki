@@ -17,12 +17,17 @@ build:
 
 INPUT_FILE ?= tmp/in.txt
 DEFAULT_INPUT_FILE := "이것은 샘플 파일입니다. $(INPUT_FILE)에 자신의 텍스트를 입력합니다.\n\nThis is a sample file. Put your own text at: $(INPUT_FILE)."
-OUTPUT_FILE ?= tmp/$(shell date +"%Y-%m-%d_%H-%M-%S")
+OUTPUT_DIR ?= tmp/$(shell date +"%Y-%m-%d_%H-%M-%S")
 
-run: build
+tmp:
 	mkdir -p tmp
 	test -e $(INPUT_FILE) || echo $(DEFAULT_INPUT_FILE) > $(INPUT_FILE)
-	$(BIN) $(INPUT_FILE) $(OUTPUT_FILE)
+
+run: build tmp
+	$(BIN) $(INPUT_FILE) $(OUTPUT_DIR)
+
+subconv: tmp
+	go run ./cmd/subconv $(INPUT_FILE) tmp/subconv.txt
 
 test:
 	go test ./...

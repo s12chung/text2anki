@@ -8,9 +8,9 @@ import (
 
 	yaml "gopkg.in/yaml.v3"
 
-	"github.com/s12chung/text2anki/cmd/prompt"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/app"
+	"github.com/s12chung/text2anki/pkg/cmd/prompt"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
 	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
 	"github.com/s12chung/text2anki/pkg/text"
@@ -61,7 +61,8 @@ func tokenizeTexts(textStringFilename string) ([]app.TokenizedText, error) {
 	parser := text.NewParser(text.Korean, text.English)
 	texts, err := parser.TextsFromString(textString)
 	if err != nil {
-		bytes, err := yaml.Marshal(texts)
+		var bytes []byte
+		bytes, err = yaml.Marshal(texts)
 		fmt.Println(string(bytes))
 		return nil, err
 	}

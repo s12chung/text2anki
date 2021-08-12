@@ -12,9 +12,9 @@ import (
 	"github.com/AlecAivazis/survey/v2/terminal"
 	yaml "gopkg.in/yaml.v3"
 
-	"github.com/s12chung/text2anki/cmd/survey"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/app"
+	"github.com/s12chung/text2anki/pkg/cmd/survey"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/text"
