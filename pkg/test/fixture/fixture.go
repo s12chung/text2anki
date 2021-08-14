@@ -31,20 +31,28 @@ func Read(t *testing.T, fixtureFilename string) []byte {
 	//nolint:gosec // for tests
 	expected, err := ioutil.ReadFile(JoinTestData(fixtureFilename))
 	require.Nil(err)
-	return expected
+	return []byte(strings.TrimSpace(string(expected)))
 }
 
 // Update updates fixture, used externally initial creation of test only
 func Update(t *testing.T, fixtureFilename string, resultBytes []byte) {
 	assert := assert.New(t)
+	if !WillUpdate() {
+		assert.Fail("fixtures.Update() is called without WillUpdate() == true")
+	}
 
 	err := ioutil.WriteFile(JoinTestData(fixtureFilename), resultBytes, 0600)
 	assert.Nil(err)
 
 	if WillUpdate() {
 		assert.Fail(fmt.Sprintf("%v=true, fixtures are updated, turn off ENV var to run test", updateFixturesEnv))
-	} else {
-		assert.Fail("fixtures.Update() is called, please remove this direct call")
+	}
+}
+
+// SafeUpdate calls Update(), only when WillUpdate() is true
+func SafeUpdate(t *testing.T, fixtureFilename string, resultBytes []byte) {
+	if WillUpdate() {
+		Update(t, fixtureFilename, resultBytes)
 	}
 }
 
@@ -61,13 +69,20 @@ func ReadOrUpdate(t *testing.T, fixtureFilename string, resultBytes []byte) []by
 	if WillUpdate() {
 		Update(t, fixtureFilename, resultBytes)
 	}
-	return []byte(strings.TrimSpace(string(Read(t, fixtureFilename))))
+	return Read(t, fixtureFilename)
 }
 
 // CompareReadOrUpdate calls ReadOrUpdate and compares the result against it
 func CompareReadOrUpdate(t *testing.T, fixtureFilename string, resultBytes []byte) {
 	require := require.New(t)
 	expected := ReadOrUpdate(t, fixtureFilename, resultBytes)
+	require.Equal(string(expected), strings.TrimSpace(string(resultBytes)))
+}
+
+// CompareRead calls Read and compares the result against it
+func CompareRead(t *testing.T, fixtureFilename string, resultBytes []byte) {
+	require := require.New(t)
+	expected := Read(t, fixtureFilename)
 	require.Equal(string(expected), strings.TrimSpace(string(resultBytes)))
 }
 
