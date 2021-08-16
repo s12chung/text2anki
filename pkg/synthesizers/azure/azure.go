@@ -128,6 +128,9 @@ func (a *Azure) TextToSpeech(s string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("returns a non-200 status code: %v (%v)", response.StatusCode, response.Status)
+	}
 	speech, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
