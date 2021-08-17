@@ -221,20 +221,24 @@ func (c *createCards) showCreateNote(term *dictionary.Term) error {
 	return nil
 }
 
-func createNoteTempfile(term *dictionary.Term, context text.Text) (string, error) {
+func createNoteTempfile(term *dictionary.Term, context text.Text) (s string, err error) {
 	f, err := ioutil.TempFile("", "text2anki-showCreateNote-*.yaml")
 	if err != nil {
 		return "", err
 	}
-	var err2 error
-	defer func() { err2 = f.Close() }()
-	if err := addCreateNoteHeaders(f, term); err != nil {
+	defer func() {
+		err2 := f.Close()
+		if err == nil {
+			err = err2
+		}
+	}()
+	if err = addCreateNoteHeaders(f, term); err != nil {
 		return "", err
 	}
-	if err := addNote(f, term, context); err != nil {
+	if err = addNote(f, term, context); err != nil {
 		return "", err
 	}
-	return f.Name(), err2
+	return f.Name(), err
 }
 
 func openEditor(filename string) error {

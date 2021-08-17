@@ -16,19 +16,22 @@ type TokenizedText struct {
 }
 
 // TokenizeTexts takes the texts and tokenizes them
-func TokenizeTexts(texts []text.Text) ([]TokenizedText, error) {
+func TokenizeTexts(texts []text.Text) (tokenizedTexts []TokenizedText, err error) {
 	tokenizer := komoran.New()
-	var err2 error
-	if err := tokenizer.Setup(); err != nil {
+	if err = tokenizer.Setup(); err != nil {
 		return nil, err
 	}
 	defer func() {
-		err2 = tokenizer.Cleanup()
+		err2 := tokenizer.Cleanup()
+		if err == nil {
+			err = err2
+		}
 	}()
 
-	tokenizedTexts := make([]TokenizedText, len(texts))
+	tokenizedTexts = make([]TokenizedText, len(texts))
 	for i, text := range texts {
-		tokens, err := tokenizer.GetTokens(text.Text)
+		var tokens []tokenizers.Token
+		tokens, err = tokenizer.GetTokens(text.Text)
 		if err != nil {
 			return nil, err
 		}
@@ -38,7 +41,7 @@ func TokenizeTexts(texts []text.Text) ([]TokenizedText, error) {
 		}
 	}
 
-	return tokenizedTexts, err2
+	return tokenizedTexts, err
 }
 
 // NewNoteFromTerm returns a Note given the Term and index
