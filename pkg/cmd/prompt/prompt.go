@@ -243,7 +243,7 @@ func createNoteTempfile(term *dictionary.Term, context text.Text) (s string, err
 
 func openEditor(filename string) error {
 	//nolint:gosec // can't get around it for now
-	cmd := exec.Command("micro", filename)
+	cmd := exec.Command("subl", "-w", filename)
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
