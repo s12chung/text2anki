@@ -81,7 +81,7 @@ func itemOverlap(a, b *astisub.Item) time.Duration {
 func itemString(i *astisub.Item) string {
 	os := make([]string, len(i.Lines))
 	for i, l := range i.Lines {
-		os[i] = l.String()
+		os[i] = strings.TrimSpace(l.String())
 	}
 	return strings.Join(os, " ")
 }
@@ -204,12 +204,12 @@ func (p *Parser) TextsFromString(s string) ([]Text, error) {
 	mode := noTranslation
 	var text Text
 	for _, line := range lines {
-		l := strings.TrimSpace(line)
-		if l == "" {
+		line = strings.TrimSpace(line)
+		if line == "" {
 			continue
 		}
 		if mode == noTranslation {
-			if l == "===" {
+			if line == "===" {
 				if nonEmptyIndex == 1 {
 					texts = append(texts, text)
 				}
