@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/s12chung/text2anki/pkg/synthesizers"
 )
@@ -23,9 +24,13 @@ type Azure struct {
 
 	token string
 
-	client *http.Client
-	cache  map[string][]byte
+	client       *http.Client
+	cache        map[string][]byte
+	requestCount uint
 }
+
+// requestLimit is the limit of requests tested from the azure API
+const requestLimit = 20
 
 // Region are region identifiers for the API
 type Region string
@@ -123,6 +128,11 @@ func (a *Azure) TextToSpeech(s string) ([]byte, error) {
 	request.Header.Add("User-Agent", "text2anki")
 	request.Header.Add("X-Microsoft-OutputFormat", "audio-24khz-96kbitrate-mono-mp3")
 	a.addToken(request.Header)
+
+	if a.requestCount != 0 && a.requestCount%requestLimit == 0 {
+		time.Sleep(10 * time.Second)
+	}
+	a.requestCount++
 
 	response, err := a.client.Do(request)
 	if err != nil {

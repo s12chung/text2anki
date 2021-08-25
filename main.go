@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"time"
 
 	yaml "gopkg.in/yaml.v3"
 
@@ -103,7 +102,6 @@ func createAudio(notes []anki.Note) error {
 		if err = note.SetSound(speech, synth.SourceName()); err != nil {
 			fmt.Printf("error setting audio for note (%v): %v\n", note.Text, err)
 		}
-		time.Sleep(time.Second)
 	}
 	return nil
 }
