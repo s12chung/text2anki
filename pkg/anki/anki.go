@@ -126,7 +126,6 @@ func ExportCSVFile(notes []Note, dst string) error {
 // ExportCSV exports the notes as CSV
 func ExportCSV(notes []Note, w io.Writer) error {
 	writer := csv.NewWriter(w)
-	writer.Comma = '\t'
 	defer writer.Flush()
 
 	for _, note := range notes {

@@ -1,10 +1,10 @@
-가다	Verb	go; travel	3	To move from one place to another place.	소풍: /\usage0	Test usage translation, index: 0	Korean Basic Dictionary	[sound:t2a-소풍: usage0.mp3]	Naver CLOVA Speech Synthesis - 0	
-가다	AuxiliaryVerb	become; turn	0	An auxiliary verb used to indicate the continuation or progress of a motion, state, or change of state in the preceding statement.			Korean Basic Dictionary			
-가다듬다	Verb	brace; pull oneself together	1	To collect one's mind, spirit, etc. together.	소풍: /\usage2	Test usage translation, index: 2	Korean Basic Dictionary	[sound:t2a-소풍: usage2.mp3]	Naver CLOVA Speech Synthesis - 2	
-가다가	Adverb	sometimes; occasionally	0	Every now and then while doing something.			Korean Basic Dictionary			
-나가다	Verb	go out; leave	3	To move from the inside to the outside of an area or space.	소풍: /\usage4	Test usage translation, index: 4	Korean Basic Dictionary	[sound:t2a-소풍: usage4.mp3]	Naver CLOVA Speech Synthesis - 4	
-지나가다	Verb	pass; go by	3	For a certain period to end as time passes by.			Korean Basic Dictionary			
-들어가다	Verb	enter; go into	3	To go inside from outside.			Korean Basic Dictionary			
-올라가다	Verb	go up; rise; ascend	3	To move from the bottom to the top, or from a lower place to a higher one.			Korean Basic Dictionary			
-돌아가다	Verb	spin; rotate	3	For an object to move in a circle around a point.			Korean Basic Dictionary			
-내려가다	Verb	go down; step down; descend	3	To move from up to down.			Korean Basic Dictionary			
+가다,Verb,go; travel,3,To move from one place to another place.,소풍: /\usage0,"Test usage translation, index: 0",Korean Basic Dictionary,[sound:t2a-소풍: usage0.mp3],Naver CLOVA Speech Synthesis - 0,
+가다,AuxiliaryVerb,become; turn,0,"An auxiliary verb used to indicate the continuation or progress of a motion, state, or change of state in the preceding statement.",,,Korean Basic Dictionary,,,
+가다듬다,Verb,brace; pull oneself together,1,"To collect one's mind, spirit, etc. together.",소풍: /\usage2,"Test usage translation, index: 2",Korean Basic Dictionary,[sound:t2a-소풍: usage2.mp3],Naver CLOVA Speech Synthesis - 2,
+가다가,Adverb,sometimes; occasionally,0,Every now and then while doing something.,,,Korean Basic Dictionary,,,
+나가다,Verb,go out; leave,3,To move from the inside to the outside of an area or space.,소풍: /\usage4,"Test usage translation, index: 4",Korean Basic Dictionary,[sound:t2a-소풍: usage4.mp3],Naver CLOVA Speech Synthesis - 4,
+지나가다,Verb,pass; go by,3,For a certain period to end as time passes by.,,,Korean Basic Dictionary,,,
+들어가다,Verb,enter; go into,3,To go inside from outside.,,,Korean Basic Dictionary,,,
+올라가다,Verb,go up; rise; ascend,3,"To move from the bottom to the top, or from a lower place to a higher one.",,,Korean Basic Dictionary,,,
+돌아가다,Verb,spin; rotate,3,For an object to move in a circle around a point.,,,Korean Basic Dictionary,,,
+내려가다,Verb,go down; step down; descend,3,To move from up to down.,,,Korean Basic Dictionary,,,
