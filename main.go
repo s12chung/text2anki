@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -11,17 +12,28 @@ import (
 	"github.com/s12chung/text2anki/pkg/app"
 	"github.com/s12chung/text2anki/pkg/cmd/prompt"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
+	"github.com/s12chung/text2anki/pkg/stringclean"
 	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
 	"github.com/s12chung/text2anki/pkg/text"
 )
 
+var cleanSpeaker bool
+
+func init() {
+	flag.BoolVar(&cleanSpeaker, "clean-speaker", false, "clean 'speaker name:' from text")
+	flag.Parse()
+}
+
 func main() {
-	if len(os.Args) != 3 {
+	args := flag.Args()
+	fmt.Println(args)
+
+	if len(args) != 2 {
 		fmt.Printf("Usage: %v textStringFilename exportDir\n", os.Args[0])
 		os.Exit(-1)
 	}
 
-	textStringFilename, exportDir := os.Args[1], os.Args[2]
+	textStringFilename, exportDir := args[0], args[1]
 
 	if err := run(textStringFilename, exportDir); err != nil {
 		fmt.Println(err)
@@ -66,11 +78,26 @@ func tokenizeTexts(textStringFilename string) ([]app.TokenizedText, error) {
 		return nil, err
 	}
 
-	tokenizedTexts, err := app.TokenizeTexts(texts)
+	cleanedTexts := make([]text.Text, len(texts))
+	for i, t := range texts {
+		cleanedTexts[i] = text.Text{
+			Text:        cleanText(t.Text),
+			Translation: cleanText(t.Translation),
+		}
+	}
+
+	tokenizedTexts, err := app.TokenizeTexts(cleanedTexts)
 	if err != nil {
 		return nil, err
 	}
 	return tokenizedTexts, err
+}
+
+func cleanText(s string) string {
+	if cleanSpeaker {
+		s = stringclean.Speaker(s)
+	}
+	return s
 }
 
 func readTextString(filename string) (string, error) {

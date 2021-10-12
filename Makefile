@@ -24,7 +24,7 @@ tmp:
 	test -e $(INPUT_FILE) || echo $(DEFAULT_INPUT_FILE) > $(INPUT_FILE)
 
 run: build tmp
-	$(BIN) $(INPUT_FILE) $(OUTPUT_DIR)
+	$(BIN) --clean-speaker $(INPUT_FILE) $(OUTPUT_DIR)
 
 subconv: tmp
 	go run ./cmd/subconv $(INPUT_FILE) tmp/subconv.txt
