@@ -30,7 +30,7 @@ type Azure struct {
 }
 
 // requestLimit is the limit of requests tested from the azure API
-const requestLimit = 20
+const requestLimit = 15
 
 // Region are region identifiers for the API
 type Region string
@@ -130,7 +130,7 @@ func (a *Azure) TextToSpeech(s string) ([]byte, error) {
 	a.addToken(request.Header)
 
 	if a.requestCount != 0 && a.requestCount%requestLimit == 0 {
-		time.Sleep(10 * time.Second)
+		time.Sleep(30 * time.Second)
 	}
 	a.requestCount++
 
