@@ -29,6 +29,9 @@ run: build tmp
 subconv: tmp
 	go run ./cmd/subconv $(INPUT_FILE) tmp/subconv.txt
 
+syncfiltered:
+	go run ./cmd/syncfiltered "$(SYNC_FILTERED_DIR)"
+
 test:
 	go test ./...
 
