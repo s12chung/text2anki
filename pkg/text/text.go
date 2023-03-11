@@ -191,8 +191,9 @@ const (
 var errExtraTextLine = fmt.Errorf("there are more text lines than translation lines")
 var errExtraTranslationLine = fmt.Errorf("there are more translation lines than text lines")
 
-//nolint:gocognit // too many states for simplification at O(n) time
 // TextsFromString returns an array of Text from the given string
+//
+//nolint:gocognit // too many states for simplification at O(n) time
 func (p *Parser) TextsFromString(s string) ([]Text, error) {
 	lines := strings.Split(strings.ReplaceAll(s, "\r\n", "\n"), "\n")
 	detector := lingua.NewLanguageDetectorBuilder().

@@ -155,6 +155,7 @@ func (a *Azure) TextToSpeech(s string) ([]byte, error) {
 	return speech, nil
 }
 
+//nolint:gosec // not a credential
 const apiKeyHeader = "Ocp-Apim-Subscription-Key"
 const tokenHeader = "Authorization"
 
