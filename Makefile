@@ -1,7 +1,7 @@
-JDK_PATH := /Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home
 BIN := dist/text2anki
-export JAVA_HOME := $(JDK_PATH)/jre
-export CGO_CFLAGS := -I$(JDK_PATH)/include -I$(JDK_PATH)/include/darwin
+
+export JAVA_HOME := /Library/Java/JavaVirtualMachines/openjdk.jdk/Contents/Home
+export CGO_CFLAGS := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/darwin
 
 setup:
 	cd tokenizers; make build
