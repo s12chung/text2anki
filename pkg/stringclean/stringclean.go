@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var speakerRegex = regexp.MustCompile("\\A[^:]{0,25}:")
+var speakerRegex = regexp.MustCompile(`\A[^:\d]{0,25}:`)
 
 // Speaker removes the "speaker name:" string from s
 func Speaker(s string) string {

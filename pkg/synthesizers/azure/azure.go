@@ -130,7 +130,7 @@ func (a *Azure) TextToSpeech(s string) ([]byte, error) {
 	a.addToken(request.Header)
 
 	if a.requestCount != 0 && a.requestCount%requestLimit == 0 {
-		time.Sleep(30 * time.Second)
+		time.Sleep(60 * time.Second)
 	}
 	a.requestCount++
 

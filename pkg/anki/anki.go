@@ -113,7 +113,7 @@ func ExportSounds(notes []Note, dst string) error {
 
 // ExportCSVFile exports the Note CSV as a file
 func ExportCSVFile(notes []Note, dst string) error {
-	f, err := os.Create(dst)
+	f, err := os.Create(filepath.Clean(dst))
 	if err != nil {
 		return err
 	}

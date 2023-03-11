@@ -2,6 +2,7 @@
 package koreanbasic
 
 import (
+	"crypto/tls"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
@@ -31,7 +32,11 @@ type KoreanBasic struct {
 
 // New returns a KoreanBasic dictionary
 func New(apiKey string) dictionary.Dicionary {
-	return &KoreanBasic{apiKey: apiKey, client: http.DefaultClient}
+	transport := &http.Transport{
+		//nolint:gosec // needed
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	return &KoreanBasic{apiKey: apiKey, client: &http.Client{Transport: transport}}
 }
 
 // Search returns the search results of the query

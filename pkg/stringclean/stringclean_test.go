@@ -14,6 +14,7 @@ func TestSpeaker(t *testing.T) {
 	}{
 		{name: "none", s: "You should definitely get one.", expected: "You should definitely get one."},
 		{name: "simple", s: "Kyeong-Eun: You should definitely get one.", expected: "You should definitely get one."},
+		{name: "time", s: "At 3:30, you should definitely get one.", expected: "At 3:30, you should definitely get one."},
 		{name: "korean", s: "경은: 나중에 꼭 한번 키워 보세요.", expected: "나중에 꼭 한번 키워 보세요."},
 		{name: "long", s: "Cheong Kyeong-Eunnie-Ya: You should definitely get one.", expected: "You should definitely get one."},
 		{name: "too long",
