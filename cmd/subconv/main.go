@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -45,12 +44,12 @@ func run(textStringFilename, exportFile string) error {
 		output[i] = text.Text + "\n" + text.Translation
 	}
 
-	return ioutil.WriteFile(exportFile, []byte(strings.Join(output, "\n")), 0600)
+	return os.WriteFile(exportFile, []byte(strings.Join(output, "\n")), 0600)
 }
 
 func readTextString(filename string) (string, error) {
 	//nolint:gosec // required for binary to work
-	bytes, err := ioutil.ReadFile(filename)
+	bytes, err := os.ReadFile(filename)
 	if err != nil {
 		return "", err
 	}

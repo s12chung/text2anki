@@ -3,8 +3,8 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"path"
 	"testing"
 
@@ -24,7 +24,7 @@ func init() {
 func updateAnkiNotesTestdata() {
 	sourcePath := path.Join("..", "dictionary", "koreanbasic", fixture.TestDataDir, "search_expected.json")
 	//nolint:gosec // for tests
-	sourceBytes, err := ioutil.ReadFile(sourcePath)
+	sourceBytes, err := os.ReadFile(sourcePath)
 	if err != nil {
 		log.Panic(fmt.Errorf("error while reading source fixture: %w", err))
 	}
@@ -49,7 +49,7 @@ func updateAnkiNotesTestdata() {
 		log.Panic(fmt.Errorf("error while creating fixture: %w", err))
 	}
 
-	err = ioutil.WriteFile(path.Join("..", "anki", fixture.TestDataDir, "notes.json"), fixtureBytes, 0600)
+	err = os.WriteFile(path.Join("..", "anki", fixture.TestDataDir, "notes.json"), fixtureBytes, 0600)
 	if err != nil {
 		log.Panic(fmt.Errorf("error while writing fixture: %w", err))
 	}

@@ -3,7 +3,7 @@ package komoran
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -84,7 +84,7 @@ func (k *Komoran) callGetTokens(s string) (string, error) {
 var jarPath = "tokenizers/dist/komoran"
 
 func jarPaths() ([]string, error) {
-	files, err := ioutil.ReadDir(jarPath)
+	files, err := os.ReadDir(jarPath)
 	if err != nil {
 		return nil, err
 	}

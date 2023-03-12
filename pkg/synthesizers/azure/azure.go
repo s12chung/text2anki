@@ -4,7 +4,7 @@ package azure
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -90,7 +90,7 @@ func (a *Azure) Token() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	token, err := ioutil.ReadAll(response.Body)
+	token, err := io.ReadAll(response.Body)
 	if err != nil {
 		return "", err
 	}
@@ -140,14 +140,14 @@ func (a *Azure) TextToSpeech(s string) ([]byte, error) {
 	}
 	if response.StatusCode != http.StatusOK {
 		var body []byte
-		body, err = ioutil.ReadAll(response.Body)
+		body, err = io.ReadAll(response.Body)
 		if err != nil {
 			body = nil
 		}
 		return nil, fmt.Errorf("returns a non-200 status code: %v (%v) with body: %v",
 			response.StatusCode, response.Status, string(body))
 	}
-	speech, err := ioutil.ReadAll(response.Body)
+	speech, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}

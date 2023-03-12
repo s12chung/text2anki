@@ -4,7 +4,6 @@ package prompt
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -222,7 +221,7 @@ func (c *createCards) showCreateNote(term *dictionary.Term) error {
 }
 
 func createNoteTempfile(term *dictionary.Term, context text.Text) (s string, err error) {
-	f, err := ioutil.TempFile("", "text2anki-showCreateNote-*.yaml")
+	f, err := os.CreateTemp("", "text2anki-showCreateNote-*.yaml")
 	if err != nil {
 		return "", err
 	}
@@ -255,7 +254,7 @@ func openEditor(filename string) error {
 
 func noteFromFile(filename string) (*anki.Note, error) {
 	//nolint:gosec // always writing to tempfile
-	bytes, err := ioutil.ReadFile(filename)
+	bytes, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
