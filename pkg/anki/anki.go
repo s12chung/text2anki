@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -42,7 +41,7 @@ func (n *Note) Valid() bool {
 
 // SetSound sets the sound for the note
 func (n *Note) SetSound(sound []byte, soundSource string) error {
-	err := ioutil.WriteFile(path.Join(config.NotesCacheDir, n.soundFilename()), sound, 0600)
+	err := os.WriteFile(path.Join(config.NotesCacheDir, n.soundFilename()), sound, 0600)
 	if err != nil {
 		return err
 	}

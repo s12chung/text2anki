@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -50,7 +49,7 @@ func run(srcDir string) error {
 		if err != nil {
 			return err
 		}
-		err = ioutil.WriteFile(outputPath, []byte(strings.Join(contents, "\n")), 0600)
+		err = os.WriteFile(outputPath, []byte(strings.Join(contents, "\n")), 0600)
 		if err != nil {
 			return err
 		}

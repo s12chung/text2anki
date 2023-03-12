@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -102,7 +101,7 @@ func TestExportCSVFile(t *testing.T) {
 	err = ExportCSVFile(koreanBasicNotes(t), dir)
 	require.Nil(err)
 	//nolint:gosec // for tests
-	bytes, err := ioutil.ReadFile(dir)
+	bytes, err := os.ReadFile(dir)
 	require.Nil(err)
 	fixture.CompareReadOrUpdate(t, "export_csv_expected.csv", bytes)
 }

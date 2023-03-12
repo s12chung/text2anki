@@ -4,7 +4,6 @@ package fixture
 import (
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -29,7 +28,7 @@ func JoinTestData(elem ...string) string {
 func Read(t *testing.T, fixtureFilename string) []byte {
 	require := require.New(t)
 	//nolint:gosec // for tests
-	expected, err := ioutil.ReadFile(JoinTestData(fixtureFilename))
+	expected, err := os.ReadFile(JoinTestData(fixtureFilename))
 	require.Nil(err)
 	return []byte(strings.TrimSpace(string(expected)))
 }
@@ -41,7 +40,7 @@ func Update(t *testing.T, fixtureFilename string, resultBytes []byte) {
 		assert.Fail("fixtures.Update() is called without WillUpdate() == true")
 	}
 
-	err := ioutil.WriteFile(JoinTestData(fixtureFilename), resultBytes, 0600)
+	err := os.WriteFile(JoinTestData(fixtureFilename), resultBytes, 0600)
 	assert.Nil(err)
 
 	if WillUpdate() {
@@ -131,17 +130,17 @@ func compareOrUpdateFile(t *testing.T, expected, result string) {
 	require := require.New(t)
 
 	//nolint:gosec // for tests
-	resultBytes, err := ioutil.ReadFile(result)
+	resultBytes, err := os.ReadFile(result)
 	require.Nil(err)
 
 	if WillUpdate() {
 		//nolint:gosec // for tests
-		require.Nil(ioutil.WriteFile(expected, resultBytes, 0600))
+		require.Nil(os.WriteFile(expected, resultBytes, 0600))
 		return
 	}
 
 	//nolint:gosec // for tests
-	expectedBytes, err := ioutil.ReadFile(expected)
+	expectedBytes, err := os.ReadFile(expected)
 	require.Nil(err)
 
 	if utf8.Valid(expectedBytes) && utf8.Valid(resultBytes) {

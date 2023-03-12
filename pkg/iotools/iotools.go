@@ -3,7 +3,6 @@ package iotools
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -21,7 +20,7 @@ func CopyFile(dst, src string, perm os.FileMode) error {
 	}
 	//nolint:errcheck,gosec // just closing file
 	defer in.Close()
-	tmp, err := ioutil.TempFile(filepath.Dir(dst), "")
+	tmp, err := os.CreateTemp(filepath.Dir(dst), "")
 	if err != nil {
 		return err
 	}

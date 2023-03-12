@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	yaml "gopkg.in/yaml.v3"
@@ -102,7 +101,7 @@ func cleanText(s string) string {
 
 func readTextString(filename string) (string, error) {
 	//nolint:gosec // required for binary to work
-	bytes, err := ioutil.ReadFile(filename)
+	bytes, err := os.ReadFile(filename)
 	if err != nil {
 		return "", err
 	}

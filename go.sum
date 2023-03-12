@@ -132,5 +132,3 @@ gopkg.in/yaml.v2 v2.4.0/go.mod h1:RDklbk79AGWmwhnvt/jBztapEOGDOx6ZbXqjP6csGnQ=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b h1:h8qDotaEPuJATrMmW04NCwg7v22aHH28wwpauUhK9Oo=
 gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
-tekao.net/jnigi v0.0.0-20201212091834-f7b899046676 h1:ZEkhDs0eKEynaUD1XX/WnQCD5/zoEUyMkDx5DbvVq7g=
-tekao.net/jnigi v0.0.0-20201212091834-f7b899046676/go.mod h1:SmVvXetJ8N0ov5c2eOC+IxmkdYGEyuXghTuBq5HWZ/Y=
