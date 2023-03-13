@@ -2,6 +2,8 @@
 package komoran
 
 import (
+	"os"
+
 	"github.com/s12chung/text2anki/pkg/tokenizers"
 	"github.com/s12chung/text2anki/pkg/tokenizers/server"
 	"github.com/s12chung/text2anki/pkg/tokenizers/server/java"
@@ -19,7 +21,11 @@ type Komoran struct {
 	server server.Server
 }
 
-var jarPath = "tokenizers/dist/komoran/tokenizer-komoran.jar"
+var jarPath string
+
+func init() {
+	jarPath = os.Getenv("KOMORAN_JAR_PATH")
+}
 
 // Setup setups up the JVM for Komoran to run
 func (k *Komoran) Setup() error {

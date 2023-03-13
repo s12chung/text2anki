@@ -1,3 +1,4 @@
+export KOMORAN_JAR_PATH := tokenizers/dist/komoran/tokenizer-komoran.jar
 BIN := dist/text2anki
 
 setup:
