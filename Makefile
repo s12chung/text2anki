@@ -1,8 +1,5 @@
 BIN := dist/text2anki
 
-export JAVA_HOME := /Library/Java/JavaVirtualMachines/openjdk.jdk/Contents/Home
-export CGO_CFLAGS := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/darwin
-
 setup:
 	cd tokenizers; make build
 
@@ -13,7 +10,7 @@ goimports:
 	goimports -w .
 
 build:
-	go build -o $(BIN) .
+	go build -v -o $(BIN) .
 
 INPUT_FILE ?= tmp/in.txt
 DEFAULT_INPUT_FILE := "이것은 샘플 파일입니다. $(INPUT_FILE)에 자신의 텍스트를 입력합니다.\n\nThis is a sample file. Put your own text at: $(INPUT_FILE)."
@@ -33,7 +30,7 @@ syncfiltered:
 	go run ./cmd/syncfiltered "$(SYNC_FILTERED_DIR)"
 
 test:
-	go test ./...
+	go test -v ./...
 
 test.fixtures:
 	UPDATE_FIXTURES=true make test
