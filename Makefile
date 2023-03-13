@@ -1,8 +1,5 @@
 BIN := dist/text2anki
 
-export JAVA_HOME := /Library/Java/JavaVirtualMachines/openjdk.jdk/Contents/Home
-export CGO_CFLAGS := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/darwin
-
 setup:
 	cd tokenizers; make build
 
