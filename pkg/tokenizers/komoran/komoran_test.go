@@ -14,7 +14,7 @@ func TestGetTokens(t *testing.T) {
 		t.Skip("can't run java environment in CI")
 	}
 
-	jarPath = "../../../tokenizers/dist/komoran/tokenizer-komoran.jar"
+	jarPath = "../../../" + jarPath
 	require := require.New(t)
 
 	tokenizer := New()
