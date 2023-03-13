@@ -3,6 +3,7 @@ import java.util.function.Function;
 import text2anki.tokenizer.komoran.Tokenizer;
 import text2anki.tokenizer.komoran.Server;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,9 +19,10 @@ class TestTokenizer {
         try {
             server.start();
             testServer();
+            testServerStop();
+            server.threadWaitForStop();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
             server.stop(5);
         }
     }
@@ -53,7 +55,10 @@ class TestTokenizer {
         response = stringResponse(request);
         expected = "{\"tokens\":[{\"pos\":\"NNP\",\"endIndex\":4,\"beginIndex\":0,\"morph\":\"대한민국\"},{\"pos\":\"JX\",\"endIndex\":5,\"beginIndex\":4,\"morph\":\"은\"}]}";
         Assert.equalsString("tokenize Response", response, expected);
+    }
 
+    static void testServerStop() {
+        System.setIn(new ByteArrayInputStream((Server.stopKeyword + "\n").getBytes()));
     }
 
     static String stringResponse(HttpRequest request) throws IOException, InterruptedException {

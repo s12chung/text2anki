@@ -3,7 +3,6 @@ package server
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -28,18 +27,16 @@ type Server interface {
 // CmdServer is a server that runs a cmd
 type CmdServer struct {
 	cmd       *exec.Cmd
+	stdIn     io.WriteCloser
 	isRunning bool
-	cancel    context.CancelFunc
 	port      int
 }
 
 // NewCmdSever returns a new CmdServer
 func NewCmdSever(port int, name string, args ...string) *CmdServer {
-	ctx, cancel := context.WithCancel(context.Background())
 	return &CmdServer{
-		cmd:    exec.CommandContext(ctx, name, args...),
-		cancel: cancel,
-		port:   port,
+		cmd:  exec.Command(name, args...),
+		port: port,
 	}
 }
 
@@ -47,14 +44,21 @@ const healthzPath = "/healthz"
 
 // Start starts the CmdServer
 func (s *CmdServer) Start() error {
-	err := s.cmd.Start()
+	var err error
+
+	s.stdIn, err = s.cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+
+	err = s.cmd.Start()
 	if err != nil {
 		return err
 	}
 	s.isRunning = true
 
 	go func() {
-		if err := s.cmd.Wait(); err != nil && s.cmd.ProcessState.String() != "signal: killed" {
+		if err := s.cmd.Wait(); err != nil {
 			fmt.Printf("Error after waiting for command: %v\n", err)
 		}
 		s.isRunning = false
@@ -90,8 +94,8 @@ func getFirstLine(str string) string {
 
 // Stop stops the CmdServer
 func (s *CmdServer) Stop() error {
-	s.cancel()
-	return nil
+	_, err := io.WriteString(s.stdIn, "stop\n")
+	return err
 }
 
 // IsRunning returns true if the CmdServer is running
