@@ -9,7 +9,7 @@ type Tokenizer interface {
 	Cleanup() error
 	IsSetup() bool
 
-	GetTokens(s string) ([]Token, error)
+	Tokenize(str string) ([]Token, error)
 }
 
 // Token is a part of speech token
