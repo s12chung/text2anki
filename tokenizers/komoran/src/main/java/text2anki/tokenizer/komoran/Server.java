@@ -18,24 +18,26 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Scanner;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
 public class Server {
   public static void main(String[] args) throws IOException {
     if (args.length == 2) {
-      new Server(Integer.parseInt(args[0]), Integer.parseInt(args[1])).start();
+      new Server(Integer.parseInt(args[0]), Integer.parseInt(args[1])).startWithStop();
       return;
     }
-    new Server().start();
+    new Server().startWithStop();
   }
 
-  public static String tokenizeKey = "string";
-  public static String pathHealthz = "/healthz";
-  public static String pathTokenize = "/tokenize";
+  public static final String tokenizeKey = "string";
+  public static final String pathHealthz = "/healthz";
+  public static final String pathTokenize = "/tokenize";
 
-  public static int defaultPort = 9999;
-  public static int defaultBacklog = 64;
+  public static final int defaultPort = 9999;
+  public static final int defaultBacklog = 64;
+  public static final String stopKeyword = "stop";
 
   HttpServer server;
 
@@ -75,8 +77,29 @@ public class Server {
     server.start();
   }
 
+  public void startWithStop() {
+    start();
+    threadWaitForStop();
+  }
+
   public void stop(int delay) {
     server.stop(delay);
+  }
+
+  public void threadWaitForStop() {
+    new Thread(() -> {
+      waitForStop();
+    }).start();
+  }
+
+  public void waitForStop() {
+    Scanner in = new Scanner(System.in);
+    while (in.hasNextLine()) {
+      if (in.nextLine().equals(stopKeyword)) {
+        break;
+      }
+    }
+    stop(5);
   }
 
   static HttpHandler respondWith(HttpFunc hf) {
