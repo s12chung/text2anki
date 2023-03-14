@@ -3,6 +3,7 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,6 +20,8 @@ import (
 type Server interface {
 	Start() error
 	Stop() error
+	StopAndWait() error
+	ForceStop() error
 	IsRunning() bool
 
 	Tokenize(str string, resp any) error
@@ -30,13 +33,19 @@ type CmdServer struct {
 	stdIn     io.WriteCloser
 	isRunning bool
 	port      int
+
+	stopWarningDuration time.Duration
+	cancel              context.CancelFunc
 }
 
 // NewCmdSever returns a new CmdServer
-func NewCmdSever(port int, name string, args ...string) *CmdServer {
+func NewCmdSever(port int, stopWarningDuration time.Duration, name string, args ...string) *CmdServer {
+	ctx, cancel := context.WithCancel(context.Background())
 	return &CmdServer{
-		cmd:  exec.Command(name, args...),
-		port: port,
+		cmd:                 exec.CommandContext(ctx, name, args...),
+		port:                port,
+		stopWarningDuration: stopWarningDuration,
+		cancel:              cancel,
 	}
 }
 
@@ -94,8 +103,78 @@ func getFirstLine(str string) string {
 
 // Stop stops the CmdServer
 func (s *CmdServer) Stop() error {
-	_, err := io.WriteString(s.stdIn, "stop\n")
+	stopped, err := s.stop()
+	go func() {
+		i := 0
+		for {
+			i++
+			time.Sleep(s.stopWarningDuration)
+			select {
+			case <-stopped:
+				fmt.Println("CmdServer stopped")
+				return
+			default:
+				fmt.Printf("CmdServer server is still running after %v\n",
+					time.Duration(i)*s.stopWarningDuration)
+			}
+		}
+	}()
+	go func() {
+		forceStopDuration := (s.stopWarningDuration * 10) - time.Second
+		time.Sleep(forceStopDuration)
+		if !s.IsRunning() {
+			return
+		}
+		fmt.Printf("Komoran Server still running after %v, ForceStop()\n", forceStopDuration)
+		if err2 := s.ForceStop(); err != nil {
+			fmt.Println(err2)
+		}
+	}()
 	return err
+}
+
+func (s *CmdServer) stop() (chan bool, error) {
+	if _, err := io.WriteString(s.stdIn, "stop\n"); err != nil {
+		return nil, err
+	}
+
+	stopped := make(chan bool)
+	go func() {
+		sleepTime := time.Millisecond * 200
+		for i := 1; s.isRunning; i++ {
+			time.Sleep(sleepTime)
+		}
+		stopped <- true
+	}()
+
+	return stopped, nil
+}
+
+// StopAndWait runs Stop() and waits until the server is stopped
+func (s *CmdServer) StopAndWait() error {
+	_, err := s.stop()
+	if err != nil {
+		return err
+	}
+
+	sleepTime := time.Millisecond * 200
+	count := int(s.stopWarningDuration / sleepTime)
+	for i := 1; i <= count && s.isRunning; i++ {
+		time.Sleep(sleepTime)
+	}
+	if s.isRunning {
+		return fmt.Errorf("CmdServer running after timeout Stop()")
+	}
+	return nil
+}
+
+// ForceStop forces the server to stop via kill
+func (s *CmdServer) ForceStop() error {
+	if s.isRunning {
+		return fmt.Errorf("will not ForceStop() while IsRunning()")
+	}
+	s.cancel()
+	return nil
 }
 
 // IsRunning returns true if the CmdServer is running

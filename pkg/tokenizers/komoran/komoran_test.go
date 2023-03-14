@@ -17,11 +17,10 @@ func TestGetTokens(t *testing.T) {
 	jarPath = "../../../" + jarPath
 	require := require.New(t)
 
-	tokenizer := New()
+	tokenizer := new()
 	err := tokenizer.Setup()
 	defer func() {
-		err = tokenizer.Cleanup()
-		require.Nil(err)
+		require.Nil(tokenizer.server.StopAndWait())
 	}()
 	require.Nil(err)
 	tokens, err := tokenizer.Tokenize("대한민국은 민주공화국이다.")
