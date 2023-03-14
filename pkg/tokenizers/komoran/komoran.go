@@ -2,7 +2,9 @@
 package komoran
 
 import (
+	"fmt"
 	"os"
+	"time"
 
 	"github.com/s12chung/text2anki/pkg/tokenizers"
 	"github.com/s12chung/text2anki/pkg/tokenizers/server"
@@ -11,14 +13,21 @@ import (
 
 // New returns a Komoran Korean tokenizer
 func New() tokenizers.Tokenizer {
+	return new()
+}
+
+const stopWarningDuration = 15 * time.Second
+
+func new() *Komoran {
 	return &Komoran{
-		server: java.NewJarServer(jarPath, 9999, 64),
+		server: java.NewJarServer(jarPath, 9999, 64, stopWarningDuration),
 	}
 }
 
 // Komoran is a Korean Tokenizer in java
 type Komoran struct {
-	server server.Server
+	server  server.Server
+	started bool
 }
 
 var jarPath string
@@ -29,6 +38,10 @@ func init() {
 
 // Setup setups up the JVM for Komoran to run
 func (k *Komoran) Setup() error {
+	if k.started {
+		return fmt.Errorf("Komoran already started before, make a new instance")
+	}
+	k.started = true
 	return k.server.Start()
 }
 
