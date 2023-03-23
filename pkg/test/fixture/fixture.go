@@ -40,7 +40,10 @@ func Update(t *testing.T, fixtureFilename string, resultBytes []byte) {
 		assert.Fail("fixtures.Update() is called without WillUpdate() == true")
 	}
 
-	err := os.WriteFile(JoinTestData(fixtureFilename), resultBytes, 0600)
+	err := os.MkdirAll(TestDataDir, os.ModePerm)
+	assert.Nil(err)
+
+	err = os.WriteFile(JoinTestData(fixtureFilename), resultBytes, 0600)
 	assert.Nil(err)
 
 	if WillUpdate() {
