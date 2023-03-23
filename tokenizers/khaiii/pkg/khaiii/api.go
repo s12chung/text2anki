@@ -131,7 +131,7 @@ func goWord(wordC C.khaiii_word_t) *Word {
 	word := &Word{
 		Begin:    int(wordC.begin),
 		Length:   int(wordC.length),
-		reserved: strndup((*C.char)(unsafe.Pointer(&wordC.reserved)), C.RESERVED_STRLEN),
+		reserved: strndup(wordC.reserved, C.RESERVED_STRLEN),
 	}
 
 	morphs := []*Morph{}
@@ -151,11 +151,12 @@ func goMorph(morphC C.khaiii_morph_t) *Morph {
 		Tag:      C.GoString(morphC.tag),
 		Begin:    int(morphC.begin),
 		Length:   int(morphC.length),
-		reserved: strndup((*C.char)(unsafe.Pointer(&morphC.reserved)), C.RESERVED_STRLEN),
+		reserved: strndup(morphC.reserved, C.RESERVED_STRLEN),
 	}
 	return morph
 }
 
-func strndup(cs *C.char, len int) string {
+func strndup(i interface{}, len int) string {
+	cs := (*C.char)(unsafe.Pointer(&i))
 	return C.GoStringN(cs, C.int(C.strnlen(cs, C.size_t(len))))
 }
