@@ -1,0 +1,44 @@
+[
+  {
+    "Begin": 0,
+    "Length": 7,
+    "Morphs": [
+      {
+        "Lex": "안녕",
+        "Tag": "IC",
+        "Begin": 0,
+        "Length": 6
+      },
+      {
+        "Lex": "!",
+        "Tag": "SF",
+        "Begin": 6,
+        "Length": 1
+      }
+    ]
+  },
+  {
+    "Begin": 8,
+    "Length": 10,
+    "Morphs": [
+      {
+        "Lex": "반갑",
+        "Tag": "VA",
+        "Begin": 8,
+        "Length": 6
+      },
+      {
+        "Lex": "어",
+        "Tag": "EF",
+        "Begin": 14,
+        "Length": 3
+      },
+      {
+        "Lex": "!",
+        "Tag": "SF",
+        "Begin": 17,
+        "Length": 1
+      }
+    ]
+  }
+]
