@@ -9,8 +9,8 @@ import (
 )
 
 // NewJarServer returns a server that runs a jar file
-func NewJarServer(jarName string, port, backlog int, stopWarningDuration time.Duration) server.Server {
-	return server.NewCmdSever(port, stopWarningDuration,
+func NewJarServer(jarName string, port, backlog int, stopWarningDuration time.Duration) server.TokenizerServer {
+	return server.NewCmdTokenizerServer(port, stopWarningDuration,
 		"java", "-jar", jarName,
 		strconv.Itoa(port), strconv.Itoa(backlog))
 }

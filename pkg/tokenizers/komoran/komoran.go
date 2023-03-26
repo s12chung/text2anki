@@ -26,7 +26,7 @@ func new() *Komoran {
 
 // Komoran is a Korean Tokenizer in java
 type Komoran struct {
-	server  server.Server
+	server  server.TokenizerServer
 	started bool
 }
 
