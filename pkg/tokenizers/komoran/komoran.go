@@ -130,12 +130,12 @@ var partOfSpeechMap = map[string]lang.PartOfSpeech{
 	"IC":  lang.PartOfSpeechInterjection, // 감탄사 - Not in Github
 
 	"XPN": lang.PartOfSpeechPrefix, // Noun Prefix - 체언 접두사 - Not in GitHub
-	"XSN": lang.PartOfSpeechSuffix, // Noun Derived Suffix - 명사파생 접미사 - Not in Github
+	"XSN": lang.PartOfSpeechSuffix, // Noun Derived Suffix - 명사 파생 접미사 - Not in Github
 	"XSV": lang.PartOfSpeechSuffix, // Verb Derived Suffix - 동사 파생 접미사 - Not in Github
 	"XSA": lang.PartOfSpeechSuffix, // Adjective Derived Suffix - 형용사 파생 접미사 - Not in Github
 
 	"NNB": lang.PartOfSpeechDependentNoun,      // 의존 명사
-	"VX":  lang.PartOfSpeechAuxiliaryPredicate, // Auxiliary Predicate - 보조 용언
+	"VX":  lang.PartOfSpeechAuxiliaryPredicate, // 보조 용언
 
 	"EP":  lang.PartOfSpeechEnding, // Pre-Final Ending 선어말어미
 	"EC":  lang.PartOfSpeechEnding, // Connective Ending - 연결 어미
@@ -145,16 +145,16 @@ var partOfSpeechMap = map[string]lang.PartOfSpeech{
 	"VCP": lang.PartOfSpeechCopula, // Positive Copula - 긍정 지정사
 	"VCN": lang.PartOfSpeechCopula, // Negative Copula - 부정 지정사
 
-	"SW": lang.PartOfSpeechPunctuation, // Etc Symbol - 기타 기호
+	"SW": lang.PartOfSpeechPunctuation, // Other Symbols - 기타 기호
 	"SF": lang.PartOfSpeechPunctuation, // Period, Question Mark, Exclamation Mark - 마침표, 물음표, 느낌표
-	"SS": lang.PartOfSpeechPunctuation, // Quotation Mark, Parentheses, Dash - 따옴표,괄호표,줄표
+	"SS": lang.PartOfSpeechPunctuation, // Quotation Mark, Parentheses, Dash - 따옴표, 괄호표, 줄표
 	"SE": lang.PartOfSpeechPunctuation, // Ellipsis - 줄임표 - Not in Github
-	"SP": lang.PartOfSpeechPunctuation, // Comma, Bullet, Colon, Slash - 쉼표,가운뎃점,콜론,빗금 - Not in Github
-	"SO": lang.PartOfSpeechPunctuation, // Dash, Tilde, Hidden - 붙임표(물결,숨김,빠짐) - Not in Github
+	"SP": lang.PartOfSpeechPunctuation, // Comma, Bullet, Colon, Slash - 쉼표, 가운뎃점, 콜론, 빗금 - Not in Github
+	"SO": lang.PartOfSpeechPunctuation, // Dash, Tilde, Hidden - 붙임표 (물결, 숨김, 빠짐) - Not in Github
 
-	"SH": lang.PartOfSpeechOther, // Chinese Language - 한자 - Not in Github
-	"SL": lang.PartOfSpeechOther, // Foreign Language - 외국어 - Not in Github
-	"XR": lang.PartOfSpeechOther, // Root - 어근 - Not in Github
+	"SH": lang.PartOfSpeechOtherLanguage, // Chinese Language - 한자 - Not in Github
+	"SL": lang.PartOfSpeechOtherLanguage, // Foreign Language - 외국어 - Not in Github
+	"XR": lang.PartOfSpeechRoot,          // Root - 어근 - Not in Github
 
 	"NA": lang.PartOfSpeechUnknown, // Unknown - 분석불능범주
 	"NF": lang.PartOfSpeechUnknown, // Presumptive Noun Category of Nouns - 명사추정범주 - Not in Github

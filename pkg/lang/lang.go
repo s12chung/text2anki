@@ -20,6 +20,7 @@ const (
 	PartOfSpeechNoun         PartOfSpeech = "Noun"
 	PartOfSpeechPronoun      PartOfSpeech = "Pronoun"
 	PartOfSpeechNumeral      PartOfSpeech = "Numeral"
+	PartOfSpeechAlphabet     PartOfSpeech = "Alphabet"
 	PartOfSpeechPostposition PartOfSpeech = "Postposition"
 	PartOfSpeechVerb         PartOfSpeech = "Verb"
 	PartOfSpeechAdjective    PartOfSpeech = "Adjective"
@@ -29,8 +30,8 @@ const (
 
 	PartOfSpeechAffix  PartOfSpeech = "Affix" // General
 	PartOfSpeechPrefix PartOfSpeech = "Prefix"
-	PartOfSpeechInfix  PartOfSpeech = "Infix"
 	PartOfSpeechSuffix PartOfSpeech = "Suffix"
+	PartOfSpeechRoot   PartOfSpeech = "Root"
 
 	PartOfSpeechDependentNoun PartOfSpeech = "DependentNoun"
 
@@ -42,7 +43,8 @@ const (
 	PartOfSpeechCopula      PartOfSpeech = "Copula"
 	PartOfSpeechPunctuation PartOfSpeech = "Punctuation"
 
-	PartOfSpeechOther   PartOfSpeech = "Other"
-	PartOfSpeechUnknown PartOfSpeech = "Unknown"
-	PartOfSpeechInvalid PartOfSpeech = ""
+	PartOfSpeechOtherLanguage PartOfSpeech = "OtherLanguage"
+	PartOfSpeechOther         PartOfSpeech = "Other"
+	PartOfSpeechUnknown       PartOfSpeech = "Unknown"
+	PartOfSpeechInvalid       PartOfSpeech = ""
 )
