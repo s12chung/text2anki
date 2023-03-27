@@ -41,18 +41,22 @@ var partOfSpeechMap = map[string]lang.PartOfSpeech{
 	"XSN": lang.PartOfSpeechSuffix, // Noun Derived Suffix - 의존 형태 - 명사 파생 접미사
 	"XSV": lang.PartOfSpeechSuffix, // Verb Derived Suffix - 의존 형태 - 동사 파생 접미사
 	"XSA": lang.PartOfSpeechSuffix, // Adjective Derived Suffix - 의존 형태 - 형용사 파생 접미사
-	"XR":  lang.PartOfSpeechRoot,   // Root - 의존 형태 - 어근
 
-	"SF":  lang.PartOfSpeechPunctuation,   // Period, Question Mark, Exclamation Mark - 기호 - 마침표, 물음표, 느낌표
-	"SP":  lang.PartOfSpeechPunctuation,   // Comma, Bullet, Colon, Slash - 기호 - 쉼표, 가운뎃점, 콜론, 빗금
-	"SS":  lang.PartOfSpeechPunctuation,   // Quotation Mark, Parentheses, Dash - 기호 - 따옴표, 괄호표, 줄표
-	"SE":  lang.PartOfSpeechPunctuation,   // Ellipsis - 기호 - 줄임표
-	"SO":  lang.PartOfSpeechPunctuation,   // Dash, Tilde, Hidden - 기호 - 붙임표 (물결, 숨김, 빠짐)
-	"SL":  lang.PartOfSpeechOtherLanguage, // Foreign Language - 기호 - 외국어
-	"SH":  lang.PartOfSpeechOtherLanguage, // Chinese Language - 기호 - 한자
-	"SW":  lang.PartOfSpeechPunctuation,   // Other Symbols (Logic, Mathematical, Monetary, etc.) - 기호 - 기타 기호 (논리, 수학 기호, 화폐 기호 등)
-	"SWK": lang.PartOfSpeechAlphabet,      // Korean Alphabet (subpart of SW) - 기호 - 한글 자소
-	"SN":  lang.PartOfSpeechNumeral,       // 기호 - 숫자
+	"XR": lang.PartOfSpeechRoot, // Root - 의존 형태 - 어근
+
+	"SF": lang.PartOfSpeechPunctuation, // Period, Question Mark, Exclamation Mark - 기호 - 마침표, 물음표, 느낌표
+	"SP": lang.PartOfSpeechPunctuation, // Comma, Bullet, Colon, Slash - 기호 - 쉼표, 가운뎃점, 콜론, 빗금
+	"SS": lang.PartOfSpeechPunctuation, // Quotation Mark, Parentheses, Dash - 기호 - 따옴표, 괄호표, 줄표
+	"SE": lang.PartOfSpeechPunctuation, // Ellipsis - 기호 - 줄임표
+	"SO": lang.PartOfSpeechPunctuation, // Dash, Tilde, Hidden - 기호 - 붙임표 (물결, 숨김, 빠짐)
+	"SW": lang.PartOfSpeechPunctuation, // Other Symbols (Logic, Mathematical, Monetary, etc.) - 기호 - 기타 기호 (논리, 수학 기호, 화폐 기호 등)
+
+	"SL": lang.PartOfSpeechOtherLanguage, // Foreign Language - 기호 - 외국어
+	"SH": lang.PartOfSpeechOtherLanguage, // Chinese Language - 기호 - 한자
+	"SN": lang.PartOfSpeechNumeral,       // 기호 - 숫자
+
+	// All below are not in Sejeong Corpus
+	"SWK": lang.PartOfSpeechAlphabet, // Korean Alphabet (subpart of SW) - 기호 - 한글 자소
 
 	"ZN": lang.PartOfSpeechNoun,  // Guessed Noun  - 추정 - 분석 불능 (명사 추정)
 	"ZV": lang.PartOfSpeechVerb,  // Guessed Verb - 추정 - 분석 불능 (용언 추정)

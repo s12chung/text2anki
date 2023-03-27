@@ -91,22 +91,29 @@ var wordGradeToCommonLevel = map[string]lang.CommonLevel{
 }
 
 var partOfSpeechMap = map[string]lang.PartOfSpeech{
-	"명사":     lang.PartOfSpeechNoun,
-	"대명사":    lang.PartOfSpeechPronoun,
-	"수사":     lang.PartOfSpeechNumeral,
-	"조사":     lang.PartOfSpeechPostposition,
-	"동사":     lang.PartOfSpeechVerb,
-	"형용사":    lang.PartOfSpeechAdjective,
-	"관형사":    lang.PartOfSpeechDeterminer,
-	"부사":     lang.PartOfSpeechAdverb,
-	"감탄사":    lang.PartOfSpeechInterjection,
-	"접사":     lang.PartOfSpeechAffix,
-	"의존 명사":  lang.PartOfSpeechDependentNoun,
+	"명사":  lang.PartOfSpeechNoun,
+	"대명사": lang.PartOfSpeechPronoun,
+	"수사":  lang.PartOfSpeechNumeral,
+	"조사":  lang.PartOfSpeechPostposition,
+
+	"동사":  lang.PartOfSpeechVerb,
+	"형용사": lang.PartOfSpeechAdjective,
+	"관형사": lang.PartOfSpeechDeterminer,
+
+	"부사":  lang.PartOfSpeechAdverb,
+	"감탄사": lang.PartOfSpeechInterjection,
+
+	"접사": lang.PartOfSpeechAffix,
+
+	"의존 명사": lang.PartOfSpeechDependentNoun,
+
 	"보조 동사":  lang.PartOfSpeechAuxiliaryVerb,
 	"보조 형용사": lang.PartOfSpeechAuxiliaryAdjective,
-	"어미":     lang.PartOfSpeechEnding,
-	"품사 없음":  lang.PartOfSpeechUnknown,
-	"":       lang.PartOfSpeechUnknown,
+
+	"어미": lang.PartOfSpeechEnding,
+
+	"품사 없음": lang.PartOfSpeechUnknown,
+	"":      lang.PartOfSpeechUnknown,
 }
 
 func itemsToTerms(items []item) ([]dictionary.Term, error) {

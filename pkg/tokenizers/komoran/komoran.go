@@ -137,7 +137,7 @@ var partOfSpeechMap = map[string]lang.PartOfSpeech{
 	"NNB": lang.PartOfSpeechDependentNoun,      // 의존 명사
 	"VX":  lang.PartOfSpeechAuxiliaryPredicate, // 보조 용언
 
-	"EP":  lang.PartOfSpeechEnding, // Pre-Final Ending 선어말어미
+	"EP":  lang.PartOfSpeechEnding, // Pre-Final Ending 선어말 어미
 	"EC":  lang.PartOfSpeechEnding, // Connective Ending - 연결 어미
 	"EF":  lang.PartOfSpeechEnding, // Sentence Closing Ending - 종결 어미
 	"ETN": lang.PartOfSpeechEnding, // Nominal Ending - 명사형 전성 어미

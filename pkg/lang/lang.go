@@ -17,30 +17,42 @@ type PartOfSpeech string
 
 // PartOfSpeech types
 const (
-	PartOfSpeechNoun         PartOfSpeech = "Noun"
-	PartOfSpeechPronoun      PartOfSpeech = "Pronoun"
-	PartOfSpeechNumeral      PartOfSpeech = "Numeral"
-	PartOfSpeechAlphabet     PartOfSpeech = "Alphabet"
-	PartOfSpeechPostposition PartOfSpeech = "Postposition"
-	PartOfSpeechVerb         PartOfSpeech = "Verb"
-	PartOfSpeechAdjective    PartOfSpeech = "Adjective"
-	PartOfSpeechDeterminer   PartOfSpeech = "Determiner"
-	PartOfSpeechAdverb       PartOfSpeech = "Adverb"
-	PartOfSpeechInterjection PartOfSpeech = "Interjection"
+	// PartOfSpeechCount is the number of Part Of Speech Types - mostly for testing
+	PartOfSpeechCount = 26
 
-	PartOfSpeechAffix  PartOfSpeech = "Affix" // General
-	PartOfSpeechPrefix PartOfSpeech = "Prefix"
-	PartOfSpeechSuffix PartOfSpeech = "Suffix"
-	PartOfSpeechRoot   PartOfSpeech = "Root"
+	//
+	// UPDATE PartOfSpeechCount and partOfSpeechTypes WHEN CHANGING
+	//
+	// Search "PartOfSpeech EQUAL_SIGN" to count
+	//
+	PartOfSpeechNoun         PartOfSpeech = "Noun"         // 명사
+	PartOfSpeechPronoun      PartOfSpeech = "Pronoun"      // 대명사
+	PartOfSpeechNumeral      PartOfSpeech = "Numeral"      // 수사
+	PartOfSpeechAlphabet     PartOfSpeech = "Alphabet"     // 한글 자소
+	PartOfSpeechPostposition PartOfSpeech = "Postposition" // 조사
 
-	PartOfSpeechDependentNoun PartOfSpeech = "DependentNoun"
+	PartOfSpeechVerb       PartOfSpeech = "Verb"       // 동사
+	PartOfSpeechAdjective  PartOfSpeech = "Adjective"  // 형용사
+	PartOfSpeechDeterminer PartOfSpeech = "Determiner" // 보조 용언
 
-	PartOfSpeechAuxiliaryPredicate PartOfSpeech = "AuxiliaryPredicate" // General
-	PartOfSpeechAuxiliaryVerb      PartOfSpeech = "AuxiliaryVerb"
-	PartOfSpeechAuxiliaryAdjective PartOfSpeech = "AuxiliaryAdjective"
+	PartOfSpeechAdverb       PartOfSpeech = "Adverb"       // 부사
+	PartOfSpeechInterjection PartOfSpeech = "Interjection" // 감탄사
 
-	PartOfSpeechEnding      PartOfSpeech = "Ending"
-	PartOfSpeechCopula      PartOfSpeech = "Copula"
+	PartOfSpeechAffix  PartOfSpeech = "Affix"  // General - 접사
+	PartOfSpeechPrefix PartOfSpeech = "Prefix" // 체언 접두사
+	PartOfSpeechInfix  PartOfSpeech = "Infix"
+	PartOfSpeechSuffix PartOfSpeech = "Suffix" // 파생 접미사
+
+	PartOfSpeechRoot PartOfSpeech = "Root" // 어근
+
+	PartOfSpeechDependentNoun PartOfSpeech = "DependentNoun" // 의존 명사
+
+	PartOfSpeechAuxiliaryPredicate PartOfSpeech = "AuxiliaryPredicate" // General - 보조 용언
+	PartOfSpeechAuxiliaryVerb      PartOfSpeech = "AuxiliaryVerb"      // 보조 동사
+	PartOfSpeechAuxiliaryAdjective PartOfSpeech = "AuxiliaryAdjective" // 보조 형용사
+
+	PartOfSpeechEnding      PartOfSpeech = "Ending" // 어미
+	PartOfSpeechCopula      PartOfSpeech = "Copula" // 지정사
 	PartOfSpeechPunctuation PartOfSpeech = "Punctuation"
 
 	PartOfSpeechOtherLanguage PartOfSpeech = "OtherLanguage"
@@ -48,3 +60,46 @@ const (
 	PartOfSpeechUnknown       PartOfSpeech = "Unknown"
 	PartOfSpeechInvalid       PartOfSpeech = ""
 )
+
+var partOfSpeechTypes = []PartOfSpeech{
+	PartOfSpeechNoun,
+	PartOfSpeechPronoun,
+	PartOfSpeechNumeral,
+	PartOfSpeechAlphabet,
+	PartOfSpeechPostposition,
+
+	PartOfSpeechVerb,
+	PartOfSpeechAdjective,
+	PartOfSpeechDeterminer,
+	PartOfSpeechAdverb,
+	PartOfSpeechInterjection,
+
+	PartOfSpeechAffix,
+	PartOfSpeechPrefix,
+	PartOfSpeechInfix,
+	PartOfSpeechSuffix,
+
+	PartOfSpeechRoot,
+
+	PartOfSpeechDependentNoun,
+
+	PartOfSpeechAuxiliaryPredicate,
+	PartOfSpeechAuxiliaryVerb,
+	PartOfSpeechAuxiliaryAdjective,
+
+	PartOfSpeechEnding,
+	PartOfSpeechCopula,
+	PartOfSpeechPunctuation,
+
+	PartOfSpeechOtherLanguage,
+	PartOfSpeechOther,
+	PartOfSpeechUnknown,
+	PartOfSpeechInvalid,
+}
+
+// PartOfSpeechTypes returns an array of all Part Of Speech Types
+func PartOfSpeechTypes() []PartOfSpeech {
+	c := make([]PartOfSpeech, len(partOfSpeechTypes))
+	copy(c, partOfSpeechTypes)
+	return c
+}

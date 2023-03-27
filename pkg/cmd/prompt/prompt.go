@@ -173,37 +173,6 @@ func (c *createCards) showSearch(context text.Text, query string) error {
 	}
 }
 
-var posTypes = []lang.PartOfSpeech{
-	lang.PartOfSpeechNoun,
-	lang.PartOfSpeechPronoun,
-	lang.PartOfSpeechNumeral,
-	lang.PartOfSpeechPostposition,
-	lang.PartOfSpeechVerb,
-	lang.PartOfSpeechAdjective,
-	lang.PartOfSpeechDeterminer,
-	lang.PartOfSpeechAdverb,
-	lang.PartOfSpeechInterjection,
-
-	lang.PartOfSpeechAffix,
-	lang.PartOfSpeechPrefix,
-	lang.PartOfSpeechInfix,
-	lang.PartOfSpeechSuffix,
-
-	lang.PartOfSpeechDependentNoun,
-
-	lang.PartOfSpeechAuxiliaryPredicate,
-	lang.PartOfSpeechAuxiliaryVerb,
-	lang.PartOfSpeechAuxiliaryAdjective,
-
-	lang.PartOfSpeechEnding,
-	lang.PartOfSpeechCopula,
-	lang.PartOfSpeechPunctuation,
-
-	lang.PartOfSpeechOther,
-	lang.PartOfSpeechUnknown,
-	lang.PartOfSpeechInvalid,
-}
-
 func (c *createCards) showCreateNote(term *dictionary.Term) error {
 	filename, err := createNoteTempfile(term, c.tokenizedTexts[c.tokenizedTextIndex].Text)
 	if err != nil {
@@ -279,6 +248,7 @@ func addCreateNoteHeaders(f io.Writer, term *dictionary.Term) error {
 		}
 	}
 
+	posTypes := lang.PartOfSpeechTypes()
 	a := make([]string, len(posTypes))
 	for i, posType := range posTypes {
 		a[i] = string(posType)
