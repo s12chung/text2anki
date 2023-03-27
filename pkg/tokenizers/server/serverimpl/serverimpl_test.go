@@ -22,8 +22,10 @@ type TokenResponse struct {
 type SplitTokenizer struct {
 }
 
-func (s *SplitTokenizer) Cleanup() {
+var cleaned = false
 
+func (s *SplitTokenizer) Cleanup() {
+	cleaned = true
 }
 func (s *SplitTokenizer) Tokenize(str string) (any, error) {
 	return strings.Split(str, " "), nil
@@ -44,6 +46,10 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 	if err := server.Stop(); err != nil {
 		fmt.Println(err)
+	}
+	if !cleaned {
+		fmt.Println("cleaned = false from Cleanup()")
+		os.Exit(-1)
 	}
 	os.Exit(code)
 }

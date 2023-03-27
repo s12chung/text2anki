@@ -52,14 +52,21 @@ func (s *ServerImpl) Run(port int) error {
 	return s.waitStdinStop(serverChannel)
 }
 
+// Stop stops the server
+func (s *ServerImpl) Stop() error {
+	return s.server.Shutdown(context.Background())
+}
+
 func (s *ServerImpl) runWithoutStdin(port int) chan error {
 	serverChannel := make(chan error)
-	if err := s.setupServer(port); err != nil {
-		serverChannel <- err
-	}
 	go func() {
+		if err := s.setupServer(port); err != nil {
+			serverChannel <- err
+			return
+		}
 		s.running = true
 		serverChannel <- s.server.Serve(s.listener)
+		s.tokenizer.Cleanup()
 	}()
 
 	retChannel := make(chan error)
@@ -74,11 +81,6 @@ func (s *ServerImpl) runWithoutStdin(port int) chan error {
 	return retChannel
 }
 
-// Stop stops the server
-func (s *ServerImpl) Stop() error {
-	return s.server.Shutdown(context.Background())
-}
-
 func (s *ServerImpl) setupServer(port int) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc(server.HealthzPath, handleHeathzfunc)
@@ -89,9 +91,12 @@ func (s *ServerImpl) setupServer(port int) error {
 		Handler:           mux,
 		ReadHeaderTimeout: time.Second,
 	}
-	server.RegisterOnShutdown(s.tokenizer.Cleanup)
+	s.server = server
+	return s.listen()
+}
 
-	addr := server.Addr
+func (s *ServerImpl) listen() error {
+	addr := s.server.Addr
 	if addr == "" {
 		addr = ":http"
 	}
@@ -99,7 +104,7 @@ func (s *ServerImpl) setupServer(port int) error {
 	if err != nil {
 		return err
 	}
-	s.server, s.listener = server, ln
+	s.listener = ln
 	return nil
 }
 
@@ -114,7 +119,7 @@ func (s *ServerImpl) waitStdinStop(serverChannel chan error) error {
 		}
 
 		_, err3 := io.WriteString(os.Stdin, server.StopKeyword+"\n")
-		if err2 != nil {
+		if err2 == nil {
 			err2 = err3
 		}
 	}()
