@@ -49,7 +49,16 @@ func NewCmdTokenizerServer(port int, stopWarningDuration time.Duration, name str
 	}
 }
 
-const healthzPath = "/healthz"
+// HealthzPath is the path to the health check path - GET
+const HealthzPath = "/healthz"
+
+// TokenizePath is the path to the tokenize path - POST
+const TokenizePath = "/tokenize"
+
+// TokenizeRequest is the format of the request for TokenizePath
+type TokenizeRequest struct {
+	String string `json:"string"`
+}
 
 // Start starts the CmdServer
 func (s *CmdTokenizerServer) Start() error {
@@ -75,7 +84,7 @@ func (s *CmdTokenizerServer) Start() error {
 
 	for i := 1; i <= 15; i++ {
 		time.Sleep(time.Millisecond * 200)
-		response, err := http.Get(s.uriFor(healthzPath))
+		response, err := http.Get(s.uriFor(HealthzPath))
 		if err != nil {
 			continue
 		}
@@ -90,7 +99,7 @@ func (s *CmdTokenizerServer) Start() error {
 			return nil
 		}
 	}
-	return errors.New("timed out waiting for " + healthzPath)
+	return errors.New("timed out waiting for " + HealthzPath)
 }
 
 func getFirstLine(str string) string {
@@ -133,8 +142,11 @@ func (s *CmdTokenizerServer) Stop() error {
 	return err
 }
 
+// StopKeyword is the keyword to stop the server from stdin
+const StopKeyword = "stop"
+
 func (s *CmdTokenizerServer) stop() (chan bool, error) {
-	if _, err := io.WriteString(s.stdIn, "stop\n"); err != nil {
+	if _, err := io.WriteString(s.stdIn, StopKeyword+"\n"); err != nil {
 		return nil, err
 	}
 
@@ -182,18 +194,14 @@ func (s *CmdTokenizerServer) IsRunning() bool {
 	return s.isRunning
 }
 
-type tokenizeRequest struct {
-	String string `json:"string"`
-}
-
 // Tokenize marshalls tokenizes the string into the resp
 func (s *CmdTokenizerServer) Tokenize(str string, resp any) error {
-	body, err := json.Marshal(&tokenizeRequest{String: str})
+	body, err := json.Marshal(&TokenizeRequest{String: str})
 	if err != nil {
 		return err
 	}
 
-	response, err := http.Post(s.uriFor("/tokenize"), mime.TypeByExtension(".json"), bytes.NewBuffer(body))
+	response, err := http.Post(s.uriFor(TokenizePath), mime.TypeByExtension(".json"), bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}
