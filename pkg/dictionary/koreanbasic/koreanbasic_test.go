@@ -41,9 +41,9 @@ func TestSearch(t *testing.T) {
 			require := require.New(t)
 
 			terms, err := dict.Search(tc.searchTerm)
-			require.Nil(err)
+			require.NoError(err)
 			resultBytes, err := json.MarshalIndent(terms, "", "  ")
-			require.Nil(err)
+			require.NoError(err)
 
 			fixture.CompareReadOrUpdate(t, tc.expected, resultBytes)
 		})

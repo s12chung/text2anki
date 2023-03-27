@@ -13,7 +13,7 @@ const pathChange = "../../"
 func newKhaiii(t *testing.T) *Khaiii {
 	require := require.New(t)
 	k, err := NewKhaiii(pathChange + DefaultDlPath)
-	require.Nil(err)
+	require.NoError(err)
 	return k
 }
 
@@ -23,17 +23,17 @@ func TestAnalyze(t *testing.T) {
 	var err error
 	k := newKhaiii(t)
 	err = k.Open(pathChange + DefaultRscPath)
-	require.Nil(err)
+	require.NoError(err)
 	defer func() {
-		require.Nil(k.Close())
+		require.NoError(k.Close())
 	}()
 
 	var words []*Word
 	words, err = k.Analyze("안녕! 반가워!")
-	require.Nil(err)
+	require.NoError(err)
 
 	bytes, err := json.MarshalIndent(words, "", "  ")
-	require.Nil(err)
+	require.NoError(err)
 
 	fixture.CompareReadOrUpdate(t, "analyze.json", bytes)
 }

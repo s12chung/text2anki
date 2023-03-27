@@ -20,14 +20,14 @@ func TestGetTokens(t *testing.T) {
 	tokenizer := new()
 	err := tokenizer.Setup()
 	defer func() {
-		require.Nil(tokenizer.server.StopAndWait())
+		require.NoError(tokenizer.server.StopAndWait())
 	}()
-	require.Nil(err)
+	require.NoError(err)
 	tokens, err := tokenizer.Tokenize("대한민국은 민주공화국이다.")
-	require.Nil(err)
+	require.NoError(err)
 
 	bytes, err := json.MarshalIndent(tokens, "", "  ")
-	require.Nil(err)
+	require.NoError(err)
 
 	fixture.CompareReadOrUpdate(t, "get_tokens.json", bytes)
 }

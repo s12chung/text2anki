@@ -21,7 +21,7 @@ func SetupVCR(t *testing.T, cassetteName string, hasClient interface{}, setupRec
 	require.True(ok, "should implement HasClient")
 
 	r, err := recorder.New(cassetteName)
-	require.Nil(err)
+	require.NoError(err)
 
 	if setupRecorder != nil {
 		setupRecorder(r)
@@ -29,6 +29,6 @@ func SetupVCR(t *testing.T, cassetteName string, hasClient interface{}, setupRec
 	h.SetClient(&http.Client{Transport: r})
 
 	return func() {
-		require.Nil(r.Stop())
+		require.NoError(r.Stop())
 	}
 }

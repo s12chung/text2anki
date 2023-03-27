@@ -43,7 +43,7 @@ func koreanBasicNotes(t *testing.T) []Note {
 
 	var notes []Note
 	bytes := fixture.Read(t, "notes.json")
-	require.Nil(json.Unmarshal(bytes, &notes))
+	require.NoError(json.Unmarshal(bytes, &notes))
 
 	return notes
 }
@@ -56,7 +56,7 @@ func koreanBasicNotesWithSounds(t *testing.T) []Note {
 	for i, note := range notes {
 		if note.Usage != "" {
 			err := notes[i].SetSound(sound, fmt.Sprintf("Naver CLOVA Speech Synthesis - %v", i))
-			require.Nil(err)
+			require.NoError(err)
 		}
 	}
 	return notes
@@ -66,9 +66,9 @@ func TestExportFiles(t *testing.T) {
 	require := require.New(t)
 
 	exportDir, err := os.MkdirTemp("", "text2anki-TestExportFiles-")
-	require.Nil(err)
+	require.NoError(err)
 	err = ExportFiles(koreanBasicNotesWithSounds(t), exportDir)
-	require.Nil(err)
+	require.NoError(err)
 
 	fixture.CompareOrUpdateDir(t, "ExportFiles", exportDir)
 }
@@ -77,12 +77,12 @@ func TestExportSounds(t *testing.T) {
 	require := require.New(t)
 
 	exportDir, err := os.MkdirTemp("", "text2anki-TestExportSounds-")
-	require.Nil(err)
+	require.NoError(err)
 	err = ExportSounds(koreanBasicNotesWithSounds(t), exportDir)
-	require.Nil(err)
+	require.NoError(err)
 
 	dirEntries, err := os.ReadDir(exportDir)
-	require.Nil(err)
+	require.NoError(err)
 	dirEntryNames := make([]string, len(dirEntries))
 	for i, dirEntry := range dirEntries {
 		dirEntryNames[i] = dirEntry.Name()
@@ -95,14 +95,14 @@ func TestExportCSVFile(t *testing.T) {
 	require := require.New(t)
 
 	dir, err := os.MkdirTemp("", "text2anki-TestExportCSVFile-")
-	require.Nil(err)
+	require.NoError(err)
 	dir = path.Join(dir, "TestExportCSVFile.csv")
 
 	err = ExportCSVFile(koreanBasicNotes(t), dir)
-	require.Nil(err)
+	require.NoError(err)
 	//nolint:gosec // for tests
 	bytes, err := os.ReadFile(dir)
-	require.Nil(err)
+	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, "export_csv_expected.csv", bytes)
 }
 
@@ -111,6 +111,6 @@ func TestExportCSV(t *testing.T) {
 
 	buffer := &bytes.Buffer{}
 	err := ExportCSV(koreanBasicNotes(t), buffer)
-	require.Nil(err)
+	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, "export_csv_expected.csv", buffer.Bytes())
 }
