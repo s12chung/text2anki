@@ -59,7 +59,7 @@ type Word struct {
 	Begin    int
 	Length   int
 	reserved string
-	Morphs   []*Morph
+	Morphs   []Morph
 }
 
 // Version returns the version of Khaiii being run
@@ -81,7 +81,7 @@ func (k *Khaiii) Open(rscDir string) error {
 }
 
 // Analyze analyzes the input string
-func (k *Khaiii) Analyze(input string) ([]*Word, error) {
+func (k *Khaiii) Analyze(input string) ([]Word, error) {
 	if k.openHandle <= 0 {
 		return nil, fmt.Errorf("Khaiii.Open() invalid for Analyze()")
 	}
@@ -98,7 +98,7 @@ func (k *Khaiii) Analyze(input string) ([]*Word, error) {
 		}
 	}()
 
-	words := []*Word{}
+	words := []Word{}
 	for wordC != nil {
 		word := goWord(*wordC)
 		words = append(words, word)
@@ -127,14 +127,14 @@ func (k *Khaiii) lastError() string {
 	return lastError(k.openHandle)
 }
 
-func goWord(wordC C.khaiii_word_t) *Word {
-	word := &Word{
+func goWord(wordC C.khaiii_word_t) Word {
+	word := Word{
 		Begin:    int(wordC.begin),
 		Length:   int(wordC.length),
 		reserved: strndup(wordC.reserved, C.RESERVED_STRLEN),
 	}
 
-	morphs := []*Morph{}
+	morphs := []Morph{}
 	morphC := wordC.morphs
 	for morphC != nil {
 		morph := goMorph(*morphC)
@@ -145,8 +145,8 @@ func goWord(wordC C.khaiii_word_t) *Word {
 	return word
 }
 
-func goMorph(morphC C.khaiii_morph_t) *Morph {
-	morph := &Morph{
+func goMorph(morphC C.khaiii_morph_t) Morph {
+	morph := Morph{
 		Lex:      C.GoString(morphC.lex),
 		Tag:      C.GoString(morphC.tag),
 		Begin:    int(morphC.begin),

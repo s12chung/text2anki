@@ -28,7 +28,7 @@ func TestAnalyze(t *testing.T) {
 		require.NoError(k.Close())
 	}()
 
-	var words []*Word
+	var words []Word
 	words, err = k.Analyze("안녕! 반가워!")
 	require.NoError(err)
 
