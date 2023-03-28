@@ -13,6 +13,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/stringclean"
 	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
 	"github.com/s12chung/text2anki/pkg/text"
+	"github.com/s12chung/text2anki/pkg/tokenizers"
+	"github.com/s12chung/text2anki/pkg/tokenizers/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizers/komoran"
 )
 
@@ -23,8 +25,15 @@ func init() {
 	flag.Parse()
 }
 
+var tokenizer = func() tokenizers.Tokenizer {
+	switch os.Getenv("TOKENIZER") {
+	case "komoran":
+		return komoran.New()
+	default:
+		return khaiii.New()
+	}
+}()
 var parser = text.NewParser(text.Korean, text.English)
-var tokenizer = komoran.New()
 var dictionary = koreanbasic.New(koreanbasic.GetAPIKeyFromEnv())
 var synth = azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
 
