@@ -4,11 +4,12 @@ package komoran
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
-	"github.com/s12chung/text2anki/pkg/tokenizers/server/java"
+	"github.com/s12chung/text2anki/pkg/tokenizers/server"
 )
 
 const stopWarningDuration = 15 * time.Second
@@ -28,8 +29,12 @@ func New() tokenizers.Tokenizer {
 }
 
 func new(port int) *Komoran {
+	opts := server.NewCmdOptions("java")
+	opts.Args = []string{"-jar", jarName, strconv.Itoa(port), strconv.Itoa(backlog)}
+	opts.Dir = jarPath
+	server := server.NewCmdTokenizerServer(opts, port, stopWarningDuration)
+
 	name := "Komoran"
-	server := java.NewJarServer(jarPath, jarName, port, backlog, stopWarningDuration)
 	return &Komoran{
 		name:            name,
 		ServerTokenizer: tokenizers.NewServerTokenizer(name, server),

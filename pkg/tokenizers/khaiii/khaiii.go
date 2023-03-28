@@ -30,10 +30,12 @@ func New() tokenizers.Tokenizer {
 }
 
 func new(port int) *Khaiii {
+	opts := server.NewCmdOptions(binName)
+	opts.Args = []string{"--port", strconv.Itoa(port)}
+	opts.Dir = binPath
+	server := server.NewCmdTokenizerServer(opts, port, stopWarningDuration)
+
 	name := "Khaiii"
-	server := server.NewCmdTokenizerServer(port, stopWarningDuration,
-		binPath,
-		binName, "--port", strconv.Itoa(port))
 	return &Khaiii{
 		name:            name,
 		ServerTokenizer: tokenizers.NewServerTokenizer(name, server),

@@ -38,11 +38,29 @@ type CmdTokenizerServer struct {
 	cancel              context.CancelFunc
 }
 
-// NewCmdTokenizerServer returns a new CmdServer
-func NewCmdTokenizerServer(port int, stopWarningDuration time.Duration, dir, name string, args ...string) *CmdTokenizerServer {
+// CmdOptions is the set of options for the Cmd
+type CmdOptions struct {
+	name string
+	Dir  string
+	Args []string
+}
+
+// NewCmdOptions returns a new CmdOptions
+func NewCmdOptions(name string) CmdOptions {
+	return CmdOptions{name: name, Args: []string{}}
+}
+
+// Cmd returns the cmd given the options
+func (c *CmdOptions) Cmd() (*exec.Cmd, context.CancelFunc) {
 	ctx, cancel := context.WithCancel(context.Background())
-	cmd := exec.CommandContext(ctx, name, args...)
-	cmd.Dir = dir
+	cmd := exec.CommandContext(ctx, c.name, c.Args...) //nolint:gosec //pretty sure not called often
+	cmd.Dir = c.Dir
+	return cmd, cancel
+}
+
+// NewCmdTokenizerServer returns a new CmdServer
+func NewCmdTokenizerServer(cmdOpts CmdOptions, port int, stopWarningDuration time.Duration) *CmdTokenizerServer {
+	cmd, cancel := cmdOpts.Cmd()
 	return &CmdTokenizerServer{
 		cmd:                 cmd,
 		port:                port,
