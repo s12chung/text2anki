@@ -39,10 +39,12 @@ type CmdTokenizerServer struct {
 }
 
 // NewCmdTokenizerServer returns a new CmdServer
-func NewCmdTokenizerServer(port int, stopWarningDuration time.Duration, name string, args ...string) *CmdTokenizerServer {
+func NewCmdTokenizerServer(port int, stopWarningDuration time.Duration, dir, name string, args ...string) *CmdTokenizerServer {
 	ctx, cancel := context.WithCancel(context.Background())
+	cmd := exec.CommandContext(ctx, name, args...)
+	cmd.Dir = dir
 	return &CmdTokenizerServer{
-		cmd:                 exec.CommandContext(ctx, name, args...),
+		cmd:                 cmd,
 		port:                port,
 		stopWarningDuration: stopWarningDuration,
 		cancel:              cancel,

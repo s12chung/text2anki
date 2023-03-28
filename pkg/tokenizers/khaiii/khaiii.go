@@ -1,7 +1,82 @@
 // Package khaiii is an interface to the Khaiii Korean tokenizer
 package khaiii
 
-import "github.com/s12chung/text2anki/pkg/lang"
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"time"
+
+	"github.com/s12chung/text2anki/pkg/lang"
+	"github.com/s12chung/text2anki/pkg/tokenizers"
+	"github.com/s12chung/text2anki/pkg/tokenizers/server"
+	api "github.com/s12chung/text2anki/tokenizers/khaiii/pkg/khaiii"
+)
+
+const stopWarningDuration = 15 * time.Second
+const port = 9999
+const binName = "./khaiiiserver"
+
+var binPath string
+
+func init() {
+	binPath = os.Getenv("KHAIII_BIN_PATH")
+}
+
+// New returns a Khaiii Korean tokenizer
+func New() tokenizers.Tokenizer {
+	return new()
+}
+
+func new() *Khaiii {
+	name := "Khaiii"
+	server := server.NewCmdTokenizerServer(port, stopWarningDuration,
+		binPath,
+		binName, "--port", strconv.Itoa(port))
+	return &Khaiii{
+		name:            name,
+		ServerTokenizer: tokenizers.NewServerTokenizer(name, server),
+	}
+}
+
+// Khaiii is a Korean Tokenizer in java
+type Khaiii struct {
+	name string
+	tokenizers.ServerTokenizer
+}
+
+type response struct {
+	Words []api.Word `json:"tokens"`
+}
+
+// Tokenize returns the part of speech tokens of the given string
+func (k *Khaiii) Tokenize(str string) ([]tokenizers.Token, error) {
+	resp := &response{}
+	err := k.ServerTokenize(str, resp)
+	if err != nil {
+		return nil, err
+	}
+	return k.toTokenizerTokens(resp)
+}
+
+func (k *Khaiii) toTokenizerTokens(resp *response) ([]tokenizers.Token, error) {
+	tokens := []tokenizers.Token{}
+	for _, word := range resp.Words {
+		for _, morph := range word.Morphs {
+			partOfSpeech, found := partOfSpeechMap[morph.Tag]
+			if !found {
+				return nil, fmt.Errorf("%v POS not mapped: %v", k.name, morph.Tag)
+			}
+			tokens = append(tokens, tokenizers.Token{
+				Text:         morph.Lex,
+				PartOfSpeech: partOfSpeech,
+				StartIndex:   morph.Begin,
+				EndIndex:     morph.Begin + morph.Length,
+			})
+		}
+	}
+	return tokens, nil
+}
 
 var partOfSpeechMap = map[string]lang.PartOfSpeech{
 	"NNG": lang.PartOfSpeechNoun,          // Common Noun - 체언 - 일반 명사

@@ -8,28 +8,13 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
-	"github.com/s12chung/text2anki/pkg/tokenizers/server"
 	"github.com/s12chung/text2anki/pkg/tokenizers/server/java"
 )
 
-// New returns a Komoran Korean tokenizer
-func New() tokenizers.Tokenizer {
-	return new()
-}
-
 const stopWarningDuration = 15 * time.Second
-
-func new() *Komoran {
-	return &Komoran{
-		server: java.NewJarServer(jarPath, 9999, 64, stopWarningDuration),
-	}
-}
-
-// Komoran is a Korean Tokenizer in java
-type Komoran struct {
-	server  server.TokenizerServer
-	started bool
-}
+const port = 9999
+const backlog = 64
+const jarName = "tokenizer-komoran.jar"
 
 var jarPath string
 
@@ -37,25 +22,25 @@ func init() {
 	jarPath = os.Getenv("KOMORAN_JAR_PATH")
 }
 
-// Setup setups up the JVM for Komoran to run
-func (k *Komoran) Setup() error {
-	if k.started {
-		return fmt.Errorf("Komoran already started before, make a new instance")
+// New returns a Komoran Korean tokenizer
+func New() tokenizers.Tokenizer {
+	return new()
+}
+
+func new() *Komoran {
+	name := "Komoran"
+	server := java.NewJarServer(jarPath, jarName, port, backlog, stopWarningDuration)
+	return &Komoran{
+		name:            name,
+		ServerTokenizer: tokenizers.NewServerTokenizer(name, server),
 	}
-	k.started = true
-	return k.server.Start()
 }
 
-// Cleanup cleans Komoran's resources
-func (k *Komoran) Cleanup() error {
-	return k.server.Stop()
+// Komoran is a Korean Tokenizer in java
+type Komoran struct {
+	name string
+	tokenizers.ServerTokenizer
 }
-
-// IsSetup returns true if Komoran is ready to execute
-func (k *Komoran) IsSetup() bool {
-	return k.server.IsRunning()
-}
-
 type response struct {
 	Tokens []token `json:"tokens"`
 }
@@ -69,24 +54,20 @@ type token struct {
 
 // Tokenize returns the part of speech tokens of the given string
 func (k *Komoran) Tokenize(str string) ([]tokenizers.Token, error) {
-	if !k.IsSetup() {
-		return nil, &tokenizers.NotSetupError{}
-	}
-
 	resp := &response{}
-	err := k.server.Tokenize(str, resp)
+	err := k.ServerTokenize(str, resp)
 	if err != nil {
 		return nil, err
 	}
-	return toTokenizerTokens(resp)
+	return k.toTokenizerTokens(resp)
 }
 
-func toTokenizerTokens(resp *response) ([]tokenizers.Token, error) {
+func (k *Komoran) toTokenizerTokens(resp *response) ([]tokenizers.Token, error) {
 	tokens := make([]tokenizers.Token, len(resp.Tokens))
 	for i, token := range resp.Tokens {
 		partOfSpeech, found := partOfSpeechMap[token.POS]
 		if !found {
-			return nil, fmt.Errorf("komoran POS not mapped: %v", token.POS)
+			return nil, fmt.Errorf("%v POS not mapped: %v", k.name, token.POS)
 		}
 		tokens[i] = tokenizers.Token{
 			Text:         token.Morph,

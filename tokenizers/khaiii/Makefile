@@ -1,11 +1,11 @@
-BIN := dist/khaiiserver
+DIST_DIR := dist
+BIN := $(DIST_DIR)/khaiiiserver
 
 lint:
 	golangci-lint run
 
 build:
 	go build -v -o $(BIN) .
-
 
 PORT := 9999
 run: build
@@ -21,3 +21,10 @@ test:
 
 test.fixtures:
 	UPDATE_FIXTURES=true make test
+
+.PHONY: dist
+dist: clean build
+	cp -r lib $(DIST_DIR)
+
+clean:
+	rm -rf $(DIST_DIR)

@@ -49,15 +49,15 @@ var apiFunctions = map[string]interface{}{
 type Morph struct {
 	Lex      string
 	Tag      string
-	Begin    int
-	Length   int
+	Begin    uint
+	Length   uint
 	reserved string
 }
 
 // Word represents a word in the given string
 type Word struct {
-	Begin    int
-	Length   int
+	Begin    uint
+	Length   uint
 	reserved string
 	Morphs   []Morph
 }
@@ -129,8 +129,8 @@ func (k *Khaiii) lastError() string {
 
 func goWord(wordC C.khaiii_word_t) Word {
 	word := Word{
-		Begin:    int(wordC.begin),
-		Length:   int(wordC.length),
+		Begin:    uint(wordC.begin),
+		Length:   uint(wordC.length),
 		reserved: strndup(wordC.reserved, C.RESERVED_STRLEN),
 	}
 
@@ -149,8 +149,8 @@ func goMorph(morphC C.khaiii_morph_t) Morph {
 	morph := Morph{
 		Lex:      C.GoString(morphC.lex),
 		Tag:      C.GoString(morphC.tag),
-		Begin:    int(morphC.begin),
-		Length:   int(morphC.length),
+		Begin:    uint(morphC.begin),
+		Length:   uint(morphC.length),
 		reserved: strndup(morphC.reserved, C.RESERVED_STRLEN),
 	}
 	return morph

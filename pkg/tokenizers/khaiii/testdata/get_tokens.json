@@ -1,0 +1,44 @@
+[
+  {
+    "Text": "대한민국",
+    "PartOfSpeech": "Noun",
+    "StartIndex": 0,
+    "EndIndex": 12
+  },
+  {
+    "Text": "은",
+    "PartOfSpeech": "Postposition",
+    "StartIndex": 12,
+    "EndIndex": 15
+  },
+  {
+    "Text": "민주공",
+    "PartOfSpeech": "Noun",
+    "StartIndex": 16,
+    "EndIndex": 25
+  },
+  {
+    "Text": "화국",
+    "PartOfSpeech": "Noun",
+    "StartIndex": 25,
+    "EndIndex": 31
+  },
+  {
+    "Text": "이",
+    "PartOfSpeech": "Copula",
+    "StartIndex": 31,
+    "EndIndex": 34
+  },
+  {
+    "Text": "다",
+    "PartOfSpeech": "Ending",
+    "StartIndex": 34,
+    "EndIndex": 37
+  },
+  {
+    "Text": ".",
+    "PartOfSpeech": "Punctuation",
+    "StartIndex": 37,
+    "EndIndex": 38
+  }
+]

@@ -1,4 +1,4 @@
-package komoran
+package khaiii
 
 import (
 	"encoding/json"
@@ -14,7 +14,7 @@ func TestGetTokens(t *testing.T) {
 		t.Skip("can't run java environment in CI")
 	}
 
-	jarPath = "../../../" + jarPath
+	binPath = "../../../" + binPath
 	require := require.New(t)
 
 	tokenizer := new()
