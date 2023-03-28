@@ -10,12 +10,12 @@ import (
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/cmd/prompt"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
-	"github.com/s12chung/text2anki/pkg/stringclean"
 	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
 	"github.com/s12chung/text2anki/pkg/tokenizers/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizers/komoran"
+	"github.com/s12chung/text2anki/pkg/util/stringclean"
 )
 
 var cleanSpeaker bool

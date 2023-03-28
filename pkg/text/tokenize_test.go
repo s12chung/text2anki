@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/test/fixture"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 func TestTokenizeTexts(t *testing.T) {
