@@ -9,8 +9,8 @@ import (
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/test/fixture"
-	"github.com/s12chung/text2anki/pkg/test/vcr"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture"
+	"github.com/s12chung/text2anki/pkg/util/test/vcr"
 )
 
 func TestTextToSpeech(t *testing.T) {

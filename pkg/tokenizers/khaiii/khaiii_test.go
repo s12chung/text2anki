@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/test"
-	"github.com/s12chung/text2anki/pkg/test/fixture"
+	"github.com/s12chung/text2anki/pkg/util/test"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 const testPort = 9001

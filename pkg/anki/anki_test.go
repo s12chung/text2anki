@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
-	"github.com/s12chung/text2anki/pkg/test/fixture"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 func TestMain(m *testing.M) {
