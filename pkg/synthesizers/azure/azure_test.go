@@ -4,10 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dnaeon/go-vcr/v2/cassette"
-	"github.com/dnaeon/go-vcr/v2/recorder"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/dnaeon/go-vcr.v3/cassette"
+	"gopkg.in/dnaeon/go-vcr.v3/recorder"
 
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 	"github.com/s12chung/text2anki/pkg/util/test/vcr"
@@ -33,16 +33,16 @@ func TestTextToSpeech(t *testing.T) {
 
 func setupVCR(t *testing.T, testName string, hasClient interface{}) func() {
 	return vcr.SetupVCR(t, fixture.JoinTestData(testName), hasClient, func(r *recorder.Recorder) {
-		r.AddFilter(func(i *cassette.Interaction) error {
+		r.AddHook(func(i *cassette.Interaction) error {
 			delete(i.Request.Headers, apiKeyHeader)
 			delete(i.Request.Headers, tokenHeader)
 			return nil
-		})
-		r.AddSaveFilter(func(i *cassette.Interaction) error {
-			if strings.Contains(i.URL, "issueToken") {
+		}, recorder.AfterCaptureHook)
+		r.AddHook(func(i *cassette.Interaction) error {
+			if strings.Contains(i.Request.URL, "issueToken") {
 				i.Response.Body = "REDACTED"
 			}
 			return nil
-		})
+		}, recorder.BeforeSaveHook)
 	})
 }
