@@ -23,26 +23,6 @@ func main() {
 	}
 }
 
-type KhaiiiServer struct {
-	kahiii *khaiii.Khaiii
-}
-
-func NewKhaiiiServer(k *khaiii.Khaiii) *KhaiiiServer {
-	return &KhaiiiServer{
-		kahiii: k,
-	}
-}
-
-func (k *KhaiiiServer) Cleanup() {
-	if err := k.kahiii.Close(); err != nil {
-		fmt.Println(err)
-	}
-}
-
-func (k *KhaiiiServer) Tokenize(str string) (any, error) {
-	return k.kahiii.Analyze(str)
-}
-
 func run(port int) error {
 	var err error
 	k, err := khaiii.NewKhaiii(khaiii.DefaultDlPath)
@@ -52,6 +32,6 @@ func run(port int) error {
 	if err = k.Open(khaiii.DefaultRscPath); err != nil {
 		return err
 	}
-	server := serverimpl.NewServerImpl(NewKhaiiiServer(k))
+	server := serverimpl.NewServerImpl(khaiii.NewTokenizer(k))
 	return server.Run(port)
 }

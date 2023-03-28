@@ -168,10 +168,6 @@ func handleWrapper(f handleWrapperFunc) func(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-type tokenizeResponse struct {
-	Tokens any `json:"tokens"`
-}
-
 func (s *ServerImpl) handleTokenize(r *http.Request) ([]byte, int, error) {
 	if r.Method != http.MethodPost {
 		return nil, http.StatusMethodNotAllowed, fmt.Errorf("405 Method Not Allowed")
@@ -187,7 +183,7 @@ func (s *ServerImpl) handleTokenize(r *http.Request) ([]byte, int, error) {
 		return nil, http.StatusUnprocessableEntity, err
 	}
 
-	b, err := json.Marshal(tokenizeResponse{Tokens: tokens})
+	b, err := json.Marshal(tokens)
 	if err != nil {
 		return nil, http.StatusInternalServerError, err
 	}

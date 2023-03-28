@@ -11,9 +11,9 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/s12chung/text2anki/pkg/lang"
-
+	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/iotools"
+	"github.com/s12chung/text2anki/pkg/lang"
 )
 
 // Note is a Anki Note, which contains data to create cards from
@@ -78,6 +78,20 @@ var invalidFilenameRegex = regexp.MustCompile("/\\\\")
 
 func (n *Note) soundFilename() string {
 	return config.ExportPrefix + invalidFilenameRegex.ReplaceAllString(n.Usage, "") + ".mp3"
+}
+
+// NewNoteFromTerm returns a Note given the Term and index
+func NewNoteFromTerm(term dictionary.Term, translationIndex uint) Note {
+	translation := term.Translations[translationIndex]
+	return Note{
+		Text:         term.Text,
+		PartOfSpeech: term.PartOfSpeech,
+		Translation:  translation.Text,
+
+		CommonLevel:      term.CommonLevel,
+		Explanation:      translation.Explanation,
+		DictionarySource: term.DictionarySource,
+	}
 }
 
 // ExportFiles exports all files into the given dst

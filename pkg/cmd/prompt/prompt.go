@@ -12,7 +12,6 @@ import (
 	yaml "gopkg.in/yaml.v3"
 
 	"github.com/s12chung/text2anki/pkg/anki"
-	"github.com/s12chung/text2anki/pkg/app"
 	"github.com/s12chung/text2anki/pkg/cmd/survey"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
@@ -20,7 +19,7 @@ import (
 )
 
 // CreateCards initializes the create card UI prompt
-func CreateCards(tokenizedTexts []app.TokenizedText, dict dictionary.Dicionary) ([]anki.Note, error) {
+func CreateCards(tokenizedTexts []text.TokenizedText, dict dictionary.Dicionary) ([]anki.Note, error) {
 	return (&createCards{
 		tokenizedTexts: tokenizedTexts,
 		dictionary:     dict,
@@ -28,7 +27,7 @@ func CreateCards(tokenizedTexts []app.TokenizedText, dict dictionary.Dicionary) 
 }
 
 type createCards struct {
-	tokenizedTexts []app.TokenizedText
+	tokenizedTexts []text.TokenizedText
 	dictionary     dictionary.Dicionary
 
 	tokenizedTextIndex int
@@ -62,7 +61,7 @@ func (c *createCards) start() ([]anki.Note, error) {
 	}
 }
 
-func (c *createCards) showTokenizedText(tokenizedText app.TokenizedText) (transition, error) {
+func (c *createCards) showTokenizedText(tokenizedText text.TokenizedText) (transition, error) {
 	for {
 		context := tokenizedText.Text
 		selectText := fmt.Sprintf("%v/%v: %v\n%v\n",
@@ -111,7 +110,7 @@ var ignorePOS = map[lang.PartOfSpeech]bool{
 	lang.PartOfSpeechUnknown:     true,
 }
 
-func tokenOptions(tokenizedText app.TokenizedText) ([]string, bool) {
+func tokenOptions(tokenizedText text.TokenizedText) ([]string, bool) {
 	options := make([]string, 0, len(tokenizedText.Tokens))
 	for _, token := range tokenizedText.Tokens {
 		if ignorePOS[token.PartOfSpeech] {
@@ -171,37 +170,6 @@ func (c *createCards) showSearch(context text.Text, query string) error {
 			}
 		}
 	}
-}
-
-var posTypes = []lang.PartOfSpeech{
-	lang.PartOfSpeechNoun,
-	lang.PartOfSpeechPronoun,
-	lang.PartOfSpeechNumeral,
-	lang.PartOfSpeechPostposition,
-	lang.PartOfSpeechVerb,
-	lang.PartOfSpeechAdjective,
-	lang.PartOfSpeechDeterminer,
-	lang.PartOfSpeechAdverb,
-	lang.PartOfSpeechInterjection,
-
-	lang.PartOfSpeechAffix,
-	lang.PartOfSpeechPrefix,
-	lang.PartOfSpeechInfix,
-	lang.PartOfSpeechSuffix,
-
-	lang.PartOfSpeechDependentNoun,
-
-	lang.PartOfSpeechAuxiliaryPredicate,
-	lang.PartOfSpeechAuxiliaryVerb,
-	lang.PartOfSpeechAuxiliaryAdjective,
-
-	lang.PartOfSpeechEnding,
-	lang.PartOfSpeechCopula,
-	lang.PartOfSpeechPunctuation,
-
-	lang.PartOfSpeechOther,
-	lang.PartOfSpeechUnknown,
-	lang.PartOfSpeechInvalid,
 }
 
 func (c *createCards) showCreateNote(term *dictionary.Term) error {
@@ -279,6 +247,7 @@ func addCreateNoteHeaders(f io.Writer, term *dictionary.Term) error {
 		}
 	}
 
+	posTypes := lang.PartOfSpeechTypes()
 	a := make([]string, len(posTypes))
 	for i, posType := range posTypes {
 		a[i] = string(posType)
@@ -293,7 +262,7 @@ func addCreateNoteHeaders(f io.Writer, term *dictionary.Term) error {
 func addNote(f io.Writer, term *dictionary.Term, context text.Text) error {
 	note := anki.Note{}
 	if term != nil {
-		note = app.NewNoteFromTerm(*term, 0)
+		note = anki.NewNoteFromTerm(*term, 0)
 	}
 	note.Usage = context.Text
 	note.UsageTranslation = context.Translation

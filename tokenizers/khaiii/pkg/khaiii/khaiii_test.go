@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/s12chung/text2anki/pkg/test/fixture"
 	"github.com/stretchr/testify/require"
+
+	"github.com/s12chung/text2anki/pkg/test/fixture"
 )
 
 const pathChange = "../../"
@@ -28,7 +29,7 @@ func TestAnalyze(t *testing.T) {
 		require.NoError(k.Close())
 	}()
 
-	var words []*Word
+	var words []Word
 	words, err = k.Analyze("안녕! 반가워!")
 	require.NoError(err)
 

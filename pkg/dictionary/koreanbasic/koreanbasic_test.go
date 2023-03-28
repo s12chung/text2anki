@@ -8,10 +8,10 @@ import (
 
 	"github.com/dnaeon/go-vcr/v2/cassette"
 	"github.com/dnaeon/go-vcr/v2/recorder"
-	"github.com/s12chung/text2anki/pkg/test/vcr"
+	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/pkg/test/fixture"
-	"github.com/stretchr/testify/require"
+	"github.com/s12chung/text2anki/pkg/test/vcr"
 )
 
 func TestSearch(t *testing.T) {

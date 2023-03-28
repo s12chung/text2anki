@@ -1,4 +1,4 @@
-package komoran
+package khaiii
 
 import (
 	"encoding/json"
@@ -10,14 +10,14 @@ import (
 	"github.com/s12chung/text2anki/pkg/test/fixture"
 )
 
-const testPort = 9002
+const testPort = 9001
 
 func TestGetTokens(t *testing.T) {
 	if test.IsCI() {
 		t.Skip("can't run java environment in CI")
 	}
 
-	jarPath = "../../../" + jarPath
+	binPath = "../../../" + binPath
 	require := require.New(t)
 
 	tokenizer := new(testPort)

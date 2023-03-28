@@ -9,8 +9,10 @@ import (
 	"path"
 	"testing"
 
-	"github.com/s12chung/text2anki/pkg/test/fixture"
 	"github.com/stretchr/testify/require"
+
+	"github.com/s12chung/text2anki/pkg/dictionary"
+	"github.com/s12chung/text2anki/pkg/test/fixture"
 )
 
 func TestMain(m *testing.M) {
@@ -38,12 +40,16 @@ func TestMain(m *testing.M) {
 	os.Exit(exit)
 }
 
+const notesFixture = "notes.json"
+
 func koreanBasicNotes(t *testing.T) []Note {
 	require := require.New(t)
 
 	var notes []Note
-	bytes := fixture.Read(t, "notes.json")
-	require.NoError(json.Unmarshal(bytes, &notes))
+	if fixture.WillUpdate() {
+		fixture.Update(t, notesFixture, dictionaryNotes(t))
+	}
+	require.NoError(json.Unmarshal(fixture.Read(t, notesFixture), &notes))
 
 	return notes
 }
@@ -113,4 +119,32 @@ func TestExportCSV(t *testing.T) {
 	err := ExportCSV(koreanBasicNotes(t), buffer)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, "export_csv_expected.csv", buffer.Bytes())
+}
+
+func dictionaryNotes(t *testing.T) []byte {
+	require := require.New(t)
+
+	sourcePath := path.Join("..", "dictionary", "koreanbasic", fixture.TestDataDir, "search_expected.json")
+	//nolint:gosec // for tests
+	sourceBytes, err := os.ReadFile(sourcePath)
+	require.NoError(err)
+
+	var terms []dictionary.Term
+	err = json.Unmarshal(sourceBytes, &terms)
+	require.NoError(err)
+
+	notes := make([]Note, len(terms))
+	for i, term := range terms {
+		notes[i] = NewNoteFromTerm(term, 0)
+	}
+	for _, testIndex := range []uint{0, 2, 4} {
+		notes[testIndex].Usage = fmt.Sprintf("소풍: /\\usage%v", testIndex)
+	}
+	for _, testIndex := range []uint{0, 2, 4} {
+		notes[testIndex].UsageTranslation = fmt.Sprintf("Test usage translation, index: %v", testIndex)
+	}
+
+	bytes, err := json.MarshalIndent(notes, "", "  ")
+	require.NoError(err)
+	return bytes
 }

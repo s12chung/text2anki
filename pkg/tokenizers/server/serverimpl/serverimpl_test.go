@@ -11,31 +11,17 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/s12chung/text2anki/pkg/tokenizers/server"
 	"github.com/stretchr/testify/require"
+
+	"github.com/s12chung/text2anki/pkg/tokenizers/server"
 )
 
-type TokenResponse struct {
-	Tokens []string `json:"tokens"`
-}
-
-type SplitTokenizer struct {
-}
-
-var cleaned = false
-
-func (s *SplitTokenizer) Cleanup() {
-	cleaned = true
-}
-func (s *SplitTokenizer) Tokenize(str string) (any, error) {
-	return strings.Split(str, " "), nil
-}
-
 const host = "http://localhost"
+const testPort = 9000
 
 func TestMain(m *testing.M) {
 	server := NewServerImpl(&SplitTokenizer{})
-	serverChannel := server.runWithoutStdin(defaultPort)
+	serverChannel := server.runWithoutStdin(testPort)
 	go func() {
 		err := <-serverChannel
 		if err != nil {
@@ -54,10 +40,27 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+var cleaned = false
+
+type SplitTokenizer struct {
+}
+
+func (s *SplitTokenizer) Cleanup() {
+	cleaned = true
+}
+
+func (s *SplitTokenizer) Tokenize(str string) (any, error) {
+	return &tokenizeResponse{strings.Split(str, " ")}, nil
+}
+
+type tokenizeResponse struct {
+	Tokens []string `json:"tokens"`
+}
+
 func TestHealthz(t *testing.T) {
 	require := require.New(t)
 
-	resp, err := http.Get(fmt.Sprintf(host+":%v%v", defaultPort, server.HealthzPath))
+	resp, err := http.Get(getURI(server.HealthzPath))
 	require.NoError(err)
 	defer func() {
 		require.NoError(resp.Body.Close())
@@ -82,7 +85,7 @@ func TestTokenize(t *testing.T) {
 	payload, err := json.Marshal(input)
 	require.NoError(err)
 
-	resp, err := http.Post(fmt.Sprintf(host+":%v%v", defaultPort, server.TokenizePath),
+	resp, err := http.Post(getURI(server.TokenizePath),
 		mime.TypeByExtension(".json"),
 		bytes.NewBuffer(payload))
 	require.NoError(err)
@@ -95,10 +98,14 @@ func TestTokenize(t *testing.T) {
 	contentType := resp.Header.Get("Content-Type")
 	require.Equal("application/json", contentType)
 
-	data := &TokenResponse{}
+	data := &tokenizeResponse{}
 	err = json.NewDecoder(resp.Body).Decode(data)
 	require.NoError(err)
 
 	expectedTokens := []string{"my", "example"}
 	require.Equal(expectedTokens, data.Tokens)
+}
+
+func getURI(path string) string {
+	return fmt.Sprintf(host+":%v%v", testPort, path)
 }

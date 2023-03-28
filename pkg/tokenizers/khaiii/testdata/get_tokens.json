@@ -12,10 +12,16 @@
     "Length": 1
   },
   {
-    "Text": "민주공화국",
+    "Text": "민주공",
     "PartOfSpeech": "Noun",
     "StartIndex": 6,
-    "Length": 5
+    "Length": 3
+  },
+  {
+    "Text": "화국",
+    "PartOfSpeech": "Noun",
+    "StartIndex": 9,
+    "Length": 2
   },
   {
     "Text": "이",

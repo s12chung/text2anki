@@ -1,4 +1,6 @@
-export KOMORAN_JAR_PATH := tokenizers/dist/komoran/tokenizer-komoran.jar
+export KHAIII_BIN_PATH := tokenizers/dist/khaiii
+export KOMORAN_JAR_PATH := tokenizers/dist/komoran
+export TOKENIZER := khaiii
 BIN := dist/text2anki
 
 setup:
