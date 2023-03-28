@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dnaeon/go-vcr/v2/recorder"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/dnaeon/go-vcr.v3/recorder"
 )
 
 // HasClient objects has a client to set for VCR

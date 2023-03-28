@@ -340,70 +340,6 @@
     "DictionarySource": "Korean Basic Dictionary"
   },
   {
-    "Text": "들어가다",
-    "PartOfSpeech": "Verb",
-    "CommonLevel": 3,
-    "Translations": [
-      {
-        "Text": "enter; go into",
-        "Explanation": "To go inside from outside."
-      },
-      {
-        "Text": "be installed; be laid in place",
-        "Explanation": "For the hardware of utilities such as electricity, water, etc., to be installed."
-      },
-      {
-        "Text": "start",
-        "Explanation": "For a new state or period to start."
-      },
-      {
-        "Text": "be used",
-        "Explanation": "For money, effort, resources, etc., to be spent on a certain project."
-      },
-      {
-        "Text": "be inserted",
-        "Explanation": "To be inserted in something."
-      },
-      {
-        "Text": "be permeated",
-        "Explanation": "To be permeated to the inside."
-      },
-      {
-        "Text": "be handed; be owned",
-        "Explanation": "For something to be delivered or owned by another person, organization, etc."
-      },
-      {
-        "Text": "join; be employed; be accepted",
-        "Explanation": "To become a member of a certain group."
-      },
-      {
-        "Text": "be included",
-        "Explanation": "To be included in a certain range or to meet a standard."
-      },
-      {
-        "Text": "be understood",
-        "Explanation": "For certain content to be understood and kept in memory."
-      },
-      {
-        "Text": "be sunken",
-        "Explanation": "For the surface of an object to become sunken."
-      },
-      {
-        "Text": "disappear",
-        "Explanation": "For a clear phenomenon to disappear."
-      },
-      {
-        "Text": "get to learn",
-        "Explanation": "To get to know a field of study or obtain knowledge, etc."
-      },
-      {
-        "Text": "fit",
-        "Explanation": "For clothes, shoes, etc., to fit one's body."
-      }
-    ],
-    "DictionarySource": "Korean Basic Dictionary"
-  },
-  {
     "Text": "올라가다",
     "PartOfSpeech": "Verb",
     "CommonLevel": 3,
@@ -471,6 +407,70 @@
       {
         "Text": "climb; ascend",
         "Explanation": "To go toward a high place."
+      }
+    ],
+    "DictionarySource": "Korean Basic Dictionary"
+  },
+  {
+    "Text": "들어가다",
+    "PartOfSpeech": "Verb",
+    "CommonLevel": 3,
+    "Translations": [
+      {
+        "Text": "enter; go into",
+        "Explanation": "To go inside from outside."
+      },
+      {
+        "Text": "be installed; be laid in place",
+        "Explanation": "For the hardware of utilities such as electricity, water, etc., to be installed."
+      },
+      {
+        "Text": "start",
+        "Explanation": "For a new state or period to start."
+      },
+      {
+        "Text": "be used",
+        "Explanation": "For money, effort, resources, etc., to be spent on a certain project."
+      },
+      {
+        "Text": "be inserted",
+        "Explanation": "To be inserted in something."
+      },
+      {
+        "Text": "be permeated",
+        "Explanation": "To be permeated to the inside."
+      },
+      {
+        "Text": "be handed; be owned",
+        "Explanation": "For something to be delivered or owned by another person, organization, etc."
+      },
+      {
+        "Text": "join; be employed; be accepted",
+        "Explanation": "To become a member of a certain group."
+      },
+      {
+        "Text": "be included",
+        "Explanation": "To be included in a certain range or to meet a standard."
+      },
+      {
+        "Text": "be understood",
+        "Explanation": "For certain content to be understood and kept in memory."
+      },
+      {
+        "Text": "be sunken",
+        "Explanation": "For the surface of an object to become sunken."
+      },
+      {
+        "Text": "disappear",
+        "Explanation": "For a clear phenomenon to disappear."
+      },
+      {
+        "Text": "get to learn",
+        "Explanation": "To get to know a field of study or obtain knowledge, etc."
+      },
+      {
+        "Text": "fit",
+        "Explanation": "For clothes, shoes, etc., to fit one's body."
       }
     ],
     "DictionarySource": "Korean Basic Dictionary"
