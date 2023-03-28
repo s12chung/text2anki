@@ -9,9 +9,10 @@ import (
 	"path"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/test/fixture"
-	"github.com/stretchr/testify/require"
 )
 
 func TestMain(m *testing.M) {

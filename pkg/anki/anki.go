@@ -12,9 +12,8 @@ import (
 	"strconv"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
-	"github.com/s12chung/text2anki/pkg/lang"
-
 	"github.com/s12chung/text2anki/pkg/iotools"
+	"github.com/s12chung/text2anki/pkg/lang"
 )
 
 // Note is a Anki Note, which contains data to create cards from

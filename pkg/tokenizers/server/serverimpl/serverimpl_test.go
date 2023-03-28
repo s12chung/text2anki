@@ -11,8 +11,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/s12chung/text2anki/pkg/tokenizers/server"
 	"github.com/stretchr/testify/require"
+
+	"github.com/s12chung/text2anki/pkg/tokenizers/server"
 )
 
 const host = "http://localhost"

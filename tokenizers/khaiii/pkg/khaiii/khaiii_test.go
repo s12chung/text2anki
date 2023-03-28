@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/s12chung/text2anki/pkg/test/fixture"
 	"github.com/stretchr/testify/require"
+
+	"github.com/s12chung/text2anki/pkg/test/fixture"
 )
 
 const pathChange = "../../"

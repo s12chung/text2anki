@@ -4,13 +4,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/s12chung/text2anki/pkg/test/fixture"
-	"github.com/s12chung/text2anki/pkg/test/vcr"
-
 	"github.com/dnaeon/go-vcr/v2/cassette"
 	"github.com/dnaeon/go-vcr/v2/recorder"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/stretchr/testify/require"
+
+	"github.com/s12chung/text2anki/pkg/test/fixture"
+	"github.com/s12chung/text2anki/pkg/test/vcr"
 )
 
 func TestTextToSpeech(t *testing.T) {

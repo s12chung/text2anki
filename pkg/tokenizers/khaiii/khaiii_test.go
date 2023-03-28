@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/s12chung/text2anki/pkg/test"
 	"github.com/s12chung/text2anki/pkg/test/fixture"
-	"github.com/stretchr/testify/require"
 )
 
 const testPort = 9001
