@@ -15,10 +15,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type TokenResponse struct {
-	Tokens []string `json:"tokens"`
-}
-
 type SplitTokenizer struct {
 }
 
@@ -27,8 +23,13 @@ var cleaned = false
 func (s *SplitTokenizer) Cleanup() {
 	cleaned = true
 }
+
+type tokenizeResponse struct {
+	Tokens []string `json:"tokens"`
+}
+
 func (s *SplitTokenizer) Tokenize(str string) (any, error) {
-	return strings.Split(str, " "), nil
+	return &tokenizeResponse{strings.Split(str, " ")}, nil
 }
 
 const host = "http://localhost"
@@ -95,7 +96,7 @@ func TestTokenize(t *testing.T) {
 	contentType := resp.Header.Get("Content-Type")
 	require.Equal("application/json", contentType)
 
-	data := &TokenResponse{}
+	data := &tokenizeResponse{}
 	err = json.NewDecoder(resp.Body).Decode(data)
 	require.NoError(err)
 

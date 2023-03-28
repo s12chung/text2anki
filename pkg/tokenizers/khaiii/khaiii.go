@@ -45,13 +45,9 @@ type Khaiii struct {
 	tokenizers.ServerTokenizer
 }
 
-type response struct {
-	Words []api.Word `json:"tokens"`
-}
-
 // Tokenize returns the part of speech tokens of the given string
 func (k *Khaiii) Tokenize(str string) ([]tokenizers.Token, error) {
-	resp := &response{}
+	resp := &api.TokenizeResponse{}
 	err := k.ServerTokenize(str, resp)
 	if err != nil {
 		return nil, err
@@ -59,7 +55,7 @@ func (k *Khaiii) Tokenize(str string) ([]tokenizers.Token, error) {
 	return k.toTokenizerTokens(resp)
 }
 
-func (k *Khaiii) toTokenizerTokens(resp *response) ([]tokenizers.Token, error) {
+func (k *Khaiii) toTokenizerTokens(resp *api.TokenizeResponse) ([]tokenizers.Token, error) {
 	tokens := []tokenizers.Token{}
 	for _, word := range resp.Words {
 		for _, morph := range word.Morphs {
