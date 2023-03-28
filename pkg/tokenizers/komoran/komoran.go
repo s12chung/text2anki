@@ -24,10 +24,10 @@ func init() {
 
 // New returns a Komoran Korean tokenizer
 func New() tokenizers.Tokenizer {
-	return new()
+	return new(port)
 }
 
-func new() *Komoran {
+func new(port int) *Komoran {
 	name := "Komoran"
 	server := java.NewJarServer(jarPath, jarName, port, backlog, stopWarningDuration)
 	return &Komoran{

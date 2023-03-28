@@ -25,10 +25,10 @@ func init() {
 
 // New returns a Khaiii Korean tokenizer
 func New() tokenizers.Tokenizer {
-	return new()
+	return new(port)
 }
 
-func new() *Khaiii {
+func new(port int) *Khaiii {
 	name := "Khaiii"
 	server := server.NewCmdTokenizerServer(port, stopWarningDuration,
 		binPath,

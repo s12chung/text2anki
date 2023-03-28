@@ -9,6 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testPort = 9001
+
 func TestGetTokens(t *testing.T) {
 	if test.IsCI() {
 		t.Skip("can't run java environment in CI")
@@ -17,7 +19,7 @@ func TestGetTokens(t *testing.T) {
 	binPath = "../../../" + binPath
 	require := require.New(t)
 
-	tokenizer := new()
+	tokenizer := new(testPort)
 	err := tokenizer.Setup()
 	defer func() {
 		require.NoError(tokenizer.CleanupAndWait())
