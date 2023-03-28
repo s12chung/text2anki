@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"unicode/utf8"
 
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
@@ -56,19 +57,28 @@ func (k *Khaiii) Tokenize(str string) ([]tokenizers.Token, error) {
 }
 
 func (k *Khaiii) toTokenizerTokens(resp *api.TokenizeResponse) ([]tokenizers.Token, error) {
+	var lastRuneEnd uint = 0
+	var lastWordCharEnd uint = 0
+
 	tokens := []tokenizers.Token{}
 	for _, word := range resp.Words {
+		lastRuneEnd += word.Begin - lastWordCharEnd // add spaces between words
+		lastWordCharEnd = word.Begin + word.Length
+
 		for _, morph := range word.Morphs {
 			partOfSpeech, found := partOfSpeechMap[morph.Tag]
 			if !found {
 				return nil, fmt.Errorf("%v POS not mapped: %v", k.name, morph.Tag)
 			}
+
+			runeCount := uint(utf8.RuneCountInString(morph.Lex))
 			tokens = append(tokens, tokenizers.Token{
 				Text:         morph.Lex,
 				PartOfSpeech: partOfSpeech,
-				StartIndex:   morph.Begin,
-				EndIndex:     morph.Begin + morph.Length,
+				StartIndex:   lastRuneEnd,
+				EndIndex:     lastRuneEnd + runeCount,
 			})
+			lastRuneEnd += runeCount // = rune end of last token
 		}
 	}
 	return tokens, nil

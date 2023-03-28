@@ -3,42 +3,42 @@
     "Text": "대한민국",
     "PartOfSpeech": "Noun",
     "StartIndex": 0,
-    "EndIndex": 12
+    "EndIndex": 4
   },
   {
     "Text": "은",
     "PartOfSpeech": "Postposition",
-    "StartIndex": 12,
-    "EndIndex": 15
+    "StartIndex": 4,
+    "EndIndex": 5
   },
   {
     "Text": "민주공",
     "PartOfSpeech": "Noun",
-    "StartIndex": 16,
-    "EndIndex": 25
+    "StartIndex": 6,
+    "EndIndex": 9
   },
   {
     "Text": "화국",
     "PartOfSpeech": "Noun",
-    "StartIndex": 25,
-    "EndIndex": 31
+    "StartIndex": 9,
+    "EndIndex": 11
   },
   {
     "Text": "이",
     "PartOfSpeech": "Copula",
-    "StartIndex": 31,
-    "EndIndex": 34
+    "StartIndex": 11,
+    "EndIndex": 12
   },
   {
     "Text": "다",
     "PartOfSpeech": "Ending",
-    "StartIndex": 34,
-    "EndIndex": 37
+    "StartIndex": 12,
+    "EndIndex": 13
   },
   {
     "Text": ".",
     "PartOfSpeech": "Punctuation",
-    "StartIndex": 37,
-    "EndIndex": 38
+    "StartIndex": 13,
+    "EndIndex": 14
   }
 ]
