@@ -1,0 +1,80 @@
+[
+  {
+    "Text": "super mario go",
+    "Translation": "",
+    "Tokens": [
+      {
+        "Text": "super",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 0,
+        "Length": 5
+      },
+      {
+        "Text": "mario",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 6,
+        "Length": 5
+      },
+      {
+        "Text": "go",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 12,
+        "Length": 2
+      }
+    ]
+  },
+  {
+    "Text": "waka waka",
+    "Translation": "",
+    "Tokens": [
+      {
+        "Text": "waka",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 0,
+        "Length": 4
+      },
+      {
+        "Text": "waka",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 5,
+        "Length": 4
+      }
+    ]
+  },
+  {
+    "Text": "all this to learn korean",
+    "Translation": "",
+    "Tokens": [
+      {
+        "Text": "all",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 0,
+        "Length": 3
+      },
+      {
+        "Text": "this",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 4,
+        "Length": 4
+      },
+      {
+        "Text": "to",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 9,
+        "Length": 2
+      },
+      {
+        "Text": "learn",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 12,
+        "Length": 5
+      },
+      {
+        "Text": "korean",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 18,
+        "Length": 6
+      }
+    ]
+  }
+]

@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"os"
 
-	yaml "gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v3"
 
 	"github.com/s12chung/text2anki/pkg/anki"
-	"github.com/s12chung/text2anki/pkg/app"
 	"github.com/s12chung/text2anki/pkg/cmd/prompt"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
 	"github.com/s12chung/text2anki/pkg/stringclean"
 	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
 	"github.com/s12chung/text2anki/pkg/text"
+	"github.com/s12chung/text2anki/pkg/tokenizers/komoran"
 )
 
 var cleanSpeaker bool
@@ -22,6 +22,11 @@ func init() {
 	flag.BoolVar(&cleanSpeaker, "clean-speaker", false, "clean 'speaker name:' from text")
 	flag.Parse()
 }
+
+var parser = text.NewParser(text.Korean, text.English)
+var tokenizer = komoran.New()
+var dictionary = koreanbasic.New(koreanbasic.GetAPIKeyFromEnv())
+var synth = azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
 
 func main() {
 	args := flag.Args()
@@ -40,75 +45,58 @@ func main() {
 }
 
 func run(textStringFilename, exportDir string) error {
-	err := anki.SetupDefaultConfig()
+	if err := anki.SetupDefaultConfig(); err != nil {
+		return err
+	}
+	tokenizedTexts, err := tokenizeFile(textStringFilename)
 	if err != nil {
 		return err
 	}
-
-	tokenizedTexts, err := tokenizeTexts(textStringFilename)
-	if err != nil {
-		return err
-	}
-
 	notes, err := runUI(tokenizedTexts)
 	if err != nil {
 		return err
 	}
-	if err = createAudio(notes); err != nil {
-		return err
-	}
-
 	return exportFiles(notes, exportDir)
 }
 
-func tokenizeTexts(textStringFilename string) ([]app.TokenizedText, error) {
-	textString, err := readTextString(textStringFilename)
+func tokenizeFile(filename string) ([]text.TokenizedText, error) {
+	//nolint:gosec // required for binary to work
+	fileBytes, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
 
-	parser := text.NewParser(text.Korean, text.English)
-	texts, err := parser.TextsFromString(textString)
+	texts, err := parser.TextsFromString(string(fileBytes))
 	if err != nil {
-		var bytes []byte
-		bytes, err = yaml.Marshal(texts)
+		bytes, _ := yaml.Marshal(texts)
 		fmt.Println(string(bytes))
 		return nil, err
 	}
+	texts = cleanTexts(texts)
 
-	cleanedTexts := make([]text.Text, len(texts))
-	for i, t := range texts {
-		cleanedTexts[i] = text.Text{
-			Text:        cleanText(t.Text),
-			Translation: cleanText(t.Translation),
-		}
-	}
-
-	tokenizedTexts, err := app.TokenizeTexts(cleanedTexts)
+	tokenizedTexts, err := text.TokenizeTexts(tokenizer, texts)
 	if err != nil {
 		return nil, err
 	}
 	return tokenizedTexts, err
 }
 
-func cleanText(s string) string {
-	if cleanSpeaker {
-		s = stringclean.Speaker(s)
+func cleanTexts(texts []text.Text) []text.Text {
+	if !cleanSpeaker {
+		return texts
 	}
-	return s
+
+	cleanedTexts := make([]text.Text, len(texts))
+	for i, t := range texts {
+		cleanedTexts[i] = text.Text{
+			Text:        stringclean.Speaker(t.Text),
+			Translation: stringclean.Speaker(t.Translation),
+		}
+	}
+	return cleanedTexts
 }
 
-func readTextString(filename string) (string, error) {
-	//nolint:gosec // required for binary to work
-	bytes, err := os.ReadFile(filename)
-	if err != nil {
-		return "", err
-	}
-	return string(bytes), nil
-}
-
-func runUI(tokenizedTexts []app.TokenizedText) ([]anki.Note, error) {
-	dictionary := koreanbasic.New(koreanbasic.GetAPIKeyFromEnv())
+func runUI(tokenizedTexts []text.TokenizedText) ([]anki.Note, error) {
 	notes, err := prompt.CreateCards(tokenizedTexts, dictionary)
 	if err != nil {
 		return nil, err
@@ -116,8 +104,20 @@ func runUI(tokenizedTexts []app.TokenizedText) ([]anki.Note, error) {
 	return notes, nil
 }
 
+func exportFiles(notes []anki.Note, exportDir string) error {
+	if err := createAudio(notes); err != nil {
+		return err
+	}
+	if err := os.Mkdir(exportDir, 0750); err != nil {
+		return err
+	}
+	if err := anki.ExportFiles(notes, exportDir); err != nil {
+		return err
+	}
+	return nil
+}
+
 func createAudio(notes []anki.Note) error {
-	synth := azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
 	for i := range notes {
 		note := &notes[i]
 		speech, err := synth.TextToSpeech(note.Usage)
@@ -127,18 +127,6 @@ func createAudio(notes []anki.Note) error {
 		if err = note.SetSound(speech, synth.SourceName()); err != nil {
 			fmt.Printf("error setting audio for note (%v): %v\n", note.Text, err)
 		}
-	}
-	return nil
-}
-
-func exportFiles(notes []anki.Note, exportDir string) error {
-	err := os.Mkdir(exportDir, 0750)
-	if err != nil {
-		return err
-	}
-
-	if err := anki.ExportFiles(notes, exportDir); err != nil {
-		return err
 	}
 	return nil
 }
