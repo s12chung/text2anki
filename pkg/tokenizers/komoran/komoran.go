@@ -26,7 +26,7 @@ func new() *Komoran {
 
 // Komoran is a Korean Tokenizer in java
 type Komoran struct {
-	server  server.Server
+	server  server.TokenizerServer
 	started bool
 }
 
@@ -55,6 +55,17 @@ func (k *Komoran) IsSetup() bool {
 	return k.server.IsRunning()
 }
 
+type response struct {
+	Tokens []token `json:"tokens"`
+}
+
+type token struct {
+	POS        string `json:"pos"`
+	EndIndex   uint   `json:"endIndex"`
+	BeginIndex uint   `json:"beginIndex"`
+	Morph      string `json:"morph"`
+}
+
 // Tokenize returns the part of speech tokens of the given string
 func (k *Komoran) Tokenize(str string) ([]tokenizers.Token, error) {
 	if !k.IsSetup() {
@@ -66,5 +77,5 @@ func (k *Komoran) Tokenize(str string) ([]tokenizers.Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.toTokenizerTokens(), nil
+	return toTokenizerTokens(resp)
 }

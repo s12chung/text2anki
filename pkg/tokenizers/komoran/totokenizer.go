@@ -1,6 +1,8 @@
 package komoran
 
 import (
+	"fmt"
+
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
 )
@@ -68,26 +70,19 @@ var partOfSpeechMap = map[string]lang.PartOfSpeech{
 	"NV": lang.PartOfSpeechUnknown, // Prediction Category of Terminology - 용언추정범주 - Not in Github
 }
 
-type response struct {
-	Tokens []token `json:"tokens"`
-}
-
-type token struct {
-	POS        string `json:"pos"`
-	EndIndex   uint   `json:"endIndex"`
-	BeginIndex uint   `json:"beginIndex"`
-	Morph      string `json:"morph"`
-}
-
-func (r *response) toTokenizerTokens() []tokenizers.Token {
-	tokens := make([]tokenizers.Token, len(r.Tokens))
-	for i, token := range r.Tokens {
+func toTokenizerTokens(resp *response) ([]tokenizers.Token, error) {
+	tokens := make([]tokenizers.Token, len(resp.Tokens))
+	for i, token := range resp.Tokens {
+		partOfSpeech, found := partOfSpeechMap[token.POS]
+		if !found {
+			return nil, fmt.Errorf("komoran POS not mapped: %v", token.POS)
+		}
 		tokens[i] = tokenizers.Token{
 			Text:         token.Morph,
-			PartOfSpeech: partOfSpeechMap[token.POS],
+			PartOfSpeech: partOfSpeech,
 			StartIndex:   token.BeginIndex,
 			EndIndex:     token.EndIndex,
 		}
 	}
-	return tokens
+	return tokens, nil
 }

@@ -25,7 +25,6 @@ func init() {
 
 func main() {
 	args := flag.Args()
-	fmt.Println(args)
 
 	if len(args) != 2 {
 		fmt.Printf("Usage: %v textStringFilename exportDir\n", os.Args[0])

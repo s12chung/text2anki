@@ -29,7 +29,7 @@ func Read(t *testing.T, fixtureFilename string) []byte {
 	require := require.New(t)
 	//nolint:gosec // for tests
 	expected, err := os.ReadFile(JoinTestData(fixtureFilename))
-	require.Nil(err)
+	require.NoError(err)
 	return []byte(strings.TrimSpace(string(expected)))
 }
 
@@ -40,8 +40,11 @@ func Update(t *testing.T, fixtureFilename string, resultBytes []byte) {
 		assert.Fail("fixtures.Update() is called without WillUpdate() == true")
 	}
 
-	err := os.WriteFile(JoinTestData(fixtureFilename), resultBytes, 0600)
-	assert.Nil(err)
+	err := os.MkdirAll(TestDataDir, os.ModePerm)
+	assert.NoError(err)
+
+	err = os.WriteFile(JoinTestData(fixtureFilename), resultBytes, 0600)
+	assert.NoError(err)
 
 	if WillUpdate() {
 		assert.Fail(fmt.Sprintf("%v=true, fixtures are updated, turn off ENV var to run test", updateFixturesEnv))
@@ -91,13 +94,13 @@ func CompareOrUpdateDir(t *testing.T, fixtureDir, resultDir string) {
 
 	fixtureDir = JoinTestData(fixtureDir)
 	if WillUpdate() {
-		require.Nil(os.RemoveAll(fixtureDir))
+		require.NoError(os.RemoveAll(fixtureDir))
 	}
 
 	err := filepath.WalkDir(resultDir, func(result string, d fs.DirEntry, err error) error {
-		require.Nil(err)
+		require.NoError(err)
 		rel, err := filepath.Rel(resultDir, result)
-		require.Nil(err)
+		require.NoError(err)
 
 		expected := path.Join(fixtureDir, rel)
 		if d.IsDir() {
@@ -107,7 +110,7 @@ func CompareOrUpdateDir(t *testing.T, fixtureDir, resultDir string) {
 		}
 		return nil
 	})
-	require.Nil(err)
+	require.NoError(err)
 	if WillUpdate() {
 		require.Fail(fmt.Sprintf("%v=true, fixtures are updated, turn off ENV var to run test", updateFixturesEnv))
 	}
@@ -117,12 +120,12 @@ func compareOrUpdateDirName(t *testing.T, expected, result string) {
 	require := require.New(t)
 
 	if WillUpdate() {
-		require.Nil(os.Mkdir(expected, 0750))
+		require.NoError(os.Mkdir(expected, 0750))
 		return
 	}
 
 	stat, err := os.Stat(expected)
-	require.Nil(err)
+	require.NoError(err)
 	require.True(stat.IsDir(), fmt.Sprintf("result, %v, is not matching %v", result, expected))
 }
 
@@ -131,17 +134,17 @@ func compareOrUpdateFile(t *testing.T, expected, result string) {
 
 	//nolint:gosec // for tests
 	resultBytes, err := os.ReadFile(result)
-	require.Nil(err)
+	require.NoError(err)
 
 	if WillUpdate() {
 		//nolint:gosec // for tests
-		require.Nil(os.WriteFile(expected, resultBytes, 0600))
+		require.NoError(os.WriteFile(expected, resultBytes, 0600))
 		return
 	}
 
 	//nolint:gosec // for tests
 	expectedBytes, err := os.ReadFile(expected)
-	require.Nil(err)
+	require.NoError(err)
 
 	if utf8.Valid(expectedBytes) && utf8.Valid(resultBytes) {
 		require.Equal(string(expectedBytes), string(resultBytes))

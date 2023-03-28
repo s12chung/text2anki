@@ -16,8 +16,8 @@ import (
 	"time"
 )
 
-// Server provides an interface to call tokenizer servers
-type Server interface {
+// TokenizerServer provides an interface to call tokenizer servers
+type TokenizerServer interface {
 	Start() error
 	Stop() error
 	StopAndWait() error
@@ -27,8 +27,8 @@ type Server interface {
 	Tokenize(str string, resp any) error
 }
 
-// CmdServer is a server that runs a cmd
-type CmdServer struct {
+// CmdTokenizerServer is a server that runs a cmd
+type CmdTokenizerServer struct {
 	cmd       *exec.Cmd
 	stdIn     io.WriteCloser
 	isRunning bool
@@ -38,10 +38,10 @@ type CmdServer struct {
 	cancel              context.CancelFunc
 }
 
-// NewCmdSever returns a new CmdServer
-func NewCmdSever(port int, stopWarningDuration time.Duration, name string, args ...string) *CmdServer {
+// NewCmdTokenizerServer returns a new CmdServer
+func NewCmdTokenizerServer(port int, stopWarningDuration time.Duration, name string, args ...string) *CmdTokenizerServer {
 	ctx, cancel := context.WithCancel(context.Background())
-	return &CmdServer{
+	return &CmdTokenizerServer{
 		cmd:                 exec.CommandContext(ctx, name, args...),
 		port:                port,
 		stopWarningDuration: stopWarningDuration,
@@ -49,10 +49,19 @@ func NewCmdSever(port int, stopWarningDuration time.Duration, name string, args 
 	}
 }
 
-const healthzPath = "/healthz"
+// HealthzPath is the path to the health check path - GET
+const HealthzPath = "/healthz"
+
+// TokenizePath is the path to the tokenize path - POST
+const TokenizePath = "/tokenize"
+
+// TokenizeRequest is the format of the request for TokenizePath
+type TokenizeRequest struct {
+	String string `json:"string"`
+}
 
 // Start starts the CmdServer
-func (s *CmdServer) Start() error {
+func (s *CmdTokenizerServer) Start() error {
 	var err error
 
 	s.stdIn, err = s.cmd.StdinPipe()
@@ -75,7 +84,7 @@ func (s *CmdServer) Start() error {
 
 	for i := 1; i <= 15; i++ {
 		time.Sleep(time.Millisecond * 200)
-		response, err := http.Get(s.uriFor(healthzPath))
+		response, err := http.Get(s.uriFor(HealthzPath))
 		if err != nil {
 			continue
 		}
@@ -90,7 +99,7 @@ func (s *CmdServer) Start() error {
 			return nil
 		}
 	}
-	return errors.New("timed out waiting for " + healthzPath)
+	return errors.New("timed out waiting for " + HealthzPath)
 }
 
 func getFirstLine(str string) string {
@@ -102,7 +111,7 @@ func getFirstLine(str string) string {
 }
 
 // Stop stops the CmdServer
-func (s *CmdServer) Stop() error {
+func (s *CmdTokenizerServer) Stop() error {
 	stopped, err := s.stop()
 	go func() {
 		i := 0
@@ -133,8 +142,11 @@ func (s *CmdServer) Stop() error {
 	return err
 }
 
-func (s *CmdServer) stop() (chan bool, error) {
-	if _, err := io.WriteString(s.stdIn, "stop\n"); err != nil {
+// StopKeyword is the keyword to stop the server from stdin
+const StopKeyword = "stop"
+
+func (s *CmdTokenizerServer) stop() (chan bool, error) {
+	if _, err := io.WriteString(s.stdIn, StopKeyword+"\n"); err != nil {
 		return nil, err
 	}
 
@@ -151,7 +163,7 @@ func (s *CmdServer) stop() (chan bool, error) {
 }
 
 // StopAndWait runs Stop() and waits until the server is stopped
-func (s *CmdServer) StopAndWait() error {
+func (s *CmdTokenizerServer) StopAndWait() error {
 	_, err := s.stop()
 	if err != nil {
 		return err
@@ -169,7 +181,7 @@ func (s *CmdServer) StopAndWait() error {
 }
 
 // ForceStop forces the server to stop via kill
-func (s *CmdServer) ForceStop() error {
+func (s *CmdTokenizerServer) ForceStop() error {
 	if s.isRunning {
 		return fmt.Errorf("will not ForceStop() while IsRunning()")
 	}
@@ -178,22 +190,18 @@ func (s *CmdServer) ForceStop() error {
 }
 
 // IsRunning returns true if the CmdServer is running
-func (s *CmdServer) IsRunning() bool {
+func (s *CmdTokenizerServer) IsRunning() bool {
 	return s.isRunning
 }
 
-type tokenizeRequest struct {
-	String string `json:"string"`
-}
-
 // Tokenize marshalls tokenizes the string into the resp
-func (s *CmdServer) Tokenize(str string, resp any) error {
-	body, err := json.Marshal(&tokenizeRequest{String: str})
+func (s *CmdTokenizerServer) Tokenize(str string, resp any) error {
+	body, err := json.Marshal(&TokenizeRequest{String: str})
 	if err != nil {
 		return err
 	}
 
-	response, err := http.Post(s.uriFor("/tokenize"), mime.TypeByExtension(".json"), bytes.NewBuffer(body))
+	response, err := http.Post(s.uriFor(TokenizePath), mime.TypeByExtension(".json"), bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}
@@ -214,6 +222,6 @@ func (s *CmdServer) Tokenize(str string, resp any) error {
 
 const baseURI = "http://localhost"
 
-func (s *CmdServer) uriFor(path string) string {
+func (s *CmdTokenizerServer) uriFor(path string) string {
 	return baseURI + ":" + strconv.Itoa(s.port) + path
 }
