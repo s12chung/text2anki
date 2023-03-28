@@ -73,7 +73,7 @@ func (k *Komoran) toTokenizerTokens(resp *response) ([]tokenizers.Token, error) 
 			Text:         token.Morph,
 			PartOfSpeech: partOfSpeech,
 			StartIndex:   token.BeginIndex,
-			EndIndex:     token.EndIndex,
+			Length:       token.EndIndex - token.BeginIndex,
 		}
 	}
 	return tokens, nil

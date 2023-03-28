@@ -22,7 +22,7 @@ type Token struct {
 	Text         string
 	PartOfSpeech lang.PartOfSpeech
 	StartIndex   uint
-	EndIndex     uint
+	Length       uint
 }
 
 // NotSetupError is returned when a tokenizer function runs when it is not setup

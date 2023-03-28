@@ -3,36 +3,36 @@
     "Text": "대한민국",
     "PartOfSpeech": "Noun",
     "StartIndex": 0,
-    "EndIndex": 4
+    "Length": 4
   },
   {
     "Text": "은",
     "PartOfSpeech": "Postposition",
     "StartIndex": 4,
-    "EndIndex": 5
+    "Length": 1
   },
   {
     "Text": "민주공화국",
     "PartOfSpeech": "Noun",
     "StartIndex": 6,
-    "EndIndex": 11
+    "Length": 5
   },
   {
     "Text": "이",
     "PartOfSpeech": "Copula",
     "StartIndex": 11,
-    "EndIndex": 12
+    "Length": 1
   },
   {
     "Text": "다",
     "PartOfSpeech": "Ending",
     "StartIndex": 12,
-    "EndIndex": 13
+    "Length": 1
   },
   {
     "Text": ".",
     "PartOfSpeech": "Punctuation",
     "StartIndex": 13,
-    "EndIndex": 14
+    "Length": 1
   }
 ]

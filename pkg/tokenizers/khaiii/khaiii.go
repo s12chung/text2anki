@@ -76,7 +76,7 @@ func (k *Khaiii) toTokenizerTokens(resp *api.TokenizeResponse) ([]tokenizers.Tok
 				Text:         morph.Lex,
 				PartOfSpeech: partOfSpeech,
 				StartIndex:   lastRuneEnd,
-				EndIndex:     lastRuneEnd + runeCount,
+				Length:       runeCount,
 			})
 			lastRuneEnd += runeCount // = rune end of last token
 		}
