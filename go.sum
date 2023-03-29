@@ -38,8 +38,6 @@ github.com/pemistahl/lingua-go v1.3.3/go.mod h1:mIvWu4mOE6oOVe/5u/UAW9lkWYOCR+oH
 github.com/pkg/profile v1.4.0/go.mod h1:NWz/XGvpEW1FyYQ7fCx4dqYBLlfTcE+A9FLAkNKqjFE=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/s12chung/text2anki/tokenizers/khaiii v0.0.0-20230328201634-eaeb05387847 h1:8vsJHYSAx+ZWkusIQTAhwSUttsIEjKQ2rfut5a3QL7c=
-github.com/s12chung/text2anki/tokenizers/khaiii v0.0.0-20230328201634-eaeb05387847/go.mod h1:U5/NiVlR9hsCIbhnOlHp4mKSwrz/phC3cyJO5Lyq4Sc=
 github.com/shopspring/decimal v1.3.1 h1:2Usl1nmF/WZucqkFZhnfFYxxxu8LG21F6nPQBE5gKV8=
 github.com/shopspring/decimal v1.3.1/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

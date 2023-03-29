@@ -1,10 +1,10 @@
-export KHAIII_BIN_PATH := tokenizers/dist/khaiii
-export KOMORAN_JAR_PATH := tokenizers/dist/komoran
+export KHAIII_BIN_PATH := integrations/tokenizers/dist/khaiii
+export KOMORAN_JAR_PATH := integrations/tokenizers/dist/komoran
 export TOKENIZER := khaiii
 BIN := dist/text2anki
 
 setup:
-	cd tokenizers; make build
+	cd integrations/tokenizers; make build
 
 lint:
 	golangci-lint run

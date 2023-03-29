@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/s12chung/text2anki/integrations/tokenizers/khaiii/pkg/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizers/server/serverimpl"
-	"github.com/s12chung/text2anki/tokenizers/khaiii/pkg/khaiii"
 )
 
 var port int
