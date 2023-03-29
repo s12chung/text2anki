@@ -17,7 +17,7 @@ curl:
 	 curl -X POST $(POST_URI) -H 'Content-Type: application/json' -d '{"string": "$(STR)"}'
 
 test:
-	go test -v ./...
+	go test ./...
 
 test.fixtures:
 	UPDATE_FIXTURES=true make test

@@ -33,6 +33,9 @@ syncfiltered:
 	go run ./cmd/syncfiltered "$(SYNC_FILTERED_DIR)"
 
 test:
+	go test ./...
+
+ci.test:
 	go test -v ./...
 
 test.fixtures:
