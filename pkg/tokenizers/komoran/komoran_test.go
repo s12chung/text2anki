@@ -13,9 +13,7 @@ import (
 const testPort = 9002
 
 func TestGetTokens(t *testing.T) {
-	if test.IsCI() {
-		t.Skip("can't run java environment in CI")
-	}
+	test.CISkip(t, "can't run java environment in CI")
 
 	jarPath = "../../../" + jarPath
 	require := require.New(t)

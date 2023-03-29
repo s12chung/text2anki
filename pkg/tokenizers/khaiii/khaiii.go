@@ -8,10 +8,10 @@ import (
 	"time"
 	"unicode/utf8"
 
+	api "github.com/s12chung/text2anki/integrations/tokenizers/khaiii/pkg/khaiii"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
 	"github.com/s12chung/text2anki/pkg/tokenizers/server"
-	api "github.com/s12chung/text2anki/tokenizers/khaiii/pkg/khaiii"
 )
 
 const stopWarningDuration = time.Second

@@ -6,10 +6,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 const pathChange = "../../"
+const ciSkipMsg = "can't run C environment in CI"
 
 func newKhaiii(t *testing.T) *Khaiii {
 	require := require.New(t)
@@ -19,6 +21,8 @@ func newKhaiii(t *testing.T) *Khaiii {
 }
 
 func TestAnalyze(t *testing.T) {
+	test.CISkip(t, ciSkipMsg)
+
 	require := require.New(t)
 
 	var err error
@@ -40,7 +44,10 @@ func TestAnalyze(t *testing.T) {
 }
 
 func TestVersion(t *testing.T) {
+	test.CISkip(t, ciSkipMsg)
+
 	require := require.New(t)
+
 	k := newKhaiii(t)
 	require.Equal("0.5", k.Version())
 }

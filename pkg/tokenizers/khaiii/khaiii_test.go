@@ -13,9 +13,7 @@ import (
 const testPort = 9001
 
 func TestGetTokens(t *testing.T) {
-	if test.IsCI() {
-		t.Skip("can't run java environment in CI")
-	}
+	test.CISkip(t, "can't run C environment in CI")
 
 	binPath = "../../../" + binPath
 	require := require.New(t)

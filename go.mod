@@ -5,9 +5,9 @@ go 1.20
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
 	github.com/asticode/go-astisub v0.23.0
+	github.com/ebitengine/purego v0.3.1
 	github.com/gabriel-vasile/mimetype v1.4.2
 	github.com/pemistahl/lingua-go v1.3.3
-	github.com/s12chung/text2anki/tokenizers/khaiii v0.0.0-20230328201634-eaeb05387847
 	github.com/stretchr/testify v1.8.1
 	golang.org/x/term v0.6.0
 	gopkg.in/dnaeon/go-vcr.v3 v3.1.2
@@ -18,7 +18,6 @@ require (
 	github.com/asticode/go-astikit v0.38.0 // indirect
 	github.com/asticode/go-astits v1.11.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/ebitengine/purego v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect

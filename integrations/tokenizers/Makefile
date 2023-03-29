@@ -1,6 +1,6 @@
 DIST_DIR := dist
 
-build: clean komoran
+build: clean khaiii komoran
 
 .PHONY: khaiii
 khaiii:
