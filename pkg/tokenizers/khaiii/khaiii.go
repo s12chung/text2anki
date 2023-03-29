@@ -14,7 +14,7 @@ import (
 	api "github.com/s12chung/text2anki/tokenizers/khaiii/pkg/khaiii"
 )
 
-const stopWarningDuration = 15 * time.Second
+const stopWarningDuration = time.Second
 const port = 9999
 const binName = "./khaiiiserver"
 

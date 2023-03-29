@@ -133,23 +133,25 @@ func getFirstLine(str string) string {
 // Stop stops the CmdServer
 func (s *CmdTokenizerServer) Stop() error {
 	stopped, err := s.stop()
+	initialSleep := time.Second
+	time.Sleep(initialSleep)
 	go func() {
 		i := 0
 		for {
-			i++
-			time.Sleep(s.stopWarningDuration)
 			select {
 			case <-stopped:
 				fmt.Println("CmdServer stopped")
 				return
 			default:
 				fmt.Printf("CmdServer server is still running after %v\n",
-					time.Duration(i)*s.stopWarningDuration)
+					time.Duration(i)*s.stopWarningDuration+initialSleep)
 			}
+			i++
+			time.Sleep(s.stopWarningDuration)
 		}
 	}()
 	go func() {
-		forceStopDuration := (s.stopWarningDuration * 10) - time.Second
+		forceStopDuration := s.stopWarningDuration * 10
 		time.Sleep(forceStopDuration)
 		if !s.IsRunning() {
 			return
