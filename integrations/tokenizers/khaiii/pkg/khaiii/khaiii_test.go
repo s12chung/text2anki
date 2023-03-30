@@ -11,6 +11,7 @@ import (
 )
 
 const pathChange = "../../"
+const rscPath = pathChange + DefaultRscPath
 const ciSkipMsg = "can't run C environment in CI"
 
 func newKhaiii(t *testing.T) *Khaiii {
@@ -27,8 +28,7 @@ func TestAnalyze(t *testing.T) {
 
 	var err error
 	k := newKhaiii(t)
-	err = k.Open(pathChange + DefaultRscPath)
-	require.NoError(err)
+	require.NoError(k.Open(rscPath))
 	defer func() {
 		require.NoError(k.Close())
 	}()
@@ -40,7 +40,7 @@ func TestAnalyze(t *testing.T) {
 	bytes, err := json.MarshalIndent(words, "", "  ")
 	require.NoError(err)
 
-	fixture.CompareReadOrUpdate(t, "analyze.json", bytes)
+	fixture.CompareReadOrUpdate(t, "TestAnalyze.json", bytes)
 }
 
 func TestVersion(t *testing.T) {
@@ -50,4 +50,17 @@ func TestVersion(t *testing.T) {
 
 	k := newKhaiii(t)
 	require.Equal("0.5", k.Version())
+}
+
+func TestRsc(t *testing.T) {
+	test.CISkip(t, ciSkipMsg)
+
+	require := require.New(t)
+	hashMap, err := fixture.SHA2Map(rscPath)
+	require.NoError(err)
+
+	bytes, err := json.MarshalIndent(hashMap, "", "  ")
+	require.NoError(err)
+
+	fixture.CompareReadOrUpdate(t, "TestRsc.json", bytes)
 }

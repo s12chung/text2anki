@@ -2,6 +2,7 @@
 package fixture
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"io/fs"
 	"os"
@@ -27,8 +28,7 @@ func JoinTestData(elem ...string) string {
 // Read reads the fixture
 func Read(t *testing.T, fixtureFilename string) []byte {
 	require := require.New(t)
-	//nolint:gosec // for tests
-	expected, err := os.ReadFile(JoinTestData(fixtureFilename))
+	expected, err := os.ReadFile(JoinTestData(fixtureFilename)) //nolint:gosec // for tests
 	require.NoError(err)
 	return []byte(strings.TrimSpace(string(expected)))
 }
@@ -132,18 +132,15 @@ func compareOrUpdateDirName(t *testing.T, expected, result string) {
 func compareOrUpdateFile(t *testing.T, expected, result string) {
 	require := require.New(t)
 
-	//nolint:gosec // for tests
-	resultBytes, err := os.ReadFile(result)
+	resultBytes, err := os.ReadFile(result) //nolint:gosec // for tests
 	require.NoError(err)
 
 	if WillUpdate() {
-		//nolint:gosec // for tests
-		require.NoError(os.WriteFile(expected, resultBytes, 0600))
+		require.NoError(os.WriteFile(expected, resultBytes, 0600)) //nolint:gosec // for tests
 		return
 	}
 
-	//nolint:gosec // for tests
-	expectedBytes, err := os.ReadFile(expected)
+	expectedBytes, err := os.ReadFile(expected) //nolint:gosec // for tests
 	require.NoError(err)
 
 	if utf8.Valid(expectedBytes) && utf8.Valid(resultBytes) {
@@ -151,4 +148,33 @@ func compareOrUpdateFile(t *testing.T, expected, result string) {
 	} else {
 		require.Equal(expectedBytes, resultBytes)
 	}
+}
+
+// SHA2Map takes a directory path and generates a map between
+// the filenames in the directory and their SHA2 hash.
+//
+// Often used with fixstures
+func SHA2Map(dir string) (map[string]string, error) {
+	fileMap := make(map[string]string)
+	err := filepath.WalkDir(dir, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+
+		content, err := os.ReadFile(p) //nolint:gosec // for tests
+		if err != nil {
+			return err
+		}
+		fileMap[d.Name()] = fmt.Sprintf("%x", sha256.Sum256(content))
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return fileMap, nil
 }
