@@ -162,7 +162,7 @@ func JSON(t *testing.T, v any) []byte {
 // SHA2Map takes a directory path and generates a map between
 // the filenames in the directory and their SHA2 hash.
 //
-// Often used with fixstures
+// Often used with fixtures
 func SHA2Map(dir string) (map[string]string, error) {
 	fileMap := make(map[string]string)
 	err := filepath.WalkDir(dir, func(p string, d fs.DirEntry, err error) error {
