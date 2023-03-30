@@ -1,7 +1,6 @@
 package komoran
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -27,8 +26,5 @@ func TestGetTokens(t *testing.T) {
 	tokens, err := tokenizer.Tokenize("대한민국은 민주공화국이다.")
 	require.NoError(err)
 
-	bytes, err := json.MarshalIndent(tokens, "", "  ")
-	require.NoError(err)
-
-	fixture.CompareReadOrUpdate(t, "get_tokens.json", bytes)
+	fixture.CompareReadOrUpdate(t, "get_tokens.json", fixture.JSON(t, tokens))
 }

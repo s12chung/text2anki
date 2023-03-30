@@ -1,7 +1,6 @@
 package text
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -20,8 +19,6 @@ func TestTokenizeTexts(t *testing.T) {
 	}
 	tokenizedTexts, err := TokenizeTexts(tokenizers.NewSplitTokenizer(), texts)
 	require.Nil(err)
-	bytes, err := json.MarshalIndent(tokenizedTexts, "", "  ")
-	require.Nil(err)
 
-	fixture.CompareReadOrUpdate(t, "TestTokenizeTexts.json", bytes)
+	fixture.CompareReadOrUpdate(t, "TestTokenizeTexts.json", fixture.JSON(t, tokenizedTexts))
 }

@@ -1,7 +1,6 @@
 package koreanbasic
 
 import (
-	"encoding/json"
 	"net/http"
 	"strings"
 	"testing"
@@ -42,10 +41,7 @@ func TestSearch(t *testing.T) {
 
 			terms, err := dict.Search(tc.searchTerm)
 			require.NoError(err)
-			resultBytes, err := json.MarshalIndent(terms, "", "  ")
-			require.NoError(err)
-
-			fixture.CompareReadOrUpdate(t, tc.expected, resultBytes)
+			fixture.CompareReadOrUpdate(t, tc.expected, fixture.JSON(t, terms))
 		})
 	}
 }

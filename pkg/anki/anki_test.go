@@ -125,8 +125,7 @@ func dictionaryNotes(t *testing.T) []byte {
 	require := require.New(t)
 
 	sourcePath := path.Join("..", "dictionary", "koreanbasic", fixture.TestDataDir, "search_expected.json")
-	//nolint:gosec // for tests
-	sourceBytes, err := os.ReadFile(sourcePath)
+	sourceBytes, err := os.ReadFile(sourcePath) //nolint:gosec // for tests
 	require.NoError(err)
 
 	var terms []dictionary.Term
@@ -143,8 +142,5 @@ func dictionaryNotes(t *testing.T) []byte {
 	for _, testIndex := range []uint{0, 2, 4} {
 		notes[testIndex].UsageTranslation = fmt.Sprintf("Test usage translation, index: %v", testIndex)
 	}
-
-	bytes, err := json.MarshalIndent(notes, "", "  ")
-	require.NoError(err)
-	return bytes
+	return fixture.JSON(t, notes)
 }

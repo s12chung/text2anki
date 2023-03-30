@@ -1,7 +1,6 @@
 package text
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -29,9 +28,8 @@ func TestParseSubtitles(t *testing.T) {
 				fixture.JoinTestData(tc.name+"_translation.vtt"),
 			)
 			require.Nil(err)
-			bytes, err := json.MarshalIndent(texts, "", "  ")
-			require.Nil(err)
 
+			bytes := fixture.JSON(t, texts)
 			if tc.name == "match" {
 				fixture.SafeUpdate(t, fixtureName, bytes)
 			}

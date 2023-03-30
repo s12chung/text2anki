@@ -1,7 +1,6 @@
 package text
 
 import (
-	"encoding/json"
 	"testing"
 
 	lingua "github.com/pemistahl/lingua-go"
@@ -45,10 +44,7 @@ func TestTextsFromString(t *testing.T) {
 			}
 			require.Nil(err)
 
-			bytes, err := json.MarshalIndent(texts, "", "  ")
-			require.Nil(err)
-
-			fixture.CompareReadOrUpdate(t, tc.name+".json", bytes)
+			fixture.CompareReadOrUpdate(t, tc.name+".json", fixture.JSON(t, texts))
 		})
 	}
 }

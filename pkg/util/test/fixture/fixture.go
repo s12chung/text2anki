@@ -3,6 +3,7 @@ package fixture
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"os"
@@ -148,6 +149,14 @@ func compareOrUpdateFile(t *testing.T, expected, result string) {
 	} else {
 		require.Equal(expectedBytes, resultBytes)
 	}
+}
+
+// JSON returns indented json for fixtures
+func JSON(t *testing.T, v any) []byte {
+	require := require.New(t)
+	bytes, err := json.MarshalIndent(v, "", "  ")
+	require.NoError(err)
+	return bytes
 }
 
 // SHA2Map takes a directory path and generates a map between

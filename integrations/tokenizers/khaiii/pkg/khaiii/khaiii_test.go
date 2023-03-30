@@ -1,7 +1,6 @@
 package khaiii
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -37,10 +36,7 @@ func TestAnalyze(t *testing.T) {
 	words, err = k.Analyze("안녕! 반가워!")
 	require.NoError(err)
 
-	bytes, err := json.MarshalIndent(words, "", "  ")
-	require.NoError(err)
-
-	fixture.CompareReadOrUpdate(t, "TestAnalyze.json", bytes)
+	fixture.CompareReadOrUpdate(t, "TestAnalyze.json", fixture.JSON(t, words))
 }
 
 func TestVersion(t *testing.T) {
@@ -59,8 +55,5 @@ func TestRsc(t *testing.T) {
 	hashMap, err := fixture.SHA2Map(rscPath)
 	require.NoError(err)
 
-	bytes, err := json.MarshalIndent(hashMap, "", "  ")
-	require.NoError(err)
-
-	fixture.CompareReadOrUpdate(t, "TestRsc.json", bytes)
+	fixture.CompareReadOrUpdate(t, "TestRsc.json", fixture.JSON(t, hashMap))
 }
