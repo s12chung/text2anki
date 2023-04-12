@@ -314,7 +314,7 @@ func itemStringsFromTerms(terms []dictionary.Term) ([]string, bool) {
 	return itemStrings, false
 }
 
-func showSelect(message string, options []string, resp interface{}, keyPressMap map[rune]string) (rune, error) {
+func showSelect(message string, options []string, resp any, keyPressMap map[rune]string) (rune, error) {
 	sel := &survey.Select{
 		Message:     message,
 		Options:     options,

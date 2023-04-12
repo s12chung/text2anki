@@ -31,7 +31,7 @@ func TestTextToSpeech(t *testing.T) {
 	require.NoError(err)
 }
 
-func setupVCR(t *testing.T, testName string, hasClient interface{}) func() {
+func setupVCR(t *testing.T, testName string, hasClient any) func() {
 	return vcr.SetupVCR(t, fixture.JoinTestData(testName), hasClient, func(r *recorder.Recorder) {
 		r.AddHook(func(i *cassette.Interaction) error {
 			delete(i.Request.Headers, apiKeyHeader)

@@ -36,7 +36,7 @@ var freeResults func(handle int, results *C.khaiii_word_t)
 var close func(handle int)
 var lastError func(handle int) string
 
-var apiFunctions = map[string]interface{}{
+var apiFunctions = map[string]any{
 	"khaiii_version":      &version,
 	"khaiii_open":         &open,
 	"khaiii_analyze":      &analyze,
@@ -156,7 +156,7 @@ func goMorph(morphC C.khaiii_morph_t) Morph {
 	return morph
 }
 
-func strndup(i interface{}, len int) string {
+func strndup(i any, len int) string {
 	cs := (*C.char)(unsafe.Pointer(&i))
 	return C.GoStringN(cs, C.int(C.strnlen(cs, C.size_t(len))))
 }
