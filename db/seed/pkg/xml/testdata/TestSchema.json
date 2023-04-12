@@ -1,0 +1,181 @@
+{
+  "Many": false,
+  "Attrs": [
+    "test_merge"
+  ],
+  "Children": {
+    "LexicalResource": {
+      "Many": false,
+      "Attrs": [
+        "dtdVersion"
+      ],
+      "Children": {
+        "GlobalInformation": {
+          "Many": false,
+          "Children": {
+            "feat": {
+              "Many": true,
+              "Attrs": [
+                "att",
+                "val"
+              ],
+              "NodeAttrs": [
+                "creationDate",
+                "label",
+                "languageCoding"
+              ]
+            }
+          }
+        },
+        "Lexicon": {
+          "Many": false,
+          "Children": {
+            "LexicalEntry": {
+              "Many": true,
+              "Attrs": [
+                "att",
+                "val"
+              ],
+              "NodeAttrs": [
+                "id"
+              ],
+              "Children": {
+                "Lemma": {
+                  "Many": false,
+                  "Children": {
+                    "feat": {
+                      "Many": false,
+                      "Attrs": [
+                        "att",
+                        "val"
+                      ],
+                      "NodeAttrs": [
+                        "writtenForm"
+                      ]
+                    }
+                  }
+                },
+                "Sense": {
+                  "Many": true,
+                  "Attrs": [
+                    "att",
+                    "val"
+                  ],
+                  "NodeAttrs": [
+                    "id"
+                  ],
+                  "Children": {
+                    "Equivalent": {
+                      "Many": true,
+                      "Children": {
+                        "feat": {
+                          "Many": true,
+                          "Attrs": [
+                            "att",
+                            "val"
+                          ],
+                          "NodeAttrs": [
+                            "definition",
+                            "language",
+                            "lemma"
+                          ]
+                        }
+                      }
+                    },
+                    "SenseExample": {
+                      "Many": true,
+                      "Children": {
+                        "feat": {
+                          "Many": true,
+                          "Attrs": [
+                            "att",
+                            "val"
+                          ],
+                          "NodeAttrs": [
+                            "example",
+                            "type"
+                          ]
+                        }
+                      }
+                    },
+                    "SenseRelation": {
+                      "Many": true,
+                      "Children": {
+                        "feat": {
+                          "Many": true,
+                          "Attrs": [
+                            "att",
+                            "val"
+                          ],
+                          "NodeAttrs": [
+                            "homonymNumber",
+                            "id",
+                            "lemma",
+                            "type"
+                          ]
+                        }
+                      }
+                    },
+                    "feat": {
+                      "Many": true,
+                      "Attrs": [
+                        "att",
+                        "val"
+                      ],
+                      "NodeAttrs": [
+                        "definition",
+                        "syntacticPattern"
+                      ]
+                    }
+                  }
+                },
+                "WordForm": {
+                  "Many": false,
+                  "Children": {
+                    "feat": {
+                      "Many": true,
+                      "Attrs": [
+                        "att",
+                        "val"
+                      ],
+                      "NodeAttrs": [
+                        "pronunciation",
+                        "sound",
+                        "type"
+                      ]
+                    }
+                  }
+                },
+                "feat": {
+                  "Many": true,
+                  "Attrs": [
+                    "att",
+                    "val"
+                  ],
+                  "NodeAttrs": [
+                    "homonym_number",
+                    "lexicalUnit",
+                    "partOfSpeech",
+                    "semanticCategory",
+                    "subjectCategiory",
+                    "vocabularyLevel"
+                  ]
+                }
+              }
+            },
+            "feat": {
+              "Many": false,
+              "Attrs": [
+                "att",
+                "val"
+              ],
+              "NodeAttrs": [
+                "language"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

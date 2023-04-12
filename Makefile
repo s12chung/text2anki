@@ -1,7 +1,7 @@
-export KHAIII_BIN_PATH := integrations/tokenizers/dist/khaiii
-export KOMORAN_JAR_PATH := integrations/tokenizers/dist/komoran
-export TOKENIZER := khaiii
-BIN := dist/text2anki
+export KHAIII_BIN_PATH ?= integrations/tokenizers/dist/khaiii
+export KOMORAN_JAR_PATH ?= integrations/tokenizers/dist/komoran
+export TOKENIZER ?= khaiii
+BIN ?= dist/text2anki
 
 setup:
 	cd integrations/tokenizers; make build
@@ -32,11 +32,16 @@ subconv: tmp
 syncfiltered:
 	go run ./cmd/syncfiltered "$(SYNC_FILTERED_DIR)"
 
+
+TEST ?= ./...
 test:
-	go test ./...
+	go test $(TEST)
 
 ci.test:
-	go test -v ./...
+	go test -v $(TEST)
 
 test.fixtures:
 	UPDATE_FIXTURES=true make test
+
+db.seed:
+	go run ./db/seed -- seed

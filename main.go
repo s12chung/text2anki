@@ -39,9 +39,8 @@ var synth = azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
 
 func main() {
 	args := flag.Args()
-
 	if len(args) != 2 {
-		fmt.Printf("Usage: %v textStringFilename exportDir\n", os.Args[0])
+		fmt.Printf("usage: %v textStringFilename exportDir\n", os.Args[0])
 		os.Exit(-1)
 	}
 
