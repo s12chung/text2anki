@@ -1,0 +1,550 @@
+{
+  "ID": 93416,
+  "Feats": [
+    {
+      "Att": "homonym_number",
+      "Val": "0"
+    },
+    {
+      "Att": "lexicalUnit",
+      "Val": "단어"
+    },
+    {
+      "Att": "partOfSpeech",
+      "Val": "동사"
+    },
+    {
+      "Att": "vocabularyLevel",
+      "Val": "고급"
+    }
+  ],
+  "Lemmas": [
+    {
+      "Feats": [
+        {
+          "Att": "writtenForm",
+          "Val": "펄럭이다"
+        }
+      ]
+    }
+  ],
+  "RelatedForms": [
+    {
+      "Feats": [
+        {
+          "Att": "type",
+          "Val": "가봐라"
+        },
+        {
+          "Att": "id",
+          "Val": "81932"
+        },
+        {
+          "Att": "writtenForm",
+          "Val": "펄럭"
+        }
+      ]
+    }
+  ],
+  "Senses": [
+    {
+      "ID": 1,
+      "Feats": [
+        {
+          "Att": "syntacticPattern",
+          "Val": " 1이 (2를) 펄럭이다"
+        },
+        {
+          "Att": "definition",
+          "Val": "넓고 큰 천 등이 바람에 빠르고 힘차게 잇따라 흔들리다. 또는 그렇게 되게 하다."
+        }
+      ],
+      "Equivalents": [
+        {
+          "Feats": [
+            {
+              "Att": "language",
+              "Val": "영어"
+            },
+            {
+              "Att": "lemma",
+              "Val": "keep waving; keep flapping; keep fluttering"
+            },
+            {
+              "Att": "definition",
+              "Val": "For a wide and big cloth, etc., to keep swaying fast and strongly in the wind, or to make this happen."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "language",
+              "Val": "일본어"
+            },
+            {
+              "Att": "lemma",
+              "Val": "はためく。はたはたとひるがえる【はたはたと翻る】 \t　"
+            },
+            {
+              "Att": "definition",
+              "Val": "広くて大きい布などがしきりに風に吹かれて勢いよく翻る。また、そうさせる。"
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "language",
+              "Val": "프랑스어"
+            },
+            {
+              "Att": "lemma",
+              "Val": "flotter, claquer"
+            },
+            {
+              "Att": "definition",
+              "Val": "(Grand tissu ou autre) Bouger continuellement avec force et rapidité à cause du vent ; faire bouger ainsi."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "language",
+              "Val": "스페인어"
+            },
+            {
+              "Att": "lemma",
+              "Val": "ondear, agitar(se), flamear"
+            },
+            {
+              "Att": "definition",
+              "Val": "Mover rápida y fuertemente, y formando ondas, una pieza amplia de tela, etc. O hacer que revolotee."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "language",
+              "Val": "아랍어"
+            },
+            {
+              "Att": "lemma",
+              "Val": "يرفرف"
+            },
+            {
+              "Att": "definition",
+              "Val": "تتطاير قطعة من القماش الكبير والعريض أو ما شابه ذلك وتهتز بسرعة بفعل الرياح"
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "language",
+              "Val": "몽골어"
+            },
+            {
+              "Att": "lemma",
+              "Val": "намируулах, дэвэх, далбагнуулах"
+            },
+            {
+              "Att": "definition",
+              "Val": "том өргөн даавуу зэрэг зүйл салхинд хурдан хурдан байнга хөдлөх, мөн тэгэх үйл."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "language",
+              "Val": "베트남어"
+            },
+            {
+              "Att": "lemma",
+              "Val": "phần phật"
+            },
+            {
+              "Att": "definition",
+              "Val": "Vải rộng và to lay động nhanh và mạnh liên tục trước gió. Hoặc bị làm cho như vậy."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "language",
+              "Val": "타이어"
+            },
+            {
+              "Att": "lemma",
+              "Val": "โบกสะบัด, สะบัดพริ้ว"
+            },
+            {
+              "Att": "definition",
+              "Val": "ผ้าผืนกว้างและใหญ่ เป็นต้น แกว่งไกวอย่างรุนแรงและรวดเร็ว หรือทำให้มีลักษณะดังกล่าว"
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "language",
+              "Val": "인도네시아어"
+            },
+            {
+              "Att": "lemma",
+              "Val": "berkibar"
+            },
+            {
+              "Att": "definition",
+              "Val": "bergerak-gerak mengombak karena ditiup angin tentang bendera, kain lebar, dan sebagainya"
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "language",
+              "Val": "러시아어"
+            },
+            {
+              "Att": "lemma",
+              "Val": "развеваться на ветру, колыхаться"
+            },
+            {
+              "Att": "definition",
+              "Val": "Колыхаться от сильного быстрого ветра (о широком куске ткани). Или развевать кусок ткани на ветру."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "language",
+              "Val": "중국어"
+            },
+            {
+              "Att": "lemma",
+              "Val": "飘扬，飘舞"
+            },
+            {
+              "Att": "definition",
+              "Val": "宽大的布等再风中快速有力地接连摇晃；或使之那样。"
+            }
+          ]
+        }
+      ],
+      "Multimedias": [
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "동영상"
+            },
+            {
+              "Att": "label",
+              "Val": "펄럭이다"
+            },
+            {
+              "Att": "url",
+              "Val": "http://dicmedia.korean.go.kr:8899/multimedia/multimedia_files/convert/20200214/658877/MOV000356656_700X466.mp4"
+            }
+          ]
+        }
+      ],
+      "SenseExamples": [
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "구"
+            },
+            {
+              "Att": "example",
+              "Val": "깃발이 펄럭이다."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "구"
+            },
+            {
+              "Att": "example",
+              "Val": "옷자락이 펄럭이다."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "구"
+            },
+            {
+              "Att": "example",
+              "Val": "책장을 펄럭이다."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "구"
+            },
+            {
+              "Att": "example",
+              "Val": "치맛자락을 펄럭이다."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "구"
+            },
+            {
+              "Att": "example",
+              "Val": "바람에 펄럭이다."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "구"
+            },
+            {
+              "Att": "example",
+              "Val": "힘차게 펄럭이다."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "문장"
+            },
+            {
+              "Att": "example",
+              "Val": "승규가 더운지 입고 있는 옷을 펄럭였다."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "문장"
+            },
+            {
+              "Att": "example",
+              "Val": "빨랫줄에 널어 놓은 옷이 바람에 펄럭인다."
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "대화"
+            },
+            {
+              "Att": "example",
+              "Val": "학교에서 무슨 행사를 하나 봐요."
+            },
+            {
+              "Att": "example",
+              "Val": "네, 운동장에 만국기가 힘차게 펄럭이던데요."
+            }
+          ]
+        }
+      ],
+      "SenseRelations": [
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "유의어"
+            },
+            {
+              "Att": "id",
+              "Val": "83229"
+            },
+            {
+              "Att": "lemma",
+              "Val": "펄럭거리다"
+            },
+            {
+              "Att": "homonymNumber",
+              "Val": "0"
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "유의어"
+            },
+            {
+              "Att": "id",
+              "Val": "90820"
+            },
+            {
+              "Att": "lemma",
+              "Val": "펄럭대다"
+            },
+            {
+              "Att": "homonymNumber",
+              "Val": "0"
+            }
+          ]
+        },
+        {
+          "Feats": [
+            {
+              "Att": "type",
+              "Val": "유의어"
+            },
+            {
+              "Att": "id",
+              "Val": "90821"
+            },
+            {
+              "Att": "lemma",
+              "Val": "펄럭펄럭하다"
+            },
+            {
+              "Att": "homonymNumber",
+              "Val": "0"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "WordForms": [
+    {
+      "Feats": [
+        {
+          "Att": "type",
+          "Val": "발음"
+        },
+        {
+          "Att": "pronunciation",
+          "Val": "펄러기다"
+        },
+        {
+          "Att": "sound",
+          "Val": "https://dicmedia.korean.go.kr/multimedia/sound_file/pieup_2005/peolreogida.wav"
+        }
+      ],
+      "FormRepresentation": {
+        "Feats": null
+      }
+    },
+    {
+      "Feats": [
+        {
+          "Att": "type",
+          "Val": "활용"
+        },
+        {
+          "Att": "writtenForm",
+          "Val": "펄럭이는"
+        },
+        {
+          "Att": "pronunciation",
+          "Val": "펄러기는"
+        }
+      ],
+      "FormRepresentation": {
+        "Feats": null
+      }
+    },
+    {
+      "Feats": [
+        {
+          "Att": "type",
+          "Val": "활용"
+        },
+        {
+          "Att": "writtenForm",
+          "Val": "펄럭이어"
+        },
+        {
+          "Att": "pronunciation",
+          "Val": "펄러기어"
+        },
+        {
+          "Att": "pronunciation",
+          "Val": "펄러기여"
+        }
+      ],
+      "FormRepresentation": {
+        "Feats": [
+          {
+            "Att": "type",
+            "Val": "준말"
+          },
+          {
+            "Att": "writtenForm",
+            "Val": "펄럭여"
+          },
+          {
+            "Att": "pronunciation",
+            "Val": "펄러겨"
+          }
+        ]
+      }
+    },
+    {
+      "Feats": [
+        {
+          "Att": "type",
+          "Val": "활용"
+        },
+        {
+          "Att": "writtenForm",
+          "Val": "펄럭이니"
+        },
+        {
+          "Att": "pronunciation",
+          "Val": "펄러기니"
+        }
+      ],
+      "FormRepresentation": {
+        "Feats": null
+      }
+    },
+    {
+      "Feats": [
+        {
+          "Att": "type",
+          "Val": "활용"
+        },
+        {
+          "Att": "writtenForm",
+          "Val": "펄럭입니다"
+        },
+        {
+          "Att": "pronunciation",
+          "Val": "펄러김니다"
+        }
+      ],
+      "FormRepresentation": {
+        "Feats": null
+      }
+    }
+  ]
+}
