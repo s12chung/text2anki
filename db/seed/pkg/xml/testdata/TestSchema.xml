@@ -8,721 +8,167 @@
 	</GlobalInformation>
 	<Lexicon>
 		<feat att="language" val="kor" />
-		<LexicalEntry att="id" val="20911">
+		<LexicalEntry att="id" val="93416">
 			<feat att="homonym_number" val="0" />
 			<feat att="lexicalUnit" val="단어" />
-			<feat att="partOfSpeech" val="명사" />
+			<feat att="partOfSpeech" val="동사" />
 			<Lemma>
-				<feat att="writtenForm" val="마음" />
+				<feat att="writtenForm" val="펄럭이다" />
 			</Lemma>
 			<WordForm>
 				<feat att="type" val="발음" />
-				<feat att="pronunciation" val="마음" />
-				<feat att="sound" val="https://dicmedia.korean.go.kr/multimedia/sound_file/mieum_2005/maeum.wav" />
+				<feat att="pronunciation" val="펄러기다" />
+				<feat att="sound" val="https://dicmedia.korean.go.kr/multimedia/sound_file/pieup_2005/peolreogida.wav" />
 			</WordForm>
-			<feat att="vocabularyLevel" val="초급" />
-			<feat att="semanticCategory" val="인간 > 인지 행위" />
-			<feat att="subjectCategiory" val="감정, 기분 표현하기" />
+			<WordForm>
+				<feat att="type" val="활용" />
+				<feat att="writtenForm" val="펄럭이는" />
+				<feat att="pronunciation" val="펄러기는" />
+			</WordForm>
+			<WordForm>
+				<feat att="type" val="활용" />
+				<feat att="writtenForm" val="펄럭이어" />
+				<feat att="pronunciation" val="펄러기어" />
+				<feat att="pronunciation" val="펄러기여" />
+				<FormRepresentation>
+					<feat att="type" val="준말" />
+					<feat att="writtenForm" val="펄럭여" />
+					<feat att="pronunciation" val="펄러겨" />
+				</FormRepresentation>
+			</WordForm>
+			<WordForm>
+				<feat att="type" val="활용" />
+				<feat att="writtenForm" val="펄럭이니" />
+				<feat att="pronunciation" val="펄러기니" />
+			</WordForm>
+			<WordForm>
+				<feat att="type" val="활용" />
+				<feat att="writtenForm" val="펄럭입니다" />
+				<feat att="pronunciation" val="펄러김니다" />
+			</WordForm>
+			<RelatedForm>
+				<feat att="type" val="가봐라" />
+				<feat att="id" val="81932" />
+				<feat att="writtenForm" val="펄럭" />
+			</RelatedForm>
+			<feat att="vocabularyLevel" val="고급" />
 			<Sense att="id" val="1">
 				<SenseRelation>
-					<feat att="type" val="준말" />
-					<feat att="id" val="91093" />
-					<feat att="lemma" val="맘" />
+					<feat att="type" val="유의어" />
+					<feat att="id" val="83229" />
+					<feat att="lemma" val="펄럭거리다" />
 					<feat att="homonymNumber" val="0" />
 				</SenseRelation>
-				<feat att="definition" val="사람이 태어날 때부터 지닌 성질." />
+				<SenseRelation>
+					<feat att="type" val="유의어" />
+					<feat att="id" val="90820" />
+					<feat att="lemma" val="펄럭대다" />
+					<feat att="homonymNumber" val="0" />
+				</SenseRelation>
+				<SenseRelation>
+					<feat att="type" val="유의어" />
+					<feat att="id" val="90821" />
+					<feat att="lemma" val="펄럭펄럭하다" />
+					<feat att="homonymNumber" val="0" />
+				</SenseRelation>
+				<Multimedia>
+					<feat att="type" val="동영상" />
+					<feat att="label" val="펄럭이다" />
+					<feat att="url" val="http://dicmedia.korean.go.kr:8899/multimedia/multimedia_files/convert/20200214/658877/MOV000356656_700X466.mp4" />
+				</Multimedia>
+				<feat att="syntacticPattern" val=" 1이 (2를) 펄럭이다" />
+				<feat att="definition" val="넓고 큰 천 등이 바람에 빠르고 힘차게 잇따라 흔들리다. 또는 그렇게 되게 하다." />
 				<SenseExample>
 					<feat att="type" val="구" />
-					<feat att="example" val="인간의 마음." />
+					<feat att="example" val="깃발이 펄럭이다." />
 				</SenseExample>
 				<SenseExample>
 					<feat att="type" val="구" />
-					<feat att="example" val="고운 마음." />
+					<feat att="example" val="옷자락이 펄럭이다." />
 				</SenseExample>
 				<SenseExample>
 					<feat att="type" val="구" />
-					<feat att="example" val="관대한 마음." />
+					<feat att="example" val="책장을 펄럭이다." />
 				</SenseExample>
 				<SenseExample>
 					<feat att="type" val="구" />
-					<feat att="example" val="너그러운 마음." />
+					<feat att="example" val="치맛자락을 펄럭이다." />
 				</SenseExample>
 				<SenseExample>
 					<feat att="type" val="구" />
-					<feat att="example" val="따뜻한 마음." />
+					<feat att="example" val="바람에 펄럭이다." />
 				</SenseExample>
 				<SenseExample>
 					<feat att="type" val="구" />
-					<feat att="example" val="순수한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="아름다운 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="자비로운 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="착한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 곱다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 나쁘다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 넓다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 따뜻하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 어질다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 여리다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 좋다." />
+					<feat att="example" val="힘차게 펄럭이다." />
 				</SenseExample>
 				<SenseExample>
 					<feat att="type" val="문장" />
-					<feat att="example" val="아이들은 마음이 순수해서 거짓말을 하지 못한다." />
+					<feat att="example" val="승규가 더운지 입고 있는 옷을 펄럭였다." />
 				</SenseExample>
 				<SenseExample>
 					<feat att="type" val="문장" />
-					<feat att="example" val="매주 고아원에 봉사를 오는 그들은 모두 따뜻한 마음을 가진 사람들이다." />
+					<feat att="example" val="빨랫줄에 널어 놓은 옷이 바람에 펄럭인다." />
 				</SenseExample>
 				<SenseExample>
 					<feat att="type" val="대화" />
-					<feat att="example" val="승규는 마음이 넓으니까 이런 일쯤은 용서해 줄 거야." />
-					<feat att="example" val="승규가 그렇게 이해심이 많아?" />
+					<feat att="example" val="학교에서 무슨 행사를 하나 봐요." />
+					<feat att="example" val="네, 운동장에 만국기가 힘차게 펄럭이던데요." />
 				</SenseExample>
 				<Equivalent>
 					<feat att="language" val="영어" />
-					<feat att="lemma" val="personality" />
-					<feat att="definition" val="A trait that a person was born with." />
+					<feat att="lemma" val="keep waving; keep flapping; keep fluttering" />
+					<feat att="definition" val="For a wide and big cloth, etc., to keep swaying fast and strongly in the wind, or to make this happen." />
 				</Equivalent>
 				<Equivalent>
 					<feat att="language" val="일본어" />
-					<feat att="lemma" val="こころ【心】。き【気】。きしつ【気質】" />
-					<feat att="definition" val="人が生まれた時から持っている性質。" />
+					<feat att="lemma" val="はためく。はたはたとひるがえる【はたはたと翻る】 	　" />
+					<feat att="definition" val="広くて大きい布などがしきりに風に吹かれて勢いよく翻る。また、そうさせる。" />
 				</Equivalent>
 				<Equivalent>
 					<feat att="language" val="프랑스어" />
-					<feat att="lemma" val="esprit, cœur, personnablité, caractère, nature" />
-					<feat att="definition" val="Nature innée de l'homme." />
+					<feat att="lemma" val="flotter, claquer" />
+					<feat att="definition" val="(Grand tissu ou autre) Bouger continuellement avec force et rapidité à cause du vent ; faire bouger ainsi." />
 				</Equivalent>
 				<Equivalent>
 					<feat att="language" val="스페인어" />
-					<feat att="lemma" val="personalidad, carácter" />
-					<feat att="definition" val="Cualidad que tiene una persona desde el momento en que nace." />
+					<feat att="lemma" val="ondear, agitar(se), flamear" />
+					<feat att="definition" val="Mover rápida y fuertemente, y formando ondas, una pieza amplia de tela, etc. O hacer que revolotee." />
 				</Equivalent>
 				<Equivalent>
 					<feat att="language" val="아랍어" />
-					<feat att="lemma" val="قلب" />
-					<feat att="definition" val="أخلاق يملكها شخص ما منذ ولادته" />
+					<feat att="lemma" val="يرفرف" />
+					<feat att="definition" val="تتطاير قطعة من القماش الكبير والعريض أو ما شابه ذلك وتهتز بسرعة بفعل الرياح" />
 				</Equivalent>
 				<Equivalent>
 					<feat att="language" val="몽골어" />
-					<feat att="lemma" val="сэтгэл" />
-					<feat att="definition" val="хүний  төрөлх чанар." />
+					<feat att="lemma" val="намируулах, дэвэх, далбагнуулах" />
+					<feat att="definition" val="том өргөн даавуу зэрэг зүйл салхинд хурдан хурдан байнга хөдлөх, мөн тэгэх үйл." />
 				</Equivalent>
 				<Equivalent>
 					<feat att="language" val="베트남어" />
-					<feat att="lemma" val="tâm tính, tính tình" />
-					<feat att="definition" val="Tính chất mà con người có từ lúc được sinh ra." />
+					<feat att="lemma" val="phần phật" />
+					<feat att="definition" val="Vải rộng và to lay động nhanh và mạnh liên tục trước gió. Hoặc bị làm cho như vậy." />
 				</Equivalent>
 				<Equivalent>
 					<feat att="language" val="타이어" />
-					<feat att="lemma" val="ใจ, จิตใจ" />
-					<feat att="definition" val="ลักษณะที่คนมีมาตั้งแต่เกิด" />
+					<feat att="lemma" val="โบกสะบัด, สะบัดพริ้ว" />
+					<feat att="definition" val="ผ้าผืนกว้างและใหญ่ เป็นต้น แกว่งไกวอย่างรุนแรงและรวดเร็ว หรือทำให้มีลักษณะดังกล่าว" />
 				</Equivalent>
 				<Equivalent>
 					<feat att="language" val="인도네시아어" />
-					<feat att="lemma" val="hati, sifat" />
-					<feat att="definition" val="sifat yang dimiliki manusia sejak lahir" />
+					<feat att="lemma" val="berkibar" />
+					<feat att="definition" val="bergerak-gerak mengombak karena ditiup angin tentang bendera, kain lebar, dan sebagainya" />
 				</Equivalent>
 				<Equivalent>
 					<feat att="language" val="러시아어" />
-					<feat att="lemma" val="душа; характер; сердце" />
-					<feat att="definition" val="То, что даётся человеку с рождения." />
+					<feat att="lemma" val="развеваться на ветру, колыхаться" />
+					<feat att="definition" val="Колыхаться от сильного быстрого ветра (о широком куске ткани). Или развевать кусок ткани на ветру." />
 				</Equivalent>
 				<Equivalent>
 					<feat att="language" val="중국어" />
-					<feat att="lemma" val="心地，心性，心眼" />
-					<feat att="definition" val="指人与生俱来的性格。" />
-				</Equivalent>
-			</Sense>
-			<Sense att="id" val="2">
-				<SenseRelation>
-					<feat att="type" val="참고어" />
-					<feat att="id" val="74138" />
-					<feat att="lemma" val="몸" />
-					<feat att="homonymNumber" val="0" />
-				</SenseRelation>
-				<SenseRelation>
-					<feat att="type" val="준말" />
-					<feat att="id" val="91093" />
-					<feat att="lemma" val="맘" />
-					<feat att="homonymNumber" val="0" />
-				</SenseRelation>
-				<feat att="definition" val="사람의 몸 안에서 느끼거나 생각하는 등의 정신적인 활동을 하는 곳." />
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음의 병." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 부자이다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 청춘이다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 치유되다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 몸을 지배하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="문장" />
-					<feat att="example" val="몸이 튼튼해야 마음도 튼튼하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="문장" />
-					<feat att="example" val="우리는 설날이 되면 몸과 마음을 깨끗하게 하고 웃어른들께 인사를 간다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="문장" />
-					<feat att="example" val="바쁠 때일수록 자신의 마음을 다스리면서 천천히 생각하고 지나온 길을 돌아볼 줄 알아야 한다." />
-				</SenseExample>
-				<Equivalent>
-					<feat att="language" val="영어" />
-					<feat att="lemma" val="mind" />
-					<feat att="definition" val="A place in the human body where mental activities such as feeling and thinking occur." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="일본어" />
-					<feat att="lemma" val="こころ【心】。せいしん【精神】" />
-					<feat att="definition" val="人間の体内で感じたり考えたりする精神的な活動を行うところ。" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="프랑스어" />
-					<feat att="lemma" val="pensée, idée, conscience, coœur " />
-					<feat att="definition" val="Dans le corps humain, lieu où se déroulent les activités mentales comme les sensations, la pensée, etc." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="스페인어" />
-					<feat att="lemma" val="corazón" />
-					<feat att="definition" val="Lugar dentro del cuerpo de una persona que desempeña actividades espirituales como sentir o pensar." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="아랍어" />
-					<feat att="lemma" val="(لا يوجد كلمة مرادفة)" />
-					<feat att="definition" val="مكان لأنشطة ذهنية بما فيه جسم الإنسان ويشمل الشعور أو التفكير " />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="몽골어" />
-					<feat att="lemma" val="сэтгэл" />
-					<feat att="definition" val="хүний биед оршдог, мэдрэх, бодох зэрэг оюун санааны үйл ажиллагаа явагдах газар." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="베트남어" />
-					<feat att="lemma" val="trái tim" />
-					<feat att="definition" val="Nơi thực hiện hoạt động tinh thần trong cơ thể con người như cảm nhận hay suy nghĩ..." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="타이어" />
-					<feat att="lemma" val="หัวใจ, ใจ, จิตใจ" />
-					<feat att="definition" val="ส่วนที่ทำหน้าที่คิดหรือรับรู้ความรู้สึกต่าง ๆ ที่เกี่ยวกับทางด้านจิตใจในร่างกายคน" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="인도네시아어" />
-					<feat att="lemma" val="hati" />
-					<feat att="definition" val="sesuatu di dalam tubuh manusia yang bisa merasakan, memikirkan sesuatu dari segi mental " />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="러시아어" />
-					<feat att="lemma" val="душа; сердце" />
-					<feat att="definition" val="То, что обычно связывают с психологической деятельностью человека (о чувствах, мыслях и т.п.)." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="중국어" />
-					<feat att="lemma" val="内心" />
-					<feat att="definition" val="在人体内进行感觉或思想等精神活动的地方。" />
-				</Equivalent>
-			</Sense>
-			<Sense att="id" val="3">
-				<SenseRelation>
-					<feat att="type" val="준말" />
-					<feat att="id" val="91093" />
-					<feat att="lemma" val="맘" />
-					<feat att="homonymNumber" val="0" />
-				</SenseRelation>
-				<feat att="definition" val="기분이나 느낌." />
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="가벼운 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="감사하는 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="경건한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="고마운 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="느긋한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="답답한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="무거운 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="미안한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="바라는 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="반가운 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="불안한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="서운한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="섭섭한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="송구스러운 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="슬픈 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="쓸쓸한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="안타까운 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="열린 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="죄송한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="즐거운 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="차분한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="편한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="하고 싶은 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="홀가분한 마음." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 간절하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 개운하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 급하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 불안하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 상쾌하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 생기다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 편하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음을 가다듬다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음을 가라앉히다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음을 진정하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음을 풀다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음에 없는 말을 하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="기쁜 마음으로 일하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="두려운 마음으로 말하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="떨리는 마음으로 보다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="존경하는 마음으로 대하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="편안한 마음으로 지내다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="흐뭇한 마음으로 바라보다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="문장" />
-					<feat att="example" val="저는 부모님께 늘 감사하는 마음으로 살고 있습니다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="문장" />
-					<feat att="example" val="비가 그치고 날이 개니 내 마음까지 맑아지는 것 같다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="문장" />
-					<feat att="example" val="남자는 혼자 있고 싶어 하는 여자의 마음을 알고 자리에서 일어났다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="대화" />
-					<feat att="example" val="즐거운 마음으로 일을 하니까 일이 잘 되는 거 같지 않아?" />
-					<feat att="example" val="그래, 어떤  마음으로 일을 하느냐가 중요한 거 같아." />
-				</SenseExample>
-				<Equivalent>
-					<feat att="language" val="영어" />
-					<feat att="lemma" val="mood; feeling" />
-					<feat att="definition" val="A mood or feeling." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="일본어" />
-					<feat att="lemma" val="こころ【心】。きぶん【気分】。きもち【気持ち】。かんじ【感じ】" />
-					<feat att="definition" val="気分や感じ。" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="프랑스어" />
-					<feat att="lemma" val="âme, cœur, esprit" />
-					<feat att="definition" val="Humeur ou sentiment." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="스페인어" />
-					<feat att="lemma" val="(No hay expresión equivalente)" />
-					<feat att="definition" val="Emoción o sentimiento." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="아랍어" />
-					<feat att="lemma" val="(لا يوجد كلمة مرادفة)" />
-					<feat att="definition" val="شعور أو مزاج" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="몽골어" />
-					<feat att="lemma" val="сэтгэл" />
-					<feat att="definition" val="сэтгэл санаа, мэдрэмж." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="베트남어" />
-					<feat att="lemma" val="lòng, tâm trạng" />
-					<feat att="definition" val="Tâm trạng hay cảm xúc." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="타이어" />
-					<feat att="lemma" val="จิตใจ, ใจ, ความรู้สึก" />
-					<feat att="definition" val="อารมณ์หรือความรู้สึก" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="인도네시아어" />
-					<feat att="lemma" val="hati, perasaan " />
-					<feat att="definition" val="emosi, perasaan " />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="러시아어" />
-					<feat att="lemma" val="чувство; настроение" />
-					<feat att="definition" val="Настроение или ощущения." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="중국어" />
-					<feat att="lemma" val="心情，心绪" />
-					<feat att="definition" val="情绪或感受。" />
-				</Equivalent>
-			</Sense>
-			<Sense att="id" val="4">
-				<SenseRelation>
-					<feat att="type" val="준말" />
-					<feat att="id" val="91093" />
-					<feat att="lemma" val="맘" />
-					<feat att="homonymNumber" val="0" />
-				</SenseRelation>
-				<feat att="definition" val="좋아하는 마음이나 관심." />
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 끌리다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 없다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 있다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음을 끌다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음을 떠보다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음을 빼앗기다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음을 빼앗다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음을 사로잡다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="문장" />
-					<feat att="example" val="집 안에 귀엽게 만들어 놓은 작은 정원과 소품들이 내 마음을 끌었다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="문장" />
-					<feat att="example" val="나는 그 여자를 처음 본 순간 마음을 빼앗겨 내내 그 여자 생각만 난다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="대화" />
-					<feat att="example" val="어제 민준이가 나한테 같이 영화 보자고 했어." />
-					<feat att="example" val="그래? 민준이가 너한테 마음이 있나 보다." />
-				</SenseExample>
-				<Equivalent>
-					<feat att="language" val="영어" />
-					<feat att="lemma" val="heart" />
-					<feat att="definition" val="Affection or interest." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="일본어" />
-					<feat att="lemma" val="こうかん【好感】。かんしん【関心】" />
-					<feat att="definition" val="好きな気持ちや関心。" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="프랑스어" />
-					<feat att="lemma" val="cœur, affection, amabilité" />
-					<feat att="definition" val="Cœur aimant quelqu'un ou ayant de l’intérêt pour lui." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="스페인어" />
-					<feat att="lemma" val="(No hay expresión equivalente)" />
-					<feat att="definition" val="Interés o sentimiento de afecto." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="아랍어" />
-					<feat att="lemma" val="(لا يوجد كلمة مرادفة)" />
-					<feat att="definition" val="حب أو اهتمام" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="몽골어" />
-					<feat att="lemma" val="сэтгэл" />
-					<feat att="definition" val="таалагдах, таалах сэтгэл буюу анхаарал сонирхол." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="베트남어" />
-					<feat att="lemma" val="tấm lòng, tâm" />
-					<feat att="definition" val="Lòng yêu thích hay sự quan tâm." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="타이어" />
-					<feat att="lemma" val="ความชอบ, ความสนใจ" />
-					<feat att="definition" val="ความรู้สึกที่ชอบหรือความสนใจ" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="인도네시아어" />
-					<feat att="lemma" val="perhatian" />
-					<feat att="definition" val="kesukaan hati, ketertarikan " />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="러시아어" />
-					<feat att="lemma" val="желание; симпатия" />
-					<feat att="definition" val="Желание или интерес." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="중국어" />
-					<feat att="lemma" val="心意，心思" />
-					<feat att="definition" val="喜爱或关心的心情。" />
-				</Equivalent>
-			</Sense>
-			<Sense att="id" val="5">
-				<SenseRelation>
-					<feat att="type" val="준말" />
-					<feat att="id" val="91093" />
-					<feat att="lemma" val="맘" />
-					<feat att="homonymNumber" val="0" />
-				</SenseRelation>
-				<feat att="definition" val="무엇을 하고자 하는 뜻이나 의지." />
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 내키다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 앞서다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 없다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음이 있다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음을 정하다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="구" />
-					<feat att="example" val="마음에 거리끼다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="문장" />
-					<feat att="example" val="우리 아들은 공부에는 마음이 없는지 매일 놀기만 한다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="문장" />
-					<feat att="example" val="앞으로 무엇을 할 것인지 마음을 정해서 그것을 위해 열심히 노력하겠다." />
-				</SenseExample>
-				<SenseExample>
-					<feat att="type" val="대화" />
-					<feat att="example" val="김 대리가 이번 프로젝트를 꼭 성공시키겠다는 마음이 강한 것 같아." />
-					<feat att="example" val="그런 마음으로 노력하면 안 될 일이 없지." />
-				</SenseExample>
-				<Equivalent>
-					<feat att="language" val="영어" />
-					<feat att="lemma" val="intention; will" />
-					<feat att="definition" val="An intention or will to do something." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="일본어" />
-					<feat att="lemma" val="き【気】。こころざし【志】" />
-					<feat att="definition" val="何かを行おうとする考えや意志。" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="프랑스어" />
-					<feat att="lemma" val="intention, volonté, envie" />
-					<feat att="definition" val="Intention ou volonté de faire quelque chose." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="스페인어" />
-					<feat att="lemma" val="(No hay expresión equivalente)" />
-					<feat att="definition" val="Voluntad o intención de querer realizar algo." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="아랍어" />
-					<feat att="lemma" val="(لا يوجد كلمة مرادفة)" />
-					<feat att="definition" val="رغبة في الفعل أو إرادة" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="몽골어" />
-					<feat att="lemma" val="дур хүсэл, хүсэл зорилго" />
-					<feat att="definition" val="ямар нэгэн зүйлийг хийж бүтээх гэсэн зорилго тэмүүлэл." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="베트남어" />
-					<feat att="lemma" val="lòng" />
-					<feat att="definition" val="Ý định hay ý chí muốn làm điều gì đó." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="타이어" />
-					<feat att="lemma" val="เจตนารมณ์, ความตั้งใจ" />
-					<feat att="definition" val="ความประสงค์หรือเจตนาที่ต้องการทำสิ่งใด ๆ" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="인도네시아어" />
-					<feat att="lemma" val="keinginan, hasrat" />
-					<feat att="definition" val="keinginan, maksud untuk melakukan sesuatu" />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="러시아어" />
-					<feat att="lemma" val="желание; намерение; стремление" />
-					<feat att="definition" val="Намерение или стремление что-либо сделать." />
-				</Equivalent>
-				<Equivalent>
-					<feat att="language" val="중국어" />
-					<feat att="lemma" val="心思，心意，意向" />
-					<feat att="definition" val="要做某事的想法或意愿。" />
+					<feat att="lemma" val="飘扬，飘舞" />
+					<feat att="definition" val="宽大的布等再风中快速有力地接连摇晃；或使之那样。" />
 				</Equivalent>
 			</Sense>
 		</LexicalEntry>
@@ -798,7 +244,7 @@
 					<feat att="definition" val="如果按照自己的想法。" />
 				</Equivalent>
 			</Sense>
-				</LexicalEntry>
+		</LexicalEntry>
 		<LexicalEntry att="id" val="20911">
 			<Lemma>
 				<feat att="writtenForm" val="마음에 걸리다" />
@@ -871,6 +317,6 @@
 					<feat att="definition" val="由于牵挂，心情不舒坦。" />
 				</Equivalent>
 			</Sense>
-				</LexicalEntry>
+		</LexicalEntry>
 	</Lexicon>
 </LexicalResource>

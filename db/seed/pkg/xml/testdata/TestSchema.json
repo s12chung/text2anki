@@ -55,8 +55,25 @@
                     }
                   }
                 },
+                "RelatedForm": {
+                  "Many": false,
+                  "Children": {
+                    "feat": {
+                      "Many": true,
+                      "Attrs": [
+                        "att",
+                        "val"
+                      ],
+                      "NodeAttrs": [
+                        "id",
+                        "type",
+                        "writtenForm"
+                      ]
+                    }
+                  }
+                },
                 "Sense": {
-                  "Many": true,
+                  "Many": false,
                   "Attrs": [
                     "att",
                     "val"
@@ -78,6 +95,23 @@
                             "definition",
                             "language",
                             "lemma"
+                          ]
+                        }
+                      }
+                    },
+                    "Multimedia": {
+                      "Many": false,
+                      "Children": {
+                        "feat": {
+                          "Many": true,
+                          "Attrs": [
+                            "att",
+                            "val"
+                          ],
+                          "NodeAttrs": [
+                            "label",
+                            "type",
+                            "url"
                           ]
                         }
                       }
@@ -130,8 +164,25 @@
                   }
                 },
                 "WordForm": {
-                  "Many": false,
+                  "Many": true,
                   "Children": {
+                    "FormRepresentation": {
+                      "Many": false,
+                      "Children": {
+                        "feat": {
+                          "Many": true,
+                          "Attrs": [
+                            "att",
+                            "val"
+                          ],
+                          "NodeAttrs": [
+                            "pronunciation",
+                            "type",
+                            "writtenForm"
+                          ]
+                        }
+                      }
+                    },
                     "feat": {
                       "Many": true,
                       "Attrs": [
@@ -141,7 +192,8 @@
                       "NodeAttrs": [
                         "pronunciation",
                         "sound",
-                        "type"
+                        "type",
+                        "writtenForm"
                       ]
                     }
                   }
@@ -156,8 +208,6 @@
                     "homonym_number",
                     "lexicalUnit",
                     "partOfSpeech",
-                    "semanticCategory",
-                    "subjectCategiory",
                     "vocabularyLevel"
                   ]
                 }

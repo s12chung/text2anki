@@ -39,43 +39,6 @@ func unmarshallXML(bytes []byte) (*lexicalResource, error) {
 	return lex, nil
 }
 
-func findGoodExample() (*lexicalEntry, error) {
-	lexes, err := unmarshallRscPath()
-	if err != nil {
-		return nil, err
-	}
-	for _, lex := range lexes {
-		for _, entry := range lex.LexicalEntries {
-			if goodExampleEntry(entry) && goodExampleSense(entry.Senses) && goodExampleWordForm(entry.WordForms) {
-				return &entry, nil
-			}
-		}
-	}
-	return nil, nil
-}
-
-func goodExampleEntry(entry lexicalEntry) bool {
-	return !(entry.Lemmas == nil || entry.RelatedForms == nil || entry.Senses == nil || entry.WordForms == nil)
-}
-
-func goodExampleSense(senses []sense) bool {
-	for _, sense := range senses {
-		if !(sense.Equivalents == nil || sense.Multimedias == nil || sense.SenseExamples == nil || sense.SenseRelations == nil) {
-			return true
-		}
-	}
-	return false
-}
-
-func goodExampleWordForm(wordForms []wordForm) bool {
-	for _, wordForm := range wordForms {
-		if !(wordForm.FormRepresentation.Feats == nil) {
-			return true
-		}
-	}
-	return false
-}
-
 type lexicalResource struct {
 	LexicalEntries []lexicalEntry `xml:"Lexicon>LexicalEntry"`
 }
