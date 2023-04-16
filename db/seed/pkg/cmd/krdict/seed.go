@@ -1,10 +1,14 @@
 package krdict
 
 import (
+	"context"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"os"
+	"strconv"
 
+	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/stringclean"
@@ -12,6 +16,28 @@ import (
 
 // Seed seeds the database from the rscPath XML
 func Seed() error {
+	lexes, err := unmarshallRscPath()
+	if err != nil {
+		return err
+	}
+
+	ctx := context.Background()
+	queries := db.New(db.DB())
+	basePopularity := 1
+	for _, lex := range lexes {
+		for i, entry := range lex.LexicalEntries {
+			createParams, err := entry.createParams(basePopularity + i)
+			if err != nil {
+				if IsNoTranslationsFoundError(err) {
+					continue
+				}
+				return err
+			}
+			if _, err = queries.TermCreate(ctx, createParams); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
@@ -58,6 +84,44 @@ type lexicalEntry struct {
 	WordForms    []wordForm    `xml:"WordForm"`
 }
 
+func (l *lexicalEntry) createParams(popularity int) (db.TermCreateParams, error) {
+	term, err := l.term()
+	if err != nil {
+		return db.TermCreateParams{}, err
+	}
+	variants, err := json.Marshal(term.Variants)
+	if err != nil {
+		return db.TermCreateParams{}, err
+	}
+	translations, err := json.Marshal(term.Translations)
+	if err != nil {
+		return db.TermCreateParams{}, err
+	}
+
+	return db.TermCreateParams{
+		Text:         term.Text,
+		Variants:     string(variants),
+		PartOfSpeech: string(term.PartOfSpeech),
+		CommonLevel:  strconv.Itoa(int(term.CommonLevel)),
+		Translations: string(translations),
+		Popularity:   strconv.Itoa(popularity),
+	}, nil
+}
+
+type noTranslationsFoundError struct {
+	text string
+}
+
+func (e *noTranslationsFoundError) Error() string {
+	return fmt.Sprintf("no translations found with text: %v", e.text)
+}
+
+// IsNoTranslationsFoundError returns true if the error is a noTranslationsFoundError
+func IsNoTranslationsFoundError(err error) bool {
+	_, ok := err.(*noTranslationsFoundError)
+	return ok
+}
+
 func (l *lexicalEntry) term() (dictionary.Term, error) {
 	text, variants, err := l.textVariants()
 	if err != nil {
@@ -71,7 +135,7 @@ func (l *lexicalEntry) term() (dictionary.Term, error) {
 
 	translations := l.translations()
 	if len(translations) == 0 {
-		return dictionary.Term{}, fmt.Errorf("no translations found with text: %v", text)
+		return dictionary.Term{}, &noTranslationsFoundError{text: text}
 	}
 
 	return dictionary.Term{
@@ -130,6 +194,7 @@ var partOfSpeechMap = map[string]lang.PartOfSpeech{
 }
 
 var vocabularyToCommonLevel = map[string]lang.CommonLevel{
+	"":   lang.CommonLevelUnique,
 	"없음": lang.CommonLevelUnique,
 	"고급": lang.CommonLevelRare,
 	"중급": lang.CommonLevelMedium,

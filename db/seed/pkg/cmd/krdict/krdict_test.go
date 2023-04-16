@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	rscPath = "../../../../../" + rscPath
+	rscPath = "../../../../" + rscPath
 }
 
 func TestRscXMLPaths(t *testing.T) {

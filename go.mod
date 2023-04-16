@@ -7,6 +7,7 @@ require (
 	github.com/asticode/go-astisub v0.23.0
 	github.com/ebitengine/purego v0.3.1
 	github.com/gabriel-vasile/mimetype v1.4.2
+	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/pemistahl/lingua-go v1.3.3
 	github.com/stretchr/testify v1.8.1
 	golang.org/x/term v0.6.0

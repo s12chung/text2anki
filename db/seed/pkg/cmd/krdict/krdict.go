@@ -14,7 +14,7 @@ import (
 var rscPath string
 
 func init() {
-	rscPath = "db/seed/rsc/krdict"
+	rscPath = "seed/rsc/krdict"
 }
 
 // RscXMLPaths returns the paths of all XML files in rscPath

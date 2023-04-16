@@ -2,3 +2,4 @@
 **/dist
 **/rsc
 tmp
+*.sqlite3

@@ -44,4 +44,6 @@ test.fixtures:
 	UPDATE_FIXTURES=true make test
 
 db.seed:
-	go run ./db/seed -- seed
+	cd db; make seed
+db.generate:
+	cd db; make generate

@@ -1,11 +1,16 @@
 package main
 
 import (
+	"context"
+	_ "embed"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 
+	_ "github.com/mattn/go-sqlite3"
+
+	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/seed/pkg/cmd/krdict"
 )
 
@@ -13,7 +18,7 @@ func init() {
 	flag.Parse()
 }
 
-const usage = "usage: %v [seed/schema]"
+const usage = "usage: %v [create/seed/schema]"
 
 func main() {
 	args := flag.Args()
@@ -32,6 +37,8 @@ func main() {
 
 func run(cmd string) error {
 	switch cmd {
+	case "create":
+		return cmdCreateDB()
 	case "seed":
 		return cmdSeed()
 	case "schema":
@@ -41,8 +48,23 @@ func run(cmd string) error {
 	}
 }
 
-func cmdSeed() error {
+//go:embed schema.sql
+var ddl string
+
+func cmdCreateDB() error {
+	ctx := context.Background()
+	if _, err := db.DB().ExecContext(ctx, ddl); err != nil {
+		return err
+	}
 	return nil
+}
+
+func cmdSeed() error {
+	if err := cmdCreateDB(); err != nil {
+		return err
+	}
+
+	return krdict.Seed()
 }
 
 func cmdSchema() error {
