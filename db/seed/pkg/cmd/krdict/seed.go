@@ -2,7 +2,12 @@ package krdict
 
 import (
 	"encoding/xml"
+	"fmt"
 	"os"
+
+	"github.com/s12chung/text2anki/pkg/dictionary"
+	"github.com/s12chung/text2anki/pkg/lang"
+	"github.com/s12chung/text2anki/pkg/util/stringclean"
 )
 
 // Seed seeds the database from the rscPath XML
@@ -53,6 +58,119 @@ type lexicalEntry struct {
 	WordForms    []wordForm    `xml:"WordForm"`
 }
 
+func (l *lexicalEntry) term() (dictionary.Term, error) {
+	text, variants, err := l.textVariants()
+	if err != nil {
+		return dictionary.Term{}, err
+	}
+
+	pos, commonLevel, err := l.posCommonLevel()
+	if err != nil {
+		return dictionary.Term{}, fmt.Errorf("%w with text: %v", err, text)
+	}
+
+	translations := l.translations()
+	if len(translations) == 0 {
+		return dictionary.Term{}, fmt.Errorf("no translations found with text: %v", text)
+	}
+
+	return dictionary.Term{
+		Text:         text,
+		Variants:     variants,
+		PartOfSpeech: pos,
+		CommonLevel:  commonLevel,
+		Translations: translations,
+	}, nil
+}
+
+func (l *lexicalEntry) textVariants() (string, []string, error) {
+	text, variants := "", []string{}
+	for _, lemma := range l.Lemmas {
+		for _, feat := range lemma.Feats {
+			switch feat.Att {
+			case "writtenForm":
+				text = feat.Val
+			case "variant":
+				variants = stringclean.Split(feat.Val, ",")
+			}
+		}
+	}
+
+	var err error
+	if text == "" {
+		err = fmt.Errorf("lexicalEntry.writtenForm not found")
+	}
+	return text, variants, err
+}
+
+var partOfSpeechMap = map[string]lang.PartOfSpeech{
+	"명사":  lang.PartOfSpeechNoun,
+	"대명사": lang.PartOfSpeechPronoun,
+	"수사":  lang.PartOfSpeechNumeral,
+	"조사":  lang.PartOfSpeechPostposition,
+
+	"동사":  lang.PartOfSpeechVerb,
+	"형용사": lang.PartOfSpeechAdjective,
+	"관형사": lang.PartOfSpeechDeterminer,
+
+	"부사":  lang.PartOfSpeechAdverb,
+	"감탄사": lang.PartOfSpeechInterjection,
+
+	"접사": lang.PartOfSpeechAffix,
+
+	"의존 명사": lang.PartOfSpeechDependentNoun,
+
+	"보조 동사":  lang.PartOfSpeechAuxiliaryVerb,
+	"보조 형용사": lang.PartOfSpeechAuxiliaryAdjective,
+
+	"어미": lang.PartOfSpeechEnding,
+
+	"품사 없음": lang.PartOfSpeechUnknown,
+	"":      lang.PartOfSpeechUnknown,
+}
+
+var vocabularyToCommonLevel = map[string]lang.CommonLevel{
+	"없음": lang.CommonLevelUnique,
+	"고급": lang.CommonLevelRare,
+	"중급": lang.CommonLevelMedium,
+	"초급": lang.CommonLevelCommon,
+}
+
+func (l *lexicalEntry) posCommonLevel() (lang.PartOfSpeech, lang.CommonLevel, error) {
+	posSrc, vocabularyLevel := "", ""
+	for _, feat := range l.Feats {
+		switch feat.Att {
+		case "partOfSpeech":
+			posSrc = feat.Val
+		case "vocabularyLevel":
+			vocabularyLevel = feat.Val
+		}
+	}
+
+	var err error
+	pos, exists := partOfSpeechMap[posSrc]
+	if !exists {
+		err = fmt.Errorf("part of speech not found: %v", posSrc)
+	}
+	commonLevel, exists := vocabularyToCommonLevel[vocabularyLevel]
+	if !exists {
+		err = fmt.Errorf("common level not found: %v", vocabularyLevel)
+	}
+	return pos, commonLevel, err
+}
+
+func (l *lexicalEntry) translations() []dictionary.Translation {
+	translations := []dictionary.Translation{}
+	for _, sense := range l.Senses {
+		translation, err := sense.translation()
+		if err != nil {
+			continue
+		}
+		translations = append(translations, translation)
+	}
+	return translations
+}
+
 type lemma struct {
 	Feats []feat `xml:"feat"`
 }
@@ -71,8 +189,56 @@ type sense struct {
 	SenseRelations []senseRelation `xml:"SenseRelation"`
 }
 
+func (s *sense) translation() (dictionary.Translation, error) {
+	for _, equiv := range s.Equivalents {
+		translation, err := equiv.translation()
+		if err != nil {
+			continue
+		}
+		return translation, nil
+	}
+	return dictionary.Translation{}, fmt.Errorf("not found")
+}
+
 type equivalent struct {
 	Feats []feat `xml:"feat"`
+}
+
+const engSenseLang = "영어"
+
+func (e *equivalent) translation() (dictionary.Translation, error) {
+	isEng := false
+	for _, feat := range e.Feats {
+		if feat.Val == engSenseLang && feat.Att == "language" {
+			isEng = true
+			break
+		}
+	}
+	if !isEng {
+		return dictionary.Translation{}, fmt.Errorf("not found")
+	}
+
+	text, explanation := "", ""
+	for _, feat := range e.Feats {
+		if feat.Att == "lemma" {
+			text = feat.Val
+		}
+		if feat.Att == "definition" {
+			explanation = feat.Val
+		}
+	}
+
+	var err error
+	if text == "" {
+		err = fmt.Errorf("text is empty")
+	}
+	if explanation == "" {
+		err = fmt.Errorf("explanation is empty")
+	}
+	return dictionary.Translation{
+		Text:        text,
+		Explanation: explanation,
+	}, err
 }
 
 type multimedia struct {

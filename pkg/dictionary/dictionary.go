@@ -5,12 +5,14 @@ import "github.com/s12chung/text2anki/pkg/lang"
 
 // Dicionary is a interface for a dictionary to search with
 type Dicionary interface {
+	// Search returns the dictionary terms for the given query in popularity order
 	Search(q string) ([]Term, error)
 }
 
 // Term is a word or phrase
 type Term struct {
 	Text         string
+	Variants     []string
 	PartOfSpeech lang.PartOfSpeech
 	CommonLevel  lang.CommonLevel
 	Translations []Translation

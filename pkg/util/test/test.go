@@ -2,6 +2,8 @@
 package test
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 	"testing"
 )
@@ -16,4 +18,13 @@ func CISkip(t *testing.T, msg string) {
 	if IsCI() {
 		t.Skip(msg)
 	}
+}
+
+// MustJSON marshals v into indented JSON, panics if fails
+func MustJSON(v any) []byte {
+	bytes, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		panic(fmt.Sprintf("MustJSON: error marshaling: %v", v))
+	}
+	return bytes
 }

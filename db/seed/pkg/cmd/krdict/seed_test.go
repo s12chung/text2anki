@@ -6,18 +6,32 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 func TestUnmarshallXML(t *testing.T) {
-	test.CISkip(t, "rsc files not in CI")
-
 	require := require.New(t)
 
 	lex, err := unmarshallXML(fixture.Read(t, "TestUnmarshallXML.xml"))
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, "TestUnmarshallXML.json", fixture.JSON(t, lex))
+}
+
+func TestTerm(t *testing.T) {
+	require := require.New(t)
+
+	lex, err := unmarshallXML(fixture.Read(t, "TestTerm.xml"))
+	require.NoError(err)
+
+	terms := []dictionary.Term{}
+	for _, entry := range lex.LexicalEntries {
+		term, err := entry.term()
+		require.NoError(err)
+		terms = append(terms, term)
+	}
+	fixture.CompareReadOrUpdate(t, "TestTerm.json", fixture.JSON(t, terms))
 }
 
 func TestFindGoodExample(t *testing.T) {
