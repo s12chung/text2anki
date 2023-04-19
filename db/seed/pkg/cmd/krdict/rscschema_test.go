@@ -18,7 +18,7 @@ func TestSchema(t *testing.T) {
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, "TestRscSchemaSHA.json", fixture.JSON(t, hashMap))
 
-	node, err := RscSchema()
+	node, err := RscSchema(rscPath)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, "TestRscSchema.json", fixture.JSON(t, node))
 }

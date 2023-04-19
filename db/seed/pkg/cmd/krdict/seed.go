@@ -15,8 +15,8 @@ import (
 )
 
 // Seed seeds the database from the rscPath XML
-func Seed() error {
-	lexes, err := unmarshallRscPath()
+func Seed(rscPath string) error {
+	lexes, err := unmarshallRscPath(rscPath)
 	if err != nil {
 		return err
 	}
@@ -41,9 +41,9 @@ func Seed() error {
 	return nil
 }
 
-func unmarshallRscPath() ([]*lexicalResource, error) {
+func unmarshallRscPath(rscPath string) ([]*lexicalResource, error) {
 	lexes := []*lexicalResource{}
-	xmlPaths, err := RscXMLPaths()
+	xmlPaths, err := RscXMLPaths(rscPath)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func unmarshallRscPath() ([]*lexicalResource, error) {
 		if err != nil {
 			return nil, err
 		}
-		lex, err := unmarshallXML(bytes)
+		lex, err := unmarshallRscXML(bytes)
 		if err != nil {
 			return nil, err
 		}
@@ -62,7 +62,7 @@ func unmarshallRscPath() ([]*lexicalResource, error) {
 	return lexes, nil
 }
 
-func unmarshallXML(bytes []byte) (*lexicalResource, error) {
+func unmarshallRscXML(bytes []byte) (*lexicalResource, error) {
 	lex := &lexicalResource{}
 	if err := xml.Unmarshal(bytes, lex); err != nil {
 		return nil, err

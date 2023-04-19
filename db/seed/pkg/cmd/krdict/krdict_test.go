@@ -7,19 +7,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func init() {
-	rscPath = "../../../../" + rscPath
-}
+const rscPath = "../../../../" + DefaultRscPath
 
 func TestRscXMLPaths(t *testing.T) {
-	oldRscPath := rscPath
-	rscPath = fixture.JoinTestData("TestRscXMLPaths")
-	defer func() {
-		rscPath = oldRscPath
-	}()
-
 	require := require.New(t)
-	paths, err := RscXMLPaths()
+	paths, err := RscXMLPaths(fixture.JoinTestData("TestRscXMLPaths"))
 
 	require.NoError(err)
 	require.Equal([]string{

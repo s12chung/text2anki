@@ -11,14 +11,11 @@ import (
 	"strings"
 )
 
-var rscPath string
-
-func init() {
-	rscPath = "seed/rsc/krdict"
-}
+// DefaultRscPath is the default path of the rsc XML files
+const DefaultRscPath = "seed/rsc/krdict"
 
 // RscXMLPaths returns the paths of all XML files in rscPath
-func RscXMLPaths() ([]string, error) {
+func RscXMLPaths(rscPath string) ([]string, error) {
 	paths := []string{}
 	files, err := os.ReadDir(rscPath)
 	if err != nil {

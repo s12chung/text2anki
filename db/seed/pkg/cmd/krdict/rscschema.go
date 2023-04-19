@@ -7,8 +7,8 @@ import (
 )
 
 // RscSchema returns the krdict resource XML schema
-func RscSchema() (*xml.SchemaNode, error) {
-	xmlPaths, err := RscXMLPaths()
+func RscSchema(rscPath string) (*xml.SchemaNode, error) {
+	xmlPaths, err := RscXMLPaths(rscPath)
 	if err != nil {
 		return nil, err
 	}

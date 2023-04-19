@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/mattn/go-sqlite3"
-
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/seed/pkg/cmd/krdict"
 )
@@ -64,11 +62,11 @@ func cmdSeed() error {
 		return err
 	}
 
-	return krdict.Seed()
+	return krdict.Seed(krdict.DefaultRscPath)
 }
 
 func cmdSchema() error {
-	node, err := krdict.RscSchema()
+	node, err := krdict.RscSchema(krdict.DefaultRscPath)
 	if err != nil {
 		return err
 	}

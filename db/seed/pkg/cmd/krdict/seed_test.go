@@ -11,10 +11,10 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestUnmarshallXML(t *testing.T) {
+func TestUnmarshallRscXML(t *testing.T) {
 	require := require.New(t)
 
-	lex, err := unmarshallXML(fixture.Read(t, "TestUnmarshallXML.xml"))
+	lex, err := unmarshallRscXML(fixture.Read(t, "TestUnmarshallXML.xml"))
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, "TestUnmarshallXML.json", fixture.JSON(t, lex))
 }
@@ -22,7 +22,7 @@ func TestUnmarshallXML(t *testing.T) {
 func TestTerm(t *testing.T) {
 	require := require.New(t)
 
-	lex, err := unmarshallXML(fixture.Read(t, "TestTerm.xml"))
+	lex, err := unmarshallRscXML(fixture.Read(t, "TestTerm.xml"))
 	require.NoError(err)
 
 	terms := []dictionary.Term{}
@@ -45,7 +45,7 @@ func TestFindGoodExample(t *testing.T) {
 func findGoodExample(t *testing.T) *lexicalEntry {
 	require := require.New(t)
 
-	lexes, err := unmarshallRscPath()
+	lexes, err := unmarshallRscPath(rscPath)
 	require.NoError(err)
 	for _, lex := range lexes {
 		for _, entry := range lex.LexicalEntries {
