@@ -2,6 +2,7 @@ package krdict
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -15,14 +16,15 @@ import (
 )
 
 // Seed seeds the database from the rscPath XML
-func Seed(rscPath string) error {
+func Seed(database *sql.DB, rscPath string) error {
 	lexes, err := unmarshallRscPath(rscPath)
 	if err != nil {
 		return err
 	}
 
 	ctx := context.Background()
-	queries := db.New(db.DB())
+	queries := db.New(database)
+
 	basePopularity := 1
 	for _, lex := range lexes {
 		for i, entry := range lex.LexicalEntries {

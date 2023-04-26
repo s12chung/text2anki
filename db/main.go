@@ -12,6 +12,8 @@ import (
 	"github.com/s12chung/text2anki/db/seed/pkg/cmd/krdict"
 )
 
+var seedDB = db.DefaultDB()
+
 func init() {
 	flag.Parse()
 }
@@ -51,7 +53,7 @@ var ddl string
 
 func cmdCreateDB() error {
 	ctx := context.Background()
-	if _, err := db.DB().ExecContext(ctx, ddl); err != nil {
+	if _, err := seedDB.ExecContext(ctx, ddl); err != nil {
 		return err
 	}
 	return nil
@@ -62,7 +64,7 @@ func cmdSeed() error {
 		return err
 	}
 
-	return krdict.Seed(krdict.DefaultRscPath)
+	return krdict.Seed(seedDB, krdict.DefaultRscPath)
 }
 
 func cmdSchema() error {
