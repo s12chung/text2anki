@@ -1,3 +1,4 @@
+//nolint:dupword
 package text
 
 import (

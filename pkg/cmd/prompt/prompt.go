@@ -57,6 +57,8 @@ func (c *createCards) start() ([]anki.Note, error) {
 			c.tokenizedTextIndex = (c.tokenizedTextIndex + 1) % len(c.tokenizedTexts)
 		case finishedTransition:
 			return c.notes, nil
+		case noneTransition:
+			return nil, err
 		}
 	}
 }

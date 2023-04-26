@@ -33,7 +33,7 @@ var version func() string
 var open func(rscDir, optStr string) int
 var analyze func(handle int, input, optStr string) *C.khaiii_word_t
 var freeResults func(handle int, results *C.khaiii_word_t)
-var close func(handle int)
+var kclose func(handle int)
 var lastError func(handle int) string
 
 var apiFunctions = map[string]any{
@@ -41,7 +41,7 @@ var apiFunctions = map[string]any{
 	"khaiii_open":         &open,
 	"khaiii_analyze":      &analyze,
 	"khaiii_free_results": &freeResults,
-	"khaiii_close":        &close,
+	"khaiii_close":        &kclose,
 	"khaiii_last_error":   &lastError,
 }
 
@@ -113,7 +113,7 @@ func (k *Khaiii) Close() error {
 	if k.openHandle <= 0 {
 		return fmt.Errorf("trying to Khaiii.Close() with handle: %v", k.openHandle)
 	}
-	close(k.openHandle)
+	kclose(k.openHandle)
 	k.openHandle = 0
 	return nil
 }

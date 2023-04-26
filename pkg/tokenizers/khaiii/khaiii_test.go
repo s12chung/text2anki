@@ -17,7 +17,7 @@ func TestGetTokens(t *testing.T) {
 	binPath = "../../../" + binPath
 	require := require.New(t)
 
-	tokenizer := new(testPort)
+	tokenizer := newKhaiii(testPort)
 	err := tokenizer.Setup()
 	defer func() {
 		require.NoError(tokenizer.CleanupAndWait())

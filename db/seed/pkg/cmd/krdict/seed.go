@@ -120,6 +120,7 @@ func (e *noTranslationsFoundError) Error() string {
 
 // IsNoTranslationsFoundError returns true if the error is a noTranslationsFoundError
 func IsNoTranslationsFoundError(err error) bool {
+	//nolint:errorlint // code does what it says
 	_, ok := err.(*noTranslationsFoundError)
 	return ok
 }

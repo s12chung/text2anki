@@ -10,6 +10,8 @@ type Dicionary interface {
 }
 
 // Term is a word or phrase
+//
+//nolint:musttag // Used for Temp UI only
 type Term struct {
 	Text         string
 	Variants     []string

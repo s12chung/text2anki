@@ -3,8 +3,9 @@ package krdict
 import (
 	"testing"
 
-	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 	"github.com/stretchr/testify/require"
+
+	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 const rscPath = "../../../../" + DefaultRscPath

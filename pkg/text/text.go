@@ -137,6 +137,7 @@ func (p *Parser) TextsFromString(s string) ([]Text, error) {
 		if line == "" {
 			continue
 		}
+		//nolint:nestif // complex case
 		if mode == noTranslation {
 			if line == "===" {
 				if nonEmptyIndex == 1 {

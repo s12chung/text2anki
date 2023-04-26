@@ -1,3 +1,4 @@
+// Package main is the start point for text2anki
 package main
 
 import (
@@ -82,6 +83,8 @@ func tokenizeFile(filename string) ([]text.TokenizedText, error) {
 	}
 	texts = cleanTexts(texts)
 
+	var a = 0
+	fmt.Println(a)
 	tokenizedTexts, err := text.TokenizeTexts(tokenizer, texts)
 	if err != nil {
 		return nil, err

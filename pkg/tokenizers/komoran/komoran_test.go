@@ -17,7 +17,7 @@ func TestGetTokens(t *testing.T) {
 	jarPath = "../../../" + jarPath
 	require := require.New(t)
 
-	tokenizer := new(testPort)
+	tokenizer := newKomoran(testPort)
 	err := tokenizer.Setup()
 	defer func() {
 		require.NoError(tokenizer.CleanupAndWait())

@@ -1,3 +1,4 @@
+// Package main is the start point for db
 package main
 
 import (

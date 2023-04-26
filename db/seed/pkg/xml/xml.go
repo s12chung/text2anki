@@ -9,9 +9,11 @@ import (
 	"sort"
 )
 
-// SchemaNode represents a tyoe node in the XML file in the schema
+// SchemaNode represents a type node in the XML file in the schema
+//
+// nolint:tagliatelle // this is prettier output for tests only
 type SchemaNode struct {
-	Many         bool
+	Many         bool                   `json:","`
 	Attrs        Attrs                  `json:",omitempty"`
 	NodeAttrs    Attrs                  `json:",omitempty"`
 	Children     map[string]*SchemaNode `json:",omitempty"`

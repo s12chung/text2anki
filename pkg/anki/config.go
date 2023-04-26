@@ -30,6 +30,7 @@ const filesDirName = "files"
 func DefaultConfig() (Config, error) {
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
+		//nolint:nilerr
 		return Config{}, nil
 	}
 	return Config{
