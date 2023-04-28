@@ -1,4 +1,7 @@
--- sqlc can't read this table, see matching table in schema_implied.sql
+-- sqlc can't read this table:
+--
+-- see matching table in: schema_implied.sql
+-- also update: custom.go
 CREATE VIRTUAL TABLE IF NOT EXISTS terms USING fts5 (
     text,
     variants,

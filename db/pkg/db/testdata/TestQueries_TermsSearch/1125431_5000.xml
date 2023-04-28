@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE LexicalResource SYSTEM "https://krdict.korean.go.kr/dtd/DTD_LMF_REV_16.dtd">
+<LexicalResource dtdVersion="16">
+    <GlobalInformation>
+        <feat att="label" val="한국어기초사전 - 국립국어원 제공"/>
+        <feat att="creationDate" val="2023/03/24 06:31:48"/>
+        <feat att="languageCoding" val="ISO 639-3"/>
+    </GlobalInformation>
+    <Lexicon>
+        <feat att="language" val="kor"/>
+        <LexicalEntry att="id" val="93416">
+            <feat att="homonym_number" val="0"/>
+            <feat att="lexicalUnit" val="단어"/>
+            <feat att="partOfSpeech" val="동사"/>
+            <Lemma>
+                <feat att="writtenForm" val="펄럭이다"/>
+            </Lemma>
+            <WordForm>
+                <feat att="type" val="발음"/>
+                <feat att="pronunciation" val="펄러기다"/>
+                <feat att="sound" val="https://dicmedia.korean.go.kr/multimedia/sound_file/pieup_2005/peolreogida.wav"/>
+            </WordForm>
+            <WordForm>
+                <feat att="type" val="활용"/>
+                <feat att="writtenForm" val="펄럭이는"/>
+                <feat att="pronunciation" val="펄러기는"/>
+            </WordForm>
+            <WordForm>
+                <feat att="type" val="활용"/>
+                <feat att="writtenForm" val="펄럭이어"/>
+                <feat att="pronunciation" val="펄러기어"/>
+                <feat att="pronunciation" val="펄러기여"/>
+                <FormRepresentation>
+                    <feat att="type" val="준말"/>
+                    <feat att="writtenForm" val="펄럭여"/>
+                    <feat att="pronunciation" val="펄러겨"/>
+                </FormRepresentation>
+            </WordForm>
+            <WordForm>
+                <feat att="type" val="활용"/>
+                <feat att="writtenForm" val="펄럭이니"/>
+                <feat att="pronunciation" val="펄러기니"/>
+            </WordForm>
+            <WordForm>
+                <feat att="type" val="활용"/>
+                <feat att="writtenForm" val="펄럭입니다"/>
+                <feat att="pronunciation" val="펄러김니다"/>
+            </WordForm>
+            <RelatedForm>
+                <feat att="type" val="가봐라"/>
+                <feat att="id" val="81932"/>
+                <feat att="writtenForm" val="펄럭"/>
+            </RelatedForm>
+            <feat att="vocabularyLevel" val="고급"/>
+            <Sense att="id" val="1">
+                <SenseRelation>
+                    <feat att="type" val="유의어"/>
+                    <feat att="id" val="83229"/>
+                    <feat att="lemma" val="펄럭거리다"/>
+                    <feat att="homonymNumber" val="0"/>
+                </SenseRelation>
+                <SenseRelation>
+                    <feat att="type" val="유의어"/>
+                    <feat att="id" val="90820"/>
+                    <feat att="lemma" val="펄럭대다"/>
+                    <feat att="homonymNumber" val="0"/>
+                </SenseRelation>
+                <SenseRelation>
+                    <feat att="type" val="유의어"/>
+                    <feat att="id" val="90821"/>
+                    <feat att="lemma" val="펄럭펄럭하다"/>
+                    <feat att="homonymNumber" val="0"/>
+                </SenseRelation>
+                <Multimedia>
+                    <feat att="type" val="동영상"/>
+                    <feat att="label" val="펄럭이다"/>
+                    <feat att="url"
+                          val="http://dicmedia.korean.go.kr:8899/multimedia/multimedia_files/convert/20200214/658877/MOV000356656_700X466.mp4"/>
+                </Multimedia>
+                <feat att="syntacticPattern" val=" 1이 (2를) 펄럭이다"/>
+                <feat att="definition" val="넓고 큰 천 등이 바람에 빠르고 힘차게 잇따라 흔들리다. 또는 그렇게 되게 하다."/>
+                <SenseExample>
+                    <feat att="type" val="구"/>
+                    <feat att="example" val="깃발이 펄럭이다."/>
+                </SenseExample>
+                <SenseExample>
+                    <feat att="type" val="구"/>
+                    <feat att="example" val="옷자락이 펄럭이다."/>
+                </SenseExample>
+                <SenseExample>
+                    <feat att="type" val="구"/>
+                    <feat att="example" val="책장을 펄럭이다."/>
+                </SenseExample>
+                <SenseExample>
+                    <feat att="type" val="구"/>
+                    <feat att="example" val="치맛자락을 펄럭이다."/>
+                </SenseExample>
+                <SenseExample>
+                    <feat att="type" val="구"/>
+                    <feat att="example" val="바람에 펄럭이다."/>
+                </SenseExample>
+                <SenseExample>
+                    <feat att="type" val="구"/>
+                    <feat att="example" val="힘차게 펄럭이다."/>
+                </SenseExample>
+                <SenseExample>
+                    <feat att="type" val="문장"/>
+                    <feat att="example" val="승규가 더운지 입고 있는 옷을 펄럭였다."/>
+                </SenseExample>
+                <SenseExample>
+                    <feat att="type" val="문장"/>
+                    <feat att="example" val="빨랫줄에 널어 놓은 옷이 바람에 펄럭인다."/>
+                </SenseExample>
+                <SenseExample>
+                    <feat att="type" val="대화"/>
+                    <feat att="example" val="학교에서 무슨 행사를 하나 봐요."/>
+                    <feat att="example" val="네, 운동장에 만국기가 힘차게 펄럭이던데요."/>
+                </SenseExample>
+                <Equivalent>
+                    <feat att="language" val="영어"/>
+                    <feat att="lemma" val="keep waving; keep flapping; keep fluttering"/>
+                    <feat att="definition"
+                          val="For a wide and big cloth, etc., to keep swaying fast and strongly in the wind, or to make this happen."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="일본어"/>
+                    <feat att="lemma" val="はためく。はたはたとひるがえる【はたはたと翻る】 	　"/>
+                    <feat att="definition" val="広くて大きい布などがしきりに風に吹かれて勢いよく翻る。また、そうさせる。"/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="프랑스어"/>
+                    <feat att="lemma" val="flotter, claquer"/>
+                    <feat att="definition"
+                          val="(Grand tissu ou autre) Bouger continuellement avec force et rapidité à cause du vent ; faire bouger ainsi."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="스페인어"/>
+                    <feat att="lemma" val="ondear, agitar(se), flamear"/>
+                    <feat att="definition"
+                          val="Mover rápida y fuertemente, y formando ondas, una pieza amplia de tela, etc. O hacer que revolotee."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="아랍어"/>
+                    <feat att="lemma" val="يرفرف"/>
+                    <feat att="definition"
+                          val="تتطاير قطعة من القماش الكبير والعريض أو ما شابه ذلك وتهتز بسرعة بفعل الرياح"/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="몽골어"/>
+                    <feat att="lemma" val="намируулах, дэвэх, далбагнуулах"/>
+                    <feat att="definition"
+                          val="том өргөн даавуу зэрэг зүйл салхинд хурдан хурдан байнга хөдлөх, мөн тэгэх үйл."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="베트남어"/>
+                    <feat att="lemma" val="phần phật"/>
+                    <feat att="definition"
+                          val="Vải rộng và to lay động nhanh và mạnh liên tục trước gió. Hoặc bị làm cho như vậy."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="타이어"/>
+                    <feat att="lemma" val="โบกสะบัด, สะบัดพริ้ว"/>
+                    <feat att="definition"
+                          val="ผ้าผืนกว้างและใหญ่ เป็นต้น แกว่งไกวอย่างรุนแรงและรวดเร็ว หรือทำให้มีลักษณะดังกล่าว"/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="인도네시아어"/>
+                    <feat att="lemma" val="berkibar"/>
+                    <feat att="definition"
+                          val="bergerak-gerak mengombak karena ditiup angin tentang bendera, kain lebar, dan sebagainya"/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="러시아어"/>
+                    <feat att="lemma" val="развеваться на ветру, колыхаться"/>
+                    <feat att="definition"
+                          val="Колыхаться от сильного быстрого ветра (о широком куске ткани). Или развевать кусок ткани на ветру."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="중국어"/>
+                    <feat att="lemma" val="飘扬，飘舞"/>
+                    <feat att="definition" val="宽大的布等再风中快速有力地接连摇晃；或使之那样。"/>
+                </Equivalent>
+            </Sense>
+        </LexicalEntry>
+    </Lexicon>
+</LexicalResource>
