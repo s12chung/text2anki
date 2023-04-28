@@ -3,7 +3,7 @@ package krdict
 import (
 	"os"
 
-	"github.com/s12chung/text2anki/db/seed/pkg/xml"
+	"github.com/s12chung/text2anki/db/pkg/xml"
 )
 
 // RscSchema returns the krdict resource XML schema

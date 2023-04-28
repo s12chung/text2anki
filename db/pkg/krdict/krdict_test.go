@@ -8,7 +8,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-const rscPath = "../../../../" + DefaultRscPath
+const rscPath = "../../" + DefaultRscPath
 
 func TestRscXMLPaths(t *testing.T) {
 	require := require.New(t)

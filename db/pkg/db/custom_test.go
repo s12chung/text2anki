@@ -8,7 +8,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
-	"github.com/s12chung/text2anki/db/seed/pkg/cmd/krdict"
+	"github.com/s12chung/text2anki/db/pkg/krdict"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
