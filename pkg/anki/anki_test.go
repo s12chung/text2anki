@@ -124,7 +124,7 @@ func TestExportCSV(t *testing.T) {
 func dictionaryNotes(t *testing.T) []byte {
 	require := require.New(t)
 
-	sourcePath := path.Join("..", "dictionary", "koreanbasic", fixture.TestDataDir, "search_expected.json")
+	sourcePath := path.Join("..", "dictionary", "koreanbasic", fixture.TestDataDir, "TestKoreanBasic_Search", "expected.json")
 	sourceBytes, err := os.ReadFile(sourcePath) //nolint:gosec // for tests
 	require.NoError(err)
 

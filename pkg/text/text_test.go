@@ -15,7 +15,8 @@ func TestLanguagesMatch(t *testing.T) {
 	require.Equal(int(Unknown), int(lingua.Unknown))
 }
 
-func TestTextsFromString(t *testing.T) {
+func TestParser_TextsFromString(t *testing.T) {
+	testNamePath := "TestParser_TextsFromString/"
 	tcs := []struct {
 		name string
 		err  error
@@ -36,7 +37,7 @@ func TestTextsFromString(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			s := string(fixture.Read(t, tc.name+".txt"))
+			s := string(fixture.Read(t, testNamePath+tc.name+".txt"))
 			texts, err := parser.TextsFromString(s)
 			if tc.err != nil {
 				require.Equal(tc.err, err)
@@ -44,7 +45,7 @@ func TestTextsFromString(t *testing.T) {
 			}
 			require.Nil(err)
 
-			fixture.CompareReadOrUpdate(t, tc.name+".json", fixture.JSON(t, texts))
+			fixture.CompareReadOrUpdate(t, testNamePath+tc.name+".json", fixture.JSON(t, texts))
 		})
 	}
 }

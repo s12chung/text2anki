@@ -55,7 +55,7 @@ func TestUnmarshallRscXML(t *testing.T) {
 	fixture.CompareReadOrUpdate(t, "TestUnmarshallXML.json", fixture.JSON(t, lex))
 }
 
-func TestTerm(t *testing.T) {
+func TestLexicalEntry_term(t *testing.T) {
 	require := require.New(t)
 
 	lex, err := unmarshallRscXML(fixture.Read(t, "TestTerm.xml"))

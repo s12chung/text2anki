@@ -20,7 +20,7 @@ func newKhaiii(t *testing.T) *Khaiii {
 	return k
 }
 
-func TestAnalyze(t *testing.T) {
+func TestKhaiii_Analyze(t *testing.T) {
 	test.CISkip(t, ciSkipMsg)
 
 	require := require.New(t)
@@ -36,10 +36,10 @@ func TestAnalyze(t *testing.T) {
 	words, err = k.Analyze("안녕! 반가워!")
 	require.NoError(err)
 
-	fixture.CompareReadOrUpdate(t, "TestAnalyze.json", fixture.JSON(t, words))
+	fixture.CompareReadOrUpdate(t, "TestKhaiii_Analyze.json", fixture.JSON(t, words))
 }
 
-func TestVersion(t *testing.T) {
+func TestKhaiii_Version(t *testing.T) {
 	test.CISkip(t, ciSkipMsg)
 
 	require := require.New(t)
@@ -48,12 +48,12 @@ func TestVersion(t *testing.T) {
 	require.Equal("0.5", k.Version())
 }
 
-func TestRsc(t *testing.T) {
+func TestRscSHA(t *testing.T) {
 	test.CISkip(t, ciSkipMsg)
 
 	require := require.New(t)
 	hashMap, err := fixture.SHA2Map(rscPath)
 	require.NoError(err)
 
-	fixture.CompareReadOrUpdate(t, "TestRsc.json", fixture.JSON(t, hashMap))
+	fixture.CompareReadOrUpdate(t, "TestRscSHA.json", fixture.JSON(t, hashMap))
 }

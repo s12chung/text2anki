@@ -11,7 +11,7 @@ import (
 
 const testPort = 9001
 
-func TestGetTokens(t *testing.T) {
+func TestKhaiii_Tokenize(t *testing.T) {
 	test.CISkip(t, "can't run C environment in CI")
 
 	binPath = "../../../" + binPath
@@ -26,5 +26,5 @@ func TestGetTokens(t *testing.T) {
 	tokens, err := tokenizer.Tokenize("대한민국은 민주공화국이다.")
 	require.NoError(err)
 
-	fixture.CompareReadOrUpdate(t, "get_tokens.json", fixture.JSON(t, tokens))
+	fixture.CompareReadOrUpdate(t, "TestKhaiii_Tokenize.json", fixture.JSON(t, tokens))
 }

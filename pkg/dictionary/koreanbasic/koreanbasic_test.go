@@ -13,9 +13,10 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/vcr"
 )
 
-func TestSearch(t *testing.T) {
+func TestKoreanBasic_Search(t *testing.T) {
+	testName := "TestKoreanBasic_Search"
 	dict := New(GetAPIKeyFromEnv())
-	clean := vcr.SetupVCR(t, fixture.JoinTestData("TestSearch"), dict, func(r *recorder.Recorder) {
+	clean := vcr.SetupVCR(t, fixture.JoinTestData(testName), dict, func(r *recorder.Recorder) {
 		r.AddHook(func(i *cassette.Interaction) error {
 			i.Request.URL = cleanURL(i.Request.URL)
 			return nil
@@ -30,8 +31,8 @@ func TestSearch(t *testing.T) {
 		searchTerm string
 		expected   string
 	}{
-		{searchTerm: "가다", expected: "search_expected.json"},
-		{searchTerm: "안녕하세요", expected: "search_empty_expected.json"},
+		{searchTerm: "가다", expected: testName + "/expected.json"},
+		{searchTerm: "안녕하세요", expected: testName + "/empty_expected.json"},
 	}
 
 	for _, tc := range tcs {

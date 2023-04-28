@@ -11,7 +11,7 @@ import (
 
 const testPort = 9002
 
-func TestGetTokens(t *testing.T) {
+func TestKomoran_Tokenize(t *testing.T) {
 	test.CISkip(t, "can't run java environment in CI")
 
 	jarPath = "../../../" + jarPath
@@ -26,5 +26,5 @@ func TestGetTokens(t *testing.T) {
 	tokens, err := tokenizer.Tokenize("대한민국은 민주공화국이다.")
 	require.NoError(err)
 
-	fixture.CompareReadOrUpdate(t, "get_tokens.json", fixture.JSON(t, tokens))
+	fixture.CompareReadOrUpdate(t, "TestKomoran_Tokenize.json", fixture.JSON(t, tokens))
 }

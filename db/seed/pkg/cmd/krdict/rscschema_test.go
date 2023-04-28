@@ -9,7 +9,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestSchema(t *testing.T) {
+func TestRscSchema(t *testing.T) {
 	test.CISkip(t, "rsc files not in CI")
 
 	require := require.New(t)
