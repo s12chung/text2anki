@@ -2,7 +2,6 @@ package krdict
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -16,28 +15,46 @@ import (
 )
 
 // Seed seeds the database from the rscPath XML
-func Seed(database *sql.DB, rscPath string) error {
+func Seed(ctx context.Context, rscPath string) error {
 	lexes, err := unmarshallRscPath(rscPath)
 	if err != nil {
 		return err
 	}
 
-	ctx := context.Background()
-	queries := db.New(database)
-
 	basePopularity := 1
 	for _, lex := range lexes {
-		for i, entry := range lex.LexicalEntries {
-			createParams, err := entry.createParams(basePopularity + i)
-			if err != nil {
-				if IsNoTranslationsFoundError(err) {
-					continue
-				}
-				return err
+		if err := seedLex(ctx, lex, basePopularity); err != nil {
+			return err
+		}
+		basePopularity += len(lex.LexicalEntries)
+	}
+	return nil
+}
+
+// SeedFile seeds a rscPath XML file to the database
+func SeedFile(ctx context.Context, file []byte) error {
+	lex, err := unmarshallRscXML(file)
+	if err != nil {
+		return err
+	}
+	return seedLex(ctx, lex, 1)
+}
+
+func seedLex(ctx context.Context, lex *lexicalResource, basePopularity int) error {
+	// default to 1
+	if basePopularity == 0 {
+		basePopularity = 1
+	}
+	for i, entry := range lex.LexicalEntries {
+		createParams, err := entry.createParams(basePopularity + i)
+		if err != nil {
+			if IsNoTranslationsFoundError(err) {
+				continue
 			}
-			if _, err = queries.TermCreate(ctx, createParams); err != nil {
-				return err
-			}
+			return err
+		}
+		if _, err = db.New(db.DB()).TermCreate(ctx, createParams); err != nil {
+			return err
 		}
 	}
 	return nil

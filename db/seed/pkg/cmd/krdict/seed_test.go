@@ -1,15 +1,51 @@
 package krdict
 
 import (
-	"fmt"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
+
+func TestSeed(t *testing.T) {
+	testName := "TestSeed"
+	ctx := context.Background()
+	testSeed(ctx, t, testName, func() error {
+		return Seed(ctx, fixture.JoinTestData(testName))
+	})
+}
+
+func TestSeedFile(t *testing.T) {
+	testName := "TestSeedFile"
+	ctx := context.Background()
+	testSeed(ctx, t, testName, func() error {
+		return SeedFile(ctx, fixture.Read(t, "TestSeedFile.xml"))
+	})
+}
+
+func testSeed(ctx context.Context, t *testing.T, testName string, f func() error) {
+	require := require.New(t)
+	testdb.SetupTempDBT(ctx, t, testName)
+
+	err := f()
+	require.NoError(err)
+
+	queries := db.New(db.DB())
+
+	count, err := queries.TermsCount(ctx)
+	require.NoError(err)
+	require.Equal(int64(3), count)
+
+	terms, err := queries.TermsPopular(ctx)
+	require.NoError(err)
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))
+}
 
 func TestUnmarshallRscXML(t *testing.T) {
 	require := require.New(t)
@@ -38,7 +74,7 @@ func TestFindGoodExample(t *testing.T) {
 	test.CISkip(t, "rsc files not in CI")
 
 	entry := findGoodExample(t)
-	fmt.Println(string(fixture.JSON(t, entry)))
+	// fmt.Println(string(fixture.JSON(t, entry)))
 	fixture.CompareReadOrUpdate(t, "TestFindGoodExample.json", fixture.JSON(t, entry))
 }
 

@@ -2,23 +2,38 @@
 package db
 
 import (
+	"context"
 	"database/sql"
+	_ "embed"
 
 	_ "github.com/mattn/go-sqlite3" // sql.Open needs it from init()
 )
 
-var defaultDB *sql.DB
+var database *sql.DB
 
-func init() {
+// SetDB sets the database returned from the DB() function
+func SetDB(dataSourceName string) error {
 	var err error
 	// related to require above
-	defaultDB, err = sql.Open("sqlite3", "data.sqlite3")
+	database, err = sql.Open("sqlite3", dataSourceName)
 	if err != nil {
-		panic("database/sql.Open error: " + err.Error())
+		return err
 	}
+	return nil
 }
 
-// DefaultDB returns the default database
-func DefaultDB() *sql.DB {
-	return defaultDB
+// DB returns the database set by SetDB()
+func DB() *sql.DB {
+	return database
+}
+
+//go:embed schema.sql
+var schema string
+
+// Create creates the tables from schema.sql
+func Create(ctx context.Context) error {
+	if _, err := DB().ExecContext(ctx, schema); err != nil {
+		return err
+	}
+	return nil
 }

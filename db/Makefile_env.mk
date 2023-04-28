@@ -1,0 +1,1 @@
+TAGS ?= fts5 sqlite_math_functions

@@ -11,10 +11,9 @@ import (
 
 const termCreate = `-- name: TermCreate :one
 INSERT INTO terms (
-  text, variants, part_of_speech, common_level, translations, popularity
-) VALUES (
-  ?, ?, ?, ?, ?, ?
+    text, variants, part_of_speech, common_level, translations, popularity
 )
+VALUES (?, ?, ?, ?, ?, ?)
 RETURNING text, variants, part_of_speech, common_level, translations, popularity
 `
 
@@ -48,12 +47,23 @@ func (q *Queries) TermCreate(ctx context.Context, arg TermCreateParams) (Term, e
 	return i, err
 }
 
-const termsSearch = `-- name: TermsSearch :many
-SELECT text, variants, part_of_speech, common_level, translations, popularity FROM terms WHERE text MATCH ?
+const termsCount = `-- name: TermsCount :one
+SELECT COUNT(*) FROM terms
 `
 
-func (q *Queries) TermsSearch(ctx context.Context, text string) ([]Term, error) {
-	rows, err := q.db.QueryContext(ctx, termsSearch, text)
+func (q *Queries) TermsCount(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, termsCount)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const termsPopular = `-- name: TermsPopular :many
+SELECT text, variants, part_of_speech, common_level, translations, popularity FROM terms ORDER BY popularity LIMIT 100
+`
+
+func (q *Queries) TermsPopular(ctx context.Context) ([]Term, error) {
+	rows, err := q.db.QueryContext(ctx, termsPopular)
 	if err != nil {
 		return nil, err
 	}

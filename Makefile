@@ -2,6 +2,7 @@ export KHAIII_BIN_PATH ?= integrations/tokenizers/dist/khaiii
 export KOMORAN_JAR_PATH ?= integrations/tokenizers/dist/komoran
 export TOKENIZER ?= khaiii
 BIN ?= dist/text2anki
+include db/Makefile_env.mk
 
 setup:
 	cd integrations/tokenizers; make build
@@ -13,7 +14,7 @@ goimports:
 	goimports -w .
 
 build:
-	go build -v -o $(BIN) .
+	go build -tags "$(TAGS)" -v -o $(BIN) .
 
 INPUT_FILE ?= tmp/in.txt
 DEFAULT_INPUT_FILE := "이것은 샘플 파일입니다. $(INPUT_FILE)에 자신의 텍스트를 입력합니다.\n\nThis is a sample file. Put your own text at: $(INPUT_FILE)."
@@ -35,10 +36,10 @@ syncfiltered:
 
 TEST ?= ./...
 test:
-	go test $(TEST)
+	go test -tags "$(TAGS)" $(TEST)
 
 ci.test:
-	go test -v $(TEST)
+	go test -tags "$(TAGS)" -v $(TEST)
 
 test.fixtures:
 	UPDATE_FIXTURES=true make test

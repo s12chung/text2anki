@@ -13,8 +13,6 @@ import (
 	"github.com/s12chung/text2anki/db/seed/pkg/cmd/krdict"
 )
 
-var seedDB = db.DefaultDB()
-
 func init() {
 	flag.Parse()
 }
@@ -39,7 +37,7 @@ func main() {
 func run(cmd string) error {
 	switch cmd {
 	case "create":
-		return cmdCreateDB()
+		return cmdCreate()
 	case "seed":
 		return cmdSeed()
 	case "schema":
@@ -49,23 +47,19 @@ func run(cmd string) error {
 	}
 }
 
-//go:embed schema.sql
-var ddl string
-
-func cmdCreateDB() error {
-	ctx := context.Background()
-	if _, err := seedDB.ExecContext(ctx, ddl); err != nil {
+func cmdCreate() error {
+	if err := db.SetDB("data.sqlite3"); err != nil {
 		return err
 	}
-	return nil
+	return db.Create(context.Background())
 }
 
 func cmdSeed() error {
-	if err := cmdCreateDB(); err != nil {
+	if err := cmdCreate(); err != nil {
 		return err
 	}
 
-	return krdict.Seed(seedDB, krdict.DefaultRscPath)
+	return krdict.Seed(context.Background(), krdict.DefaultRscPath)
 }
 
 func cmdSchema() error {
