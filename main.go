@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
 
 	"github.com/s12chung/text2anki/pkg/anki"
@@ -83,8 +84,6 @@ func tokenizeFile(filename string) ([]text.TokenizedText, error) {
 	}
 	texts = cleanTexts(texts)
 
-	var a = 0
-	fmt.Println(a)
 	tokenizedTexts, err := text.TokenizeTexts(tokenizer, texts)
 	if err != nil {
 		return nil, err
@@ -133,10 +132,12 @@ func createAudio(notes []anki.Note) error {
 		note := &notes[i]
 		speech, err := synth.TextToSpeech(note.Usage)
 		if err != nil {
-			fmt.Printf("error creating audio for note (%v): %v\n", note.Text, err)
+			slog.Error("error creating audio for note",
+				slog.String("text", note.Text), slog.String("err", err.Error()))
 		}
 		if err = note.SetSound(speech, synth.SourceName()); err != nil {
-			fmt.Printf("error setting audio for note (%v): %v\n", note.Text, err)
+			slog.Error("error creating audio for note",
+				slog.String("text", note.Text), slog.String("err", err.Error()))
 		}
 	}
 	return nil

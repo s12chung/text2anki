@@ -14,6 +14,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/exp/slog"
 )
 
 // TokenizerServer provides an interface to call tokenizer servers
@@ -97,7 +99,7 @@ func (s *CmdTokenizerServer) Start() error {
 
 	go func() {
 		if err := s.cmd.Wait(); err != nil {
-			fmt.Printf("Error after waiting for command: %v\n", err)
+			slog.Warn(fmt.Sprintf("Error after waiting for CmdTokenizerServer: %v", err))
 		}
 		s.isRunning = false
 	}()
@@ -140,11 +142,11 @@ func (s *CmdTokenizerServer) Stop() error {
 		for {
 			select {
 			case <-stopped:
-				fmt.Println("CmdServer stopped")
+				slog.Info("CmdServer stopped")
 				return
 			default:
-				fmt.Printf("CmdServer server is still running after %v\n",
-					time.Duration(i)*s.stopWarningDuration+initialSleep)
+				slog.Warn(fmt.Sprintf("CmdServer server is still running after %v",
+					time.Duration(i)*s.stopWarningDuration+initialSleep))
 			}
 			i++
 			time.Sleep(s.stopWarningDuration)
@@ -156,9 +158,9 @@ func (s *CmdTokenizerServer) Stop() error {
 		if !s.IsRunning() {
 			return
 		}
-		fmt.Printf("Komoran Server still running after %v, ForceStop()\n", forceStopDuration)
+		slog.Warn(fmt.Sprintf("Komoran Server still running after %v, calling ForceStop()", forceStopDuration))
 		if err2 := s.ForceStop(); err != nil {
-			fmt.Println(err2)
+			slog.Warn(fmt.Sprintf("error calling ForceStop(): %v", err2))
 		}
 	}()
 	return err
