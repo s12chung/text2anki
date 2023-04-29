@@ -1,8 +1,8 @@
--- name: TermsSearch :many
-SELECT *, rank, (
-        1 / LOG(100, CAST(popularity AS REAL) + 99) * 50 + -- 1/log(100, popularity + 99 <base # - 1>)
-        rank / -12 * 30 +
-        1 / LOG(2, ABS(LENGTH(TRIM(text, '-')) - ?) + ? + 1) * 20 -- 1/log(2, len_diff + 1 <so don't log zero> + 1 <base # - 1>)
+-- name: TermsSearchRaw :many
+WITH const AS (SELECT ? AS query)
+SELECT terms.*, (
+                1 / LOG(100, CAST(popularity AS REAL) + 99) * 40 + -- 1/log(100, popularity + 99 <base # - 1>)
+                1 / LOG(3, ABS(LENGTH(TRIM(text, '-')) - LENGTH(const.query)) + 3) * 60 -- 1/log(log_base, len_diff + log_base)
     ) AS calc_rank
-FROM terms WHERE terms MATCH ? AND rank MATCH 'bm25(1.0, 0.5)'
+FROM terms, const WHERE text LIKE '%' || const.query || '%' OR variants LIKE '%' || const.query || '%'
 ORDER BY calc_rank DESC;

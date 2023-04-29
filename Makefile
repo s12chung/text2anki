@@ -1,6 +1,7 @@
 export KHAIII_BIN_PATH ?= integrations/tokenizers/dist/khaiii
 export KOMORAN_JAR_PATH ?= integrations/tokenizers/dist/komoran
 export TOKENIZER ?= khaiii
+export DICTIONARY ?= krdict
 BIN ?= dist/text2anki
 include Makefile_env.mk
 

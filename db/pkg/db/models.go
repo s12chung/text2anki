@@ -10,7 +10,7 @@ type Term struct {
 	Text         string
 	Variants     string
 	PartOfSpeech string
-	CommonLevel  string
+	CommonLevel  int64
 	Translations string
-	Popularity   string
+	Popularity   int64
 }

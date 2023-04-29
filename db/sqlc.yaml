@@ -3,7 +3,6 @@ sql:
   - engine: "sqlite"
     schema:
       - "schema.sql"
-      - "schema_implied.sql"
     queries: "query.sql"
     gen:
       go:

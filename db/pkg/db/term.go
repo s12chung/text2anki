@@ -5,8 +5,6 @@ import (
 	"database/sql"
 	_ "embed"
 	"encoding/json"
-	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
@@ -26,9 +24,9 @@ func ToDBTerm(term dictionary.Term, popularity int) (Term, error) {
 		Text:         term.Text,
 		Variants:     variants,
 		PartOfSpeech: string(term.PartOfSpeech),
-		CommonLevel:  strconv.Itoa(int(term.CommonLevel)),
+		CommonLevel:  int64(term.CommonLevel),
 		Translations: string(translations),
-		Popularity:   strconv.Itoa(popularity),
+		Popularity:   int64(popularity),
 	}, nil
 }
 
@@ -40,16 +38,12 @@ func (t *Term) DictionaryTerm() (dictionary.Term, error) {
 	if err := json.Unmarshal([]byte(t.Translations), &translations); err != nil {
 		return dictionary.Term{}, err
 	}
-	commonLevel, err := strconv.Atoi(t.CommonLevel)
-	if err != nil {
-		return dictionary.Term{}, err
-	}
 
 	return dictionary.Term{
 		Text:             t.Text,
 		Variants:         variants,
 		PartOfSpeech:     lang.PartOfSpeech(t.PartOfSpeech),
-		CommonLevel:      lang.CommonLevel(commonLevel),
+		CommonLevel:      lang.CommonLevel(t.CommonLevel),
 		Translations:     translations,
 		DictionarySource: "Korean Basic Dictionary (23-03)",
 	}, nil
@@ -73,16 +67,12 @@ var termsSearch string
 // TermsSearchRow is the row returned by TermsSearch
 type TermsSearchRow struct {
 	Term
-	Rank     sql.NullFloat64
 	CalcRank sql.NullFloat64
 }
 
-// TermsSearch searches within Terms for txt using fts5
+// TermsSearch searches within Terms for text
 func (q *Queries) TermsSearch(ctx context.Context, text string) ([]TermsSearchRow, error) {
-	textLength := len(text)
-	search := fmt.Sprintf("%v OR %v*", text, text)
-
-	rows, err := q.db.QueryContext(ctx, termsSearch, textLength, textLength, search)
+	rows, err := q.db.QueryContext(ctx, termsSearch, text)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +88,6 @@ func (q *Queries) TermsSearch(ctx context.Context, text string) ([]TermsSearchRo
 			&i.CommonLevel,
 			&i.Translations,
 			&i.Popularity,
-			&i.Rank,
 			&i.CalcRank,
 		); err != nil {
 			return nil, err

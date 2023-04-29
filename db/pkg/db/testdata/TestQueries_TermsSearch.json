@@ -3,15 +3,11 @@
     "Text": "마음 같아서는",
     "Variants": "",
     "PartOfSpeech": "Unknown",
-    "CommonLevel": "0",
+    "CommonLevel": 0,
     "Translations": "[{\"Text\":\"if it's like my mind\",\"Explanation\":\"If one follows as one thinks.\"}]",
-    "Popularity": "2",
-    "Rank": {
-      "Float64": -0.47219267743074783,
-      "Valid": true
-    },
+    "Popularity": 2,
     "CalcRank": {
-      "Float64": 57.73934694079134,
+      "Float64": 71.61300887886138,
       "Valid": true
     }
   },
@@ -19,15 +15,11 @@
     "Text": "마음에 걸리다",
     "Variants": "",
     "PartOfSpeech": "Unknown",
-    "CommonLevel": "0",
+    "CommonLevel": 0,
     "Translations": "[{\"Text\":\"be caught in one's mind\",\"Explanation\":\"To feel uncomfortable out of worry.\"}]",
-    "Popularity": "3",
-    "Rank": {
-      "Float64": -9.243697478991598e-7,
-      "Valid": true
-    },
+    "Popularity": 3,
     "CalcRank": {
-      "Float64": 56.45258526190627,
+      "Float64": 71.52798304187532,
       "Valid": true
     }
   }
