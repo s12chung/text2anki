@@ -1,28 +1,31 @@
-package db_test
+package db
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"path"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/db/pkg/db/testdb"
-	"github.com/s12chung/text2anki/db/pkg/krdict"
-	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestQueries_TermsSearch(t *testing.T) {
+func dBPath(testName string) string {
+	filename := fmt.Sprintf("text2anki-%v-%v.sqlite3", testName, time.Now().Unix())
+	return path.Join(os.TempDir(), filename)
+}
+
+func TestSetDB(t *testing.T) {
 	require := require.New(t)
-	ctx := context.Background()
-	testName := "TestQueries_TermsSearch"
-	testdb.SetupTempDBT(ctx, t, testName)
-
-	err := krdict.Seed(context.Background(), fixture.JoinTestData(testName))
+	err := SetDB(dBPath("TestSetDB"))
 	require.NoError(err)
+}
 
-	queries := db.New(db.DB())
-	results, err := queries.TermsSearch(ctx, "마음")
+func TestCreate(t *testing.T) {
+	require := require.New(t)
+	err := SetDB(dBPath("TestCreate"))
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, "TestQueries_TermsSearch.json", fixture.JSON(t, results))
+	err = Create(context.Background())
+	require.NoError(err)
 }

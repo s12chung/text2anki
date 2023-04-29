@@ -156,7 +156,7 @@ func (i *item) term() (dictionary.Term, error) {
 	term := dictionary.Term{
 		Text: strings.TrimSpace(i.Word),
 		// Not supported by API, try for karaoke, "가라오케", variants: "가라오께, 가라오게, 까라오께, 카라오케, 카라오께"
-		Variants:         nil,
+		Variants:         []string{},
 		CommonLevel:      wordGradeToCommonLevel[i.WordGrade],
 		PartOfSpeech:     partOfSpeechMap[i.PartOfSpeech],
 		DictionarySource: DictionarySource,

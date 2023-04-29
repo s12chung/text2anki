@@ -2,6 +2,7 @@ package krdict
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,23 +16,22 @@ import (
 
 func TestSeed(t *testing.T) {
 	testName := "TestSeed"
-	ctx := context.Background()
-	testSeed(ctx, t, testName, func() error {
-		return Seed(ctx, fixture.JoinTestData(testName))
+	testSeed(t, testName, func() error {
+		return Seed(context.Background(), fixture.JoinTestData(testName))
 	})
 }
 
 func TestSeedFile(t *testing.T) {
 	testName := "TestSeedFile"
-	ctx := context.Background()
-	testSeed(ctx, t, testName, func() error {
-		return SeedFile(ctx, fixture.Read(t, "TestSeedFile.xml"))
+	testSeed(t, testName, func() error {
+		return SeedFile(context.Background(), fixture.Read(t, "TestSeedFile.xml"))
 	})
 }
 
-func testSeed(ctx context.Context, t *testing.T, testName string, f func() error) {
+func testSeed(t *testing.T, testName string, f func() error) {
 	require := require.New(t)
-	testdb.SetupTempDBT(ctx, t, testName)
+	ctx := context.Background()
+	testdb.SetupTempDBT(t, testName)
 
 	err := f()
 	require.NoError(err)
@@ -47,27 +47,60 @@ func testSeed(ctx context.Context, t *testing.T, testName string, f func() error
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))
 }
 
-func TestUnmarshallRscXML(t *testing.T) {
+func TestUnmarshallRscPath(t *testing.T) {
 	require := require.New(t)
+	testName := "TestUnmarshallRscPath"
 
-	lex, err := unmarshallRscXML(fixture.Read(t, "TestUnmarshallXML.xml"))
+	lexes, err := UnmarshallRscPath(fixture.JoinTestData(testName))
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, "TestUnmarshallXML.json", fixture.JSON(t, lex))
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, lexes))
 }
 
-func TestLexicalEntry_term(t *testing.T) {
+func TestUnmarshallRscXML(t *testing.T) {
 	require := require.New(t)
+	testName := "TestUnmarshallRscXML"
 
-	lex, err := unmarshallRscXML(fixture.Read(t, "TestTerm.xml"))
+	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
+	require.NoError(err)
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, lex))
+}
+
+func TestIsNoTranslationsFoundError(t *testing.T) {
+	require := require.New(t)
+	require.True(IsNoTranslationsFoundError(&NoTranslationsFoundError{}))
+	require.False(IsNoTranslationsFoundError(fmt.Errorf("test error")))
+}
+
+func TestLexicalEntry_CreateParams(t *testing.T) {
+	require := require.New(t)
+	testName := "TestLexicalEntry_CreateParams"
+
+	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
+	require.NoError(err)
+
+	createParamsArray := []db.TermCreateParams{}
+	for i, entry := range lex.LexicalEntries {
+		createParams, err := entry.CreateParams(i + 1)
+		require.NoError(err)
+		createParamsArray = append(createParamsArray, createParams)
+	}
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParamsArray))
+}
+
+func TestLexicalEntry_Term(t *testing.T) {
+	require := require.New(t)
+	testName := "TestLexicalEntry_Term"
+
+	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
 	require.NoError(err)
 
 	terms := []dictionary.Term{}
 	for _, entry := range lex.LexicalEntries {
-		term, err := entry.term()
+		term, err := entry.Term()
 		require.NoError(err)
 		terms = append(terms, term)
 	}
-	fixture.CompareReadOrUpdate(t, "TestTerm.json", fixture.JSON(t, terms))
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))
 }
 
 func TestFindGoodExample(t *testing.T) {
@@ -78,10 +111,10 @@ func TestFindGoodExample(t *testing.T) {
 	fixture.CompareReadOrUpdate(t, "TestFindGoodExample.json", fixture.JSON(t, entry))
 }
 
-func findGoodExample(t *testing.T) *lexicalEntry {
+func findGoodExample(t *testing.T) *LexicalEntry {
 	require := require.New(t)
 
-	lexes, err := unmarshallRscPath(rscPath)
+	lexes, err := UnmarshallRscPath(rscPath)
 	require.NoError(err)
 	for _, lex := range lexes {
 		for _, entry := range lex.LexicalEntries {
@@ -93,11 +126,11 @@ func findGoodExample(t *testing.T) *lexicalEntry {
 	return nil
 }
 
-func goodExampleEntry(entry lexicalEntry) bool {
+func goodExampleEntry(entry LexicalEntry) bool {
 	return !(entry.Lemmas == nil || entry.RelatedForms == nil || entry.Senses == nil || entry.WordForms == nil)
 }
 
-func goodExampleSense(senses []sense) bool {
+func goodExampleSense(senses []Sense) bool {
 	for _, sense := range senses {
 		if !(sense.Equivalents == nil || sense.Multimedias == nil || sense.SenseExamples == nil || sense.SenseRelations == nil) {
 			return true
@@ -106,7 +139,7 @@ func goodExampleSense(senses []sense) bool {
 	return false
 }
 
-func goodExampleWordForm(wordForms []wordForm) bool {
+func goodExampleWordForm(wordForms []WordForm) bool {
 	for _, wordForm := range wordForms {
 		if !(wordForm.FormRepresentation.Feats == nil) {
 			return true

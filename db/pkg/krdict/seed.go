@@ -2,11 +2,9 @@ package krdict
 
 import (
 	"context"
-	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
@@ -16,7 +14,7 @@ import (
 
 // Seed seeds the database from the rscPath XML
 func Seed(ctx context.Context, rscPath string) error {
-	lexes, err := unmarshallRscPath(rscPath)
+	lexes, err := UnmarshallRscPath(rscPath)
 	if err != nil {
 		return err
 	}
@@ -33,20 +31,20 @@ func Seed(ctx context.Context, rscPath string) error {
 
 // SeedFile seeds a rscPath XML file to the database
 func SeedFile(ctx context.Context, file []byte) error {
-	lex, err := unmarshallRscXML(file)
+	lex, err := UnmarshallRscXML(file)
 	if err != nil {
 		return err
 	}
 	return seedLex(ctx, lex, 1)
 }
 
-func seedLex(ctx context.Context, lex *lexicalResource, basePopularity int) error {
+func seedLex(ctx context.Context, lex *LexicalResource, basePopularity int) error {
 	// default to 1
 	if basePopularity == 0 {
 		basePopularity = 1
 	}
 	for i, entry := range lex.LexicalEntries {
-		createParams, err := entry.createParams(basePopularity + i)
+		createParams, err := entry.CreateParams(basePopularity + i)
 		if err != nil {
 			if IsNoTranslationsFoundError(err) {
 				continue
@@ -60,8 +58,9 @@ func seedLex(ctx context.Context, lex *lexicalResource, basePopularity int) erro
 	return nil
 }
 
-func unmarshallRscPath(rscPath string) ([]*lexicalResource, error) {
-	lexes := []*lexicalResource{}
+// UnmarshallRscPath unmarshalls the rsc path of XML files to LexicalResources
+func UnmarshallRscPath(rscPath string) ([]*LexicalResource, error) {
+	lexes := []*LexicalResource{}
 	xmlPaths, err := RscXMLPaths(rscPath)
 	if err != nil {
 		return nil, err
@@ -72,7 +71,7 @@ func unmarshallRscPath(rscPath string) ([]*lexicalResource, error) {
 		if err != nil {
 			return nil, err
 		}
-		lex, err := unmarshallRscXML(bytes)
+		lex, err := UnmarshallRscXML(bytes)
 		if err != nil {
 			return nil, err
 		}
@@ -81,68 +80,62 @@ func unmarshallRscPath(rscPath string) ([]*lexicalResource, error) {
 	return lexes, nil
 }
 
-func unmarshallRscXML(bytes []byte) (*lexicalResource, error) {
-	lex := &lexicalResource{}
+// UnmarshallRscXML unmarshalls the rsc XML files to a LexicalResource
+func UnmarshallRscXML(bytes []byte) (*LexicalResource, error) {
+	lex := &LexicalResource{}
 	if err := xml.Unmarshal(bytes, lex); err != nil {
 		return nil, err
 	}
 	return lex, nil
 }
 
-type lexicalResource struct {
-	LexicalEntries []lexicalEntry `xml:"Lexicon>LexicalEntry"`
+// LexicalResource represents a rsc XML file
+type LexicalResource struct {
+	LexicalEntries []LexicalEntry `xml:"Lexicon>LexicalEntry"`
 }
 
-type lexicalEntry struct {
+// LexicalEntry represents a entry in the dictionary
+type LexicalEntry struct {
 	ID    uint   `xml:"val,attr"`
-	Feats []feat `xml:"feat"`
+	Feats []Feat `xml:"feat"`
 
-	Lemmas       []lemma       `xml:"Lemma"`
-	RelatedForms []relatedForm `xml:"RelatedForm"`
-	Senses       []sense       `xml:"Sense"`
-	WordForms    []wordForm    `xml:"WordForm"`
+	Lemmas       []Lemma       `xml:"Lemma"`
+	RelatedForms []RelatedForm `xml:"RelatedForm"`
+	Senses       []Sense       `xml:"Sense"`
+	WordForms    []WordForm    `xml:"WordForm"`
 }
 
-func (l *lexicalEntry) createParams(popularity int) (db.TermCreateParams, error) {
-	term, err := l.term()
+// CreateParams returns the db create params from the LexicalEntry
+func (l *LexicalEntry) CreateParams(popularity int) (db.TermCreateParams, error) {
+	term, err := l.Term()
 	if err != nil {
 		return db.TermCreateParams{}, err
 	}
-	variants, err := json.Marshal(term.Variants)
+	dbTerm, err := db.ToDBTerm(term, popularity)
 	if err != nil {
 		return db.TermCreateParams{}, err
 	}
-	translations, err := json.Marshal(term.Translations)
-	if err != nil {
-		return db.TermCreateParams{}, err
-	}
-
-	return db.TermCreateParams{
-		Text:         term.Text,
-		Variants:     string(variants),
-		PartOfSpeech: string(term.PartOfSpeech),
-		CommonLevel:  strconv.Itoa(int(term.CommonLevel)),
-		Translations: string(translations),
-		Popularity:   strconv.Itoa(popularity),
-	}, nil
+	return dbTerm.CreateParams(), nil
 }
 
-type noTranslationsFoundError struct {
+// NoTranslationsFoundError is returned if no translation is found within a LexicalEntry
+type NoTranslationsFoundError struct {
 	text string
 }
 
-func (e *noTranslationsFoundError) Error() string {
+func (e *NoTranslationsFoundError) Error() string {
 	return fmt.Sprintf("no translations found with text: %v", e.text)
 }
 
-// IsNoTranslationsFoundError returns true if the error is a noTranslationsFoundError
+// IsNoTranslationsFoundError returns true if the error is a NoTranslationsFoundError
 func IsNoTranslationsFoundError(err error) bool {
 	//nolint:errorlint // code does what it says
-	_, ok := err.(*noTranslationsFoundError)
+	_, ok := err.(*NoTranslationsFoundError)
 	return ok
 }
 
-func (l *lexicalEntry) term() (dictionary.Term, error) {
+// Term returns the dictionary.Term from the LexicalEntry
+func (l *LexicalEntry) Term() (dictionary.Term, error) {
 	text, variants, err := l.textVariants()
 	if err != nil {
 		return dictionary.Term{}, err
@@ -155,7 +148,7 @@ func (l *lexicalEntry) term() (dictionary.Term, error) {
 
 	translations := l.translations()
 	if len(translations) == 0 {
-		return dictionary.Term{}, &noTranslationsFoundError{text: text}
+		return dictionary.Term{}, &NoTranslationsFoundError{text: text}
 	}
 
 	return dictionary.Term{
@@ -167,22 +160,21 @@ func (l *lexicalEntry) term() (dictionary.Term, error) {
 	}, nil
 }
 
-func (l *lexicalEntry) textVariants() (string, []string, error) {
+func (l *LexicalEntry) textVariants() (string, []string, error) {
 	text, variants := "", []string{}
 	for _, lemma := range l.Lemmas {
-		for _, feat := range lemma.Feats {
-			switch feat.Att {
-			case "writtenForm":
-				text = feat.Val
-			case "variant":
-				variants = stringclean.Split(feat.Val, ",")
-			}
+		innerText, innerVariants := lemma.textOrVariants()
+		if innerText != "" {
+			text = innerText
+		}
+		if len(innerVariants) != 0 {
+			variants = innerVariants
 		}
 	}
 
 	var err error
 	if text == "" {
-		err = fmt.Errorf("lexicalEntry.writtenForm not found")
+		err = fmt.Errorf("LexicalEntry.writtenForm not found")
 	}
 	return text, variants, err
 }
@@ -221,7 +213,7 @@ var vocabularyToCommonLevel = map[string]lang.CommonLevel{
 	"초급": lang.CommonLevelCommon,
 }
 
-func (l *lexicalEntry) posCommonLevel() (lang.PartOfSpeech, lang.CommonLevel, error) {
+func (l *LexicalEntry) posCommonLevel() (lang.PartOfSpeech, lang.CommonLevel, error) {
 	posSrc, vocabularyLevel := "", ""
 	for _, feat := range l.Feats {
 		switch feat.Att {
@@ -244,7 +236,7 @@ func (l *lexicalEntry) posCommonLevel() (lang.PartOfSpeech, lang.CommonLevel, er
 	return pos, commonLevel, err
 }
 
-func (l *lexicalEntry) translations() []dictionary.Translation {
+func (l *LexicalEntry) translations() []dictionary.Translation {
 	translations := []dictionary.Translation{}
 	for _, sense := range l.Senses {
 		translation, err := sense.translation()
@@ -256,25 +248,41 @@ func (l *lexicalEntry) translations() []dictionary.Translation {
 	return translations
 }
 
-type lemma struct {
-	Feats []feat `xml:"feat"`
+// Lemma contains the written forms and variants of the entry
+type Lemma struct {
+	Feats []Feat `xml:"feat"`
 }
 
-type relatedForm struct {
-	Feats []feat `xml:"feat"`
+func (l *Lemma) textOrVariants() (string, []string) {
+	text, variants := "", []string{}
+	for _, feat := range l.Feats {
+		switch feat.Att {
+		case "writtenForm":
+			text = feat.Val
+		case "variant":
+			variants = stringclean.Split(feat.Val, ",")
+		}
+	}
+	return text, variants
 }
 
-type sense struct {
+// RelatedForm contains the related words of the entry
+type RelatedForm struct {
+	Feats []Feat `xml:"feat"`
+}
+
+// Sense represents the meaning of the entry for all languages
+type Sense struct {
 	ID    uint   `xml:"val,attr"`
-	Feats []feat `xml:"feat"`
+	Feats []Feat `xml:"feat"`
 
-	Equivalents    []equivalent    `xml:"Equivalent"`
-	Multimedias    []multimedia    `xml:"Multimedia"`
-	SenseExamples  []senseExample  `xml:"SenseExample"`
-	SenseRelations []senseRelation `xml:"SenseRelation"`
+	Equivalents    []Equivalent    `xml:"Equivalent"`
+	Multimedias    []Multimedia    `xml:"Multimedia"`
+	SenseExamples  []SenseExample  `xml:"SenseExample"`
+	SenseRelations []SenseRelation `xml:"SenseRelation"`
 }
 
-func (s *sense) translation() (dictionary.Translation, error) {
+func (s *Sense) translation() (dictionary.Translation, error) {
 	for _, equiv := range s.Equivalents {
 		translation, err := equiv.translation()
 		if err != nil {
@@ -285,13 +293,14 @@ func (s *sense) translation() (dictionary.Translation, error) {
 	return dictionary.Translation{}, fmt.Errorf("not found")
 }
 
-type equivalent struct {
-	Feats []feat `xml:"feat"`
+// Equivalent represents the translation of the entry given a special language
+type Equivalent struct {
+	Feats []Feat `xml:"feat"`
 }
 
 const engSenseLang = "영어"
 
-func (e *equivalent) translation() (dictionary.Translation, error) {
+func (e *Equivalent) translation() (dictionary.Translation, error) {
 	isEng := false
 	for _, feat := range e.Feats {
 		if feat.Val == engSenseLang && feat.Att == "language" {
@@ -326,28 +335,34 @@ func (e *equivalent) translation() (dictionary.Translation, error) {
 	}, err
 }
 
-type multimedia struct {
-	Feats []feat `xml:"feat"`
+// Multimedia represents media related to the Sense
+type Multimedia struct {
+	Feats []Feat `xml:"feat"`
 }
 
-type senseExample struct {
-	Feats []feat `xml:"feat"`
+// SenseExample gives examples for the Sense
+type SenseExample struct {
+	Feats []Feat `xml:"feat"`
 }
 
-type senseRelation struct {
-	Feats []feat `xml:"feat"`
+// SenseRelation gives relations to the Sense
+type SenseRelation struct {
+	Feats []Feat `xml:"feat"`
 }
 
-type wordForm struct {
-	Feats              []feat             `xml:"feat"`
-	FormRepresentation formRepresentation `xml:"FormRepresentation"`
+// WordForm contains other word forms of the entry
+type WordForm struct {
+	Feats              []Feat             `xml:"feat"`
+	FormRepresentation FormRepresentation `xml:"FormRepresentation"`
 }
 
-type formRepresentation struct {
-	Feats []feat `xml:"feat"`
+// FormRepresentation contains the word form representation
+type FormRepresentation struct {
+	Feats []Feat `xml:"feat"`
 }
 
-type feat struct {
+// Feat represents any feature
+type Feat struct {
 	Att string `xml:"att,attr"`
 	Val string `xml:"val,attr"`
 }
