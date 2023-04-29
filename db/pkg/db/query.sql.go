@@ -59,7 +59,7 @@ func (q *Queries) TermsCount(ctx context.Context) (int64, error) {
 }
 
 const termsPopular = `-- name: TermsPopular :many
-SELECT text, variants, part_of_speech, common_level, translations, popularity FROM terms ORDER BY popularity LIMIT 100
+SELECT text, variants, part_of_speech, common_level, translations, popularity FROM terms ORDER BY CAST(popularity AS INT) LIMIT 100
 `
 
 func (q *Queries) TermsPopular(ctx context.Context) ([]Term, error) {

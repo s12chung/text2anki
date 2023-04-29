@@ -9,4 +9,4 @@ RETURNING *;
 SELECT COUNT(*) FROM terms;
 
 -- name: TermsPopular :many
-SELECT * FROM terms ORDER BY popularity LIMIT 100;
+SELECT * FROM terms ORDER BY CAST(popularity AS INT) LIMIT 100;
