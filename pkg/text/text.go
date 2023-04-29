@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	lingua "github.com/pemistahl/lingua-go"
+	"github.com/pemistahl/lingua-go"
 )
 
 // Text represents a text line given from the source

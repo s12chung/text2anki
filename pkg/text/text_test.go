@@ -3,7 +3,7 @@ package text
 import (
 	"testing"
 
-	lingua "github.com/pemistahl/lingua-go"
+	"github.com/pemistahl/lingua-go"
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
