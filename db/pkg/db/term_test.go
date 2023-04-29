@@ -60,8 +60,7 @@ func TestQueries_TermsSearch(t *testing.T) {
 	testdb.SetupTempDBT(t, testName)
 	testdb.Seed(t)
 
-	queries := db.New(db.DB())
-	results, err := queries.TermsSearch(ctx, "마음")
+	results, err := db.Qs().TermsSearch(ctx, "마음")
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, results))
 }

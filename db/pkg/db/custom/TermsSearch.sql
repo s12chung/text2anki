@@ -1,8 +1,7 @@
 -- name: TermsSearchRaw :many
-WITH const AS (SELECT ? AS query)
-SELECT terms.*, (
-                1 / LOG(100, CAST(popularity AS REAL) + 99) * 40 + -- 1/log(100, popularity + 99 <base # - 1>)
-                1 / LOG(3, ABS(LENGTH(TRIM(text, '-')) - LENGTH(const.query)) + 3) * 60 -- 1/log(log_base, len_diff + log_base)
-    ) AS calc_rank
-FROM terms, const WHERE text LIKE '%' || const.query || '%' OR variants LIKE '%' || const.query || '%'
-ORDER BY calc_rank DESC;
+WITH const AS (SELECT ? AS query, ? AS pop_log, ? AS pop_weight, ? AS len_log)
+SELECT terms.*,
+    1 / LOG(pop_log, CAST(popularity AS REAL) + pop_log - 1) * pop_weight AS pop_calc,
+    1 / LOG(len_log, ABS(LENGTH(TRIM(text, '-')) - LENGTH(query)) + len_log) * (100 - pop_weight) AS len_calc
+FROM terms, const WHERE text LIKE '%' || const.query ||'%' OR variants LIKE '%' || const.query ||'%'
+ORDER BY pop_calc + len_calc DESC;

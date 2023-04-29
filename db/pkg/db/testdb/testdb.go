@@ -46,8 +46,9 @@ func Seed(t *testing.T) {
 	err = json.Unmarshal(bytes, &terms)
 	require.NoError(err)
 
+	queries := db.Qs()
 	for _, term := range terms {
-		_, err = db.New(db.DB()).TermCreate(context.Background(), term.CreateParams())
+		_, err = queries.TermCreate(context.Background(), term.CreateParams())
 		require.NoError(err)
 	}
 }

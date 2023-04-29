@@ -36,13 +36,11 @@ func testSeed(t *testing.T, testName string, f func() error) {
 	err := f()
 	require.NoError(err)
 
-	queries := db.New(db.DB())
-
-	count, err := queries.TermsCount(ctx)
+	count, err := db.Qs().TermsCount(ctx)
 	require.NoError(err)
 	require.Equal(int64(3), count)
 
-	terms, err := queries.TermsPopular(ctx)
+	terms, err := db.Qs().TermsPopular(ctx)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))
 }

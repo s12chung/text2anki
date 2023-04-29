@@ -67,12 +67,31 @@ var termsSearch string
 // TermsSearchRow is the row returned by TermsSearch
 type TermsSearchRow struct {
 	Term
-	CalcRank sql.NullFloat64
+	PopCalc sql.NullFloat64
+	LenCalc sql.NullFloat64
+}
+
+// TermsSearchConfig is the config for TermsSearchRaw
+type TermsSearchConfig struct {
+	PopLog    int
+	PopWeight int
+	LenLog    int
+}
+
+var defaultTermsSearchConfig = TermsSearchConfig{
+	PopLog:    100,
+	PopWeight: 40,
+	LenLog:    3,
 }
 
 // TermsSearch searches within Terms for text
-func (q *Queries) TermsSearch(ctx context.Context, text string) ([]TermsSearchRow, error) {
-	rows, err := q.db.QueryContext(ctx, termsSearch, text)
+func (q *Queries) TermsSearch(ctx context.Context, query string) ([]TermsSearchRow, error) {
+	return q.TermsSearchRaw(ctx, query, defaultTermsSearchConfig)
+}
+
+// TermsSearchRaw searches within Terms for text given the config
+func (q *Queries) TermsSearchRaw(ctx context.Context, query string, c TermsSearchConfig) ([]TermsSearchRow, error) {
+	rows, err := q.db.QueryContext(ctx, termsSearch, query, c.PopLog, c.PopWeight, c.LenLog)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +107,8 @@ func (q *Queries) TermsSearch(ctx context.Context, text string) ([]TermsSearchRo
 			&i.CommonLevel,
 			&i.Translations,
 			&i.Popularity,
-			&i.CalcRank,
+			&i.PopCalc,
+			&i.LenCalc,
 		); err != nil {
 			return nil, err
 		}

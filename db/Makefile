@@ -7,6 +7,8 @@ build:
 .PHONY: seed
 seed: build
 	$(BIN) seed
+search: build
+	$(BIN) search
 
 generate:
 	sqlc generate

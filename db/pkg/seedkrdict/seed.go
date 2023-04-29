@@ -43,6 +43,7 @@ func seedLex(ctx context.Context, lex *LexicalResource, basePopularity int) erro
 	if basePopularity == 0 {
 		basePopularity = 1
 	}
+	queries := db.Qs()
 	for i, entry := range lex.LexicalEntries {
 		createParams, err := entry.CreateParams(basePopularity + i)
 		if err != nil {
@@ -51,7 +52,7 @@ func seedLex(ctx context.Context, lex *LexicalResource, basePopularity int) erro
 			}
 			return err
 		}
-		if _, err = db.New(db.DB()).TermCreate(ctx, createParams); err != nil {
+		if _, err = queries.TermCreate(ctx, createParams); err != nil {
 			return err
 		}
 	}

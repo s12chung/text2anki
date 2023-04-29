@@ -29,6 +29,11 @@ func DB() *sql.DB {
 	return database
 }
 
+// Qs returns the Queries for the database returned from the DB() function
+func Qs() *Queries {
+	return &Queries{db: DB()}
+}
+
 //go:embed schema.sql
 var schema string
 

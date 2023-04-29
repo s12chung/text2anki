@@ -8,7 +8,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
+	"github.com/s12chung/text2anki/db/pkg/csv"
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 )
@@ -17,7 +20,7 @@ func init() {
 	flag.Parse()
 }
 
-const usage = "usage: %v [create/seed/schema]"
+const usage = "usage: %v [create/seed/schema/search]"
 
 func main() {
 	args := flag.Args()
@@ -42,13 +45,22 @@ func run(cmd string) error {
 		return cmdSeed()
 	case "schema":
 		return cmdSchema()
+	case "search":
+		return cmdSearch()
 	default:
 		return fmt.Errorf(usage+" -- %v not found", os.Args[0], cmd)
 	}
 }
 
-func cmdCreate() error {
+func setDB() error {
 	if err := db.SetDB("data.sqlite3"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func cmdCreate() error {
+	if err := setDB(); err != nil {
 		return err
 	}
 	return db.Create(context.Background())
@@ -73,4 +85,59 @@ func cmdSchema() error {
 	}
 	fmt.Print(string(bytes))
 	return nil
+}
+
+var queriesString = "가,오"
+var config = db.TermsSearchConfig{
+	PopLog:    100,
+	PopWeight: 40,
+	LenLog:    3,
+}
+
+func cmdSearch() error {
+	if err := setDB(); err != nil {
+		return err
+	}
+
+	for _, query := range strings.Split(queriesString, ",") {
+		query = strings.TrimSpace(query)
+		terms, err := db.Qs().TermsSearchRaw(context.Background(), query, config)
+		if err != nil {
+			return err
+		}
+		rows, err := termsSearchToCSVRows(terms)
+		if err != nil {
+			return err
+		}
+		if err = csv.File("../tmp/db-search/"+query+".csv", rows); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func termsSearchToCSVRows(terms []db.TermsSearchRow) ([][]string, error) {
+	rows := make([][]string, len(terms)+1)
+	rows[0] = []string{
+		"Text", "Variants", "CommonLevel", "Explanation", "Popularity", "PopCalc", "LenCalc", "TotalCalc",
+	}
+
+	for i, term := range terms {
+		dictTerm, err := term.Term.DictionaryTerm()
+		if err != nil {
+			return nil, err
+		}
+
+		rows[i+1] = []string{
+			term.Text,
+			term.Variants,
+			strconv.Itoa(int(term.CommonLevel)),
+			dictTerm.Translations[0].Explanation,
+			strconv.Itoa(int(term.Popularity)),
+			fmt.Sprintf("%f", term.PopCalc.Float64),
+			fmt.Sprintf("%f", term.LenCalc.Float64),
+			fmt.Sprintf("%f", term.PopCalc.Float64+term.LenCalc.Float64),
+		}
+	}
+	return rows, nil
 }
