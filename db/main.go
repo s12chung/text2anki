@@ -10,7 +10,7 @@ import (
 	"os"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/db/pkg/krdict"
+	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 )
 
 func init() {
@@ -59,11 +59,11 @@ func cmdSeed() error {
 		return err
 	}
 
-	return krdict.Seed(context.Background(), krdict.DefaultRscPath)
+	return seedkrdict.Seed(context.Background(), seedkrdict.DefaultRscPath)
 }
 
 func cmdSchema() error {
-	node, err := krdict.RscSchema(krdict.DefaultRscPath)
+	node, err := seedkrdict.RscSchema(seedkrdict.DefaultRscPath)
 	if err != nil {
 		return err
 	}

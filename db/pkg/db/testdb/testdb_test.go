@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/db/pkg/krdict"
+	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
@@ -15,7 +15,7 @@ func TestGen___Seed(t *testing.T) {
 		t.Skip("TestGen___ test generates fixtures")
 	}
 	require := require.New(t)
-	lexes, err := krdict.UnmarshallRscPath(fixture.JoinTestData("TestGen___Seed"))
+	lexes, err := seedkrdict.UnmarshallRscPath(fixture.JoinTestData("TestGen___Seed"))
 	require.NoError(err)
 
 	var terms []db.Term

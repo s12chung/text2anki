@@ -1,4 +1,4 @@
-package krdict
+package seedkrdict
 
 import (
 	"os"

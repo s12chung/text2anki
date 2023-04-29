@@ -1,5 +1,5 @@
-// Package krdict manages schema and seeding for krdict dictionary
-package krdict
+// Package seedkrdict manages schema and seeding for krdict dictionary
+package seedkrdict
 
 import (
 	"os"
