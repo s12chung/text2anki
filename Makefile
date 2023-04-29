@@ -42,6 +42,8 @@ ci.test:
 	go test -tags "$(TAGS)" -v $(TEST)
 
 test.fixtures:
+	# generate top level fixtures first
+	UPDATE_FIXTURES=true go test $(TEST) -run TestGen___ || true
 	UPDATE_FIXTURES=true make test
 
 db.seed:

@@ -7,16 +7,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
+	"github.com/s12chung/text2anki/pkg/lang"
 )
 
 // ToDBTerm converts a dictionary.Term to a Term
 func ToDBTerm(term dictionary.Term, popularity int) (Term, error) {
-	variants, err := json.Marshal(term.Variants)
-	if err != nil {
-		return Term{}, err
-	}
+	variants := strings.Join(term.Variants, arraySeparator)
+
 	translations, err := json.Marshal(term.Translations)
 	if err != nil {
 		return Term{}, err
@@ -24,7 +24,7 @@ func ToDBTerm(term dictionary.Term, popularity int) (Term, error) {
 
 	return Term{
 		Text:         term.Text,
-		Variants:     string(variants),
+		Variants:     variants,
 		PartOfSpeech: string(term.PartOfSpeech),
 		CommonLevel:  strconv.Itoa(int(term.CommonLevel)),
 		Translations: string(translations),
@@ -32,7 +32,30 @@ func ToDBTerm(term dictionary.Term, popularity int) (Term, error) {
 	}, nil
 }
 
-// CreateParams converts a term to a TermCreateParams
+// DictionaryTerm converts the term to a dictionary.Term
+func (t *Term) DictionaryTerm() (dictionary.Term, error) {
+	variants := strings.Split(t.Variants, arraySeparator)
+
+	var translations []dictionary.Translation
+	if err := json.Unmarshal([]byte(t.Translations), &translations); err != nil {
+		return dictionary.Term{}, err
+	}
+	commonLevel, err := strconv.Atoi(t.CommonLevel)
+	if err != nil {
+		return dictionary.Term{}, err
+	}
+
+	return dictionary.Term{
+		Text:             t.Text,
+		Variants:         variants,
+		PartOfSpeech:     lang.PartOfSpeech(t.PartOfSpeech),
+		CommonLevel:      lang.CommonLevel(commonLevel),
+		Translations:     translations,
+		DictionarySource: "Korean Basic Dictionary (23-03)",
+	}, nil
+}
+
+// CreateParams converts the term to a TermCreateParams
 func (t *Term) CreateParams() TermCreateParams {
 	return TermCreateParams{
 		Text:         t.Text,

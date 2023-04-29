@@ -10,9 +10,12 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestSeed_Generate(t *testing.T) {
+func TestGen___Seed(t *testing.T) {
+	if !fixture.WillUpdate() {
+		t.Skip("TestGen___ test generates fixtures")
+	}
 	require := require.New(t)
-	lexes, err := krdict.UnmarshallRscPath(fixture.JoinTestData("TestSeed_Generate"))
+	lexes, err := krdict.UnmarshallRscPath(fixture.JoinTestData("TestGen___Seed"))
 	require.NoError(err)
 
 	var terms []db.Term
@@ -28,5 +31,5 @@ func TestSeed_Generate(t *testing.T) {
 		}
 		basePopularity += len(lex.LexicalEntries)
 	}
-	fixture.CompareReadOrUpdate(t, "Seed.json", fixture.JSON(t, terms))
+	fixture.Update(t, "Seed.json", fixture.JSON(t, terms))
 }

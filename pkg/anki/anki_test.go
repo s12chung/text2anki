@@ -40,24 +40,10 @@ func TestMain(m *testing.M) {
 	os.Exit(exit)
 }
 
-const notesFixture = "notes.json"
-
-func koreanBasicNotes(t *testing.T) []Note {
-	require := require.New(t)
-
-	var notes []Note
-	if fixture.WillUpdate() {
-		fixture.Update(t, notesFixture, dictionaryNotes(t))
-	}
-	require.NoError(json.Unmarshal(fixture.Read(t, notesFixture), &notes))
-
-	return notes
-}
-
 func koreanBasicNotesWithSounds(t *testing.T) []Note {
 	require := require.New(t)
 
-	notes := koreanBasicNotes(t)
+	notes := notesFromTerms(t)
 	sound := fixture.Read(t, "sound.mp3")
 	for i, note := range notes {
 		if note.Usage != "" {
@@ -104,7 +90,7 @@ func TestExportCSVFile(t *testing.T) {
 	require.NoError(err)
 	dir = path.Join(dir, "TestExportCSVFile.csv")
 
-	err = ExportCSVFile(koreanBasicNotes(t), dir)
+	err = ExportCSVFile(notesFromTerms(t), dir)
 	require.NoError(err)
 	//nolint:gosec // for tests
 	bytes, err := os.ReadFile(dir)
@@ -116,20 +102,17 @@ func TestExportCSV(t *testing.T) {
 	require := require.New(t)
 
 	buffer := &bytes.Buffer{}
-	err := ExportCSV(koreanBasicNotes(t), buffer)
+	err := ExportCSV(notesFromTerms(t), buffer)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, "export_csv_expected.csv", buffer.Bytes())
 }
 
-func dictionaryNotes(t *testing.T) []byte {
+func notesFromTerms(t *testing.T) []Note {
 	require := require.New(t)
 
-	sourcePath := path.Join("..", "dictionary", "koreanbasic", fixture.TestDataDir, "TestKoreanBasic_Search", "expected.json")
-	sourceBytes, err := os.ReadFile(sourcePath) //nolint:gosec // for tests
-	require.NoError(err)
-
 	var terms []dictionary.Term
-	err = json.Unmarshal(sourceBytes, &terms)
+	// from .../TestKoreanBasic_Search/expected.json
+	err := json.Unmarshal(fixture.Read(t, "terms.json"), &terms)
 	require.NoError(err)
 
 	notes := make([]Note, len(terms))
@@ -142,5 +125,5 @@ func dictionaryNotes(t *testing.T) []byte {
 	for _, testIndex := range []uint{0, 2, 4} {
 		notes[testIndex].UsageTranslation = fmt.Sprintf("Test usage translation, index: %v", testIndex)
 	}
-	return fixture.JSON(t, notes)
+	return notes
 }

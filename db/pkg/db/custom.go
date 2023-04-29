@@ -9,6 +9,8 @@ import (
 	_ "github.com/mattn/go-sqlite3" // sql.Open needs it from init()
 )
 
+const arraySeparator = ", "
+
 var database *sql.DB
 
 // SetDB sets the database returned from the DB() function

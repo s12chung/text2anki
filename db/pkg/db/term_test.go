@@ -27,6 +27,20 @@ func TestToDBTerm(t *testing.T) {
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, dbTerm))
 }
 
+func TestTerm_DictionaryTerm(t *testing.T) {
+	require := require.New(t)
+	testName := "TestTerm_DictionaryTerm"
+
+	term := db.Term{}
+	err := json.Unmarshal(fixture.Read(t, testName+"Src.json"), &term)
+	require.NoError(err)
+
+	dbTerm, err := term.DictionaryTerm()
+	require.NoError(err)
+
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, dbTerm))
+}
+
 func TestTerm_CreateParams(t *testing.T) {
 	require := require.New(t)
 	testName := "TestTerm_CreateParams"
