@@ -88,11 +88,7 @@ func cmdSchema() error {
 }
 
 var queriesString = "가,오"
-var config = db.TermsSearchConfig{
-	PopLog:    100,
-	PopWeight: 40,
-	LenLog:    3,
-}
+var config = db.DefaultTermsSearchConfig()
 
 func cmdSearch() error {
 	if err := setDB(); err != nil {
@@ -119,7 +115,7 @@ func cmdSearch() error {
 func termsSearchToCSVRows(terms []db.TermsSearchRow) ([][]string, error) {
 	rows := make([][]string, len(terms)+1)
 	rows[0] = []string{
-		"Text", "Variants", "CommonLevel", "Explanation", "Popularity", "PopCalc", "LenCalc", "TotalCalc",
+		"Text", "Variants", "CommonLevel", "Explanation", "Popularity", "PopCalc", "CommonCalc", "LenCalc", "RankCalc",
 	}
 
 	for i, term := range terms {
@@ -135,8 +131,9 @@ func termsSearchToCSVRows(terms []db.TermsSearchRow) ([][]string, error) {
 			dictTerm.Translations[0].Explanation,
 			strconv.Itoa(int(term.Popularity)),
 			fmt.Sprintf("%f", term.PopCalc.Float64),
+			fmt.Sprintf("%f", term.CommonCalc.Float64),
 			fmt.Sprintf("%f", term.LenCalc.Float64),
-			fmt.Sprintf("%f", term.PopCalc.Float64+term.LenCalc.Float64),
+			fmt.Sprintf("%f", term.PopCalc.Float64+term.CommonCalc.Float64+term.LenCalc.Float64),
 		}
 	}
 	return rows, nil

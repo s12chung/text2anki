@@ -7,11 +7,15 @@
     "Translations": "[{\"Text\":\"if it's like my mind\",\"Explanation\":\"If one follows as one thinks.\"}]",
     "Popularity": 2,
     "PopCalc": {
-      "Float64": 39.91375886443825,
+      "Float64": 29.84890509539871,
+      "Valid": true
+    },
+    "CommonCalc": {
+      "Float64": 0,
       "Valid": true
     },
     "LenCalc": {
-      "Float64": 31.69925001442313,
+      "Float64": 19.59139529094122,
       "Valid": true
     }
   },
@@ -23,11 +27,15 @@
     "Translations": "[{\"Text\":\"be caught in one's mind\",\"Explanation\":\"To feel uncomfortable out of worry.\"}]",
     "Popularity": 3,
     "PopCalc": {
-      "Float64": 39.82873302745219,
+      "Float64": 29.702214928159158,
+      "Valid": true
+    },
+    "CommonCalc": {
+      "Float64": 0,
       "Valid": true
     },
     "LenCalc": {
-      "Float64": 31.69925001442313,
+      "Float64": 19.59139529094122,
       "Valid": true
     }
   }
