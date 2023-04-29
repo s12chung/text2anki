@@ -17,8 +17,21 @@ jobs:
           cache: true
           go-version-file: "go.mod"
 
-      - name: Build
-        run: make build
+      - name: Cache Setup
+        id: cache-setup
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-setup
+        with:
+          path: .github/bin/*
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/Makefile*', '**/*.mk') }}
+      - if: ${{ steps.cache-setup.outputs.cache-hit != 'true' }}
+        name: Setup
+        run: make ci.setup
 
+      - name: Build
+        run: make ci.build
+      - name: Diff
+        run: make ci.diff
       - name: Test
         run: make ci.test

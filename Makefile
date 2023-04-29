@@ -2,16 +2,10 @@ export KHAIII_BIN_PATH ?= integrations/tokenizers/dist/khaiii
 export KOMORAN_JAR_PATH ?= integrations/tokenizers/dist/komoran
 export TOKENIZER ?= khaiii
 BIN ?= dist/text2anki
-include db/Makefile_env.mk
+include Makefile_env.mk
 
 setup:
 	cd integrations/tokenizers; make build
-
-lint:
-	golangci-lint run
-
-goimports:
-	goimports -w .
 
 build:
 	go build -tags "$(TAGS)" -v -o $(BIN) .
@@ -33,20 +27,32 @@ subconv: tmp
 syncfiltered:
 	go run ./cmd/syncfiltered "$(SYNC_FILTERED_DIR)"
 
-
 TEST ?= ./...
-test:
+
+test: test.diff
 	go test -tags "$(TAGS)" $(TEST)
-
-ci.test:
-	go test -tags "$(TAGS)" -v $(TEST)
-
+test.diff: db.diff
 test.fixtures:
 	# generate top level fixtures first
 	UPDATE_FIXTURES=true go test $(TEST) -run TestGen___ || true
 	UPDATE_FIXTURES=true make test
 
+lint:
+	golangci-lint run
+goimports:
+	goimports -w .
+
+ci.build: build
+ci.diff: test.diff
+ci.test:
+	go test -tags "$(TAGS)" -v $(TEST)
+ci.setup:
+	mkdir -p $(CI_BIN)
+	cd db; make ci.setup
+
 db.seed:
 	cd db; make seed
 db.generate:
 	cd db; make generate
+db.diff:
+	cd db; make diff
