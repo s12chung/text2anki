@@ -23,7 +23,7 @@ type KrDict struct {
 
 // Search searches for the query inside the dictionary
 func (k *KrDict) Search(q string) ([]dictionary.Term, error) {
-	rows, err := k.queries.TermsSearch(context.Background(), q)
+	rows, err := k.queries.TermsSearch(context.Background(), q, db.DefaultTermsSearchConfig())
 	if err != nil {
 		return nil, err
 	}

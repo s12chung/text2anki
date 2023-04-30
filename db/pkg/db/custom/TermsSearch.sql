@@ -1,4 +1,4 @@
--- name: TermsSearchRaw :many
+-- name: TermsSearch :many
 WITH const AS (SELECT ? AS query, ? AS pop_log, ? AS pop_weight, ? AS common_weight, ? AS len_log)
 SELECT terms.*,
     1 / LOG(pop_log, CAST(popularity AS REAL) + pop_log - 1) * pop_weight AS pop_calc,

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	_ "embed"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
@@ -92,13 +93,12 @@ func DefaultTermsSearchConfig() TermsSearchConfig {
 	return defaultTermsSearchConfig
 }
 
-// TermsSearch searches within Terms for text
-func (q *Queries) TermsSearch(ctx context.Context, query string) ([]TermsSearchRow, error) {
-	return q.TermsSearchRaw(ctx, query, defaultTermsSearchConfig)
-}
+// TermsSearch searches within Terms for text given the config
+func (q *Queries) TermsSearch(ctx context.Context, query string, c TermsSearchConfig) ([]TermsSearchRow, error) {
+	if c.PopWeight+c.CommonWeight > 100 {
+		return nil, fmt.Errorf("config.PopWeight and config.CommonWeight > 100: %v, %v", c.PopWeight, c.CommonWeight)
+	}
 
-// TermsSearchRaw searches within Terms for text given the config
-func (q *Queries) TermsSearchRaw(ctx context.Context, query string, c TermsSearchConfig) ([]TermsSearchRow, error) {
 	rows, err := q.db.QueryContext(ctx, termsSearch, query, c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog)
 	if err != nil {
 		return nil, err

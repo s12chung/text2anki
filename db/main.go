@@ -97,7 +97,7 @@ func cmdSearch() error {
 
 	for _, query := range strings.Split(queriesString, ",") {
 		query = strings.TrimSpace(query)
-		terms, err := db.Qs().TermsSearchRaw(context.Background(), query, config)
+		terms, err := db.Qs().TermsSearch(context.Background(), query, config)
 		if err != nil {
 			return err
 		}
