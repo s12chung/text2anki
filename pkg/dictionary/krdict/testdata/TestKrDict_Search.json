@@ -1,9 +1,7 @@
 [
   {
     "Text": "마음 같아서는",
-    "Variants": [
-      ""
-    ],
+    "Variants": [],
     "PartOfSpeech": "Unknown",
     "CommonLevel": 0,
     "Translations": [
@@ -16,9 +14,7 @@
   },
   {
     "Text": "마음에 걸리다",
-    "Variants": [
-      ""
-    ],
+    "Variants": [],
     "PartOfSpeech": "Unknown",
     "CommonLevel": 0,
     "Translations": [

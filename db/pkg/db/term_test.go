@@ -3,6 +3,7 @@ package db_test
 import (
 	"context"
 	"encoding/json"
+	"path"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -28,17 +29,28 @@ func TestToDBTerm(t *testing.T) {
 }
 
 func TestTerm_DictionaryTerm(t *testing.T) {
-	require := require.New(t)
 	testName := "TestTerm_DictionaryTerm"
+	tcs := []struct {
+		name string
+	}{
+		{name: "Base"},
+		{name: "EmptyVariants"},
+	}
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
 
-	term := db.Term{}
-	err := json.Unmarshal(fixture.Read(t, testName+"Src.json"), &term)
-	require.NoError(err)
+			term := db.Term{}
+			err := json.Unmarshal(fixture.Read(t, path.Join(testName, tc.name+"Src.json")), &term)
+			require.NoError(err)
 
-	dbTerm, err := term.DictionaryTerm()
-	require.NoError(err)
+			dbTerm, err := term.DictionaryTerm()
+			require.NoError(err)
 
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, dbTerm))
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, dbTerm))
+		})
+	}
 }
 
 func TestTerm_CreateParams(t *testing.T) {

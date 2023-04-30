@@ -40,6 +40,7 @@ func TestSplit(t *testing.T) {
 	}{
 		{name: "overall", s: "   test1,   	  test2,test3 ", expected: []string{"test1", "test2", "test3"}},
 		{name: "spaces inside", s: " a  test1,   	  test2,test3", expected: []string{"a  test1", "test2", "test3"}},
+		{name: "empty", s: "", expected: []string{}},
 	}
 	for _, tc := range tcs {
 		tc := tc
