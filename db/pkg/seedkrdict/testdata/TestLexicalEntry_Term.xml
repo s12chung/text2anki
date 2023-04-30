@@ -1,0 +1,3355 @@
+<?xml version="1.0" encoding="UTF-8"?>                                  
+<!DOCTYPE LexicalResource SYSTEM "https://krdict.korean.go.kr/dtd/DTD_LMF_REV_16.dtd"> 
+<LexicalResource dtdVersion="16">                                       
+	<GlobalInformation>
+		<feat att="label" val="한국어기초사전 - 국립국어원 제공" />
+		<feat att="creationDate" val="2023/03/24 06:31:48" />
+		<feat att="languageCoding" val="ISO 639-3" />
+	</GlobalInformation>
+	<Lexicon>
+		<feat att="language" val="kor" />
+        <LexicalEntry att="id" val="27500">
+			<feat att="homonym_number" val="1" />
+			<feat att="lexicalUnit" val="단어" />
+			<feat att="partOfSpeech" val="동사" />
+			<Lemma>
+				<feat att="writtenForm" val="가다" />
+			</Lemma>
+			<WordForm>
+				<feat att="type" val="발음" />
+				<feat att="pronunciation" val="가다" />
+				<feat att="sound" val="https://dicmedia.korean.go.kr/multimedia/naver/2016/30000/21000/28764_gada.wav" />
+			</WordForm>
+			<WordForm>
+				<feat att="type" val="활용" />
+				<feat att="writtenForm" val="가는" />
+				<feat att="pronunciation" val="가는" />
+			</WordForm>
+			<WordForm>
+				<feat att="type" val="활용" />
+				<feat att="writtenForm" val="가" />
+				<feat att="pronunciation" val="가" />
+				<feat att="sound" val="https://dicmedia.korean.go.kr/multimedia/naver/2016/20000/18000/28764_ga.wav" />
+			</WordForm>
+			<WordForm>
+				<feat att="type" val="활용" />
+				<feat att="writtenForm" val="가니" />
+				<feat att="pronunciation" val="가니" />
+				<feat att="sound" val="https://dicmedia.korean.go.kr/multimedia/naver/2016/20000/18000/28764_gani.wav" />
+			</WordForm>
+			<WordForm>
+				<feat att="type" val="활용" />
+				<feat att="writtenForm" val="갑니다" />
+				<feat att="pronunciation" val="감니다" />
+				<feat att="sound" val="https://dicmedia.korean.go.kr/multimedia/naver/2016/20000/18000/62334_gamnida.wav" />
+			</WordForm>
+			<feat att="vocabularyLevel" val="초급" />
+			<feat att="semanticCategory" val="인간 > 신체 행위" />
+			<Sense att="id" val="1">
+				<SenseRelation>
+					<feat att="type" val="반대말" />
+					<feat att="id" val="69514" />
+					<feat att="lemma" val="오다" />
+					<feat att="homonymNumber" val="1" />
+				</SenseRelation>
+				<feat att="syntacticPattern" val="1이 2에/에게/로/를 가다" />
+				<feat att="definition" val="한 곳에서 다른 곳으로 장소를 이동하다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="가게에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="공항에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="근처에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="방에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="시장에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="식당에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="집에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="화장실에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="친구에게 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="가까이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="같이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="늦게 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="데리고 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="빨리 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="일찍 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="함께 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="혼자 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="나는 친구에게 갈 때마다 책을 빌려 왔다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="승규는 오늘 아침 일찍 친구 집에 가서 아직까지 돌아오지 않았다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="아버지는 서울로 가실 때 멀미 때문에 항상 버스 대신 기차를 타신다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="어디를 그렇게 서둘러 가니?" />
+					<feat att="example" val="비행기 시간이 한 시간밖에 안 남아서 빨리 공항에 가야 돼." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go; travel" />
+					<feat att="definition" val="To move from one place to another place." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】。うつる【移る】" />
+					<feat att="definition" val="ある場所から他の場所へ移動する。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="aller, se rendre, s'en aller, passer, partir" />
+					<feat att="definition" val="Se déplacer d'un endroit à un autre." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Ir" />
+					<feat att="definition" val="Trasladarse de un lugar a otro." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="ينتقل" />
+					<feat att="definition" val="ينتقل من مكان إلى مكان آخر" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="явах, очих" />
+					<feat att="definition" val="нэг газраас нөгөө газар руу шилжиж хөдлөх явах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi" />
+					<feat att="definition" val="Di chuyển địa điểm từ một nơi sang nơi khác." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ไป" />
+					<feat att="definition" val="เคลื่อนออกจากสถานที่แห่งใดแห่งหนึ่งไปยังสถานที่อื่น" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="pergi" />
+					<feat att="definition" val="bergerak dari satu tempat ke tempat lain" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="ходить; уходить; идти" />
+					<feat att="definition" val="Передвигаться с одного места на другое." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="去" />
+					<feat att="definition" val="从一个地方移动到另一个地方。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="2">
+				<SenseRelation>
+					<feat att="type" val="반대말" />
+					<feat att="id" val="69514" />
+					<feat att="lemma" val="오다" />
+					<feat att="homonymNumber" val="1" />
+				</SenseRelation>
+				<feat att="syntacticPattern" val="1이 2에/에게/로/를 가다" />
+				<feat att="definition" val="배, 비행기, 자동차 등이 일정한 곳을 다니다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="기차가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="배가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="버스가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="지하철이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="차가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="부산으로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="서울로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="섬으로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="직접 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="서울에 바로 가는 버스가 있습니까?" />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="이 차는 바로 너의 어머니에게 가게 되어 있으니 아무 걱정 하지 마라." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="항공사 사정으로 동남아시아로 가는 비행기가 모두 취소되었다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="육지를 가는 배는 한 시간에 한 대밖에 없어서 시간을 잘 맞춰야 한다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="이 기차는 어디로 가나요?" />
+					<feat att="example" val="서울에서 부산까지 갑니다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go; head for; be bound for" />
+					<feat att="definition" val="For ships, planes, cars, etc., to travel to or from a specific place." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】。かよう【通う】" />
+					<feat att="definition" val="船、飛行機、自動車などが一定のところを行き来する。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="aller" />
+					<feat att="definition" val="(Bateau, avion, voiture, etc.) Circuler dans un certain lieu." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Ir" />
+					<feat att="definition" val="Trayecto regular de barcos, aviones o coches." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يذهب ، يسير" />
+					<feat att="definition" val="تسير سفينة أو ظائرة أو سيارة أو غيرها إلى مكان معين" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="хөдлөх, явах, очих" />
+					<feat att="definition" val="усан онгоц, нисэх онгоц, автомашин зэрэг  нь тодорхой чиглэлд ирж очих." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi, di chuyển" />
+					<feat att="definition" val="Tàu thuyền, máy bay, xe ô tô... di chuyển đến nơi nhất định." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ไป" />
+					<feat att="definition" val="เรือ เครื่องบิน รถยนต์ เป็นต้น เคลื่อนออกไปยังสถานที่ที่กำหนด" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="berangkat, menuju" />
+					<feat att="definition" val="perahu, pesawat, mobil menuju tempat yang ditentukan" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="плыть; летать; ехать" />
+					<feat att="definition" val="Приезжать и отъезжать с определённого места (о корабле, самолёте, автомобиле и т.п.)." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="去，开往，飞向" />
+					<feat att="definition" val="船、飞机、汽车等去往某个地方。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="3">
+				<feat att="syntacticPattern" val="1이 2에/를 가다" />
+				<feat att="definition" val="어떤 목적을 가진 모임에 참석하기 위해 이동하다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="동창회를 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="뒤풀이를 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="모임에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="송년회에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="송별회에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="시사회에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="잔치에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="파티에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="회의에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="민준은 음악회를 가기 위해 집을 나섰다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="김 사장은 회사 인사 회의에 가느라 딸의 졸업식에 참석하지 못했다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="너무 오랜만에 동창회를 간 탓인지 전부 모르는 얼굴뿐이었다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="이번 주 토요일에 혹시 시간 괜찮으면 영화 보러 안 갈래?" />
+					<feat att="example" val="내가 그날은 친한 친구의 집들이를 가기로 했어. 다음 주는 어때?" />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go" />
+					<feat att="definition" val="To move to attend a certain meeting that has a specific purpose." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】" />
+					<feat att="definition" val="目的のある集まりに参加するために移動する。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="aller à, assister à, participer à" />
+					<feat att="definition" val="Se déplacer en vue de participer à une réunion ayant un certain objectif." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Ir" />
+					<feat att="definition" val="Trasladarse para participar en una reunión que se celebra con objetivo determinado." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="ينتقل" />
+					<feat att="definition" val="ينتقل لحضور تجمع ذي هدف ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="оролцох, зорьж очих" />
+					<feat att="definition" val="ямар нэг зорилго бүхий цуглаанд оролцохоор явах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi" />
+					<feat att="definition" val="Di chuyển để tham dự cuộc họp với mục đích nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ไปร่วม" />
+					<feat att="definition" val="เคลื่อนที่ไปเพื่อเข้าร่วมกิจกรรมตามวัตถุประสงค์ใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="pergi" />
+					<feat att="definition" val="bergerak untuk menghadiri suatu pertemuan yang memiliki tujuan" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="идти; ехать" />
+					<feat att="definition" val="Принимать участие в каком-либо мероприятии, собрании." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="去，前往" />
+					<feat att="definition" val="为参加某种聚会而移动。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="6">
+				<feat att="syntacticPattern" val="1이 2에/에게/로/를 가다" />
+				<feat att="definition" val="어떤 목적을 가지고 일정한 곳으로 움직이다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="만나러 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="먹으러 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="배우러 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="자르러 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="찾으러 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="집 근처에 은행이 없어서 돈을 찾으러 은행에 한번 가려면 버스를 한참 타야 한다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="공부하러 도서관을 가다가 친구를 만났다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="공책을 빌리러 친구에게 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="어머니는 저녁거리를 사러 시장으로 가셨다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="저녁 언제쯤 먹을 겁니까?" />
+					<feat att="example" val="지금 식당으로 갑시다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go" />
+					<feat att="definition" val="To move to a certain place with a specific purpose." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】" />
+					<feat att="definition" val="ある目的で一定の場所に移動する。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="aller, se rendre, partir, partir pour" />
+					<feat att="definition" val="Se déplacer pour aller à un certain endroit en ayant un certain objectif." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Ir" />
+					<feat att="definition" val="Trasladarse a cierto lugar  con  objetivo determinado." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يذهب ، يسير" />
+					<feat att="definition" val="يتحرك ومعه هدف ما إلى مكان معين" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="очих, зорих" />
+					<feat att="definition" val="ямар нэг зорилгоор тодорхой нэг газар руу хөдөлж явах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi, sang" />
+					<feat att="definition" val="Di chuyển đến nơi nhất định với mục đích nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ไป" />
+					<feat att="definition" val="มีวัตถุประสงค์ใด ๆ และเคลื่อนที่ไปตามสถานที่ที่กำหนด" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="pergi" />
+					<feat att="definition" val="memiliki tujuan kemudian bergerak ke tempat tertentu" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="идти; ехать" />
+					<feat att="definition" val="Передвигаться в определённое место с какой-либо целью." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="去，上" />
+					<feat att="definition" val="为某种目的而向某个地方移动。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="8">
+				<feat att="syntacticPattern" val="1이 2에/를 가다" />
+				<feat att="definition" val="어떤 단체나 기관에 소속되다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="군대에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="학교에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="동생은 대학교 1학년을 마치고 군대를 가기로 결정했다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="조카가 벌써 초등학교에 갈 나이가 되었다는 말에 지수는 깜짝 놀랐다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="엄마, 저는 가수가 되고 싶은데 꼭 대학에 가야 해요?" />
+					<feat att="example" val="우선 대학에 가고 그다음에 하고 싶은 일을 해도 늦지 않아." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go; enter; join" />
+					<feat att="definition" val="To become a member of a certain group or organization." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】。はいる【入る】" />
+					<feat att="definition" val="ある団体や機関に所属する。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="partir pour, partir à, entrer à, être admis à" />
+					<feat att="definition" val="Appartenir à un groupe ou à un organisme." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Asociarse" />
+					<feat att="definition" val="Adherirse a un órgano o institución." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يذهب إلى" />
+					<feat att="definition" val="ينتمي إلى جماعة أو منظمة" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="харьяалагдах" />
+					<feat att="definition" val="ямар нэг байгууллага, хамт олонд харьяалагдах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi vào, gia nhập, tham gia" />
+					<feat att="definition" val="Được thuộc về đoàn thể hay cơ quan nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ไป, เข้า" />
+					<feat att="definition" val="อยู่ในสังกัดของหน่วยงานหรือกลุ่มใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="menjadi anggota, mengikuti" />
+					<feat att="definition" val="menjadi bagian dari suatu lembaga atau instansi" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="идти; ехать; уходить; уезжать" />
+					<feat att="definition" val="Входить в состав какой-либо организации или органа." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="上，进" />
+					<feat att="definition" val="隶属于某个团体或机关。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="7">
+				<feat att="syntacticPattern" val="1이 2에/로 가다" />
+				<feat att="definition" val="특정한 일을 맡아서 하기 위해 다른 곳으로 옮기다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="본사로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="부서로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="영업부로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="지부로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="지사로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="아버지가 미국 지사로 가게 되셔서 우리 가족도 모두 따라가기로 했다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="김 과장이 다른 부서로 간다는 소식에 부서원들이 모두 환송회를 준비했다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="이 검사는 지방에서 근무한 지 5년 만에 근무지가 바뀌어 서울 법원으로 가게 되었다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go; transfer" />
+					<feat att="definition" val="To transfer to another place to undertake a specific work." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】。いどうする【異動する】。ふにんする【赴任する】" />
+					<feat att="definition" val="特定の仕事を担当するために他のところに移る。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="se rendre à" />
+					<feat att="definition" val="Se rendre dans un autre lieu en vue de prendre en charge une tâche spécifique." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Transmitirse" />
+					<feat att="definition" val="Trasladarse a otra posición para asumir un trabajo especial." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="ينتقل إلى" />
+					<feat att="definition" val="ينتقل إلى مكان آخر لتنفيذ مهمة معينة" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="очих, томилогдох, шилжих" />
+					<feat att="definition" val="тодорхой ажил үүргийг хариуцан гүйцэтгэхээр өөр газарт шилжин очих." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="chuyển đi" />
+					<feat att="definition" val="Di dời đến nơi khác để đảm nhận công việc đặc biệt." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ไป" />
+					<feat att="definition" val="เคลื่อนที่ไปยังสถานที่อื่นเพราะได้รับมอบหมายให้ทำงานที่กำหนดพิเศษ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="pindah" />
+					<feat att="definition" val="pindah ke tempat lain karena diberikan tanggung jawab lain" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="ехать; уходить; уезжать" />
+					<feat att="definition" val="Перемещаться в другое место для выполнения полученного особого дела." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="去，被派去" />
+					<feat att="definition" val="为接受特定任务而向别的地方移动。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="5">
+				<SenseRelation>
+					<feat att="type" val="반대말" />
+					<feat att="id" val="69514" />
+					<feat att="lemma" val="오다" />
+					<feat att="homonymNumber" val="1" />
+				</SenseRelation>
+				<feat att="syntacticPattern" val="1이 2에/에게/로 가다" />
+				<feat att="definition" val="물건이나 권리 등이 누구의 소유가 되다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="돈이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="선물이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="재산이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="자금이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="소유권이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="수중으로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="오고 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="죽은 김 노인의 재산은 모두 큰 아들에게 갔다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="아버지가 돌아가신 후에 땅은 큰 아들에게 갔고 집은 작은 아들에게 갔다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="김 사장은 은행에서 빌린 돈을 갚지 못해 살던 집의 소유권이 은행으로 갔다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go" />
+					<feat att="definition" val="For objects, rights, etc., to belong to someone." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】。あたえられる【与えられる】" />
+					<feat att="definition" val="ものや権利などが誰かの所有になる。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="(Pas d'expression équivalente)" />
+					<feat att="definition" val="(Objet, droit, etc.) Devenir la propriété de quelqu'un." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Apoderarse" />
+					<feat att="definition" val="Ser la propiedad de alguien los objetos o derechos." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يعود الملك إلى" />
+					<feat att="definition" val="أصبحت بضاعة أو حقوق مملوكة لشخص ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="очих, өмч болох, мэдлийнх болох, шилжих очих" />
+					<feat att="definition" val="эд зүйл буюу өмчлөх эрх зэрэг хэн нэгний эзэмшил болох." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="được, có" />
+					<feat att="definition" val="Đồ vật hay quyền lợi... trở thành sở hữu của ai đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ได้" />
+					<feat att="definition" val="สิ่งของหรืออำนาจ เป็นต้น ตกเป็นของคนใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="jatuh ke" />
+					<feat att="definition" val="barang atau hak menjadi milik seseorang" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="переходить; передавать" />
+					<feat att="definition" val="Становиться чьей-либо собственностью (о предмете или правах и т.п.)." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="归属，落到" />
+					<feat att="definition" val="东西或权利等为某人所属。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="4">
+				<SenseRelation>
+					<feat att="type" val="반대말" />
+					<feat att="id" val="69514" />
+					<feat att="lemma" val="오다" />
+					<feat att="homonymNumber" val="1" />
+				</SenseRelation>
+				<feat att="syntacticPattern" val="1이 2에/에게/로 가다" />
+				<feat att="definition" val="관심이나 눈길이 어떤 대상에 끌리다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="관심이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="눈길이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="눈이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="동정이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="마음이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="시선이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="신경이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="심증이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="애정이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="정이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="호감이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="지수는 인상이 좋아서 보면 볼수록 호감이 간다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="차에 관심이 생긴 뒤로 신차를 보면 나도 모르게 시선이 간다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="사장님이 책상을 주먹으로 내리치자 직원들의 눈길이 모두 사장님에게로 갔다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="be drawn to; be attracted" />
+					<feat att="definition" val="For one's attention or gaze to be drawn to a certain object." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】。ひかれる【引かれる】" />
+					<feat att="definition" val="関心や視線がある対象に引かれる。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="se fixer sur, (attention) se porter sur, (regards) se tourner vers" />
+					<feat att="definition" val="(Intérêt ou regard) Être attiré par un objet ou par une personne." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Tener el interés" />
+					<feat att="definition" val="Atraer un objeto los intereses o las miradas de alguien." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يتّجه الاهتمام إلى" />
+					<feat att="definition" val="يتم توجيه الاهتمام والأنظار إلى موضع ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="татагдах, чиглэх" />
+					<feat att="definition" val="сонирхол буюу нүд нь аль нэгэн юманд татагдах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="hướng (ánh mắt, quan tâm) đến" />
+					<feat att="definition" val="Sự quan tâm hay ánh mắt bị lôi cuốn vào đối tượng nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="เกิดความ..., มีความ..., ...ไปหา" />
+					<feat att="definition" val="ความสนใจหรือสายตาถูกดึงดูดไปยังสิ่งใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="ada" />
+					<feat att="definition" val="minat atau perhatian tertarik ke suatu objek" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="заинтересоваться" />
+					<feat att="definition" val="Привлекать внимание или взгляд к какому-либо предмету." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="产生" />
+					<feat att="definition" val="关心或视线被某个对象吸引。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="19">
+				<SenseRelation>
+					<feat att="type" val="반대말" />
+					<feat att="id" val="69514" />
+					<feat att="lemma" val="오다" />
+					<feat att="homonymNumber" val="1" />
+				</SenseRelation>
+				<feat att="syntacticPattern" val="1이 2에/에게 가다" />
+				<feat att="definition" val="말이나 소식 등이 알려지거나 전해지다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="기별이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="소식이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="신호가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="연락이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="통보가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="통지가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="할아버지께서 돌아가셨다는 기별이 가자 반나절도 안 돼서 친척들이 모두 모였다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="동창들 모두 지수가 결혼한다는 것을 알고 있는데 승규에게만 소식이 안 가서 승규만 모르고 있다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="다들 왔는데 유민이는 왜 아직 안 오지?" />
+					<feat att="example" val="아직 연락이 안 갔나 보네요." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="be sent; be delivered" />
+					<feat att="definition" val="For words, news, etc., to be known or delivered." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】。つたわる【伝わる】。とどく【届く】" />
+					<feat att="definition" val="話や便りなどが知られたり、伝わる。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="parvenir, arriver, se transmettre, être transmis" />
+					<feat att="definition" val="(Parole, nouvelle, etc.) Être communiqué ou transmis." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Darse el aviso" />
+					<feat att="definition" val="Conocerse o transmitirse las palabras o noticias." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="ينتقل الخبر إلى" />
+					<feat att="definition" val="يتم الإبلاغ بكلام أو خبر" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="хэл хүрэх" />
+					<feat att="definition" val="хэл үг, сураг чимээ мэдэгдэх буюу дамжигдах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="truyền đi, lan ra" />
+					<feat att="definition" val="Lời nói hay tin tức... được loan báo hay truyền đi." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="แพร่ออกไป, ส่งออกไป, กระจายออกไป" />
+					<feat att="definition" val="คำพูดหรือข่าว เป็นต้น ถูกประกาศหรือเผยแพร่ออกไป" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="terkirim, terdengar" />
+					<feat att="definition" val="perkataan atau kabar diberitahukan, atau disampaikan" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="передаваться; приходить; доходить" />
+					<feat att="definition" val="Сообщаться или передаваться (о словах или вестях и.т.п)." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="传到，送到" />
+					<feat att="definition" val="话或消息等被告知或被转达。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="9">
+				<feat att="syntacticPattern" val="1이 2에/로 가다" />
+				<feat att="definition" val="어떤 상태나 상황을 향해 나아가다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="걱정스러운 상황으로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="긍정적인 방향으로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="심각한 사태로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="위험한 수준으로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="좋은 사회로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="통일로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="파국으로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="우리 부부는 3년 전 집 문제로 크게 싸워 이혼 직전까지 갔다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="우리 사회가 선진 사회로 가려면 시민들의 인식부터 달라져야 한다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="선생님 병환은 어떠세요?" />
+					<feat att="example" val="어제 저녁에 아주 심각한 상황까지 갔는데 이제 좀 나아졌어요." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="move toward; go toward" />
+					<feat att="definition" val="To move toward a certain state or situation." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="おもむく【赴く・趣く】。すすむ【進む】" />
+					<feat att="definition" val="物事がある方向・状態に向かう。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="mener à, aller, avancer, évoluer, évoluer vers, tendre vers, se laisser aller vers, se laisser dériver vers, se laisser entraîner vers" />
+					<feat att="definition" val="Avancer vers un état ou une situation." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Avanzar" />
+					<feat att="definition" val="Avanzar hacia un estado o situación." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يتّجه إلى" />
+					<feat att="definition" val="يتجه نحو حالة ما أو وضع ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="хүрэх, тулах" />
+					<feat att="definition" val="ямар нэгэн нөхцөл, төлөв байдлыг чиглэн урагшлах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi tới, tiến đến" />
+					<feat att="definition" val="Hướng về trạng thái hay tình huống nào đó và tiến tới." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ไปสู่" />
+					<feat att="definition" val="ไปตามสภาพหรือสถานการณ์ใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="menuju" />
+					<feat att="definition" val="keluar untuk menghadapi suatu situasi" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="идти; ехать; уходить; уезжать" />
+					<feat att="definition" val="Двигаться вперёд в зависимости от состояния или положения." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="到达，迈向" />
+					<feat att="definition" val="朝向某种状态或状况前进。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="11">
+				<feat att="syntacticPattern" val="1이 2에/가 가다" />
+				<feat att="syntacticAnnotation" val="'2에/가' 대신에 '중간 정도', '최고' 등도 쓴다." />
+				<feat att="definition" val="어떤 수준이나 정도에 이르다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="두 번째 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="일억 원이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="중간 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="최고 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="이 가구는 우리나라에서 최고 가는 장인이 만든 것이다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="동네 집값이 많이 올라서 예전에 2억 가던 아파트가 이제는 3억이 간다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="아들이 공부를 잘 한다면서요?" />
+					<feat att="example" val="아니에요. 반에서 중간밖에 안 가요." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="reach; rank" />
+					<feat att="definition" val="To reach a certain level or degree." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="する。そうとうする【相当する】" />
+					<feat att="definition" val="ある水準や程度に至る。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="arriver à, atteindre, parvenir à, se hisser à" />
+					<feat att="definition" val="Atteindre un certain niveau ou un certain degré." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Alcanzar" />
+					<feat att="definition" val="Llegar a un nivel o grado." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يبلغ ، يصبح" />
+					<feat att="definition" val="يبلغ مستوى ما أو درجة ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="хүрэх" />
+					<feat att="definition" val="ямар нэг түвшин буюу хэм хэмжээнд хүрэх." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi đến, đạt đến" />
+					<feat att="definition" val="Đạt đến trình độ hay mức độ nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ถึง" />
+					<feat att="definition" val="ไปได้ถึงระดับหรือมาตรฐานใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="mencapai, sampai" />
+					<feat att="definition" val="mencapai suatu standar atau kadar tertentu" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="достигать; доходить" />
+					<feat att="definition" val="Достигать какого-либо уровня или степени." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="达到" />
+					<feat att="definition" val="到某种水平或程度。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="10">
+				<feat att="syntacticPattern" val="1이 2에 가다" />
+				<feat att="definition" val="어느 때가 되거나 어느 곳에 이르다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="결국에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="결말에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="끝에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="나중에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="내일에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="마지막에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="막판에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="중간에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="후대로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="영화가 시작은 흥미진진했는데 마지막에 가서는 싱겁게 끝이 났다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="김 부장은 자기가 먼저 일을 시작하고는 나중에 가서 부하 직원에게 책임을 떠넘긴다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="내년 휴가는 어디로 가지?" />
+					<feat att="example" val="뭘 벌써부터 고민해. 그때 가서 생각하면 되지." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="reach; come" />
+					<feat att="definition" val="To reach a certain point of time or a place." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="いたる【至る】" />
+					<feat att="definition" val="ある時期や場所に至る。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="arriver à, parvenir à" />
+					<feat att="definition" val="Atteindre un certain moment ou un certain lieu." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Llegar" />
+					<feat att="definition" val="Venirse un tiempo determinado o llegarse a un lugar alguno." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يحون" />
+					<feat att="definition" val="يحون الوقت أو يبلغ مكان ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="очих, хүрэх, болох" />
+					<feat att="definition" val="ямар нэг цаг үе болох буюу ямар нэг газарт хүрэх." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi đến" />
+					<feat att="definition" val="Đến thời điểm nào đó hoặc đến nơi nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ถึง" />
+					<feat att="definition" val="ถึงช่วงใด ๆ หรือถึงที่ใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="sampai" />
+					<feat att="definition" val="mencapai waktu tertentu, atau mencapati tempat tertentu" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="идти; ехать; уходить; уезжать" />
+					<feat att="definition" val="Наступать (о каком-либо определённом времени) или достигать какого-либо назначенного места." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="到" />
+					<feat att="definition" val="到达某个时间或地点。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="12">
+				<feat att="syntacticPattern" val="1이 2를 가다" />
+				<feat att="definition" val="어떤 현상이나 상태가 유지되다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="며칠을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="몇 년을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="사흘을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="평생을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="하루를 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="길게 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="얼마 못 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="오래 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="올 겨울 유행하는 감기는 어찌나 독한지 한 번 걸리면 이 주 이상을 간다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="어떤 일에든 금방 싫증을 내는 승규는 수영에도 얼마 못 가 흥미를 잃었다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="김 선생님은 어렸을 때부터 매일 책 읽는 게 습관이 돼서 아직도 매일 책을 읽으신대." />
+					<feat att="example" val="어려서 든 습관이 평생을 간다잖아." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="last; hold" />
+					<feat att="definition" val="For a certain phenomenon or state to be maintained." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="もつ【持つ】" />
+					<feat att="definition" val="ある現象や状態が維持される。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="continuer, se maintenir" />
+					<feat att="definition" val="(Phénomène ou état) Se maintenir." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Mantenerse" />
+					<feat att="definition" val="Mantenerse un fenómeno o estado." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يستمرّ" />
+					<feat att="definition" val="تستمر ظاهرة ما أو وضع ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="болох" />
+					<feat att="definition" val="ямар нэг үзэгдэл буюу байдал тэр хэвээрээ хадгалагдах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="kéo dài" />
+					<feat att="definition" val="Hiện tượng hay trạng thái nào đó được duy trì." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="อยู่ได้..." />
+					<feat att="definition" val="ปรากฏการณ์หรือสภาพใด ๆ ยังคงอยู่" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="tertahan" />
+					<feat att="definition" val="suatu gejala atau kondisi tetap bertahan" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="проходить; занимать" />
+					<feat att="definition" val="Сохраняться (о каком-либо явлении или состоянии)." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="持续，维续" />
+					<feat att="definition" val="维持某种现象或状态。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="13">
+				<feat att="syntacticPattern" val="1이 2를 가다" />
+				<feat att="definition" val="어떤 경로를 통해 움직이다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="가던 길." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="길을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="밤길을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="빗길을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="산길을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="어머니는 밤길을 가야 하는 딸에게 조심하라고 당부했다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="지수는 지갑을 안 가지고 집을 나간 것을 알고 가던 길을 돌아왔다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="차들이 눈길을 천천히 가는 바람에 승규는 한 시간째 버스 안에 있다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go; walk; travel" />
+					<feat att="definition" val="To travel through a certain route." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】" />
+					<feat att="definition" val="ある経路に沿って動く。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="suivre" />
+					<feat att="definition" val="Se déplacer en suivant un itinéraire." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Moverse" />
+					<feat att="definition" val="Trasladarse por los caminos determinados." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يذهب ، يسير" />
+					<feat att="definition" val="يتحرك عن طريق مسار ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="чиглэх, зорих" />
+					<feat att="definition" val="ямар нэг зам буюу чиглэл шугамын дагуу хөдлөх явах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi qua" />
+					<feat att="definition" val="Di chuyển thông qua con đường nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="เดินไปตาม, เดินอยู่ใน" />
+					<feat att="definition" val="เคลื่อนไหวโดยผ่านเส้นทางใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="melewati, melalui" />
+					<feat att="definition" val="bergerak melewati suatu terowongan" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="идти; ехать; проходить; проезжать" />
+					<feat att="definition" val="Двигаться по определённому пути." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="走" />
+					<feat att="definition" val="通过某种途径移动。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="14">
+				<feat att="syntacticPattern" val="1이 2에/로 3을 가다" />
+				<feat att="definition" val="어떤 일을 하기 위해서 다른 곳으로 이동하다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="구경을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="낚시를 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="도망을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="등산을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="목욕을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="문병을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="산책을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="소풍을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="여행을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="유학을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="이민을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="이사를 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="전근을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="출장을 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="휴가를 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="아버지는 일요일 아침이면 항상 가까운 산에 등산을 가신다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="아이 학교가 멀어서 학교 근처로 가족 모두 이사를 가기로 했다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="이번 휴가는 어디로 갈 생각이야?" />
+					<feat att="example" val="제주도로 갈까 해." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go; move" />
+					<feat att="definition" val="To move to another place to do a certain task." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】" />
+					<feat att="definition" val="何かをするために他の場所に移動する。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="aller, se rendre à" />
+					<feat att="definition" val="Se déplacer d'un endroit à un autre dans un certain but." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Transmitirse" />
+					<feat att="definition" val="Trasladarse a otro lugar para realizar un trabajo." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يذهب" />
+					<feat att="definition" val="ينتقل إلى مكان آخر من أجل القيام بعمل ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="шилжих, явах" />
+					<feat att="definition" val="ямар нэг үйлийг хийхийн тулд өөр тийш шилжих." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi" />
+					<feat att="definition" val="Di chuyển đến nơi khác để thực hiện việc nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ไป" />
+					<feat att="definition" val="เคลื่อนย้ายไปยังสถานที่อื่นเพื่อทำสิ่งใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="pergi" />
+					<feat att="definition" val="bergerak ke tempat lain untuk melakukan suatu pekerjaan" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="идти; ехать; уходить; уезжать" />
+					<feat att="definition" val="Перемещаться в другое место в целях выполнить какое-либо дело." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="去" />
+					<feat att="definition" val="为做某事而向别的地方移动。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="16">
+				<feat att="syntacticPattern" val="1이 2에/로 가다" />
+				<feat att="definition" val="어떤 곳으로 향하거나 이어지다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="가는 계단." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="가는 길." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="가는 문." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="가는 입구." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="가는 통로." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="승규는 지나가는 학생에게 학생 식당으로 가는 길을 물었다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="가게 주인은 쫓기는 승규에게 뒷문으로 가는 길을 손으로 가리켰다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="화장실이 어디에 있습니까?" />
+					<feat att="example" val="2층에 있는데 2층으로 가는 계단은 저쪽에 있습니다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="lead to" />
+					<feat att="definition" val="To head for or lead to a certain place." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】。つうじる【通じる】" />
+					<feat att="definition" val="ある場所に向かったり、繋がったりする。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="marcher sur, faire mouvement" />
+					<feat att="definition" val="Se diriger vers un lieu et être relié à ce lieu." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Dirigirse" />
+					<feat att="definition" val="Dirigirse o continuarse hacia un lugar." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يذهب ، يسير" />
+					<feat att="definition" val="يتجه أو يؤدي إلى مكان ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="хүрэх, очих" />
+					<feat att="definition" val="хаа нэг зүгт чиглэх буюу үргэлжлэх." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi đến" />
+					<feat att="definition" val="Hướng đến hoặc được kết nối sang nơi nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ไป..." />
+					<feat att="definition" val="ต่อเนื่องหรือมุ่งไปยังที่ใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="pergi" />
+					<feat att="definition" val="menuju suatu tempat atau terus menyambung" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="идти; ехать; уходить; уезжать" />
+					<feat att="definition" val="Следовать или направляться в какое-либо место." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="通往，通向" />
+					<feat att="definition" val="朝着或连着某个地方。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="17">
+				<feat att="syntacticPattern" val="1이 2에/로 가다" />
+				<feat att="definition" val="없어져 보이지 않게 되다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="어디로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="어디로인가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="어디에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="책상 위에 놓아 둔 열쇠가 어디로 갔는지 보이지 않는다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="어머니는 아버지에게 카메라가 어디에 갔느냐고 물으셨다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="내 가방이 어디 갔지?" />
+					<feat att="example" val="잘 찾아봐. 교실에 두고 온 거 아니야?" />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="be gone; vanish" />
+					<feat att="definition" val="To disappear and become invisible." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】。さる【去る】" />
+					<feat att="definition" val="いなくなって見えなくなる。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="s'en aller, disparaître, s'évaporer" />
+					<feat att="definition" val="Disparaître et devenir invisible." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Irse" />
+					<feat att="definition" val="Desaparecer o no verse." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يختفي" />
+					<feat att="definition" val="يختفي ليصبح غير منظور" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="алга болох, харагдахгүй болох" />
+					<feat att="definition" val="алга болж, харагдахгүй болох." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="mất đi, đi mất" />
+					<feat att="definition" val="Trở nên không thấy do không còn." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="หายไป" />
+					<feat att="definition" val="หายไปทำให้มองไม่เห็น" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="pergi, menghilang" />
+					<feat att="definition" val="menjadi menghilang dan tidak terlihat" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="деваться; пропадать" />
+					<feat att="definition" val="Становиться невидимым, исчезнуть." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="去" />
+					<feat att="definition" val="消失不见。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="18">
+				<feat att="syntacticPattern" val="1이 2로/에 가다" />
+				<feat att="definition" val="일이 진행되다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="막판으로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="중간 단계로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="후반부로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="2년 예정이었던 아파트 공사가 벌써 마무리 단계로 가고 있다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="이번 사업은 후반부에 갈수록 예상하지 못한 문제들이 많이 생긴다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="팀 분위기가 안 좋은데 팀원들 사이에 무슨 일 있었어?" />
+					<feat att="example" val="프로젝트가 막판으로 가면서 서로 사이가 안 좋아졌어." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="proceed" />
+					<feat att="definition" val="For a certain task or job to move forward." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】。すすむ【進む】。はかどる【捗る】" />
+					<feat att="definition" val="物事がはかどる。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="se passer" />
+					<feat att="definition" val="(Affaire) Se dérouler." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Irse" />
+					<feat att="definition" val="Avanzarse un trabajo." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يستمرّ" />
+					<feat att="definition" val="يسير أمر" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="явагдах, өрнөх" />
+					<feat att="definition" val="ажил үйл явагдах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đi đến, diễn tiến" />
+					<feat att="definition" val="Công việc được tiến hành." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ดำเนิน" />
+					<feat att="definition" val="เรื่องใด ๆ ดำเนินไป" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="berlangsung, berjalan" />
+					<feat att="definition" val="pekerjaan sedang berjalan" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="двигаться; идти вперёд" />
+					<feat att="definition" val="Продвигаться (о деле)." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="到，进展到" />
+					<feat att="definition" val="事情在进行。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="20">
+				<feat att="syntacticPattern" val="1에/에게 2가 가다" />
+				<feat att="definition" val="어떤 대상에게 이익이나 손해 등이 생기다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="무리가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="부담이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="손해가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="이익이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="피해가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="해가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="엄마는 이혼 사실이 알려지면 아이들에게 피해가 갈까 봐 이를 숨기려고 했다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="김 사장은 직원들의 해외 연수가 장기적으로는 회사에도 이익이 가는 일이라고 판단했다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="여기 공장이 세워지면 매연과 폐수 때문에 주민들에게 해가 갈 수 있어요." />
+					<feat att="example" val="그럼, 다른 지역을 한번 찾아봅시다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="be done; be inflicted; occur" />
+					<feat att="definition" val="For good or harm to be done to someone or something." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="しょうじる【生じる】" />
+					<feat att="definition" val="ある対象に利益や損害が発生する。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="subir, devenir" />
+					<feat att="definition" val="Engendrer un profit pour une personne ou un objet, lui infliger une perte, etc." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Producirse" />
+					<feat att="definition" val="Producirse a alguien un beneficio o daño." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يحدث ، يحصل" />
+					<feat att="definition" val="يحدث ربح أو خسارة لطرف ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="хүргэх, учруулах" />
+					<feat att="definition" val="хэн нэгэнд ашиг тус, хор хөнөөл болох." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="sinh ra, mang đến, gây ra" />
+					<feat att="definition" val="Lợi ích hay thiệt hại… phát sinh cho đối tượng nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="เกิด.." />
+					<feat att="definition" val="ผลประโยชน์หรือความเสียหาย เป็นต้น เกิดขึ้นกับสิ่งใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="terkena, mendapat" />
+					<feat att="definition" val="mendapatkan keuntungan atau kerugian dari suatu hal" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="наступать; приходить; возникать" />
+					<feat att="definition" val="Возникать (о прибыли, убытках и т.п.)" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="产生，造成" />
+					<feat att="definition" val="在某个对象的身上发生利益或损害。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="21">
+				<feat att="syntacticPattern" val="1에 2가 가다" />
+				<feat att="definition" val="건강에 해가 되다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="무리가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="부담이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="축이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="김 부장은 술을 너무 많이 마셔서 간에 무리가 갈 지경이 되었다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="이 과장 큰 수술을 했다면서요?" />
+					<feat att="example" val="작년부터 몸 여기저기가 붓는다더니 한쪽 신장에 무리가 갔나 봐요." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="be done; be inflicted; occur" />
+					<feat att="definition" val="For harm to be done to someone's health." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="かかる【掛かる】" />
+					<feat att="definition" val="健康に悪影響を与える。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="causer des torts, causer des ennuis, nuire à, abîmer, être néfaste" />
+					<feat att="definition" val="Être nuisible à la santé." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Dañarse" />
+					<feat att="definition" val="Ser perjudicial para la salud." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يصبح" />
+					<feat att="definition" val="يضر بالصحة" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="муудах, өвчлүүлэх, нөлөөлөх" />
+					<feat att="definition" val="эрүүл мэндэд хор болох." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="bị, chịu" />
+					<feat att="definition" val="Có hại cho sức khỏe." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="เสีย, แย่" />
+					<feat att="definition" val="เป็นผลเสียต่อสุขภาพ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="rusak, memburuk" />
+					<feat att="definition" val="menjadi tidak baik, buruk untuk kesehatan" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="возникать; появляться" />
+					<feat att="definition" val="Приносить вред здоровью." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="造成" />
+					<feat att="definition" val="有害健康。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="22">
+				<feat att="syntacticPattern" val="1이 가다" />
+				<feat att="definition" val="어떤 일을 할 때 수고가 많이 들다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="손길이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="손이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="손질이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="일손이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="잔손이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="품이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="더 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="덜 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="많이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="떡은 손이 많이 가는 음식이라 만들기가 쉽지 않다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="민준은 품이 더 가는 일을 동생에게 주고 자기는 쉬운 일을 맡았다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="아이들이 셋이나 되시니 힘드시겠어요." />
+					<feat att="example" val="아이들이 어렸을 때는 잔손이 많이 갔는데 이제 다 커서 제가 신경 쓸 일이 별로 없어요." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="require; necessitate" />
+					<feat att="definition" val="For certain work to require a lot of effort" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="かかる【掛かる】。てまどる【手間取る】" />
+					<feat att="definition" val="何かをする時、手間がかかる。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="exiger, demander, réclamer, nécessiter" />
+					<feat att="definition" val="(Certaine tâche) Demander beaucoup d'efforts." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Gastarse" />
+					<feat att="definition" val="Gastarse mucho la fuerza para hacer un trabajo." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يكلّف" />
+					<feat att="definition" val="يكلف عناء كثيرا في القيام بعمل ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="хөдөлмөр орох, хүч шаардагдах, орох, шаардах" />
+					<feat att="definition" val="ямар нэг ажлыг хийхэд хүч хөдөлмөр их шаардагдах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="mất đi, mất" />
+					<feat att="definition" val="Tốn nhiều công sức khi làm việc nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ใช้...มาก, ล้า...มาก" />
+					<feat att="definition" val="มีความเหน็ดเหนื่อยเป็นอย่างมากเมื่อทำสิ่งใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="perlu, butuh" />
+					<feat att="definition" val="banyak usaha yang harus dilakukan untuk menjalankan suatu pekerjaan" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="уходить; затрачивать; тратить; требоваться" />
+					<feat att="definition" val="Требовать больших усилий." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="需要" />
+					<feat att="definition" val="做某事时花费很多力气。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="23">
+				<feat att="syntacticPattern" val="1에 2가 가다" />
+				<feat att="definition" val="줄, 주름, 흠집 등이 생기다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="구김이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="금이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="손상이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="잔주름이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="주름이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="줄이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="흠집이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="가늘게 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="살짝 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="조금 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="아내도 나이가 들었는지 이제 눈가에 잔주름이 가기 시작한다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="승규가 도자기를 옮기다가 떨어뜨렸는데 다행이 깨지지는 않고 표면에만 살짝 금이 갔다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="다림질한 지 얼마 안 됐는데 왜 벌써 치마에 주름이 갔니?" />
+					<feat att="example" val="잠깐 앉았다 일어났더니 이렇게 됐어요." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="come into being" />
+					<feat att="definition" val="For lines, wrinkles, scratches, etc., to be formed." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="できる。はいる【入る】。よる【寄る】" />
+					<feat att="definition" val="線、皺、傷などが生じる。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="se former, apparaître, survenir, se fêler, se fendre, se lézarder, se fissurer, se rider" />
+					<feat att="definition" val="(Ligne, pli, défaut, etc.) Se créer." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Producirse" />
+					<feat att="definition" val="Producirse línea, arruga o defecto, etc." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يحدث" />
+					<feat att="definition" val="ينشأ خط أو جعدة أو عيب أو غيرها" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="үүсэх, гарах" />
+					<feat att="definition" val="зураас, цав, үрчлээ үүсэх." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="xuất hiện, có" />
+					<feat att="definition" val="Xuất hiện lằn, nếp nhăn hay vết sẹo..." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="เป็นรอย, ร้าว, ย่น" />
+					<feat att="definition" val="ริ้วรอย รอยเหี่ยวย่นหรือรอยแผล เป็นต้น เกิดขึ้น" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="ada" />
+					<feat att="definition" val="muncul garis, kerut, luka" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="возникать" />
+					<feat att="definition" val="Появляться (о трещинах, морщинах, следах и т.п.)." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="有，出现，长" />
+					<feat att="definition" val="产生线条、皱纹、瑕疵等。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="24">
+				<feat att="syntacticPattern" val="1이 가다" />
+				<feat att="definition" val="어떤 것에 대해 생각이나 이해가 되다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="공감이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="구별이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="구분이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="납득이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="믿음이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="분간이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="상상이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="실감이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="수긍이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="의문이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="의심이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="이해가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="짐작이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="모범생이던 민준이가 수업을 빠지고 노래방에 간다는 건 상상이 안 간다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="승규는 영화 내용이 너무 복잡해 이해를 할 수 없었는데 누나의 설명을 듣고 그제서야 이해가 갔다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="사람들이 김 대리가 거짓말을 많이 한다는데 사실일까?" />
+					<feat att="example" val="그래서 그런지 나도 그 사람 말은 믿음이 안 가." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="occur; inspire; become possible" />
+					<feat att="definition" val="To come to think of or understand a certain thing." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】" />
+					<feat att="definition" val="あることに対して理解できる。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="deviner, prévoir, supposer, évaluer, estimer, mesurer, comprendre, arriver à se faire un jugement." />
+					<feat att="definition" val="Parvenir à penser à quelque chose ou à le comprendre." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Entenderse" />
+					<feat att="definition" val="Pensarse o comprenderse algo." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يصبح" />
+					<feat att="definition" val="يصبح أن يفهم حول شيء ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="ойлгох, авах" />
+					<feat att="definition" val="ямар нэг зүйлийн тухай бодол буюу ойлголт төрөх." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="đạt đến, có thể" />
+					<feat att="definition" val="Được nghĩ hay hiểu về điều gì đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="...ออก" />
+					<feat att="definition" val="นึกออกหรือเข้าใจเกี่ยวกับสิ่งใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="mengerti, paham, ada, merasa" />
+					<feat att="definition" val="berpikir atau mengerti tentang sesuatu" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="приходить; уловить; понять; приходить в голову" />
+					<feat att="definition" val="Додуматься или понимать что-либо." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="能够，给予" />
+					<feat att="definition" val="可以想到或理解某事。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="25">
+				<feat att="syntacticPattern" val="1이 가다" />
+				<feat att="definition" val="어떤 대상에 작용하다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="발걸음이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="발길이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="발이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="우리는 정해 놓은 목적지도 없이 그냥 발길이 가는 대로 걸었다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="저녁 식사 때 이모가 해 오신 반찬이 맛있어서 자꾸 그쪽으로만 손이 갔다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="엄마가 일주일 동안 집을 비우신 동안 집안은 엄마의 손이 가지 않아 엉망이 되었다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go; be drawn to" />
+					<feat att="definition" val="To be applied to a certain object." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="かかる【掛かる】" />
+					<feat att="definition" val="ある対象に作用する。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="influencer" />
+					<feat att="definition" val="Avoir un certain effet sur un objet." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Aplicarse" />
+					<feat att="definition" val="Aplicarse a un objeto." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يتّجه إلى" />
+					<feat att="definition" val="يعمل موضع ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="нөлөөлөх" />
+					<feat att="definition" val="ямар нэг зүйлд нөлөөлөх." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="nhắm đến, hướng đến" />
+					<feat att="definition" val="Có tác dụng với đối tượng nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ใช้" />
+					<feat att="definition" val="กระทำต่อสิ่งใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="berjalan, melangkah, bergerak" />
+					<feat att="definition" val="melakukan suatu proses pada suatu objek" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="прикладывать; использовать" />
+					<feat att="definition" val="Применять что-либо к какому-либо предмету." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="到" />
+					<feat att="definition" val="作用于某个对象。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="26">
+				<feat att="syntacticPattern" val="1에 2가 가다" />
+				<feat att="definition" val="어떤 대상에 노력이나 힘이 미치다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="붓이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="손길이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="손이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="학생들의 그림에 선생님의 붓이 한 번 가면 그림의 완성도가 한층 높아지곤 했다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="엄마가 일주일 동안 집을 비우신 동안 집안은 엄마의 손이 가지 않아 엉망이 되었다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go; be drawn to" />
+					<feat att="definition" val="For efforts or force to reach a certain object." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="かかる【掛かる】" />
+					<feat att="definition" val="ある対象に努力や力が及ぶ。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="influencer" />
+					<feat att="definition" val="(Effort ou force) Atteindre un objet ou une personne." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Influir" />
+					<feat att="definition" val="Aplicarse a un objeto." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يتّجه إلى" />
+					<feat att="definition" val="تصل الجهود والقوة إلى طرف ما" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="орох, шаардах" />
+					<feat att="definition" val="ямар нэг зүйлд хичээл зүтгэл буюу хүч хөдөлмөр орох." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="chạm tới, động tới" />
+					<feat att="definition" val="Sự nỗ lực hay sức mạnh tác động đến đối tượng nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ได้รับ..." />
+					<feat att="definition" val="ความพยายามและกำลังส่งผลต่อสิ่งใด ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="ada" />
+					<feat att="definition" val="usaha atau kekuatuan mencapai suatu objek" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="приложить" />
+					<feat att="definition" val="Приложить силы и старание к чему-либо." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="到" />
+					<feat att="definition" val="对某个对象做出努力或给予力量。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="27">
+				<feat att="syntacticPattern" val="1이 가다" />
+				<feat att="definition" val="시간이 지나거나 흐르다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="가을이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="겨울이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="날이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="며칠이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="몇 년이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="몇 달이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="몇 시간이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="봄이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="세월이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="시간이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="시대가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="하루가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="벌써 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="빨리 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="천천히 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="더운 여름이 가고 벌써 가을이 왔다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="시간이 갈수록 취직하기가 더 어려워진다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="오늘 하루 종일 뭐 했어요?" />
+					<feat att="example" val="그동안 바빠서 못했던 집안일을 하다 보니 하루가 다 갔네요." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="pass; flow" />
+					<feat att="definition" val="For time to pass or flow." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ゆく・いく【行く】。たつ【経つ】" />
+					<feat att="definition" val="時間が過ぎたり、流れたりする。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="se passer, s'écouler" />
+					<feat att="definition" val="(Temps) Se passer ou s'écouler." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Pasar" />
+					<feat att="definition" val="Pasar o correr el tiempo." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يمرّ ، يمضي" />
+					<feat att="definition" val="يمر أو يمضي الوقت" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="өнгөрөх, урсах, явах" />
+					<feat att="definition" val="цаг хугацаа өнгөрөх буюу урсах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="qua đi" />
+					<feat att="definition" val="Thời gian qua đi hay trôi đi." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ผ่านไป" />
+					<feat att="definition" val="เวลาผ่านไปหรือเลยไป" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="berlalu, pergi" />
+					<feat att="definition" val="waktu berlalu atau mengalir" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="идти" />
+					<feat att="definition" val="Идти или протекать (о времени)." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="过" />
+					<feat att="definition" val="时间经过或消逝。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="28">
+				<feat att="syntacticPattern" val="1이 가다" />
+				<feat att="definition" val="기계 등이 움직이거나 작동하다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="기차가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="시계가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="차가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="건전지로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="전기로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="이 시계는 할아버지가 주신 건데 아직도 잘 간다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="전기로 가는 차가 개발되었지만 속도가 느려 아직 많이 팔리지는 않는다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="시계가 고장 났는지 갑자기 안 가네요." />
+					<feat att="example" val="어디 봅시다. 건전지를 갈아야 되겠군요." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="work; operate; move" />
+					<feat att="definition" val="For machines, etc., to work or operate." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="うごく【動く】。すすむ【進む】" />
+					<feat att="definition" val="機械などが動いたり、作動したりする。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="(Pas d'expression équivalente)" />
+					<feat att="definition" val="(Machine ou autre) Marcher ou fonctionner." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Operarse" />
+					<feat att="definition" val="Moverse o funcionar una máquina, etc." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يعمل ، يتحرّك" />
+					<feat att="definition" val="تتحرك أو تشغل آلة أو غيرها" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="ажиллах, асах" />
+					<feat att="definition" val="машин, тоног төхөөрөмж зэрэг хөдлөх буюу ажиллах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="chạy, hoạt động" />
+					<feat att="definition" val="Máy móc... chuyển động hay hoạt động." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ติดเครื่อง, เดินเครื่อง, ทำงาน" />
+					<feat att="definition" val="เครื่องจักร เป็นต้น ทำงานหรือเดินเครื่อง" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="berjalan" />
+					<feat att="definition" val="mesin bergerak dan beroperasi" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="идти; функционировать" />
+					<feat att="definition" val="Действовать или работать (об аппарате и т.п.)." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="走，运转" />
+					<feat att="definition" val="机器等动或发动。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="29">
+				<feat att="syntacticPattern" val="1이 가다" />
+				<feat att="definition" val="상하거나 변질되다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="물이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="맛이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="음식이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="완전히 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="조금 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="확 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="어머니는 찌개 맛을 보시더니 맛이 갔다며 버리셨다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="날이 더워서 음식을 냉장고에 보관하지 않으면 맛이 금방 간다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="이 생선은 물이 갔네요." />
+					<feat att="example" val="그래요? 다른 싱싱한 걸로 골라 보세요." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go bad; go sour" />
+					<feat att="definition" val="To go bad or spoil." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="かわる【変わる】。おちる【落ちる】" />
+					<feat att="definition" val="傷んだり、変質したりする。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="perdre sa fraîcheur, s'altérer, aigrir, s'aigrir, se gâter, pourrir, tourner à l'aigre." />
+					<feat att="definition" val="Pourrir ou s'altérer." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Cambiarse" />
+					<feat att="definition" val="Pudrirse o cambiarse una cosa." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يتغيّر" />
+					<feat att="definition" val="يُفسد أو يتغير" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="муудах" />
+					<feat att="definition" val="муудах буюу өөрчлөгдөх." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="bị hư, bị hỏng, bị thiu" />
+					<feat att="definition" val="Hỏng hay bị biến chất." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="เปลี่ยน, เสีย" />
+					<feat att="definition" val="อาหารเสียหรือรสชาติเปลี่ยน" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="basi" />
+					<feat att="definition" val="basi, rusak, berubah, telat" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="портиться; терять вкус; утрачивать вкус" />
+					<feat att="definition" val="Портиться или изменять свойства." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="坏，变，跑" />
+					<feat att="definition" val="食物腐败或性质改变。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="30">
+				<feat att="syntacticPattern" val="1이 가다" />
+				<feat att="definition" val="때나 얼룩이 잘 지워지다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="때가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="얼룩이 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="금방 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="안 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="잘 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="어머니는 새로 나온 세제가 때가 잘 간다며 하나 더 사오라고 하셨다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="아이 옷에 묻은 잉크 얼룩이 잘 안 가서 세탁소에 맡길 수밖에 없었다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="엄마, 이 옷은 소매 부분의 때가 그대로예요." />
+					<feat att="example" val="세탁기에 빨아서 때가 잘 안 갔나 보구나. 다시 빨아야겠다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="come off" />
+					<feat att="definition" val="For stains or spots to be easily removed." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="ぬける【抜ける】。おちる【落ちる】" />
+					<feat att="definition" val="垢や染みがきれいに取れる。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="disparaître, partir facilement" />
+					<feat att="definition" val="(Crasse ou tache) Partir facilement." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Borrarse" />
+					<feat att="definition" val="Borrarse bien la suciedad o mancha." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يطمس ، يمحو" />
+					<feat att="definition" val="يتم إزالة قذارة أو وصمة عار بسهولة" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="арилах" />
+					<feat att="definition" val="хир, толбо сайн арилах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="mất đi" />
+					<feat att="definition" val="Vết hay vệt được chùi kĩ." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="หายไป, หมดไป" />
+					<feat att="definition" val="คราบไคลหรือรอยเปื้อนถูกขจัดไปอย่างง่ายดาย" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="terhapus" />
+					<feat att="definition" val="daki atau noda menghilang" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="уходить; стираться" />
+					<feat att="definition" val="Легко отходить (о грязи или пятне)." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="去除，消除，去掉" />
+					<feat att="definition" val="污垢或斑点被擦干净。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="31">
+				<feat att="syntacticPattern" val="1이 가다" />
+				<feat att="definition" val="충격이나 다른 것으로부터의 영향으로 정신을 제대로 못 차리게 되다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="첫 눈에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="한 눈에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="한 번에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="뿅 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="완전히 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="술이 약한 동생은 소주 두어 잔에 완전히 갔다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="삼촌은 새로 나온 자동차를 보자 뿅 가서 당장 타던 차를 바꾸겠다고 했다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="여자 친구하고 어떻게 만났어요?" />
+					<feat att="example" val="신입생 환영회에서 여자 친구를 처음 보고 제가 첫눈에 갔어요." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="be affected" />
+					<feat att="definition" val="To lose one's senses, being shocked or affected by something." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="のびる【伸びる】" />
+					<feat att="definition" val="衝撃や外部からの影響で、精神状態が正常に保てなくなる。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="tomber K.O., être K.O., être sonné, être groggy, être chancelant, être titubant, être vacillant" />
+					<feat att="definition" val="Ne pas parvenir à reprendre ses esprits suite à un choc ou à l’influence de quelque chose." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Perderse" />
+					<feat att="definition" val="Perderse la conciencia siendo afectado por un choque u otros." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يموت" />
+					<feat att="definition" val="لا يتمسك بالوعي جيدا بسبب صدمة أو غيرها" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="унах, ухаанаа алдах, сэтгэл алдах" />
+					<feat att="definition" val="гэнэтийн цохилт буюу гадны хүчин зүйлийн нөлөөллөөс шалтгаалан эрүүл ухаанаа хадгалах боломжгүй болох." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="mất đi" />
+					<feat att="definition" val="Trở nên không thể giữ vững tinh thần do ảnh hưởng từ cú sốc hay điều gì khác." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="กระเจิง" />
+					<feat att="definition" val="ไม่สามารถตั้งสติได้เพราะเป็นผลมาจากความกระทบกระเทือนหรือสิ่งอื่น ๆ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="melayang" />
+					<feat att="definition" val="menjadi tidak sadar karena pengaruh suatu pukulan atau hal" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="потерять голову." />
+					<feat att="definition" val="Не приходить в себя от шока или под влиянием чего-либо другого." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="晕厥，倾心，昏迷" />
+					<feat att="definition" val="受到打击或其他影响而不能正常行动。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="32">
+				<feat att="syntacticPattern" val="1이 가다" />
+				<feat att="definition" val="통신이 연결되었다는 신호 소리가 들리다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="신호가 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="상대방 전화기가 고장 났는지 아무리 걸어도 신호가 가지 않는다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="승규가 집에 전화를 했는데 신호는 가지만 아무도 전화를 받지 않았다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="reach" />
+					<feat att="definition" val="To hear a signal sound indicating connection in communication." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="なる【鳴る】" />
+					<feat att="definition" val="通信がつながったことを知らせる音が聞こえる。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="être adressé à" />
+					<feat att="definition" val="(Signal sonore indiquant que la connexion est établie) Se faire entendre." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Oírse" />
+					<feat att="definition" val="Oírse la señal que indica que la comunicación está conectada." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يذهب" />
+					<feat att="definition" val="يأتي صوت الإشارة إلى أن الاتصالات موصولة" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="дуудах, дуугарах" />
+					<feat att="definition" val="харилцах утас холбогдох үед дохио дуугарч сонсогдох." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="có (tín hiệu)" />
+					<feat att="definition" val="Nghe được âm thanh tín hiệu viễn thông đã được kết nối." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ดัง" />
+					<feat att="definition" val="ได้ยินเสียงสัญญาณเนื่องจากการสื่อสารถูกเชื่อมต่อ" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="sampai" />
+					<feat att="definition" val="suara simbol suatu hubungan komunikasi terdengar" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="идти; поступать" />
+					<feat att="definition" val="Раздаваться, срабатывать (о звуке сигнала о том, что осуществляется соединение)." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="有，能听到" />
+					<feat att="definition" val="传出表示通信正常的信号声。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="33">
+				<feat att="annotation" val="주로 '가면' '가다가'로 쓴다." />
+				<feat att="syntacticPattern" val="1이 가다" />
+				<feat att="definition" val="어떤 상태로 계속되다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="그대로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="계속 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="이대로 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="이렇게 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="죽 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="동생은 공부를 열심히 하지 않아 이대로 가다가는 대학에 떨어질 것 같다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="매달 들어오는 돈보다 나가는 돈이 더 많아." />
+					<feat att="example" val="이렇게 계속 가면 저축한 돈도 다 떨어질 텐데 큰일이네." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="go on; last; continue" />
+					<feat att="definition" val="To continue to be in a certain state." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="つづく【続く】" />
+					<feat att="definition" val="ある状態が続く。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="aller, durer" />
+					<feat att="definition" val="(État) Se maintenir." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Mantenerse" />
+					<feat att="definition" val="Continuarse un estado." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يستمرّ" />
+					<feat att="definition" val="تستمر حالة معينة" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="үргэлжлэх, энэ чигээрээ явах" />
+					<feat att="definition" val="ямар нэг байдлаа хадгалах." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="duy trì" />
+					<feat att="definition" val="Được tiếp tục theo trạng thái nào đó." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="คง" />
+					<feat att="definition" val="อยู่ในสภาพใด ๆ อย่างต่อเนื่อง" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="berjalan, berlangsung" />
+					<feat att="definition" val="suatu keadaan terus berlangsung" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="продолжаться; идти; двигаться; не прекращаться" />
+					<feat att="definition" val="Продолжаться, находясь в определённом состоянии." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="持续" />
+					<feat att="definition" val="某种状态一直继续。" />
+				</Equivalent>
+			</Sense>
+			<Sense att="id" val="34">
+				<feat att="syntacticPattern" val="1이 가다" />
+				<feat att="definition" val="사람이 죽다." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="비명에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="젊은 나이에 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="따라 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="먼저 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="일찍 가다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="민준은 갑작스러운 교통사고로 스무 살이라는 젊은 나이에 갔다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="문장" />
+					<feat att="example" val="그 작가는 첫 작품이자 마지막 작품을 하나 남기고 비명에 가 버렸다." />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="대화" />
+					<feat att="example" val="선생님, 가족은 어떻게 되십니까?" />
+					<feat att="example" val="아내가 먼저 가는 바람에 3년째 혼자 살고 있습니다." />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="die; pass away" />
+					<feat att="definition" val="For a person to die." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="いく・ゆく【逝く】。しぬ【死ぬ】。なくなる【亡くなる】" />
+					<feat att="definition" val="人が死ぬ。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="disparaître, décéder, périr, quitter ce monde" />
+					<feat att="definition" val="(Personne) Mourir." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="Morir" />
+					<feat att="definition" val="Morir" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="يموت" />
+					<feat att="definition" val="يموت إنسان" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="өнгөрөх, үхэх" />
+					<feat att="definition" val="хүн үхэх." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="ra đi" />
+					<feat att="definition" val="Người chết đi." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="ตาย, จากไป, ไป" />
+					<feat att="definition" val="คนเสียชีวิต" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="meninggal, mati" />
+					<feat att="definition" val="orang mati" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="уходить из жизни; скончаться" />
+					<feat att="definition" val="Умирать (о человеке)." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="去世" />
+					<feat att="definition" val="人死。" />
+				</Equivalent>
+			</Sense>
+		</LexicalEntry>	
+	</Lexicon>
+</LexicalResource>

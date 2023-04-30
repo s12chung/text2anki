@@ -1,7 +1,7 @@
 package khaiii
 
 import (
-	"fmt"
+	"golang.org/x/exp/slog"
 )
 
 // Tokenizer is a wrapper around the Khaiii
@@ -19,7 +19,7 @@ func NewTokenizer(k *Khaiii) *Tokenizer {
 // Cleanup cleans up the Kahiii instance
 func (k *Tokenizer) Cleanup() {
 	if err := k.kahiii.Close(); err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
 	}
 }
 

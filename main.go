@@ -1,3 +1,4 @@
+// Package main is the start point for text2anki
 package main
 
 import (
@@ -5,11 +6,15 @@ import (
 	"fmt"
 	"os"
 
+	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
 
+	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/cmd/prompt"
+	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
+	"github.com/s12chung/text2anki/pkg/dictionary/krdict"
 	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
@@ -25,6 +30,8 @@ func init() {
 	flag.Parse()
 }
 
+var parser = text.NewParser(text.Korean, text.English)
+var synth = azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
 var tokenizer = func() tokenizers.Tokenizer {
 	switch os.Getenv("TOKENIZER") {
 	case "komoran":
@@ -33,15 +40,23 @@ var tokenizer = func() tokenizers.Tokenizer {
 		return khaiii.New()
 	}
 }()
-var parser = text.NewParser(text.Korean, text.English)
-var dictionary = koreanbasic.New(koreanbasic.GetAPIKeyFromEnv())
-var synth = azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
+var dict = func() dictionary.Dictionary {
+	switch os.Getenv("DICTIONARY") {
+	case "koreanbasic":
+		return koreanbasic.New(koreanbasic.GetAPIKeyFromEnv())
+	default:
+		if err := db.SetDB("db/data.sqlite3"); err != nil {
+			fmt.Println("failure to SetDB()\n", err)
+			os.Exit(-1)
+		}
+		return krdict.New(db.DB())
+	}
+}
 
 func main() {
 	args := flag.Args()
-
 	if len(args) != 2 {
-		fmt.Printf("Usage: %v textStringFilename exportDir\n", os.Args[0])
+		fmt.Printf("usage: %v textStringFilename exportDir\n", os.Args[0])
 		os.Exit(-1)
 	}
 
@@ -106,7 +121,7 @@ func cleanTexts(texts []text.Text) []text.Text {
 }
 
 func runUI(tokenizedTexts []text.TokenizedText) ([]anki.Note, error) {
-	notes, err := prompt.CreateCards(tokenizedTexts, dictionary)
+	notes, err := prompt.CreateCards(tokenizedTexts, dict())
 	if err != nil {
 		return nil, err
 	}
@@ -131,10 +146,12 @@ func createAudio(notes []anki.Note) error {
 		note := &notes[i]
 		speech, err := synth.TextToSpeech(note.Usage)
 		if err != nil {
-			fmt.Printf("error creating audio for note (%v): %v\n", note.Text, err)
+			slog.Error("error creating audio for note",
+				slog.String("text", note.Text), slog.String("err", err.Error()))
 		}
 		if err = note.SetSound(speech, synth.SourceName()); err != nil {
-			fmt.Printf("error setting audio for note (%v): %v\n", note.Text, err)
+			slog.Error("error creating audio for note",
+				slog.String("text", note.Text), slog.String("err", err.Error()))
 		}
 	}
 	return nil

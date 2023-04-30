@@ -26,10 +26,10 @@ func init() {
 
 // New returns a Khaiii Korean tokenizer
 func New() tokenizers.Tokenizer {
-	return new(port)
+	return newKhaiii(port)
 }
 
-func new(port int) *Khaiii {
+func newKhaiii(port int) *Khaiii {
 	opts := server.NewCmdOptions(binName)
 	opts.Args = []string{"--port", strconv.Itoa(port)}
 	opts.Dir = binPath

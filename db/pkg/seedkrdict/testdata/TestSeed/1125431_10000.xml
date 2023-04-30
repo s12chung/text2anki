@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE LexicalResource SYSTEM "https://krdict.korean.go.kr/dtd/DTD_LMF_REV_16.dtd">
+<LexicalResource dtdVersion="16">
+    <GlobalInformation>
+        <feat att="label" val="한국어기초사전 - 국립국어원 제공"/>
+        <feat att="creationDate" val="2023/03/24 06:31:48"/>
+        <feat att="languageCoding" val="ISO 639-3"/>
+    </GlobalInformation>
+    <Lexicon>
+        <feat att="language" val="kor"/>
+        <LexicalEntry att="id" val="20911">
+            <Lemma>
+                <feat att="writtenForm" val="마음 같아서는"/>
+            </Lemma>
+            <feat att="lexicalUnit" val="관용구"/>
+            <Sense att="id" val="1">
+                <feat att="definition" val="자기가 생각하는 것대로 하자면."/>
+                <SenseExample>
+                    <feat att="type" val="문장"/>
+                    <feat att="example" val="마음 같아서는 당장 회사를 그만 두고 싶지만 생활비를 벌어야 하니 그럴 수가 없다."/>
+                </SenseExample>
+                <SenseExample>
+                    <feat att="type" val="대화"/>
+                    <feat att="example" val="이렇게 좋은 날씨에 도서관에 앉아 공부만 해야 하다니"/>
+                    <feat att="example" val="그러게 말이야 마음 같아서는 시원한 바다로 여행 가고 싶다."/>
+                </SenseExample>
+                <Equivalent>
+                    <feat att="language" val="영어"/>
+                    <feat att="lemma" val="if it's like my mind"/>
+                    <feat att="definition" val="If one follows as one thinks."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="일본어"/>
+                    <feat att="lemma" val="心の中では"/>
+                    <feat att="definition" val="自分が思っているとおりにやるなら。"/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="프랑스어"/>
+                    <feat att="lemma" val="si l’on agit selon son cœur"/>
+                    <feat att="definition" val="Si l'on fait exactement ce que l'on pense."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="스페인어"/>
+                    <feat att="lemma" val="según mi corazón"/>
+                    <feat att="definition" val="Si se hace como uno piensa."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="아랍어"/>
+                    <feat att="lemma" val="مثلما يريد قلبه"/>
+                    <feat att="definition" val="إذا عمل شخص شيئا كما يريده "/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="몽골어"/>
+                    <feat att="lemma" val="санаснаар болдог бол, болдогсон бол"/>
+                    <feat att="definition" val="өөрийн бодсоноор болдог бол."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="베트남어"/>
+                    <feat att="lemma" val="đồng lòng thì"/>
+                    <feat att="definition" val="Nếu đề nghị làm theo như suy nghĩ của bản thân."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="타이어"/>
+                    <feat att="lemma" val="(ป.ต.)ถ้าจะเหมือนใจแล้ว... ; ใจน่ะ, ใจจริงแล้ว, ถ้าให้ทำตามที่ใจต้องการ"/>
+                    <feat att="definition" val="ถ้าให้เลือกทำตามที่ตนเองคิดไว้..."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="인도네시아어"/>
+                    <feat att="lemma" val="kalau boleh mengikuti kata hati"/>
+                    <feat att="definition" val="kalau saja bisa mengikuti keinginan hati "/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="러시아어"/>
+                    <feat att="lemma" val="следуя собственному желанию; по собственному желанию"/>
+                    <feat att="definition" val="Если делать что-либо в соответствии с задуманным."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="중국어"/>
+                    <feat att="lemma" val="真想"/>
+                    <feat att="definition" val="如果按照自己的想法。"/>
+                </Equivalent>
+            </Sense>
+        </LexicalEntry>
+        <LexicalEntry att="id" val="20911">
+            <Lemma>
+                <feat att="writtenForm" val="마음에 걸리다"/>
+            </Lemma>
+            <feat att="lexicalUnit" val="관용구"/>
+            <Sense att="id" val="1">
+                <feat att="syntacticPattern" val="1이 2가 마음에 걸리다"/>
+                <feat att="definition" val="걱정되어 마음이 편하지 않게 느껴지다."/>
+                <SenseExample>
+                    <feat att="type" val="문장"/>
+                    <feat att="example" val="어린 아이를 집에 혼자 두고 나온 것이 내내 마음에 걸려서 일에 집중할 수가 없었다."/>
+                </SenseExample>
+                <SenseExample>
+                    <feat att="type" val="문장"/>
+                    <feat att="example" val="지금 휴가를 떠나면 며칠 동안 해야 할 일들을 미뤄 놓아야 한다는 사실이 마음에 걸렸다."/>
+                </SenseExample>
+                <Equivalent>
+                    <feat att="language" val="영어"/>
+                    <feat att="lemma" val="be caught in one's mind"/>
+                    <feat att="definition" val="To feel uncomfortable out of worry."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="일본어"/>
+                    <feat att="lemma" val="気にかかる。気になる"/>
+                    <feat att="definition" val="心配で気が重く感じられる。"/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="프랑스어"/>
+                    <feat att="lemma" val="Quelque chose est dans le cœur"/>
+                    <feat att="definition" val="Ne pas se sentir à l'aise en s'inquiétant de quelque chose."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="스페인어"/>
+                    <feat att="lemma" val="engancharse en el corazón"/>
+                    <feat att="definition" val="Sentir incomodidad en el corazón por estar preocupado."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="아랍어"/>
+                    <feat att="lemma" val="يتعلق قلبه"/>
+                    <feat att="definition" val="ينزعج لأنه يشعر بالقلق"/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="몽골어"/>
+                    <feat att="lemma" val="сэтгэлд торох, сэтгэл зовох"/>
+                    <feat att="definition" val="санаа зовж сэтгэл тавгүйтэл мэдрэгдэх."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="베트남어"/>
+                    <feat att="lemma" val="bận lòng"/>
+                    <feat att="definition" val="Cảm thấy lòng không không thoải mái do lo lắng."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="타이어"/>
+                    <feat att="lemma" val="(ป.ต.)ติดที่ใจ ; ไม่สบายใจ, กังวลใจ"/>
+                    <feat att="definition" val="จิตใจที่เป็นกังวลและรู้สึกไม่สบายใจ"/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="인도네시아어"/>
+                    <feat att="lemma" val="mengganjal di hati "/>
+                    <feat att="definition" val="hati terasa tidak nyaman karena khawatir "/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="러시아어"/>
+                    <feat att="lemma" val="лежать на душе; беспокоить"/>
+                    <feat att="definition" val="Чувствовать дискомфорт в душе из-за беспокойства."/>
+                </Equivalent>
+                <Equivalent>
+                    <feat att="language" val="중국어"/>
+                    <feat att="lemma" val="牵肠挂肚；放心不下；过意不去"/>
+                    <feat att="definition" val="由于牵挂，心情不舒坦。"/>
+                </Equivalent>
+            </Sense>
+        </LexicalEntry>
+    </Lexicon>
+</LexicalResource>

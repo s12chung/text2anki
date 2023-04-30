@@ -25,10 +25,10 @@ func init() {
 
 // New returns a Komoran Korean tokenizer
 func New() tokenizers.Tokenizer {
-	return new(port)
+	return newKomoran(port)
 }
 
-func new(port int) *Komoran {
+func newKomoran(port int) *Komoran {
 	opts := server.NewCmdOptions("java")
 	opts.Args = []string{"-jar", jarName, strconv.Itoa(port), strconv.Itoa(backlog)}
 	opts.Dir = jarPath
@@ -50,6 +50,7 @@ type response struct {
 	Tokens []token `json:"tokens"`
 }
 
+// nolint:tagliatelle // following java format
 type token struct {
 	POS        string `json:"pos"`
 	EndIndex   uint   `json:"endIndex"`

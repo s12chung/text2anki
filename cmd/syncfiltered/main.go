@@ -1,3 +1,4 @@
+// Package main is the start point for syncfiltered
 package main
 
 import (

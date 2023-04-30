@@ -1,0 +1,1044 @@
+[
+  {
+    "LexicalEntries": [
+      {
+        "ID": 93416,
+        "Feats": [
+          {
+            "Att": "homonym_number",
+            "Val": "0"
+          },
+          {
+            "Att": "lexicalUnit",
+            "Val": "단어"
+          },
+          {
+            "Att": "partOfSpeech",
+            "Val": "동사"
+          },
+          {
+            "Att": "vocabularyLevel",
+            "Val": "고급"
+          }
+        ],
+        "Lemmas": [
+          {
+            "Feats": [
+              {
+                "Att": "writtenForm",
+                "Val": "펄럭이다"
+              }
+            ]
+          }
+        ],
+        "RelatedForms": [
+          {
+            "Feats": [
+              {
+                "Att": "type",
+                "Val": "가봐라"
+              },
+              {
+                "Att": "id",
+                "Val": "81932"
+              },
+              {
+                "Att": "writtenForm",
+                "Val": "펄럭"
+              }
+            ]
+          }
+        ],
+        "Senses": [
+          {
+            "ID": 1,
+            "Feats": [
+              {
+                "Att": "syntacticPattern",
+                "Val": " 1이 (2를) 펄럭이다"
+              },
+              {
+                "Att": "definition",
+                "Val": "넓고 큰 천 등이 바람에 빠르고 힘차게 잇따라 흔들리다. 또는 그렇게 되게 하다."
+              }
+            ],
+            "Equivalents": [
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "영어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "keep waving; keep flapping; keep fluttering"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "For a wide and big cloth, etc., to keep swaying fast and strongly in the wind, or to make this happen."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "일본어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "はためく。はたはたとひるがえる【はたはたと翻る】 \t　"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "広くて大きい布などがしきりに風に吹かれて勢いよく翻る。また、そうさせる。"
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "프랑스어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "flotter, claquer"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "(Grand tissu ou autre) Bouger continuellement avec force et rapidité à cause du vent ; faire bouger ainsi."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "스페인어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "ondear, agitar(se), flamear"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "Mover rápida y fuertemente, y formando ondas, una pieza amplia de tela, etc. O hacer que revolotee."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "아랍어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "يرفرف"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "تتطاير قطعة من القماش الكبير والعريض أو ما شابه ذلك وتهتز بسرعة بفعل الرياح"
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "몽골어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "намируулах, дэвэх, далбагнуулах"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "том өргөн даавуу зэрэг зүйл салхинд хурдан хурдан байнга хөдлөх, мөн тэгэх үйл."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "베트남어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "phần phật"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "Vải rộng và to lay động nhanh và mạnh liên tục trước gió. Hoặc bị làm cho như vậy."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "타이어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "โบกสะบัด, สะบัดพริ้ว"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "ผ้าผืนกว้างและใหญ่ เป็นต้น แกว่งไกวอย่างรุนแรงและรวดเร็ว หรือทำให้มีลักษณะดังกล่าว"
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "인도네시아어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "berkibar"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "bergerak-gerak mengombak karena ditiup angin tentang bendera, kain lebar, dan sebagainya"
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "러시아어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "развеваться на ветру, колыхаться"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "Колыхаться от сильного быстрого ветра (о широком куске ткани). Или развевать кусок ткани на ветру."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "중국어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "飘扬，飘舞"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "宽大的布等再风中快速有力地接连摇晃；或使之那样。"
+                  }
+                ]
+              }
+            ],
+            "Multimedias": [
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "동영상"
+                  },
+                  {
+                    "Att": "label",
+                    "Val": "펄럭이다"
+                  },
+                  {
+                    "Att": "url",
+                    "Val": "http://dicmedia.korean.go.kr:8899/multimedia/multimedia_files/convert/20200214/658877/MOV000356656_700X466.mp4"
+                  }
+                ]
+              }
+            ],
+            "SenseExamples": [
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "구"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "깃발이 펄럭이다."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "구"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "옷자락이 펄럭이다."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "구"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "책장을 펄럭이다."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "구"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "치맛자락을 펄럭이다."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "구"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "바람에 펄럭이다."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "구"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "힘차게 펄럭이다."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "문장"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "승규가 더운지 입고 있는 옷을 펄럭였다."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "문장"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "빨랫줄에 널어 놓은 옷이 바람에 펄럭인다."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "대화"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "학교에서 무슨 행사를 하나 봐요."
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "네, 운동장에 만국기가 힘차게 펄럭이던데요."
+                  }
+                ]
+              }
+            ],
+            "SenseRelations": [
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "유의어"
+                  },
+                  {
+                    "Att": "id",
+                    "Val": "83229"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "펄럭거리다"
+                  },
+                  {
+                    "Att": "homonymNumber",
+                    "Val": "0"
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "유의어"
+                  },
+                  {
+                    "Att": "id",
+                    "Val": "90820"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "펄럭대다"
+                  },
+                  {
+                    "Att": "homonymNumber",
+                    "Val": "0"
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "유의어"
+                  },
+                  {
+                    "Att": "id",
+                    "Val": "90821"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "펄럭펄럭하다"
+                  },
+                  {
+                    "Att": "homonymNumber",
+                    "Val": "0"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "WordForms": [
+          {
+            "Feats": [
+              {
+                "Att": "type",
+                "Val": "발음"
+              },
+              {
+                "Att": "pronunciation",
+                "Val": "펄러기다"
+              },
+              {
+                "Att": "sound",
+                "Val": "https://dicmedia.korean.go.kr/multimedia/sound_file/pieup_2005/peolreogida.wav"
+              }
+            ],
+            "FormRepresentation": {
+              "Feats": null
+            }
+          },
+          {
+            "Feats": [
+              {
+                "Att": "type",
+                "Val": "활용"
+              },
+              {
+                "Att": "writtenForm",
+                "Val": "펄럭이는"
+              },
+              {
+                "Att": "pronunciation",
+                "Val": "펄러기는"
+              }
+            ],
+            "FormRepresentation": {
+              "Feats": null
+            }
+          },
+          {
+            "Feats": [
+              {
+                "Att": "type",
+                "Val": "활용"
+              },
+              {
+                "Att": "writtenForm",
+                "Val": "펄럭이어"
+              },
+              {
+                "Att": "pronunciation",
+                "Val": "펄러기어"
+              },
+              {
+                "Att": "pronunciation",
+                "Val": "펄러기여"
+              }
+            ],
+            "FormRepresentation": {
+              "Feats": [
+                {
+                  "Att": "type",
+                  "Val": "준말"
+                },
+                {
+                  "Att": "writtenForm",
+                  "Val": "펄럭여"
+                },
+                {
+                  "Att": "pronunciation",
+                  "Val": "펄러겨"
+                }
+              ]
+            }
+          },
+          {
+            "Feats": [
+              {
+                "Att": "type",
+                "Val": "활용"
+              },
+              {
+                "Att": "writtenForm",
+                "Val": "펄럭이니"
+              },
+              {
+                "Att": "pronunciation",
+                "Val": "펄러기니"
+              }
+            ],
+            "FormRepresentation": {
+              "Feats": null
+            }
+          },
+          {
+            "Feats": [
+              {
+                "Att": "type",
+                "Val": "활용"
+              },
+              {
+                "Att": "writtenForm",
+                "Val": "펄럭입니다"
+              },
+              {
+                "Att": "pronunciation",
+                "Val": "펄러김니다"
+              }
+            ],
+            "FormRepresentation": {
+              "Feats": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "LexicalEntries": [
+      {
+        "ID": 20911,
+        "Feats": [
+          {
+            "Att": "lexicalUnit",
+            "Val": "관용구"
+          }
+        ],
+        "Lemmas": [
+          {
+            "Feats": [
+              {
+                "Att": "writtenForm",
+                "Val": "마음 같아서는"
+              }
+            ]
+          }
+        ],
+        "RelatedForms": null,
+        "Senses": [
+          {
+            "ID": 1,
+            "Feats": [
+              {
+                "Att": "definition",
+                "Val": "자기가 생각하는 것대로 하자면."
+              }
+            ],
+            "Equivalents": [
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "영어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "if it's like my mind"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "If one follows as one thinks."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "일본어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "心の中では"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "自分が思っているとおりにやるなら。"
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "프랑스어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "si l’on agit selon son cœur"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "Si l'on fait exactement ce que l'on pense."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "스페인어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "según mi corazón"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "Si se hace como uno piensa."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "아랍어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "مثلما يريد قلبه"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "إذا عمل شخص شيئا كما يريده "
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "몽골어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "санаснаар болдог бол, болдогсон бол"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "өөрийн бодсоноор болдог бол."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "베트남어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "đồng lòng thì"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "Nếu đề nghị làm theo như suy nghĩ của bản thân."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "타이어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "(ป.ต.)ถ้าจะเหมือนใจแล้ว... ; ใจน่ะ, ใจจริงแล้ว, ถ้าให้ทำตามที่ใจต้องการ"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "ถ้าให้เลือกทำตามที่ตนเองคิดไว้..."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "인도네시아어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "kalau boleh mengikuti kata hati"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "kalau saja bisa mengikuti keinginan hati "
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "러시아어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "следуя собственному желанию; по собственному желанию"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "Если делать что-либо в соответствии с задуманным."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "중국어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "真想"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "如果按照自己的想法。"
+                  }
+                ]
+              }
+            ],
+            "Multimedias": null,
+            "SenseExamples": [
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "문장"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "마음 같아서는 당장 회사를 그만 두고 싶지만 생활비를 벌어야 하니 그럴 수가 없다."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "대화"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "이렇게 좋은 날씨에 도서관에 앉아 공부만 해야 하다니"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "그러게 말이야 마음 같아서는 시원한 바다로 여행 가고 싶다."
+                  }
+                ]
+              }
+            ],
+            "SenseRelations": null
+          }
+        ],
+        "WordForms": null
+      },
+      {
+        "ID": 20911,
+        "Feats": [
+          {
+            "Att": "lexicalUnit",
+            "Val": "관용구"
+          }
+        ],
+        "Lemmas": [
+          {
+            "Feats": [
+              {
+                "Att": "writtenForm",
+                "Val": "마음에 걸리다"
+              }
+            ]
+          }
+        ],
+        "RelatedForms": null,
+        "Senses": [
+          {
+            "ID": 1,
+            "Feats": [
+              {
+                "Att": "syntacticPattern",
+                "Val": "1이 2가 마음에 걸리다"
+              },
+              {
+                "Att": "definition",
+                "Val": "걱정되어 마음이 편하지 않게 느껴지다."
+              }
+            ],
+            "Equivalents": [
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "영어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "be caught in one's mind"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "To feel uncomfortable out of worry."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "일본어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "気にかかる。気になる"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "心配で気が重く感じられる。"
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "프랑스어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "Quelque chose est dans le cœur"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "Ne pas se sentir à l'aise en s'inquiétant de quelque chose."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "스페인어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "engancharse en el corazón"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "Sentir incomodidad en el corazón por estar preocupado."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "아랍어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "يتعلق قلبه"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "ينزعج لأنه يشعر بالقلق"
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "몽골어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "сэтгэлд торох, сэтгэл зовох"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "санаа зовж сэтгэл тавгүйтэл мэдрэгдэх."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "베트남어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "bận lòng"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "Cảm thấy lòng không không thoải mái do lo lắng."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "타이어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "(ป.ต.)ติดที่ใจ ; ไม่สบายใจ, กังวลใจ"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "จิตใจที่เป็นกังวลและรู้สึกไม่สบายใจ"
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "인도네시아어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "mengganjal di hati "
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "hati terasa tidak nyaman karena khawatir "
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "러시아어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "лежать на душе; беспокоить"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "Чувствовать дискомфорт в душе из-за беспокойства."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "language",
+                    "Val": "중국어"
+                  },
+                  {
+                    "Att": "lemma",
+                    "Val": "牵肠挂肚；放心不下；过意不去"
+                  },
+                  {
+                    "Att": "definition",
+                    "Val": "由于牵挂，心情不舒坦。"
+                  }
+                ]
+              }
+            ],
+            "Multimedias": null,
+            "SenseExamples": [
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "문장"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "어린 아이를 집에 혼자 두고 나온 것이 내내 마음에 걸려서 일에 집중할 수가 없었다."
+                  }
+                ]
+              },
+              {
+                "Feats": [
+                  {
+                    "Att": "type",
+                    "Val": "문장"
+                  },
+                  {
+                    "Att": "example",
+                    "Val": "지금 휴가를 떠나면 며칠 동안 해야 할 일들을 미뤄 놓아야 한다는 사실이 마음에 걸렸다."
+                  }
+                ]
+              }
+            ],
+            "SenseRelations": null
+          }
+        ],
+        "WordForms": null
+      }
+    ]
+  }
+]

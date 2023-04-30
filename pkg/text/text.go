@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	lingua "github.com/pemistahl/lingua-go"
+	"github.com/pemistahl/lingua-go"
 )
 
 // Text represents a text line given from the source
@@ -137,6 +137,7 @@ func (p *Parser) TextsFromString(s string) ([]Text, error) {
 		if line == "" {
 			continue
 		}
+		//nolint:nestif // complex case
 		if mode == noTranslation {
 			if line == "===" {
 				if nonEmptyIndex == 1 {

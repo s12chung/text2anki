@@ -31,7 +31,7 @@ type KoreanBasic struct {
 }
 
 // New returns a KoreanBasic dictionary
-func New(apiKey string) dictionary.Dicionary {
+func New(apiKey string) dictionary.Dictionary {
 	transport := &http.Transport{
 		//nolint:gosec // needed
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -119,25 +119,12 @@ var partOfSpeechMap = map[string]lang.PartOfSpeech{
 func itemsToTerms(items []item) ([]dictionary.Term, error) {
 	terms := make([]dictionary.Term, 0, len(items))
 	for _, item := range items {
-		if _, exists := partOfSpeechMap[item.PartOfSpeech]; !exists {
-			return nil, fmt.Errorf("part of speech not found: %v, %v", item.Word, item.PartOfSpeech)
+		term, err := item.term()
+		if err != nil {
+			return nil, err
 		}
-		if len(item.Senses) == 0 {
+		if term.Text == "" {
 			continue
-		}
-
-		term := dictionary.Term{
-			Text:             strings.TrimSpace(item.Word),
-			CommonLevel:      wordGradeToCommonLevel[item.WordGrade],
-			PartOfSpeech:     partOfSpeechMap[item.PartOfSpeech],
-			DictionarySource: DictionarySource,
-		}
-		term.Translations = make([]dictionary.Translation, len(item.Senses))
-		for j, sense := range item.Senses {
-			term.Translations[j] = dictionary.Translation{
-				Text:        strings.TrimSpace(sense.Translation),
-				Explanation: strings.TrimSpace(sense.Explanation),
-			}
 		}
 		terms = append(terms, term)
 	}
@@ -158,7 +145,42 @@ type item struct {
 	Senses       []sense `xml:"sense"`
 }
 
+func (i *item) term() (dictionary.Term, error) {
+	if _, exists := partOfSpeechMap[i.PartOfSpeech]; !exists {
+		return dictionary.Term{}, fmt.Errorf("part of speech not found: %v, %v", i.Word, i.PartOfSpeech)
+	}
+	if len(i.Senses) == 0 {
+		return dictionary.Term{}, nil
+	}
+
+	term := dictionary.Term{
+		Text: strings.TrimSpace(i.Word),
+		// Not supported by API, try for karaoke, "가라오케", variants: "가라오께, 가라오게, 까라오께, 카라오케, 카라오께"
+		Variants:         []string{},
+		CommonLevel:      wordGradeToCommonLevel[i.WordGrade],
+		PartOfSpeech:     partOfSpeechMap[i.PartOfSpeech],
+		DictionarySource: DictionarySource,
+	}
+	term.Translations = i.translations()
+	return term, nil
+}
+
+func (i *item) translations() []dictionary.Translation {
+	translations := make([]dictionary.Translation, len(i.Senses))
+	for j, sense := range i.Senses {
+		translations[j] = sense.translation()
+	}
+	return translations
+}
+
 type sense struct {
 	Translation string `xml:"translation>trans_word"`
 	Explanation string `xml:"translation>trans_dfn"`
+}
+
+func (s *sense) translation() dictionary.Translation {
+	return dictionary.Translation{
+		Text:        strings.TrimSpace(s.Translation),
+		Explanation: strings.TrimSpace(s.Explanation),
+	}
 }

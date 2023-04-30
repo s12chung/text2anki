@@ -13,9 +13,9 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/vcr"
 )
 
-func TestTextToSpeech(t *testing.T) {
+func TestAzure_TextToSpeech(t *testing.T) {
 	synth := New(GetAPIKeyFromEnv(), EastUSRegion)
-	clean := setupVCR(t, "TestTextToSpeech", synth)
+	clean := setupVCR(t, "TestAzure_TextToSpeech", synth)
 	defer clean()
 
 	require := require.New(t)

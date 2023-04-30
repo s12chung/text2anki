@@ -16,7 +16,9 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/iotools"
 )
 
-// Note is a Anki Note, which contains data to create cards from
+// Note is an Anki Note, which contains data to create cards from
+//
+//nolint:musttag // just used for debugging
 type Note struct {
 	Text string
 	lang.PartOfSpeech
@@ -74,7 +76,7 @@ func (n *Note) CSV() []string {
 	}
 }
 
-var invalidFilenameRegex = regexp.MustCompile("/\\\\")
+var invalidFilenameRegex = regexp.MustCompile(`/\\`)
 
 func (n *Note) soundFilename() string {
 	return config.ExportPrefix + invalidFilenameRegex.ReplaceAllString(n.Usage, "") + ".mp3"
@@ -101,6 +103,7 @@ func ExportFiles(notes []Note, dst string) error {
 	}
 
 	if err := os.Mkdir(path.Join(dst, "files"), 0750); err != nil {
+		//nolint:nilerr
 		return nil
 	}
 	if err := ExportSounds(notes, path.Join(dst, "files")); err != nil {

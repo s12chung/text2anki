@@ -19,7 +19,7 @@ import (
 )
 
 // CreateCards initializes the create card UI prompt
-func CreateCards(tokenizedTexts []text.TokenizedText, dict dictionary.Dicionary) ([]anki.Note, error) {
+func CreateCards(tokenizedTexts []text.TokenizedText, dict dictionary.Dictionary) ([]anki.Note, error) {
 	return (&createCards{
 		tokenizedTexts: tokenizedTexts,
 		dictionary:     dict,
@@ -28,7 +28,7 @@ func CreateCards(tokenizedTexts []text.TokenizedText, dict dictionary.Dicionary)
 
 type createCards struct {
 	tokenizedTexts []text.TokenizedText
-	dictionary     dictionary.Dicionary
+	dictionary     dictionary.Dictionary
 
 	tokenizedTextIndex int
 
@@ -57,6 +57,8 @@ func (c *createCards) start() ([]anki.Note, error) {
 			c.tokenizedTextIndex = (c.tokenizedTextIndex + 1) % len(c.tokenizedTexts)
 		case finishedTransition:
 			return c.notes, nil
+		case noneTransition:
+			return nil, err
 		}
 	}
 }

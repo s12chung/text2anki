@@ -9,6 +9,7 @@ import (
 )
 
 func TestParseSubtitles(t *testing.T) {
+	testName := "TestParseSubtitles"
 	tcs := []struct {
 		name string
 	}{
@@ -16,7 +17,7 @@ func TestParseSubtitles(t *testing.T) {
 		{name: "simple"},
 		{name: "complex"},
 	}
-	const fixtureName = "TestParseSubtitles.json"
+	fixtureName := testName + ".json"
 
 	for _, tc := range tcs {
 		tc := tc
@@ -24,8 +25,8 @@ func TestParseSubtitles(t *testing.T) {
 			require := require.New(t)
 
 			texts, err := ParseSubtitles(
-				fixture.JoinTestData(tc.name+"_source.vtt"),
-				fixture.JoinTestData(tc.name+"_translation.vtt"),
+				fixture.JoinTestData(testName, tc.name+"_source.vtt"),
+				fixture.JoinTestData(testName, tc.name+"_translation.vtt"),
 			)
 			require.Nil(err)
 
