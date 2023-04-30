@@ -2,10 +2,10 @@
 package test
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
+	"time"
 )
 
 // IsCI returns true if the test envirnment is under CI
@@ -20,11 +20,12 @@ func CISkip(t *testing.T, msg string) {
 	}
 }
 
-// MustJSON marshals v into indented JSON, panics if fails
-func MustJSON(v any) []byte {
-	bytes, err := json.MarshalIndent(v, "", "  ")
-	if err != nil {
-		panic(fmt.Sprintf("MustJSON: error marshaling: %v", v))
+var timeNow = time.Now
+
+// GenerateFilename returns a non-colliding filename
+func GenerateFilename(name, ext string) string {
+	if ext[0] != '.' {
+		ext = "." + ext
 	}
-	return bytes
+	return fmt.Sprintf("text2anki-%v-%v%v", name, timeNow().Unix(), ext)
 }

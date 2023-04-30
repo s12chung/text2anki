@@ -4,12 +4,14 @@ package csv
 import (
 	"encoding/csv"
 	"os"
+
+	"github.com/s12chung/text2anki/pkg/util/ioutils"
 )
 
 // File stores the array into a CSV
 func File(path string, rows [][]string) error {
 	//nolint:gosec // generic library
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, ioutils.OwnerRWGroupR)
 	if err != nil {
 		return err
 	}

@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
+	"github.com/s12chung/text2anki/pkg/util/ioutils"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
@@ -25,7 +26,7 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 	config.NotesCacheDir = path.Join(dir, "files")
-	if err = os.Mkdir(path.Join(dir, "files"), 0750); err != nil {
+	if err = os.Mkdir(path.Join(dir, "files"), ioutils.OwnerRWXGroupRX); err != nil {
 		log.Fatal(err)
 	}
 	SetConfig(config)

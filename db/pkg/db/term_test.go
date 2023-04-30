@@ -68,19 +68,15 @@ func TestTerm_CreateParams(t *testing.T) {
 func TestQueries_TermsSearch(t *testing.T) {
 	require := require.New(t)
 	testName := "TestQueries_TermsSearch"
+	ctx := context.Background()
 	testdb.SetupTempDBT(t, testName)
 	testdb.Seed(t)
 
-	results, err := db.Qs().TermsSearch(context.Background(), "마음", db.TermsSearchConfig{
-		PopLog:       20,
-		PopWeight:    40,
-		CommonWeight: 40,
-		LenLog:       2,
-	})
+	results, err := db.Qs().TermsSearch(ctx, testdb.SearchTerm, testdb.SearchConfig)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, results))
 
-	_, err = db.Qs().TermsSearch(context.Background(), "마음", db.TermsSearchConfig{
+	_, err = db.Qs().TermsSearch(ctx, testdb.SearchTerm, db.TermsSearchConfig{
 		PopWeight:    50,
 		CommonWeight: 51,
 	})
