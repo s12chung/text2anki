@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/s12chung/text2anki/pkg/util/ioutils"
 )
 
 func main() {
@@ -50,7 +52,7 @@ func run(srcDir string) error {
 		if err != nil {
 			return err
 		}
-		err = os.WriteFile(outputPath, []byte(strings.Join(contents, "\n")), 0600)
+		err = os.WriteFile(outputPath, []byte(strings.Join(contents, "\n")), ioutils.OwnerRWGroupR)
 		if err != nil {
 			return err
 		}
@@ -60,10 +62,7 @@ func run(srcDir string) error {
 
 func setupDestDir(srcDir string) (string, error) {
 	destDir := srcDir + "_syncfiltered"
-	if _, err := os.Stat(destDir); !os.IsNotExist(err) {
-		return destDir, nil
-	}
-	return destDir, os.Mkdir(destDir, 0750)
+	return destDir, os.MkdirAll(destDir, ioutils.OwnerRWXGroupRX)
 }
 
 func syncFileContents(srcFile string) ([]string, error) {

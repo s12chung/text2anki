@@ -1,11 +1,20 @@
-// Package iotools contains iotools
-package iotools
+// Package ioutils contains utils for io
+package ioutils
 
 import (
 	"io"
 	"os"
 	"path/filepath"
 )
+
+// OwnerGroupR is the file mode for Owners and Group read
+const OwnerGroupR os.FileMode = 0440
+
+// OwnerRWGroupR is the file mode for Owners read/write and Group read
+const OwnerRWGroupR os.FileMode = 0640
+
+// OwnerRWXGroupRX is the mode for Owners read/write/execute + Group read/write, commonly used for directories
+const OwnerRWXGroupRX os.FileMode = 0750
 
 // CopyFile copies the contents from src to dst atomically.
 // If dst does not exist, CopyFile creates it with permissions perm.

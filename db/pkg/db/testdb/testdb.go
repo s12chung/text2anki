@@ -4,22 +4,21 @@ package testdb
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"os"
 	"path"
 	"runtime"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 // SetupTempDB calls db.SetDB with a temp file
 func SetupTempDB(testName string) error {
-	filename := fmt.Sprintf("text2anki-%v-%v.sqlite3", testName, time.Now().Unix())
+	filename := test.GenerateFilename(testName, ".sqlite3")
 	if err := db.SetDB(path.Join(os.TempDir(), filename)); err != nil {
 		return err
 	}
@@ -51,4 +50,15 @@ func Seed(t *testing.T) {
 		_, err = queries.TermCreate(context.Background(), term.CreateParams())
 		require.NoError(err)
 	}
+}
+
+// SearchTerm is a search term used for tests
+const SearchTerm = "마음"
+
+// SearchConfig is the config used for test searching (so it stays constant)
+var SearchConfig = db.TermsSearchConfig{
+	PopLog:       20,
+	PopWeight:    40,
+	CommonWeight: 40,
+	LenLog:       2,
 }

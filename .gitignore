@@ -1,5 +1,5 @@
 **/target
 **/dist
 **/rsc
-tmp
+**/tmp
 *.sqlite3
