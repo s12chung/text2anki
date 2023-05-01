@@ -8,19 +8,25 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
+	"reflect"
 
+	"github.com/s12chung/text2anki/db/pkg/cli/search"
 	"github.com/s12chung/text2anki/db/pkg/csv"
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
+	"github.com/s12chung/text2anki/pkg/validates"
 )
 
 func init() {
 	flag.Parse()
 }
 
-const usage = "usage: %v [create/seed/schema/search]"
+const cmdStringCreate = "create"
+const cmdStringSeed = "seed"
+const cmdStringSchema = "schema"
+const cmdStringSearch = "search"
+const commands = cmdStringCreate + "/" + cmdStringSeed + "/" + cmdStringSchema + "/" + cmdStringSchema
+const usage = "usage: %v [" + commands + "]"
 
 func main() {
 	args := flag.Args()
@@ -39,13 +45,13 @@ func main() {
 
 func run(cmd string) error {
 	switch cmd {
-	case "create":
+	case cmdStringCreate:
 		return cmdCreate()
-	case "seed":
+	case cmdStringSeed:
 		return cmdSeed()
-	case "schema":
+	case cmdStringSchema:
 		return cmdSchema()
-	case "search":
+	case cmdStringSearch:
 		return cmdSearch()
 	default:
 		return fmt.Errorf(usage+" -- %v not found", os.Args[0], cmd)
@@ -87,54 +93,40 @@ func cmdSchema() error {
 	return nil
 }
 
-var queriesString = "가,오"
-var config = db.DefaultTermsSearchConfig()
+const searchConfigPath = "tmp/search.json"
 
 func cmdSearch() error {
 	if err := setDB(); err != nil {
 		return err
 	}
 
-	for _, query := range strings.Split(queriesString, ",") {
-		query = strings.TrimSpace(query)
-		terms, err := db.Qs().TermsSearch(context.Background(), query, config)
+	config, err := search.GetOrDefaultConfig(searchConfigPath)
+	if err != nil {
+		return err
+	}
+	if reflect.DeepEqual(config, search.Config{}) {
+		fmt.Println("Wrote search config to " + searchConfigPath + ", edit it and run command again")
+		return nil
+	}
+
+	validator := validates.New(config)
+	if !validator.IsValid() {
+		return fmt.Errorf("config is missing a field at %v", validator.Key)
+	}
+
+	for _, query := range config.Queries {
+		terms, err := db.Qs().TermsSearch(context.Background(), query, config.Config)
 		if err != nil {
 			return err
 		}
-		rows, err := termsSearchToCSVRows(terms)
+		rows, err := search.TermsSearchToCSVRows(terms)
 		if err != nil {
 			return err
 		}
-		if err = csv.File("../tmp/db-search/"+query+".csv", rows); err != nil {
+		rows = append(search.ConfigToCSVRows(config), rows...)
+		if err = csv.File("tmp/search-"+query+".csv", rows); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-func termsSearchToCSVRows(terms []db.TermsSearchRow) ([][]string, error) {
-	rows := make([][]string, len(terms)+1)
-	rows[0] = []string{
-		"Text", "Variants", "CommonLevel", "Explanation", "Popularity", "PopCalc", "CommonCalc", "LenCalc", "RankCalc",
-	}
-
-	for i, term := range terms {
-		dictTerm, err := term.Term.DictionaryTerm()
-		if err != nil {
-			return nil, err
-		}
-
-		rows[i+1] = []string{
-			term.Text,
-			term.Variants,
-			strconv.Itoa(int(term.CommonLevel)),
-			dictTerm.Translations[0].Explanation,
-			strconv.Itoa(int(term.Popularity)),
-			fmt.Sprintf("%f", term.PopCalc.Float64),
-			fmt.Sprintf("%f", term.CommonCalc.Float64),
-			fmt.Sprintf("%f", term.LenCalc.Float64),
-			fmt.Sprintf("%f", term.PopCalc.Float64+term.CommonCalc.Float64+term.LenCalc.Float64),
-		}
-	}
-	return rows, nil
 }

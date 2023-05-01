@@ -75,10 +75,10 @@ type TermsSearchRow struct {
 
 // TermsSearchConfig is the config for TermsSearchRaw
 type TermsSearchConfig struct {
-	PopLog       int
-	PopWeight    int
-	CommonWeight int
-	LenLog       int
+	PopLog       int `json:"pop_log" validates:"presence"`
+	PopWeight    int `json:"pop_weight" validates:"presence"`
+	CommonWeight int `json:"common_weight" validates:"presence"`
+	LenLog       int `json:"len_log" validates:"presence"`
 }
 
 var defaultTermsSearchConfig = TermsSearchConfig{
