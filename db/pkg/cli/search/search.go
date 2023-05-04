@@ -11,6 +11,8 @@ import (
 	"strings"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/firm"
+	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/util/ioutils"
 )
 
@@ -53,8 +55,15 @@ func ConfigToCSVRows(config Config) [][]string {
 
 // Config is the Config for the search cli command
 type Config struct {
-	Queries []string             `json:"queries,omitempty" validates:"presence"`
-	Config  db.TermsSearchConfig `json:"config" validates:"presence"`
+	Queries []string             `json:"queries,omitempty"`
+	Config  db.TermsSearchConfig `json:"config"`
+}
+
+func init() {
+	firm.RegisterType(firm.NewTypedDefinition(Config{}).Validates(firm.RuleMap{
+		"Queries": {rule.Presence{}},
+		"Config":  {rule.Presence{}},
+	}))
 }
 
 var defaultConfig = Config{

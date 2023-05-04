@@ -6,287 +6,367 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type validTestCase struct {
-	Primitive         int             `validates:"presence"`
-	Basic             validTestChild  `validates:"presence"`
-	Pt                *validTestChild `validates:"presence"`
-	Any               any             `validates:"presence"`
-	PrimitiveEmptyTag int             `validates:""`
-	BasicEmptyTag     validTestChild  `validates:""`
-	PtEmptyTag        *validTestChild `validates:""`
-	AnyEmptyTag       any             `validates:""`
-	PrimitiveNoTag    int
-	BasicNoTag        validTestChild
-	PtNoTag           *validTestChild
-	AnyNoTag          any
+type parent struct {
+	Primitive               int
+	Basic                   child
+	Pt                      *child
+	Any                     any
+	PrimitiveEmptyValidates int
+	BasicEmptyValidates     child
+	PtEmptyValidates        *child
+	AnyEmptyValidates       any
+	PrimitiveNoValidates    int
+	BasicNoValidates        child
+	PtNoValidates           *child
+	AnyNoValidates          any
 }
 
-type validTestChild struct {
-	Tag   string `validates:"presence"`
-	NoTag string
+type child struct {
+	Validates   string
+	NoValidates string
+}
+
+func fullParent() parent {
+	fullChild := child{Validates: "child validates", NoValidates: "no validates"}
+
+	fc1 := fullChild
+	fc2 := fullChild
+	fc3 := fullChild
+	return parent{
+		// validate field + child
+		Primitive: 1, Basic: fullChild, Pt: &fc1, Any: fullChild,
+		// validate child
+		PrimitiveEmptyValidates: 1, BasicEmptyValidates: fullChild, PtEmptyValidates: &fc2, AnyEmptyValidates: fullChild,
+		// validate none
+		PrimitiveNoValidates: 1, BasicNoValidates: fullChild, PtNoValidates: &fc3, AnyNoValidates: fullChild,
+	}
+}
+
+type topLevelValidates struct {
+	Primitive  int
+	Primitive2 int
+}
+
+type unregistered struct{}
+
+var testRegistry = &Registry{}
+
+func init() {
+	testRegistry.RegisterType(
+		NewTypedDefinition(parent{}).
+			Validates(RuleMap{
+				"Primitive":               {testPresence{}},
+				"Basic":                   {testPresence{}},
+				"Pt":                      {testPresence{}},
+				"Any":                     {testPresence{}},
+				"PrimitiveEmptyValidates": {},
+				"BasicEmptyValidates":     {},
+				"PtEmptyValidates":        {},
+				"AnyEmptyValidates":       {},
+			}))
+	testRegistry.RegisterType(
+		NewTypedDefinition(child{}).
+			Validates(RuleMap{
+				"Validates": {testPresence{}},
+			}))
+	testRegistry.RegisterType(
+		NewTypedDefinition(topLevelValidates{}).
+			ValidatesTopLevel(testPresence{}))
 }
 
 //nolint:funlen,maintidx // it's a big testing function
-func TestValidator_IsValid(t *testing.T) {
-	fullChild := validTestChild{Tag: "fullCase", NoTag: "no tag"}
-	fullCase := func() validTestCase {
-		pt := fullChild
-		ptEmptyTag := fullChild
-		ptNoTag := fullChild
-		return validTestCase{
-			// validate validTestCase + validTestChild
-			Primitive: 1, Basic: fullChild, Pt: &pt, Any: fullChild,
-			// validate validTestChild
-			PrimitiveEmptyTag: 1, BasicEmptyTag: fullChild, PtEmptyTag: &ptEmptyTag, AnyEmptyTag: fullChild,
-			// validate none
-			PrimitiveNoTag: 1, BasicNoTag: fullChild, PtNoTag: &ptNoTag, AnyNoTag: fullChild,
-		}
-	}
-
+func TestIntegration(t *testing.T) {
 	type testCase struct {
-		name         string
-		expected     bool
-		testCaseFunc func() validTestCase
-		anyFunc      func() any
+		name     string
+		expected bool
+		f        func() parent
+		anyF     func() any
 	}
 	tcs := []testCase{
-		{name: "Data___int", expected: false, anyFunc: func() any {
+		//
+		// Any
+		//
+		{name: "Data___int_raw", expected: false, anyF: func() any {
 			return 1
 		}},
-		{name: "Full", expected: true, testCaseFunc: func() validTestCase {
-			return fullCase()
+		{name: "Data___int_pt", expected: false, anyF: func() any {
+			i := 1
+			return &i
 		}},
+		{name: "Data___unregistered_raw", expected: false, anyF: func() any {
+			return unregistered{}
+		}},
+		{name: "Data___unregistered_pt", expected: false, anyF: func() any {
+			return &unregistered{}
+		}},
+		{name: "Data___nil_raw", expected: false, anyF: func() any {
+			return nil
+		}},
+		{name: "Data___nil_pt", expected: false, anyF: func() any {
+			var i any
+			return &i
+		}},
+		{name: "Data___topLevelValidates_full", expected: true, anyF: func() any {
+			return topLevelValidates{Primitive: 1, Primitive2: 2}
+		}},
+		{name: "Data___topLevelValidates_half_raw", expected: true, anyF: func() any {
+			return topLevelValidates{Primitive: 1}
+		}},
+		{name: "Data___topLevelValidates_half_pt", expected: true, anyF: func() any {
+			return &topLevelValidates{Primitive: 1}
+		}},
+		{name: "Data___topLevelValidates_empty_raw", expected: false, anyF: func() any {
+			return topLevelValidates{}
+		}},
+		{name: "Data___topLevelValidates_empty_pt", expected: false, anyF: func() any {
+			return &topLevelValidates{}
+		}},
+		{name: "Empty", expected: false, f: func() parent {
+			return parent{}
+		}},
+		{name: "Empty___any_raw", expected: false, anyF: func() any {
+			return parent{}
+		}},
+		{name: "Empty___any_pt", expected: false, anyF: func() any {
+			return &parent{}
+		}},
+		{name: "Full___any_raw", expected: true, anyF: func() any {
+			return fullParent()
+		}},
+		{name: "Full___any_pt", expected: true, anyF: func() any {
+			full := fullParent()
+			return &full
+		}},
+
+		//
+		// Full
+		//
+		{name: "Full", expected: true, f: fullParent},
 
 		//
 		// Primitive
 		//
-		{name: "Primitive___zero", expected: false, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.Primitive = 0
-			return childCase
+		{name: "Primitive___zero", expected: false, f: func() parent {
+			changeParent := fullParent()
+			changeParent.Primitive = 0
+			return changeParent
 		}},
 
 		//
 		// Basic
 		//
-		{name: "Basic___child_tagged", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.Basic.NoTag = ""
-			return childCase
+		{name: "Basic___child_validates_ok", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.Basic.NoValidates = ""
+			return changeParent
 		}},
-		{name: "Basic___child_tag_zero", expected: false, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.Basic.Tag = ""
-			return childCase
+		{name: "Basic___child_validates_zero", expected: false, f: func() parent {
+			changeParent := fullParent()
+			changeParent.Basic.Validates = ""
+			return changeParent
 		}},
-		{name: "Basic___child_empty", expected: false, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.Basic = validTestChild{}
-			return childCase
+		{name: "Basic___child_empty", expected: false, f: func() parent {
+			changeParent := fullParent()
+			changeParent.Basic = child{}
+			return changeParent
 		}},
 
 		//
 		// Pt
 		//
-		{name: "Pt___child_tagged", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.Pt.NoTag = ""
-			return childCase
+		{name: "Pt___child_validates_ok", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.Pt.NoValidates = ""
+			return changeParent
 		}},
-		{name: "Pt___child_tag_zero", expected: false, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.Pt.Tag = ""
-			return childCase
+		{name: "Pt___child_validates_zero", expected: false, f: func() parent {
+			changeParent := fullParent()
+			changeParent.Pt.Validates = ""
+			return changeParent
 		}},
-		{name: "Pt___child_empty", expected: false, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.Pt = &validTestChild{}
-			return childCase
+		{name: "Pt___child_empty", expected: false, f: func() parent {
+			changeParent := fullParent()
+			changeParent.Pt = &child{}
+			return changeParent
 		}},
-		{name: "Pt___nil", expected: false, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.Pt = nil
-			return childCase
+		{name: "Pt___nil", expected: false, f: func() parent {
+			changeParent := fullParent()
+			changeParent.Pt = nil
+			return changeParent
 		}},
 
 		//
 		// Any
 		//
-		{name: "Any___child_empty", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.Any = validTestChild{}
-			return childCase
+		{name: "Any___child_empty", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.Any = child{}
+			return changeParent
 		}},
-		{name: "Any___child_pointer_empty", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.Any = &validTestChild{}
-			return childCase
+		{name: "Any___child_pointer_empty", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.Any = &child{}
+			return changeParent
 		}},
-		{name: "Any___nil", expected: false, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.Any = nil
-			return childCase
-		}},
-
-		//
-		// PrimitiveEmptyTag
-		//
-		{name: "PrimitiveEmptyTag___zero", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.PrimitiveEmptyTag = 0
-			return childCase
+		{name: "Any___nil", expected: false, f: func() parent {
+			changeParent := fullParent()
+			changeParent.Any = nil
+			return changeParent
 		}},
 
 		//
-		// BasicEmptyTag
+		// PrimitiveEmptyValidates
 		//
-		{name: "BasicEmptyTag___child_tagged", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.BasicEmptyTag.NoTag = ""
-			return childCase
-		}},
-		{name: "BasicEmptyTag___child_tag_zero", expected: false, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.BasicEmptyTag.Tag = ""
-			return childCase
-		}},
-		{name: "BasicEmptyTag____child_empty", expected: false, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.BasicEmptyTag = validTestChild{}
-			return childCase
+		{name: "PrimitiveEmptyValidates___zero", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.PrimitiveEmptyValidates = 0
+			return changeParent
 		}},
 
 		//
-		// PtEmptyTag
+		// BasicEmptyValidates
 		//
-		{name: "PtEmptyTag___child_tagged", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.PtEmptyTag.NoTag = ""
-			return childCase
+		{name: "BasicEmptyValidates___child_validates_ok", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.BasicEmptyValidates.NoValidates = ""
+			return changeParent
 		}},
-		{name: "PtEmptyTag___child_tag_zero", expected: false, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.PtEmptyTag.Tag = ""
-			return childCase
+		{name: "BasicEmptyValidates___child_validates_zero", expected: false, f: func() parent {
+			changeParent := fullParent()
+			changeParent.BasicEmptyValidates.Validates = ""
+			return changeParent
 		}},
-		{name: "PtEmptyTag___child_empty", expected: false, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.PtEmptyTag = &validTestChild{}
-			return childCase
-		}},
-		{name: "PtEmptyTag___nil", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.PtEmptyTag = nil
-			return childCase
+		{name: "BasicEmptyValidates____child_empty", expected: false, f: func() parent {
+			changeParent := fullParent()
+			changeParent.BasicEmptyValidates = child{}
+			return changeParent
 		}},
 
 		//
-		// AnyEmptyTag
+		// PtEmptyValidates
 		//
-		{name: "AnyEmptyTag___child_empty", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.AnyEmptyTag = validTestChild{}
-			return childCase
+		{name: "PtEmptyValidates___child_validates_ok", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.PtEmptyValidates.NoValidates = ""
+			return changeParent
 		}},
-		{name: "AnyEmptyTag___child_pointer_empty", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.AnyEmptyTag = &validTestChild{}
-			return childCase
+		{name: "PtEmptyValidates___child_validates_zero", expected: false, f: func() parent {
+			changeParent := fullParent()
+			changeParent.PtEmptyValidates.Validates = ""
+			return changeParent
 		}},
-		{name: "AnyEmptyTag___nil", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.AnyEmptyTag = nil
-			return childCase
+		{name: "PtEmptyValidates___child_empty", expected: false, f: func() parent {
+			changeParent := fullParent()
+			changeParent.PtEmptyValidates = &child{}
+			return changeParent
+		}},
+		{name: "PtEmptyValidates___nil", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.PtEmptyValidates = nil
+			return changeParent
 		}},
 
 		//
-		// PrimitiveNoTag
+		// AnyEmptyValidates
 		//
-		{name: "PrimitiveNoTag___zero", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.PrimitiveNoTag = 0
-			return childCase
+		{name: "AnyEmptyValidates___child_empty", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.AnyEmptyValidates = child{}
+			return changeParent
+		}},
+		{name: "AnyEmptyValidates___child_pointer_empty", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.AnyEmptyValidates = &child{}
+			return changeParent
+		}},
+		{name: "AnyEmptyValidates___nil", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.AnyEmptyValidates = nil
+			return changeParent
 		}},
 
 		//
-		// BasicNoTag
+		// PrimitiveNoValidates
 		//
-		{name: "BasicNoTag___child_tagged", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.BasicNoTag.NoTag = ""
-			return childCase
-		}},
-		{name: "BasicNoTag___child_tag_zero", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.BasicNoTag.Tag = ""
-			return childCase
-		}},
-		{name: "BasicNoTag____child_empty", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.BasicNoTag = validTestChild{}
-			return childCase
+		{name: "PrimitiveNoValidates___zero", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.PrimitiveNoValidates = 0
+			return changeParent
 		}},
 
 		//
-		// PtNoTag
+		// BasicNoValidates
 		//
-		{name: "PtNoTag___child_tagged", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.PtNoTag.NoTag = ""
-			return childCase
+		{name: "BasicNoValidates___child_validates_ok", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.BasicNoValidates.NoValidates = ""
+			return changeParent
 		}},
-		{name: "PtNoTag___child_tag_zero", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.PtNoTag.Tag = ""
-			return childCase
+		{name: "BasicNoValidates___child_validates_zero", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.BasicNoValidates.Validates = ""
+			return changeParent
 		}},
-		{name: "PtNoTag___child_empty", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.PtNoTag = &validTestChild{}
-			return childCase
-		}},
-		{name: "PtNoTag___nil", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.PtNoTag = nil
-			return childCase
+		{name: "BasicNoValidates____child_empty", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.BasicNoValidates = child{}
+			return changeParent
 		}},
 
 		//
-		// AnyNoTag
+		// PtNoValidates
 		//
-		{name: "AnyNoTag___child_empty", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.AnyNoTag = validTestChild{}
-			return childCase
+		{name: "PtNoValidates___child_validates_ok", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.PtNoValidates.NoValidates = ""
+			return changeParent
 		}},
-		{name: "AnyNoTag___child_pointer_empty", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.AnyNoTag = &validTestChild{}
-			return childCase
+		{name: "PtNoValidates___child_validates_zero", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.PtNoValidates.Validates = ""
+			return changeParent
 		}},
-		{name: "AnyNoTag___nil", expected: true, testCaseFunc: func() validTestCase {
-			childCase := fullCase()
-			childCase.AnyNoTag = nil
-			return childCase
+		{name: "PtNoValidates___child_empty", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.PtNoValidates = &child{}
+			return changeParent
+		}},
+		{name: "PtNoValidates___nil", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.PtNoValidates = nil
+			return changeParent
+		}},
+
+		//
+		// AnyNoValidates
+		//
+		{name: "AnyNoValidates___child_empty", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.AnyNoValidates = child{}
+			return changeParent
+		}},
+		{name: "AnyNoValidates___child_pointer_empty", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.AnyNoValidates = &child{}
+			return changeParent
+		}},
+		{name: "AnyNoValidates___nil", expected: true, f: func() parent {
+			changeParent := fullParent()
+			changeParent.AnyNoValidates = nil
+			return changeParent
 		}},
 	}
 
-	runFunc := func(t *testing.T, tc testCase) {
-		require := require.New(t)
-		if tc.testCaseFunc != nil {
-			require.Equal(tc.expected, New(tc.testCaseFunc()).IsValid())
-			return
-		}
-		require.Equal(tc.expected, New(tc.anyFunc()).IsValid())
-	}
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			runFunc(t, tc)
-		})
-	}
-	for _, tc := range tcs {
-		t.Run("Pointer_"+tc.name, func(t *testing.T) {
-			runFunc(t, tc)
+			require := require.New(t)
+			if tc.f != nil {
+				data := tc.f()
+				require.Equal(tc.expected, testRegistry.Validate(data).IsValid())
+				require.Equal(tc.expected, testRegistry.Validate(&data).IsValid())
+				return
+			}
+			require.Equal(tc.expected, testRegistry.Validate(tc.anyF()).IsValid())
 		})
 	}
 }

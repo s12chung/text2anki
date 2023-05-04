@@ -9,6 +9,8 @@ import (
 	"strings"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
+	"github.com/s12chung/text2anki/pkg/firm"
+	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/stringclean"
 )
@@ -75,10 +77,19 @@ type TermsSearchRow struct {
 
 // TermsSearchConfig is the config for TermsSearchRaw
 type TermsSearchConfig struct {
-	PopLog       int `json:"pop_log" validates:"presence"`
-	PopWeight    int `json:"pop_weight" validates:"presence"`
-	CommonWeight int `json:"common_weight" validates:"presence"`
-	LenLog       int `json:"len_log" validates:"presence"`
+	PopLog       int `json:"pop_log"`
+	PopWeight    int `json:"pop_weight"`
+	CommonWeight int `json:"common_weight"`
+	LenLog       int `json:"len_log"`
+}
+
+func init() {
+	firm.RegisterType(firm.NewTypedDefinition(TermsSearchConfig{}).Validates(firm.RuleMap{
+		"PopLog":       {rule.Presence{}},
+		"PopWeight":    {rule.Presence{}},
+		"CommonWeight": {rule.Presence{}},
+		"LenLog":       {rule.Presence{}},
+	}))
 }
 
 var defaultTermsSearchConfig = TermsSearchConfig{

@@ -1,65 +1,119 @@
-// Package validates contains functions to validate structs
+// Package firm contains functions to do validations
 package firm
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
+	"text/template"
 )
 
-// New returns a new Validator
-func New(data any) *Validator {
-	return &Validator{data: data}
+// RegisterType registers the TypeDefinition to the DefaultRegistry
+var RegisterType = DefaultRegistry.RegisterType
+
+// Validate validates the data with the DefaultRegistry
+var Validate = DefaultRegistry.Validate
+
+// DefaultRegistry is the registry used for global functions
+var DefaultRegistry = &Registry{}
+
+// DefaultValidator is the validator used by registries for not found types when DefaultValidator is not defined
+var DefaultValidator = NewValueValidator(NotFoundRule{})
+
+// NotFoundRule is the rule used for not found types in the DefaultValidator
+type NotFoundRule struct {
+}
+
+// ValidateValue validates the value (always an error)
+func (n NotFoundRule) ValidateValue(value reflect.Value) ErrorMap {
+	return ErrorMap{
+		notFoundRuleErrorKey: notFoundRuleError(value),
+	}
+}
+
+const notFoundRuleErrorKey = "NotFound"
+
+func notFoundRuleError(value reflect.Value) *TemplatedError {
+	return &TemplatedError{
+		TemplateFields: map[string]string{"Type": typeName(value)},
+		Template:       "type, {{.Type}}, not found in Registry",
+	}
+}
+
+// Rule defines a rule for validation definitions and validators
+type Rule interface {
+	ValidateValue(value reflect.Value) ErrorMap
 }
 
 // Validator validates the data
-type Validator struct {
-	data any
-
-	// hidden untested API
-	Key string
+type Validator interface {
+	Rule
+	Validate(data any) Result
+	ValidateMerge(value reflect.Value, key string, errorMap ErrorMap)
 }
 
-// IsValid returns true if the data is valid
-func (v *Validator) IsValid() bool {
-	var err error
-	v.Key, err = v.validate(reflect.Indirect(reflect.ValueOf(v.data)))
-	return err == nil
-}
+// RuleMap is a map of fields or keys to rules
+type RuleMap map[string][]Rule
 
-func (v *Validator) validate(dataValue reflect.Value) (string, error) {
-	if dataValue.Kind() != reflect.Struct {
-		return "", fmt.Errorf("passed in data is not a struct")
+// ErrorMap is a map of TemplatedError keys to their respective TemplatedError
+type ErrorMap map[string]*TemplatedError
+
+// MergeErrorMap merges src into dest, given appending path to the src keys
+func MergeErrorMap(path string, src, dest ErrorMap) {
+	for k, v := range src {
+		dest[joinKeys(path, k)] = v
 	}
-	for i := 0; i < dataValue.NumField(); i++ {
-		field := dataValue.Type().Field(i)
-		tag, exists := field.Tag.Lookup("validates")
-		if !exists {
-			return "", nil
-		}
+}
 
-		fieldValue := dataValue.Field(i)
-		structValue := reflect.Indirect(fieldValue)
-		if structValue.Kind() == reflect.Struct {
-			key, err := v.validate(structValue)
-			if err != nil {
-				return field.Name + "." + key, err
-			}
-		}
+// TemplatedError is an error that contains a key matching a field or top level, a golang template, and template fields
+type TemplatedError struct {
+	Key            string
+	Template       string
+	TemplateFields map[string]string
+}
 
-		if tag == "" {
+// Error returns a string for the error
+func (t *TemplatedError) Error() string {
+	keyPrefix := ""
+	if t.Key != "" {
+		keyPrefix = "invalid " + t.Key + ": "
+	}
+	return keyPrefix + t.templateError()
+}
+
+func (t *TemplatedError) templateError() string {
+	badTemplateString := t.Template + " (bad format)"
+	temp, err := template.New("top").Parse(t.Template)
+	if err != nil {
+		return badTemplateString
+	}
+	var sb strings.Builder
+	if err = temp.Execute(&sb, t.TemplateFields); err != nil {
+		return badTemplateString
+	}
+	return sb.String()
+}
+
+const nilName = "nil"
+
+func typeName(value reflect.Value) string {
+	name := nilName
+	if value.IsValid() {
+		value = reflect.Indirect(value)
+		name = value.Type().Name()
+	}
+	return name
+}
+
+func joinKeys(keys ...string) string {
+	keysCopy := make([]string, len(keys))
+	i := 0
+	for _, v := range keys {
+		if v == "" {
 			continue
 		}
-		for _, fieldValidation := range strings.Split(tag, ",") {
-			fieldValidator, exists := fieldValidatorMap[fieldValidation]
-			if !exists {
-				return field.Name, fmt.Errorf("fieldValidator does not exist: %v", fieldValidation)
-			}
-			err := fieldValidator.Valid(fieldValue)
-			if err != nil {
-				return field.Name, err
-			}
-		}
+		keysCopy[i] = v
+		i++
 	}
-	return "", nil
+	keysCopy = keysCopy[:i]
+	return strings.Join(keysCopy, ".")
 }
