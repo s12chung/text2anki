@@ -1,5 +1,5 @@
 // Package validates contains functions to validate structs
-package validates
+package firm
 
 import (
 	"fmt"

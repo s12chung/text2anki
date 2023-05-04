@@ -1,4 +1,4 @@
-package validates
+package rule
 
 import (
 	"reflect"

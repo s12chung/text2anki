@@ -1,12 +1,14 @@
-package validates
+package rule
 
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/s12chung/text2anki/pkg/firm"
 )
 
 func init() {
-	AddFieldValidator("presence", &PresenceFieldValidator{})
+	firm.AddFieldValidator("presence", &PresenceFieldValidator{})
 }
 
 // PresenceFieldValidator validates the presence of the field
