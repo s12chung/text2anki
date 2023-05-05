@@ -23,9 +23,25 @@ func (s StructValidator) ValidateValue(value reflect.Value) ErrorMap {
 	return errorMap
 }
 
+const structValidatorErrorKey = "StructValidator"
+
+func structValidatorError(value reflect.Value) *TemplatedError {
+	return &TemplatedError{
+		TemplateFields: map[string]string{"Type": typeName(value)},
+		Template:       "passed in data of type, {{.Type}}, is not a struct",
+	}
+}
+
 // ValidateMerge validates the data value, also doing a merge with the errorMap
 func (s StructValidator) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
 	value = reflect.Indirect(value)
+	if value.Type().Kind() != reflect.Struct {
+		MergeErrorMap(key, ErrorMap{
+			structValidatorErrorKey: structValidatorError(value),
+		}, errorMap)
+		return
+	}
+
 	validateMerge(value, key, errorMap, s.TopLevelRules)
 
 	for i := 0; i < value.NumField(); i++ {
@@ -54,7 +70,7 @@ func NewValueValidator(rules ...Rule) ValueValidator {
 	}
 }
 
-// ValueValidator validates a simpel value
+// ValueValidator validates a simple value
 type ValueValidator struct {
 	ValueRules []Rule
 }
