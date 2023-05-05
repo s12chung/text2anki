@@ -14,7 +14,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/csv"
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
-	"github.com/s12chung/text2anki/pkg/validates"
+	"github.com/s12chung/text2anki/pkg/firm"
 )
 
 func init() {
@@ -109,9 +109,9 @@ func cmdSearch() error {
 		return nil
 	}
 
-	validator := validates.New(config)
-	if !validator.IsValid() {
-		return fmt.Errorf("config is missing a field at %v", validator.Key)
+	validation := firm.Validate(config)
+	if !validation.IsValid() {
+		return fmt.Errorf("config is missing a field: %v", validation)
 	}
 
 	for _, query := range config.Queries {
