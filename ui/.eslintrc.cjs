@@ -29,6 +29,15 @@ module.exports = {
     "react/jsx-no-bind": ["error", { allowArrowFunctions: true }],
     "react/jsx-no-literals": "off",
     "react/jsx-no-target-blank": "off",
+    "react/jsx-sort-props": [
+      "error",
+      {
+        callbacksLast: true,
+        shorthandFirst: true,
+        noSortAlphabetically: true,
+        reservedFirst: true,
+      },
+    ],
     "react-refresh/only-export-components": "error",
     "sort-imports": "off",
   },

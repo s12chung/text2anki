@@ -10,15 +10,15 @@ function App() {
     <>
       <div>
         <a href="https://vitejs.dev" target="_blank">
-          <img alt="Vite logo" className="logo" src={viteLogo} />
+          <img className="logo" src={viteLogo} alt="Vite logo" />
         </a>
         <a href="https://react.dev" target="_blank">
-          <img alt="React logo" className="logo react" src={reactLogo} />
+          <img className="logo react" src={reactLogo} alt="React logo" />
         </a>
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)} type="button">
+        <button type="button" onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
         <p>
