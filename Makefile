@@ -40,7 +40,7 @@ test.fixtures:
 
 lint:
 	golangci-lint run
-goimports:
+lint.fix:
 	goimports -w .
 
 ci.build: build
