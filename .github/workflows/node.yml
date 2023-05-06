@@ -1,6 +1,10 @@
 name: Node UI
 
-on: [push]
+on:
+  push:
+    paths:
+      - .*/**
+      - ui/**
 
 env:
   CI: "true"
