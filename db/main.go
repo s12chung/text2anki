@@ -114,8 +114,8 @@ func cmdSearch() error {
 		return fmt.Errorf("config is missing a field: %v", validation)
 	}
 
-	for _, query := range config.Queries {
-		terms, err := db.Qs().TermsSearch(context.Background(), query, config.Config)
+	for i, query := range config.Queries {
+		terms, err := db.Qs().TermsSearch(context.Background(), query, config.POS[i], config.Config)
 		if err != nil {
 			return err
 		}

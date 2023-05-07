@@ -2,9 +2,11 @@
   [
     "Text",
     "Variants",
+    "POS",
     "CommonLevel",
     "Explanation",
     "Popularity",
+    "PosCalc",
     "PopCalc",
     "CommonCalc",
     "LenCalc",
@@ -13,20 +15,24 @@
   [
     "마음 같아서는",
     "",
+    "Verb",
     "0",
     "If one follows as one thinks.",
     "2",
+    "50.000000",
     "39.358978",
     "0.000000",
     "7.124144",
-    "46.483122"
+    "96.483122"
   ],
   [
     "마음에 걸리다",
     "",
+    "Unknown",
     "0",
     "To feel uncomfortable out of worry.",
     "3",
+    "0.000000",
     "38.766627",
     "0.000000",
     "7.124144",

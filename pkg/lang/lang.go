@@ -58,7 +58,7 @@ const (
 	PartOfSpeechOtherLanguage PartOfSpeech = "OtherLanguage"
 	PartOfSpeechOther         PartOfSpeech = "Other"
 	PartOfSpeechUnknown       PartOfSpeech = "Unknown"
-	PartOfSpeechInvalid       PartOfSpeech = ""
+	PartOfSpeechEmpty         PartOfSpeech = ""
 )
 
 var partOfSpeechTypes = []PartOfSpeech{
@@ -94,7 +94,7 @@ var partOfSpeechTypes = []PartOfSpeech{
 	PartOfSpeechOtherLanguage,
 	PartOfSpeechOther,
 	PartOfSpeechUnknown,
-	PartOfSpeechInvalid,
+	PartOfSpeechEmpty,
 }
 
 // PartOfSpeechTypes returns an array of all Part Of Speech Types

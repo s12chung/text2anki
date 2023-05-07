@@ -9,6 +9,7 @@ import (
 	"gopkg.in/dnaeon/go-vcr.v3/cassette"
 	"gopkg.in/dnaeon/go-vcr.v3/recorder"
 
+	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 	"github.com/s12chung/text2anki/pkg/util/test/vcr"
 )
@@ -29,10 +30,13 @@ func TestKoreanBasic_Search(t *testing.T) {
 
 	tcs := []struct {
 		searchTerm string
+		pos        lang.PartOfSpeech
 		expected   string
 	}{
-		{searchTerm: "가다", expected: testName + "/expected.json"},
+		// PartOfSpeechOther will convert to PartOfSpeechEmpty
+		{searchTerm: "가다", pos: lang.PartOfSpeechOther, expected: testName + "/expected.json"},
 		{searchTerm: "안녕하세요", expected: testName + "/empty_expected.json"},
+		{searchTerm: "가다", pos: lang.PartOfSpeechAuxiliaryVerb, expected: testName + "/pos_expected.json"},
 	}
 
 	for _, tc := range tcs {
@@ -40,7 +44,7 @@ func TestKoreanBasic_Search(t *testing.T) {
 		t.Run(tc.expected, func(t *testing.T) {
 			require := require.New(t)
 
-			terms, err := dict.Search(tc.searchTerm)
+			terms, err := dict.Search(tc.searchTerm, tc.pos)
 			require.NoError(err)
 			fixture.CompareReadOrUpdate(t, tc.expected, fixture.JSON(t, terms))
 		})
@@ -49,4 +53,31 @@ func TestKoreanBasic_Search(t *testing.T) {
 
 func cleanURL(url string) string {
 	return strings.Replace(url, "key="+GetAPIKeyFromEnv(), "key=REDACTED", 1)
+}
+
+func TestPartOfSpeechToAPIIntMatch(t *testing.T) {
+	require := require.New(t)
+
+	for k := range partOfSpeechToAPIInt {
+		_, exists := partOfSpeechMap[k]
+		require.True(exists, "For key, %v", k)
+	}
+}
+
+func TestMergePosMap(t *testing.T) {
+	require := require.New(t)
+
+	require.Equal(lang.PartOfSpeechCount, len(mergePosMap))
+
+	uniquePosMapValues := map[lang.PartOfSpeech]bool{}
+	for _, v := range partOfSpeechMap {
+		uniquePosMapValues[v] = true
+	}
+	uniquePosMapValues[lang.PartOfSpeechEmpty] = true
+
+	uniquePosValues := map[lang.PartOfSpeech]bool{}
+	for _, v := range mergePosMap {
+		uniquePosValues[v] = true
+	}
+	require.Equal(uniquePosMapValues, uniquePosValues)
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -55,8 +56,12 @@ func Seed(t *testing.T) {
 // SearchTerm is a search term used for tests
 const SearchTerm = "마음"
 
+// SearchPOS is the search POS for tests
+const SearchPOS = lang.PartOfSpeechVerb
+
 // SearchConfig is the config used for test searching (so it stays constant)
 var SearchConfig = db.TermsSearchConfig{
+	PosWeight:    50,
 	PopLog:       20,
 	PopWeight:    40,
 	CommonWeight: 40,

@@ -70,6 +70,7 @@ var termsSearch string
 // TermsSearchRow is the row returned by TermsSearch
 type TermsSearchRow struct {
 	Term
+	PosCalc    sql.NullFloat64
 	PopCalc    sql.NullFloat64
 	CommonCalc sql.NullFloat64
 	LenCalc    sql.NullFloat64
@@ -77,6 +78,7 @@ type TermsSearchRow struct {
 
 // TermsSearchConfig is the config for TermsSearchRaw
 type TermsSearchConfig struct {
+	PosWeight    int `json:"pos_weight"`
 	PopLog       int `json:"pop_log"`
 	PopWeight    int `json:"pop_weight"`
 	CommonWeight int `json:"common_weight"`
@@ -93,6 +95,7 @@ func init() {
 }
 
 var defaultTermsSearchConfig = TermsSearchConfig{
+	PosWeight:    50,
 	PopLog:       50,
 	PopWeight:    30,
 	CommonWeight: 15,
@@ -105,12 +108,12 @@ func DefaultTermsSearchConfig() TermsSearchConfig {
 }
 
 // TermsSearch searches within Terms for text given the config
-func (q *Queries) TermsSearch(ctx context.Context, query string, c TermsSearchConfig) ([]TermsSearchRow, error) {
+func (q *Queries) TermsSearch(ctx context.Context, query string, pos lang.PartOfSpeech, c TermsSearchConfig) ([]TermsSearchRow, error) {
 	if c.PopWeight+c.CommonWeight > 100 {
 		return nil, fmt.Errorf("config.PopWeight and config.CommonWeight > 100: %v, %v", c.PopWeight, c.CommonWeight)
 	}
 
-	rows, err := q.db.QueryContext(ctx, termsSearch, query, c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog)
+	rows, err := q.db.QueryContext(ctx, termsSearch, query, pos, c.PosWeight, c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog)
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +129,7 @@ func (q *Queries) TermsSearch(ctx context.Context, query string, c TermsSearchCo
 			&i.CommonLevel,
 			&i.Translations,
 			&i.Popularity,
+			&i.PosCalc,
 			&i.PopCalc,
 			&i.CommonCalc,
 			&i.LenCalc,

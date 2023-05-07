@@ -139,7 +139,7 @@ func (c *createCards) showSearchInput(context text.Text) error {
 
 func (c *createCards) showSearch(context text.Text, query string) error {
 	for {
-		terms, err := c.dictionary.Search(query)
+		terms, err := c.dictionary.Search(query, lang.PartOfSpeechEmpty)
 		if err != nil {
 			return err
 		}

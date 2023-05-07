@@ -38,7 +38,7 @@ type Note struct {
 
 // Valid returns true when the Note is valid
 func (n *Note) Valid() bool {
-	return n.Text != "" && n.PartOfSpeech != lang.PartOfSpeechInvalid && n.Translation != ""
+	return n.Text != "" && n.PartOfSpeech != lang.PartOfSpeechEmpty && n.Translation != ""
 }
 
 // SetSound sets the sound for the note

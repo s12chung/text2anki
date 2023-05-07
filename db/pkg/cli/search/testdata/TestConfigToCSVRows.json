@@ -1,11 +1,13 @@
 [
   [
+    "PosWeight",
     "PopLog",
     "PopWeight",
     "CommonWeight",
     "LenLog"
   ],
   [
+    "50",
     "20",
     "40",
     "40",
