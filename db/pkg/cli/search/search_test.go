@@ -26,14 +26,21 @@ func TestTermsSearchToCSVRows(t *testing.T) {
 	rows, err := TermsSearchToCSVRows(terms)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, rows))
+
+	_, err = db.Qs().TermsSearch(context.Background(), testdb.SearchTerm, testdb.SearchPOS, db.TermsSearchConfig{
+		PosWeight:    30,
+		PopWeight:    40,
+		CommonWeight: 40,
+	})
+	require.Error(err)
 }
 
 var testConfig = Config{
-	Queries: []string{"a", "b"},
+	Queries: []Query{{Str: "a"}, {Str: "b"}},
 	Config:  testdb.SearchConfig,
 }
 var changedTestConfig = Config{
-	Queries: []string{"test", "change"},
+	Queries: []Query{{Str: "test"}, {Str: "change"}},
 	Config: db.TermsSearchConfig{
 		PopLog:       1,
 		PopWeight:    2,

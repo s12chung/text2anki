@@ -58,9 +58,13 @@ func ConfigToCSVRows(config Config) [][]string {
 
 // Config is the Config for the search cli command
 type Config struct {
-	Queries []string             `json:"queries,omitempty"`
-	POS     []lang.PartOfSpeech  `json:"pos,omitempty"`
+	Queries []Query              `json:"queries,omitempty"`
 	Config  db.TermsSearchConfig `json:"config"`
+}
+
+type Query struct {
+	Str string            `json:"str,omitempty"`
+	POS lang.PartOfSpeech `json:"pos,omitempty"`
 }
 
 func init() {
@@ -71,9 +75,14 @@ func init() {
 }
 
 var defaultConfig = Config{
-	Queries: []string{"가", "오"},
-	POS:     []lang.PartOfSpeech{lang.PartOfSpeechEmpty, lang.PartOfSpeechEmpty},
-	Config:  db.DefaultTermsSearchConfig(),
+	Queries: []Query{
+		{Str: "가", POS: "Verb"},
+		{Str: "가"},
+		{Str: "오"},
+		{Str: "ㅂ"},
+		{Str: "고 있다"},
+	},
+	Config: db.DefaultTermsSearchConfig(),
 }
 
 // GetOrDefaultConfig returns the config from given path

@@ -61,7 +61,7 @@ const SearchPOS = lang.PartOfSpeechVerb
 
 // SearchConfig is the config used for test searching (so it stays constant)
 var SearchConfig = db.TermsSearchConfig{
-	PosWeight:    50,
+	PosWeight:    10,
 	PopLog:       20,
 	PopWeight:    40,
 	CommonWeight: 40,

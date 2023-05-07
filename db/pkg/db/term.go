@@ -95,10 +95,10 @@ func init() {
 }
 
 var defaultTermsSearchConfig = TermsSearchConfig{
-	PosWeight:    50,
+	PosWeight:    20,
 	PopLog:       50,
-	PopWeight:    30,
-	CommonWeight: 15,
+	PopWeight:    25,
+	CommonWeight: 10,
 	LenLog:       2,
 }
 
@@ -109,8 +109,8 @@ func DefaultTermsSearchConfig() TermsSearchConfig {
 
 // TermsSearch searches within Terms for text given the config
 func (q *Queries) TermsSearch(ctx context.Context, query string, pos lang.PartOfSpeech, c TermsSearchConfig) ([]TermsSearchRow, error) {
-	if c.PopWeight+c.CommonWeight > 100 {
-		return nil, fmt.Errorf("config.PopWeight and config.CommonWeight > 100: %v, %v", c.PopWeight, c.CommonWeight)
+	if c.PosWeight+c.PopWeight+c.CommonWeight > 100 {
+		return nil, fmt.Errorf("c.PosWeight + config.PopWeight + config.CommonWeight > 100: %v, %v, %v", c.PosWeight, c.PopWeight, c.CommonWeight)
 	}
 
 	rows, err := q.db.QueryContext(ctx, termsSearch, query, pos, c.PosWeight, c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog)

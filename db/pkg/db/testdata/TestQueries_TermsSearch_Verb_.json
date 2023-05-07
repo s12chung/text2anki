@@ -7,7 +7,7 @@
     "Translations": "[{\"Text\":\"if it's like my mind\",\"Explanation\":\"If one follows as one thinks.\"}]",
     "Popularity": 2,
     "PosCalc": {
-      "Float64": 50,
+      "Float64": 10,
       "Valid": true
     },
     "PopCalc": {
@@ -19,7 +19,7 @@
       "Valid": true
     },
     "LenCalc": {
-      "Float64": 7.124143742160443,
+      "Float64": 3.5620718710802217,
       "Valid": true
     }
   },
@@ -43,7 +43,7 @@
       "Valid": true
     },
     "LenCalc": {
-      "Float64": 7.124143742160443,
+      "Float64": 3.5620718710802217,
       "Valid": true
     }
   }

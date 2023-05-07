@@ -114,8 +114,8 @@ func cmdSearch() error {
 		return fmt.Errorf("config is missing a field: %v", validation)
 	}
 
-	for i, query := range config.Queries {
-		terms, err := db.Qs().TermsSearch(context.Background(), query, config.POS[i], config.Config)
+	for _, query := range config.Queries {
+		terms, err := db.Qs().TermsSearch(context.Background(), query.Str, query.POS, config.Config)
 		if err != nil {
 			return err
 		}
@@ -124,7 +124,12 @@ func cmdSearch() error {
 			return err
 		}
 		rows = append(search.ConfigToCSVRows(config), rows...)
-		if err = csv.File("tmp/search-"+query+".csv", rows); err != nil {
+
+		filename := "tmp/search-" + query.Str
+		if query.POS != "" {
+			filename += "_" + string(query.POS) + "_"
+		}
+		if err = csv.File(filename+".csv", rows); err != nil {
 			return err
 		}
 	}
