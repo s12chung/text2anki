@@ -19,11 +19,13 @@ func TestKrDict_Search(t *testing.T) {
 	testdb.Seed(t)
 
 	dict := New(db.DB())
-	// PartOfSpeechOther will convert to PartOfSpeechEmpty
-	terms, err := dict.Search("마음", lang.PartOfSpeechOther)
-	require.NoError(err)
 
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))
+	// PartOfSpeechOther will convert to PartOfSpeechEmpty
+	for _, pos := range []lang.PartOfSpeech{lang.PartOfSpeechEmpty, lang.PartOfSpeechOther} {
+		terms, err := dict.Search("마음", pos)
+		require.NoError(err)
+		fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))
+	}
 }
 
 func TestMergePosMap(t *testing.T) {

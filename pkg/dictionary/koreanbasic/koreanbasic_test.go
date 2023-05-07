@@ -29,24 +29,29 @@ func TestKoreanBasic_Search(t *testing.T) {
 	defer clean()
 
 	tcs := []struct {
+		name       string
 		searchTerm string
 		pos        lang.PartOfSpeech
-		expected   string
 	}{
+		{name: "basic", searchTerm: "가다"},
 		// PartOfSpeechOther will convert to PartOfSpeechEmpty
-		{searchTerm: "가다", pos: lang.PartOfSpeechOther, expected: testName + "/expected.json"},
-		{searchTerm: "안녕하세요", expected: testName + "/empty_expected.json"},
-		{searchTerm: "가다", pos: lang.PartOfSpeechAuxiliaryVerb, expected: testName + "/pos_expected.json"},
+		{name: "basic_with_other", searchTerm: "가다", pos: lang.PartOfSpeechOther},
+		{name: "empty", searchTerm: "안녕하세요"},
+		{name: "auxiliary_verb", searchTerm: "가다", pos: lang.PartOfSpeechAuxiliaryVerb},
 	}
 
 	for _, tc := range tcs {
 		tc := tc
-		t.Run(tc.expected, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
 			terms, err := dict.Search(tc.searchTerm, tc.pos)
 			require.NoError(err)
-			fixture.CompareReadOrUpdate(t, tc.expected, fixture.JSON(t, terms))
+			filenameName := tc.name
+			if tc.name == "basic_with_other" {
+				filenameName = "basic"
+			}
+			fixture.CompareReadOrUpdate(t, testName+"/"+filenameName+".json", fixture.JSON(t, terms))
 		})
 	}
 }

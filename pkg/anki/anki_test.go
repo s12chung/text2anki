@@ -112,7 +112,7 @@ func notesFromTerms(t *testing.T) []Note {
 	require := require.New(t)
 
 	var terms []dictionary.Term
-	// from .../TestKoreanBasic_Search/expected.json
+	// from .../TestKoreanBasic_Search/basic.json
 	err := json.Unmarshal(fixture.Read(t, "terms.json"), &terms)
 	require.NoError(err)
 
