@@ -33,7 +33,8 @@ func TestKoreanBasic_Search(t *testing.T) {
 		pos        lang.PartOfSpeech
 		expected   string
 	}{
-		{searchTerm: "가다", expected: testName + "/expected.json"},
+		// PartOfSpeechOther will convert to PartOfSpeechEmpty
+		{searchTerm: "가다", pos: lang.PartOfSpeechOther, expected: testName + "/expected.json"},
 		{searchTerm: "안녕하세요", expected: testName + "/empty_expected.json"},
 		{searchTerm: "가다", pos: lang.PartOfSpeechAuxiliaryVerb, expected: testName + "/pos_expected.json"},
 	}
@@ -61,4 +62,22 @@ func TestPartOfSpeechToAPIIntMatch(t *testing.T) {
 		_, exists := partOfSpeechMap[k]
 		require.True(exists, "For key, %v", k)
 	}
+}
+
+func TestMergePosMap(t *testing.T) {
+	require := require.New(t)
+
+	require.Equal(lang.PartOfSpeechCount, len(mergePosMap))
+
+	uniquePosMapValues := map[lang.PartOfSpeech]bool{}
+	for _, v := range partOfSpeechMap {
+		uniquePosMapValues[v] = true
+	}
+	uniquePosMapValues[lang.PartOfSpeechEmpty] = true
+
+	uniquePosValues := map[lang.PartOfSpeech]bool{}
+	for _, v := range mergePosMap {
+		uniquePosValues[v] = true
+	}
+	require.Equal(uniquePosMapValues, uniquePosValues)
 }

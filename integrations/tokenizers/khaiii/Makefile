@@ -12,7 +12,7 @@ run: build
 	$(BIN) --port $(PORT)
 
 POST_URI := http://localhost:$(PORT)/tokenize
-STR := 안녕! 반가워!
+STR ?= 안녕! 반가워!
 curl:
 	 curl -X POST $(POST_URI) -H 'Content-Type: application/json' -d '{"string": "$(STR)"}'
 

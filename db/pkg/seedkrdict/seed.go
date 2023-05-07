@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	"golang.org/x/exp/maps"
+
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
@@ -204,6 +206,11 @@ var partOfSpeechMap = map[string]lang.PartOfSpeech{
 
 	"품사 없음": lang.PartOfSpeechUnknown,
 	"":      lang.PartOfSpeechUnknown,
+}
+
+// PartOfSpeechMap returns a copy of the partOfSpeechMap
+func PartOfSpeechMap() map[string]lang.PartOfSpeech {
+	return maps.Clone(partOfSpeechMap)
 }
 
 var vocabularyToCommonLevel = map[string]lang.CommonLevel{
