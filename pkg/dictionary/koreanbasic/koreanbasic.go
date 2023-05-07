@@ -40,8 +40,8 @@ func New(apiKey string) dictionary.Dictionary {
 }
 
 // Search returns the search results of the query
-func (k *KoreanBasic) Search(q string) ([]dictionary.Term, error) {
-	bytes, err := k.getSearch(q)
+func (k *KoreanBasic) Search(q string, pos lang.PartOfSpeech) ([]dictionary.Term, error) {
+	bytes, err := k.getSearch(q, pos)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +52,8 @@ func (k *KoreanBasic) Search(q string) ([]dictionary.Term, error) {
 	return itemsToTerms(channel.Items)
 }
 
-func (k *KoreanBasic) getSearch(q string) ([]byte, error) {
-	resp, err := k.client.Get(apiURL(q, k.apiKey))
+func (k *KoreanBasic) getSearch(q string, pos lang.PartOfSpeech) ([]byte, error) {
+	resp, err := k.client.Get(apiURL(k.apiKey, q, pos))
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +69,22 @@ func (k *KoreanBasic) SetClient(c *http.Client) {
 	k.client = c
 }
 
-const apiURLString = "https://krdict.korean.go.kr/api/search?sort=popular&translated=y&trans_lang=1&q=%s&key=%s"
+const apiURLStart = "https://krdict.korean.go.kr/api/search?sort=popular&translated=y&trans_lang=1"
+const apiURLAdvanced = "&advanced=y&method=include"
+const apiURLKeyQuery = "&key=%s&q=%s"
+const apiURLPos = "&pos=%v"
 
-func apiURL(q, apiKey string) string {
-	return fmt.Sprintf(apiURLString, url.QueryEscape(q), apiKey)
+func apiURL(apiKey, q string, pos lang.PartOfSpeech) string {
+	urlString := apiURLStart
+	posString, exists := partOfSpeechReverseMap[pos]
+	if exists {
+		urlString += apiURLAdvanced
+	}
+	urlString += fmt.Sprintf(apiURLKeyQuery, apiKey, url.QueryEscape(q))
+	if exists {
+		urlString += fmt.Sprintf(apiURLPos, partOfSpeechToAPIInt[posString])
+	}
+	return urlString
 }
 
 func unmarshallSearch(data []byte) (*channel, error) {
@@ -114,6 +126,34 @@ var partOfSpeechMap = map[string]lang.PartOfSpeech{
 
 	"품사 없음": lang.PartOfSpeechUnknown,
 	"":      lang.PartOfSpeechUnknown,
+}
+
+var partOfSpeechReverseMap map[lang.PartOfSpeech]string
+
+func init() {
+	partOfSpeechReverseMap = map[lang.PartOfSpeech]string{}
+	for k, v := range partOfSpeechMap {
+		if v != lang.PartOfSpeechUnknown {
+			partOfSpeechReverseMap[v] = k
+		}
+	}
+}
+
+var partOfSpeechToAPIInt = map[string]uint{
+	"명사":     1,
+	"대명사":    2,
+	"수사":     3,
+	"조사":     4,
+	"동사":     5,
+	"형용사":    6,
+	"관형사":    7,
+	"부사":     8,
+	"감탄사":    9,
+	"접사":     10,
+	"의존 명사":  11,
+	"보조 동사":  12,
+	"보조 형용사": 13,
+	"어미":     14,
 }
 
 func itemsToTerms(items []item) ([]dictionary.Term, error) {

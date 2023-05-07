@@ -21,7 +21,7 @@ func TestTermsSearchToCSVRows(t *testing.T) {
 	testdb.SetupTempDBT(t, testName)
 	testdb.Seed(t)
 
-	terms, err := db.Qs().TermsSearch(context.Background(), testdb.SearchTerm, testdb.SearchConfig)
+	terms, err := db.Qs().TermsSearch(context.Background(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
 	require.NoError(err)
 	rows, err := TermsSearchToCSVRows(terms)
 	require.NoError(err)

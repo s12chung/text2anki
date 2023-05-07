@@ -13,6 +13,7 @@
                 <feat att="writtenForm" val="마음 같아서는"/>
             </Lemma>
             <feat att="lexicalUnit" val="관용구"/>
+            <feat att="partOfSpeech" val="동사"/>
             <Sense att="id" val="1">
                 <feat att="definition" val="자기가 생각하는 것대로 하자면."/>
                 <SenseExample>

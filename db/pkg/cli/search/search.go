@@ -13,6 +13,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
+	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/ioutils"
 )
 
@@ -20,7 +21,7 @@ import (
 func TermsSearchToCSVRows(terms []db.TermsSearchRow) ([][]string, error) {
 	rows := make([][]string, len(terms)+1)
 	rows[0] = []string{
-		"Text", "Variants", "CommonLevel", "Explanation", "Popularity", "PopCalc", "CommonCalc", "LenCalc", "RankCalc",
+		"Text", "Variants", "POS", "CommonLevel", "Explanation", "Popularity", "PosCalc", "PopCalc", "CommonCalc", "LenCalc", "RankCalc",
 	}
 
 	for i, term := range terms {
@@ -32,13 +33,15 @@ func TermsSearchToCSVRows(terms []db.TermsSearchRow) ([][]string, error) {
 		rows[i+1] = []string{
 			term.Text,
 			term.Variants,
+			term.PartOfSpeech,
 			strconv.Itoa(int(term.CommonLevel)),
 			dictTerm.Translations[0].Explanation,
 			strconv.Itoa(int(term.Popularity)),
+			fmt.Sprintf("%f", term.PosCalc.Float64),
 			fmt.Sprintf("%f", term.PopCalc.Float64),
 			fmt.Sprintf("%f", term.CommonCalc.Float64),
 			fmt.Sprintf("%f", term.LenCalc.Float64),
-			fmt.Sprintf("%f", term.PopCalc.Float64+term.CommonCalc.Float64+term.LenCalc.Float64),
+			fmt.Sprintf("%f", term.PosCalc.Float64+term.PopCalc.Float64+term.CommonCalc.Float64+term.LenCalc.Float64),
 		}
 	}
 	return rows, nil
@@ -48,14 +51,15 @@ func TermsSearchToCSVRows(terms []db.TermsSearchRow) ([][]string, error) {
 func ConfigToCSVRows(config Config) [][]string {
 	c := config.Config
 	return [][]string{
-		{"PopLog", "PopWeight", "CommonWeight", "LenLog"},
-		strings.Fields(strings.Trim(fmt.Sprint([]int{c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog}), "[]")),
+		{"PosWeight", "PopLog", "PopWeight", "CommonWeight", "LenLog"},
+		strings.Fields(strings.Trim(fmt.Sprint([]int{c.PosWeight, c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog}), "[]")),
 	}
 }
 
 // Config is the Config for the search cli command
 type Config struct {
 	Queries []string             `json:"queries,omitempty"`
+	POS     []lang.PartOfSpeech  `json:"pos,omitempty"`
 	Config  db.TermsSearchConfig `json:"config"`
 }
 
@@ -68,6 +72,7 @@ func init() {
 
 var defaultConfig = Config{
 	Queries: []string{"가", "오"},
+	POS:     []lang.PartOfSpeech{lang.PartOfSpeechEmpty, lang.PartOfSpeechEmpty},
 	Config:  db.DefaultTermsSearchConfig(),
 }
 

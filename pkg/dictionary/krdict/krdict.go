@@ -7,6 +7,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
+	"github.com/s12chung/text2anki/pkg/lang"
 )
 
 // New returns a new KrDict
@@ -22,8 +23,8 @@ type KrDict struct {
 }
 
 // Search searches for the query inside the dictionary
-func (k *KrDict) Search(q string) ([]dictionary.Term, error) {
-	rows, err := k.queries.TermsSearch(context.Background(), q, db.DefaultTermsSearchConfig())
+func (k *KrDict) Search(q string, pos lang.PartOfSpeech) ([]dictionary.Term, error) {
+	rows, err := k.queries.TermsSearch(context.Background(), q, pos, db.DefaultTermsSearchConfig())
 	if err != nil {
 		return nil, err
 	}

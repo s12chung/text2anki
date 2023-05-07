@@ -7,6 +7,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
+	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
@@ -17,7 +18,7 @@ func TestKrDict_Search(t *testing.T) {
 	testdb.Seed(t)
 
 	dict := New(db.DB())
-	terms, err := dict.Search("마음")
+	terms, err := dict.Search("마음", lang.PartOfSpeechEmpty)
 	require.NoError(err)
 
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))

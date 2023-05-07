@@ -11,6 +11,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/dictionary"
+	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
@@ -72,13 +73,17 @@ func TestQueries_TermsSearch(t *testing.T) {
 	testdb.SetupTempDBT(t, testName)
 	testdb.Seed(t)
 
-	results, err := db.Qs().TermsSearch(ctx, testdb.SearchTerm, testdb.SearchConfig)
+	results, err := db.Qs().TermsSearch(ctx, testdb.SearchTerm, lang.PartOfSpeechEmpty, testdb.SearchConfig)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, results))
 
-	_, err = db.Qs().TermsSearch(ctx, testdb.SearchTerm, db.TermsSearchConfig{
+	_, err = db.Qs().TermsSearch(ctx, testdb.SearchTerm, lang.PartOfSpeechEmpty, db.TermsSearchConfig{
 		PopWeight:    50,
 		CommonWeight: 51,
 	})
 	require.Error(err)
+
+	results, err = db.Qs().TermsSearch(ctx, testdb.SearchTerm, lang.PartOfSpeechVerb, testdb.SearchConfig)
+	require.NoError(err)
+	fixture.CompareReadOrUpdate(t, testName+"_Verb_"+".json", fixture.JSON(t, results))
 }
