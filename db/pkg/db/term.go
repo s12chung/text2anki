@@ -95,7 +95,7 @@ func init() {
 }
 
 var defaultTermsSearchConfig = TermsSearchConfig{
-	PosWeight:    20,
+	PosWeight:    25,
 	PopLog:       50,
 	PopWeight:    25,
 	CommonWeight: 10,

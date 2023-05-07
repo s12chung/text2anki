@@ -62,6 +62,7 @@ type Config struct {
 	Config  db.TermsSearchConfig `json:"config"`
 }
 
+// Query represents a search query for the search cli command
 type Query struct {
 	Str string            `json:"str,omitempty"`
 	POS lang.PartOfSpeech `json:"pos,omitempty"`
