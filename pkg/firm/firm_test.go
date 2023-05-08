@@ -50,20 +50,19 @@ func TestTemplatedError_Error(t *testing.T) {
 	require := require.New(t)
 
 	err := &TemplatedError{
-		Key:      "KEY.ME",
 		Template: "the error we go with {{ .Him }} and {{ .Her }}. yay",
 		TemplateFields: map[string]string{
 			"Him": "Jack",
 			"Her": "Jill",
 		},
 	}
-	require.Equal("invalid KEY.ME: the error we go with Jack and Jill. yay", err.Error())
+	require.Equal("the error we go with Jack and Jill. yay", err.Error())
 
 	err.TemplateFields = map[string]string{
 		"Her": "Jill",
 	}
-	require.Equal("invalid KEY.ME: the error we go with <no value> and Jill. yay", err.Error())
+	require.Equal("the error we go with <no value> and Jill. yay", err.Error())
 
 	err.Template = "{{ a }}"
-	require.Equal("invalid KEY.ME: {{ a }} (bad format)", err.Error())
+	require.Equal("{{ a }} (bad format)", err.Error())
 }

@@ -66,21 +66,12 @@ func MergeErrorMap(path string, src, dest ErrorMap) {
 
 // TemplatedError is an error that contains a key matching a field or top level, a golang template, and template fields
 type TemplatedError struct {
-	Key            string
 	Template       string
 	TemplateFields map[string]string
 }
 
 // Error returns a string for the error
 func (t *TemplatedError) Error() string {
-	keyPrefix := ""
-	if t.Key != "" {
-		keyPrefix = "invalid " + t.Key + ": "
-	}
-	return keyPrefix + t.templateError()
-}
-
-func (t *TemplatedError) templateError() string {
 	badTemplateString := t.Template + " (bad format)"
 	temp, err := template.New("top").Parse(t.Template)
 	if err != nil {
