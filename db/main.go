@@ -115,7 +115,7 @@ func cmdSearch() error {
 	}
 
 	for _, query := range config.Queries {
-		terms, err := db.Qs().TermsSearch(context.Background(), query.Str, query.POS, config.Config)
+		terms, err := db.Qs().TermsSearch(context.Background(), query.Str, query.POS)
 		if err != nil {
 			return err
 		}
@@ -123,7 +123,7 @@ func cmdSearch() error {
 		if err != nil {
 			return err
 		}
-		rows = append(search.ConfigToCSVRows(config), rows...)
+		rows = append(search.ConfigToCSVRows(), rows...)
 
 		filename := "tmp/search-" + query.Str
 		if query.POS != "" {

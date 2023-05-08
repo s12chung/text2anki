@@ -21,13 +21,13 @@ func TestTermsSearchToCSVRows(t *testing.T) {
 	testdb.SetupTempDBT(t, testName)
 	testdb.Seed(t)
 
-	terms, err := db.Qs().TermsSearch(context.Background(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
+	terms, err := db.Qs().TermsSearchRaw(context.Background(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
 	require.NoError(err)
 	rows, err := TermsSearchToCSVRows(terms)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, rows))
 
-	_, err = db.Qs().TermsSearch(context.Background(), testdb.SearchTerm, testdb.SearchPOS, db.TermsSearchConfig{
+	_, err = db.Qs().TermsSearchRaw(context.Background(), testdb.SearchTerm, testdb.SearchPOS, db.TermsSearchConfig{
 		PosWeight:    30,
 		PopWeight:    40,
 		CommonWeight: 40,
@@ -37,21 +37,14 @@ func TestTermsSearchToCSVRows(t *testing.T) {
 
 var testConfig = Config{
 	Queries: []Query{{Str: "a"}, {Str: "b"}},
-	Config:  testdb.SearchConfig,
 }
 var changedTestConfig = Config{
 	Queries: []Query{{Str: "test"}, {Str: "change"}},
-	Config: db.TermsSearchConfig{
-		PopLog:       1,
-		PopWeight:    2,
-		CommonWeight: 3,
-		LenLog:       4,
-	},
 }
 
 func TestConfigToCSVRows(t *testing.T) {
 	testName := "TestConfigToCSVRows"
-	rows := ConfigToCSVRows(testConfig)
+	rows := ConfigToCSVRows()
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, rows))
 }
 

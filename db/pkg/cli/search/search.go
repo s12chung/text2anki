@@ -48,8 +48,8 @@ func TermsSearchToCSVRows(terms []db.TermsSearchRow) ([][]string, error) {
 }
 
 // ConfigToCSVRows returns the CSV rows for the config
-func ConfigToCSVRows(config Config) [][]string {
-	c := config.Config
+func ConfigToCSVRows() [][]string {
+	c := db.DefaultTermsSearchConfig()
 	return [][]string{
 		{"PosWeight", "PopLog", "PopWeight", "CommonWeight", "LenLog"},
 		strings.Fields(strings.Trim(fmt.Sprint([]int{c.PosWeight, c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog}), "[]")),
@@ -58,8 +58,7 @@ func ConfigToCSVRows(config Config) [][]string {
 
 // Config is the Config for the search cli command
 type Config struct {
-	Queries []Query              `json:"queries,omitempty"`
-	Config  db.TermsSearchConfig `json:"config"`
+	Queries []Query `json:"queries,omitempty"`
 }
 
 // Query represents a search query for the search cli command
@@ -70,8 +69,10 @@ type Query struct {
 
 func init() {
 	firm.RegisterType(firm.NewTypedDefinition(Config{}).Validates(firm.RuleMap{
-		"Queries": {rule.Presence{}},
-		"Config":  {rule.Presence{}},
+		"Queries": {},
+	}))
+	firm.RegisterType(firm.NewTypedDefinition(Query{}).Validates(firm.RuleMap{
+		"Str": {rule.Presence{}},
 	}))
 }
 
@@ -83,7 +84,6 @@ var defaultConfig = Config{
 		{Str: "ㅂ"},
 		{Str: "고 있다"},
 	},
-	Config: db.DefaultTermsSearchConfig(),
 }
 
 // GetOrDefaultConfig returns the config from given path

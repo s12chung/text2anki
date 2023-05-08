@@ -66,24 +66,24 @@ func TestTerm_CreateParams(t *testing.T) {
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }
 
-func TestQueries_TermsSearch(t *testing.T) {
+func TestQueries_TermsSearchRaw(t *testing.T) {
 	require := require.New(t)
 	testName := "TestQueries_TermsSearch"
 	ctx := context.Background()
 	testdb.SetupTempDBT(t, testName)
 	testdb.Seed(t)
 
-	results, err := db.Qs().TermsSearch(ctx, testdb.SearchTerm, lang.PartOfSpeechEmpty, testdb.SearchConfig)
+	results, err := db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechEmpty, testdb.SearchConfig)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, results))
 
-	_, err = db.Qs().TermsSearch(ctx, testdb.SearchTerm, lang.PartOfSpeechEmpty, db.TermsSearchConfig{
+	_, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechEmpty, db.TermsSearchConfig{
 		PopWeight:    50,
 		CommonWeight: 51,
 	})
 	require.Error(err)
 
-	results, err = db.Qs().TermsSearch(ctx, testdb.SearchTerm, lang.PartOfSpeechVerb, testdb.SearchConfig)
+	results, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechVerb, testdb.SearchConfig)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+"_Verb_"+".json", fixture.JSON(t, results))
 }

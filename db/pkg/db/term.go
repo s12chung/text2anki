@@ -9,8 +9,6 @@ import (
 	"strings"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
-	"github.com/s12chung/text2anki/pkg/firm"
-	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/stringclean"
 )
@@ -78,24 +76,15 @@ type TermsSearchRow struct {
 
 // TermsSearchConfig is the config for TermsSearchRaw
 type TermsSearchConfig struct {
-	PosWeight    int `json:"pos_weight"`
-	PopLog       int `json:"pop_log"`
-	PopWeight    int `json:"pop_weight"`
-	CommonWeight int `json:"common_weight"`
-	LenLog       int `json:"len_log"`
-}
-
-func init() {
-	firm.RegisterType(firm.NewTypedDefinition(TermsSearchConfig{}).Validates(firm.RuleMap{
-		"PopLog":       {rule.Presence{}},
-		"PopWeight":    {rule.Presence{}},
-		"CommonWeight": {rule.Presence{}},
-		"LenLog":       {rule.Presence{}},
-	}))
+	PosWeight    int
+	PopLog       int
+	PopWeight    int
+	CommonWeight int
+	LenLog       int
 }
 
 var defaultTermsSearchConfig = TermsSearchConfig{
-	PosWeight:    25,
+	PosWeight:    15,
 	PopLog:       50,
 	PopWeight:    25,
 	CommonWeight: 10,
@@ -107,8 +96,13 @@ func DefaultTermsSearchConfig() TermsSearchConfig {
 	return defaultTermsSearchConfig
 }
 
-// TermsSearch searches within Terms for text given the config
-func (q *Queries) TermsSearch(ctx context.Context, query string, pos lang.PartOfSpeech, c TermsSearchConfig) ([]TermsSearchRow, error) {
+// TermsSearch searches within Terms for text given the default config
+func (q *Queries) TermsSearch(ctx context.Context, query string, pos lang.PartOfSpeech) ([]TermsSearchRow, error) {
+	return q.TermsSearchRaw(ctx, query, pos, DefaultTermsSearchConfig())
+}
+
+// TermsSearchRaw searches within Terms for text given the config
+func (q *Queries) TermsSearchRaw(ctx context.Context, query string, pos lang.PartOfSpeech, c TermsSearchConfig) ([]TermsSearchRow, error) {
 	if c.PosWeight+c.PopWeight+c.CommonWeight > 100 {
 		return nil, fmt.Errorf("c.PosWeight + config.PopWeight + config.CommonWeight > 100: %v, %v, %v", c.PosWeight, c.PopWeight, c.CommonWeight)
 	}
