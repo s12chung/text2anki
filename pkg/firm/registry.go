@@ -36,7 +36,7 @@ func (r *Registry) ValidateValue(value reflect.Value) ErrorMap {
 }
 
 // ValidateMerge validates the data value with the correct validator, also doing a merge with the errorMap
-func (r *Registry) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
+func (r *Registry) ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap) {
 	r.DefaultedValidator(value).ValidateMerge(value, key, errorMap)
 }
 

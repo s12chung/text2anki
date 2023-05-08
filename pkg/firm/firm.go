@@ -48,17 +48,17 @@ type Rule interface {
 type Validator interface {
 	Rule
 	Validate(data any) Result
-	ValidateMerge(value reflect.Value, key string, errorMap ErrorMap)
+	ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap)
 }
 
 // RuleMap is a map of fields or keys to rules
 type RuleMap map[string][]Rule
 
 // ErrorMap is a map of TemplatedError keys to their respective TemplatedError
-type ErrorMap map[string]*TemplatedError
+type ErrorMap map[ErrorKey]*TemplatedError
 
 // MergeErrorMap merges src into dest, given appending path to the src keys
-func MergeErrorMap(path string, src, dest ErrorMap) {
+func MergeErrorMap(path ErrorKey, src, dest ErrorMap) {
 	for k, v := range src {
 		dest[joinKeys(path, k)] = v
 	}
@@ -95,6 +95,10 @@ func typeName(value reflect.Value) string {
 	return name
 }
 
+func typeNameKey(value reflect.Value) ErrorKey {
+	return ErrorKey(typeName(value))
+}
+
 func indirect(value reflect.Value) reflect.Value {
 	for value.Kind() == reflect.Pointer {
 		value = value.Elem()
@@ -102,16 +106,41 @@ func indirect(value reflect.Value) reflect.Value {
 	return value
 }
 
-func joinKeys(keys ...string) string {
-	keysCopy := make([]string, len(keys))
-	i := 0
+const keySeparator = "."
+
+func joinKeys(keys ...ErrorKey) ErrorKey {
+	var key ErrorKey
 	for _, v := range keys {
 		if v == "" {
 			continue
 		}
-		keysCopy[i] = v
-		i++
+		if key != "" {
+			key += keySeparator
+		}
+		key += v
 	}
-	keysCopy = keysCopy[:i]
-	return strings.Join(keysCopy, ".")
+	return key
+}
+
+// ErrorKey is a string that has helper functions relating to error keys
+type ErrorKey string
+
+// TypeName returns the type name of the key
+func (e ErrorKey) TypeName() string {
+	s := string(e)
+	firstIdx := strings.Index(s, keySeparator)
+	if firstIdx == -1 {
+		return ""
+	}
+	return s[:firstIdx]
+}
+
+// ErrorName returns the error name of the key
+func (e ErrorKey) ErrorName() string {
+	s := string(e)
+	lastIdx := strings.LastIndex(s, keySeparator)
+	if lastIdx == -1 {
+		return ""
+	}
+	return s[lastIdx+len(keySeparator):]
 }

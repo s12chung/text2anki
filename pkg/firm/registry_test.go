@@ -50,7 +50,7 @@ func TestRegistry_Validate(t *testing.T) {
 		definition *TypedDefinition
 		data       any
 
-		expectedKeySuffix string
+		expectedKeySuffix ErrorKey
 		err               *TemplatedError
 	}
 	tcs := []testCase{
@@ -98,7 +98,7 @@ func TestRegistry_Validate(t *testing.T) {
 
 			expected := MapResult{errorMap: ErrorMap{}}
 			if tc.err != nil {
-				expected.errorMap[joinKeys(typeName(reflect.ValueOf(tc.data)), tc.expectedKeySuffix)] = tc.err
+				expected.errorMap[joinKeys(typeNameKey(reflect.ValueOf(tc.data)), tc.expectedKeySuffix)] = tc.err
 			}
 			require.Equal(expected, registry.Validate(tc.data))
 			require.Equal(expected.errorMap, registry.ValidateValue(reflect.ValueOf(tc.data)))

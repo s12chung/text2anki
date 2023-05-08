@@ -66,3 +66,41 @@ func TestTemplatedError_Error(t *testing.T) {
 	err.Template = "{{ a }}"
 	require.Equal("{{ a }} (bad format)", err.Error())
 }
+
+func TestErrorKey_TypeName(t *testing.T) {
+	tcs := []struct {
+		name     string
+		errorKey ErrorKey
+		expected string
+	}{
+		{name: "deep", errorKey: "parent.Field[0].InnerField.ErrorName", expected: "parent"},
+		{name: "one_level", errorKey: "parent.Field.ErrorName", expected: "parent"},
+		{name: "top_level", errorKey: "parent.ErrorName", expected: "parent"},
+		{name: "empty", errorKey: "", expected: ""},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			require.Equal(tc.expected, tc.errorKey.TypeName())
+		})
+	}
+}
+
+func TestErrorKey_ErrorName(t *testing.T) {
+	tcs := []struct {
+		name     string
+		errorKey ErrorKey
+		expected string
+	}{
+		{name: "deep", errorKey: "parent.Field[0].InnerField.TheError", expected: "TheError"},
+		{name: "one_level", errorKey: "parent.Field.TheError", expected: "TheError"},
+		{name: "top_level", errorKey: "parent.TheError", expected: "TheError"},
+		{name: "empty", errorKey: "", expected: ""},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			require.Equal(tc.expected, tc.errorKey.ErrorName())
+		})
+	}
+}
