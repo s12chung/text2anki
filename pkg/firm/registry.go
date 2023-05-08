@@ -25,18 +25,6 @@ func (r *Registry) RegisterType(definition *TypedDefinition) {
 	r.typeToDefinition[typ] = definition
 }
 
-// DefinitionForType returns the definition for the type
-func (r *Registry) DefinitionForType(typ reflect.Type) StructuredDefinition {
-	if typ == nil || r.typeToDefinition == nil {
-		return nil
-	}
-	definition, exists := r.typeToDefinition[typ]
-	if !exists {
-		return nil
-	}
-	return definition
-}
-
 // Validate validates the data with the correct validator
 func (r *Registry) Validate(data any) Result {
 	return MapResult{errorMap: r.ValidateValue(reflect.ValueOf(data))}
@@ -75,15 +63,21 @@ func (r *Registry) Validator(value reflect.Value) Validator {
 
 // Definition returns the definition for the value
 func (r *Registry) Definition(value reflect.Value) StructuredDefinition {
-	value = reflect.Indirect(value)
+	value = indirect(value)
 	if !value.IsValid() {
 		return nil
 	}
+	return r.DefinitionForType(value.Type())
+}
 
-	typ := value.Type()
-	definition := r.DefinitionForType(typ)
-	if definition != nil {
-		return definition
+// DefinitionForType returns the definition for the type
+func (r *Registry) DefinitionForType(typ reflect.Type) StructuredDefinition {
+	if typ == nil || r.typeToDefinition == nil {
+		return nil
 	}
-	return nil
+	definition, exists := r.typeToDefinition[typ]
+	if !exists {
+		return nil
+	}
+	return definition
 }

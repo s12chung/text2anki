@@ -11,14 +11,20 @@ type parent struct {
 	Basic                   child
 	Pt                      *child
 	Any                     any
+	Array                   []child
+	ArrayPt                 []*child
 	PrimitiveEmptyValidates int
 	BasicEmptyValidates     child
 	PtEmptyValidates        *child
 	AnyEmptyValidates       any
+	ArrayValidates          []child
+	ArrayPtValidates        []*child
 	PrimitiveNoValidates    int
 	BasicNoValidates        child
 	PtNoValidates           *child
 	AnyNoValidates          any
+	ArrayNoValidates        []child
+	ArrayPtNoValidates      []*child
 }
 
 type child struct {
@@ -27,18 +33,19 @@ type child struct {
 }
 
 func fullParent() parent {
-	fullChild := child{Validates: "child validates", NoValidates: "no validates"}
-
-	fc1 := fullChild
-	fc2 := fullChild
-	fc3 := fullChild
+	fc := func() *child {
+		return &child{Validates: "child validates", NoValidates: "no validates"}
+	}
 	return parent{
 		// validate field + child
-		Primitive: 1, Basic: fullChild, Pt: &fc1, Any: fullChild,
+		Primitive: 1, Basic: *fc(), Pt: fc(), Any: *fc(),
+		Array: []child{*fc(), *fc()}, ArrayPt: []*child{fc(), fc()},
 		// validate child
-		PrimitiveEmptyValidates: 1, BasicEmptyValidates: fullChild, PtEmptyValidates: &fc2, AnyEmptyValidates: fullChild,
+		PrimitiveEmptyValidates: 1, BasicEmptyValidates: *fc(), PtEmptyValidates: fc(), AnyEmptyValidates: *fc(),
+		ArrayValidates: []child{*fc(), *fc()}, ArrayPtValidates: []*child{fc(), fc()},
 		// validate none
-		PrimitiveNoValidates: 1, BasicNoValidates: fullChild, PtNoValidates: &fc3, AnyNoValidates: fullChild,
+		PrimitiveNoValidates: 1, BasicNoValidates: *fc(), PtNoValidates: fc(), AnyNoValidates: *fc(),
+		ArrayNoValidates: []child{*fc(), *fc()}, ArrayPtNoValidates: []*child{fc(), fc()},
 	}
 }
 
@@ -59,10 +66,14 @@ func init() {
 				"Basic":                   {testPresence{}},
 				"Pt":                      {testPresence{}},
 				"Any":                     {testPresence{}},
+				"Array":                   {testPresence{}},
+				"ArrayPt":                 {testPresence{}},
 				"PrimitiveEmptyValidates": {},
 				"BasicEmptyValidates":     {},
 				"PtEmptyValidates":        {},
 				"AnyEmptyValidates":       {},
+				"ArrayValidates":          {},
+				"ArrayPtValidates":        {},
 			}))
 	testRegistry.RegisterType(
 		NewTypedDefinition(child{}).

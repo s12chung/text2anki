@@ -14,7 +14,7 @@ type StructuredDefinition interface {
 
 // NewTypedDefinition returns a new TypedDefinition
 func NewTypedDefinition(data any) *TypedDefinition {
-	value := reflect.Indirect(reflect.ValueOf(data))
+	value := indirect(reflect.ValueOf(data))
 	validator := &TypedDefinition{
 		typ:           value.Type(),
 		topLevelRules: []Rule{},

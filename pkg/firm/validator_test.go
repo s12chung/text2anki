@@ -92,6 +92,70 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 
 	//
+	// Array
+	//
+	{name: "Array___child_validates_ok", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		for _, v := range changeParent.Array {
+			v.NoValidates = ""
+		}
+		return changeParent
+	}},
+	{name: "Array___child_validates_zero", errorKeys: []string{"Array[0].Validates", "Array[1].Validates"}, f: func() parent {
+		changeParent := fullParent()
+		changeParent.Array[0].Validates = ""
+		changeParent.Array[1].Validates = ""
+		return changeParent
+	}},
+	{name: "Array___child_validates_one_zero", errorKeys: []string{"Array[0].Validates"}, f: func() parent {
+		changeParent := fullParent()
+		changeParent.Array[0].Validates = ""
+		return changeParent
+	}},
+	{name: "Array___empty", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.Array = []child{}
+		return changeParent
+	}},
+	{name: "Array___nil", errorKeys: []string{"Array"}, f: func() parent {
+		changeParent := fullParent()
+		changeParent.Array = nil
+		return changeParent
+	}},
+
+	//
+	// ArrayPt
+	//
+	{name: "ArrayPt___child_validates_ok", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		for _, v := range changeParent.ArrayPt {
+			v.NoValidates = ""
+		}
+		return changeParent
+	}},
+	{name: "ArrayPt___child_validates_zero", errorKeys: []string{"ArrayPt[0].Validates", "ArrayPt[1].Validates"}, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayPt[0].Validates = ""
+		changeParent.ArrayPt[1].Validates = ""
+		return changeParent
+	}},
+	{name: "ArrayPt___child_validates_one_zero", errorKeys: []string{"ArrayPt[0].Validates"}, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayPt[0].Validates = ""
+		return changeParent
+	}},
+	{name: "ArrayPt___empty", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayPt = []*child{}
+		return changeParent
+	}},
+	{name: "ArrayPt___nil", errorKeys: []string{"ArrayPt"}, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayPt = nil
+		return changeParent
+	}},
+
+	//
 	// PrimitiveEmptyValidates
 	//
 	{name: "PrimitiveEmptyValidates___zero", errorKeys: nil, f: func() parent {
@@ -163,6 +227,71 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 
 	//
+	// ArrayValidates
+	//
+	{name: "ArrayValidates___child_validates_ok", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		for _, v := range changeParent.ArrayValidates {
+			v.NoValidates = ""
+		}
+		return changeParent
+	}},
+	{name: "ArrayValidates___child_validates_zero", errorKeys: []string{"ArrayValidates[0].Validates", "ArrayValidates[1].Validates"}, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayValidates[0].Validates = ""
+		changeParent.ArrayValidates[1].Validates = ""
+		return changeParent
+	}},
+	{name: "ArrayValidates___child_validates_one_zero", errorKeys: []string{"ArrayValidates[0].Validates"}, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayValidates[0].Validates = ""
+		return changeParent
+	}},
+	{name: "ArrayValidates___empty", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayValidates = []child{}
+		return changeParent
+	}},
+	{name: "ArrayValidates___nil", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayValidates = nil
+		return changeParent
+	}},
+
+	//
+	// ArrayPtValidates
+	//
+	{name: "ArrayPtValidates___child_validates_ok", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		for _, v := range changeParent.ArrayPtValidates {
+			v.NoValidates = ""
+		}
+		return changeParent
+	}},
+	{name: "ArrayPtValidates___child_validates_zero",
+		errorKeys: []string{"ArrayPtValidates[0].Validates", "ArrayPtValidates[1].Validates"}, f: func() parent {
+			changeParent := fullParent()
+			changeParent.ArrayPtValidates[0].Validates = ""
+			changeParent.ArrayPtValidates[1].Validates = ""
+			return changeParent
+		}},
+	{name: "ArrayPtValidates___child_validates_one_zero", errorKeys: []string{"ArrayPtValidates[0].Validates"}, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayPtValidates[0].Validates = ""
+		return changeParent
+	}},
+	{name: "ArrayPtValidates___empty", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayPtValidates = []*child{}
+		return changeParent
+	}},
+	{name: "ArrayPtValidates___nil", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayPtValidates = nil
+		return changeParent
+	}},
+
+	//
 	// PrimitiveNoValidates
 	//
 	{name: "PrimitiveNoValidates___zero", errorKeys: nil, f: func() parent {
@@ -230,6 +359,70 @@ var structValidatorTestCases = []structValidatorTestCase{
 	{name: "AnyNoValidates___nil", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
 		changeParent.AnyNoValidates = nil
+		return changeParent
+	}},
+
+	//
+	// ArrayNoValidates
+	//
+	{name: "ArrayNoValidates___child_validates_ok", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		for _, v := range changeParent.ArrayNoValidates {
+			v.NoValidates = ""
+		}
+		return changeParent
+	}},
+	{name: "ArrayNoValidates___child_validates_zero", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayNoValidates[0].Validates = ""
+		changeParent.ArrayNoValidates[1].Validates = ""
+		return changeParent
+	}},
+	{name: "ArrayNoValidates___child_validates_one_zero", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayNoValidates[0].Validates = ""
+		return changeParent
+	}},
+	{name: "ArrayNoValidates___empty", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayNoValidates = []child{}
+		return changeParent
+	}},
+	{name: "ArrayNoValidates___nil", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayNoValidates = nil
+		return changeParent
+	}},
+
+	//
+	// ArrayPtNoValidates
+	//
+	{name: "ArrayPtNoValidates___child_validates_ok", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		for _, v := range changeParent.ArrayPtNoValidates {
+			v.NoValidates = ""
+		}
+		return changeParent
+	}},
+	{name: "ArrayPtNoValidates___child_validates_zero", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayPtNoValidates[0].Validates = ""
+		changeParent.ArrayPtNoValidates[1].Validates = ""
+		return changeParent
+	}},
+	{name: "ArrayPtNoValidates___child_validates_one_zero", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayPtNoValidates[0].Validates = ""
+		return changeParent
+	}},
+	{name: "ArrayPtNoValidates___empty", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayPtNoValidates = []*child{}
+		return changeParent
+	}},
+	{name: "ArrayPtNoValidates___nil", errorKeys: nil, f: func() parent {
+		changeParent := fullParent()
+		changeParent.ArrayPtNoValidates = nil
 		return changeParent
 	}},
 }

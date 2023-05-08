@@ -98,10 +98,17 @@ const nilName = "nil"
 func typeName(value reflect.Value) string {
 	name := nilName
 	if value.IsValid() {
-		value = reflect.Indirect(value)
+		value = indirect(value)
 		name = value.Type().Name()
 	}
 	return name
+}
+
+func indirect(value reflect.Value) reflect.Value {
+	for value.Kind() == reflect.Pointer {
+		value = value.Elem()
+	}
+	return value
 }
 
 func joinKeys(keys ...string) string {

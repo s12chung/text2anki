@@ -2,6 +2,7 @@ package firm
 
 import (
 	"reflect"
+	"strconv"
 )
 
 // StructValidator validates structs
@@ -34,7 +35,7 @@ func structValidatorError(value reflect.Value) *TemplatedError {
 
 // ValidateMerge validates the data value, also doing a merge with the errorMap
 func (s StructValidator) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
-	value = reflect.Indirect(value)
+	value = indirect(value)
 	if value.Type().Kind() != reflect.Struct {
 		MergeErrorMap(key, ErrorMap{
 			structValidatorErrorKey: structValidatorError(value),
@@ -54,12 +55,22 @@ func (s StructValidator) ValidateMerge(value reflect.Value, key string, errorMap
 		fieldKey := joinKeys(key, field.Name)
 
 		validateMerge(fieldValue, fieldKey, errorMap, rules)
+		s.validateMergeRecursive(fieldValue, fieldKey, errorMap)
+	}
+}
 
-		indirectValue := reflect.Indirect(fieldValue)
-		validator := s.Registry.Validator(indirectValue)
-		if validator != nil {
-			validator.ValidateMerge(indirectValue, fieldKey, errorMap)
+func (s StructValidator) validateMergeRecursive(value reflect.Value, key string, errorMap ErrorMap) {
+	indirectValue := indirect(value)
+	if indirectValue.Kind() == reflect.Array || indirectValue.Kind() == reflect.Slice {
+		for i := 0; i < value.Len(); i++ {
+			indexKey := key + "[" + strconv.Itoa(i) + "]"
+			s.validateMergeRecursive(indirectValue.Index(i), indexKey, errorMap)
 		}
+		return
+	}
+	validator := s.Registry.Validator(indirectValue)
+	if validator != nil {
+		validator.ValidateMerge(indirectValue, key, errorMap)
 	}
 }
 
@@ -89,7 +100,7 @@ func (v ValueValidator) ValidateValue(value reflect.Value) ErrorMap {
 
 // ValidateMerge validates the data value, also doing a merge with the errorMap
 func (v ValueValidator) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
-	value = reflect.Indirect(value)
+	value = indirect(value)
 	validateMerge(value, key, errorMap, v.ValueRules)
 }
 
