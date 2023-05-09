@@ -5,12 +5,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/maps"
 )
 
-type registryTest struct {
+type registryTestParent struct {
 	Primitive int
+	Child     registryTestChild
 }
+
+type registryTestChild struct{}
 
 type registryNotFoundTest struct{}
 
@@ -18,36 +20,40 @@ func TestRegistry_RegisterType(t *testing.T) {
 	require := require.New(t)
 
 	registry := &Registry{}
-	definition := NewTypedDefinition(registryTest{})
+	registry.RegisterType(NewDefinition(registryTestParent{}).
+		Validates(RuleMap{"Child": {}}).
+		ValidatesTopLevel(testPresence{}))
 
-	registry.RegisterType(definition)
-	require.Equal(map[reflect.Type]StructuredDefinition{
-		definition.typ: definition,
-	}, registry.typeToDefinition)
+	typeToValidator := map[reflect.Type]*ValueValidator{
+		reflect.TypeOf(registryTestParent{}): {Rules: []Rule{testPresence{}, &StructValidator{RuleMap: map[string]*[]Rule{
+			"Child": {},
+		}}}},
+	}
+	require.Equal(typeToValidator, registry.typeToValidator)
+	require.Equal(map[reflect.Type][]*[]Rule{
+		reflect.TypeOf(registryTestChild{}): {{}},
+	}, registry.unregisteredTypeReferences)
+
+	registry.RegisterType(NewDefinition(registryTestChild{}))
+
+	typeToValidator[reflect.TypeOf(registryTestParent{})] = &ValueValidator{Rules: []Rule{testPresence{},
+		&StructValidator{RuleMap: map[string]*[]Rule{
+			"Child": {&ValueValidator{Rules: []Rule{&StructValidator{RuleMap: map[string]*[]Rule{}}}}},
+		}}}}
+	typeToValidator[reflect.TypeOf(registryTestChild{})] = &ValueValidator{Rules: []Rule{&StructValidator{RuleMap: map[string]*[]Rule{}}}}
+	require.Equal(typeToValidator, registry.typeToValidator)
+	require.Equal(map[reflect.Type][]*[]Rule{}, registry.unregisteredTypeReferences)
 
 	require.Panics(func() {
-		registry.RegisterType(NewTypedDefinition(registryTest{}).ValidatesTopLevel(testPresence{}))
+		registry.RegisterType(NewDefinition(registryTestParent{}).ValidatesTopLevel(testPresence{}))
 	})
-}
-
-func TestRegistry_DefinitionForType(t *testing.T) {
-	require := require.New(t)
-
-	registry := &Registry{}
-	definition := NewTypedDefinition(registryTest{})
-	require.Nil(registry.DefinitionForType(definition.typ))
-
-	registry.RegisterType(definition)
-	require.Equal(definition, registry.DefinitionForType(definition.typ))
-	require.Nil(registry.DefinitionForType(nil))
-	require.Nil(registry.DefinitionForType(reflect.TypeOf(1)))
 }
 
 // nolint:funlen // a bunch of test cases
 func TestRegistry_Validate(t *testing.T) {
 	type testCase struct {
 		name       string
-		definition *TypedDefinition
+		definition *Definition
 		data       any
 
 		expectedKeySuffix ErrorKey
@@ -56,31 +62,31 @@ func TestRegistry_Validate(t *testing.T) {
 	tcs := []testCase{
 		{
 			name:              "top_level",
-			definition:        NewTypedDefinition(registryTest{}).ValidatesTopLevel(testPresence{}),
-			data:              registryTest{},
-			expectedKeySuffix: "testPresence",
-			err:               &TemplatedError{Template: "test"},
+			definition:        NewDefinition(registryTestParent{}).ValidatesTopLevel(testPresence{}),
+			data:              registryTestParent{},
+			expectedKeySuffix: testPresenceKey,
+			err:               errTest,
 		},
 		{
 			name: "field_Primitive",
-			definition: NewTypedDefinition(registryTest{}).
+			definition: NewDefinition(registryTestParent{}).
 				Validates(RuleMap{
 					"Primitive": {testPresence{}},
 				}),
-			data:              registryTest{},
+			data:              registryTestParent{},
 			expectedKeySuffix: "Primitive.testPresence",
-			err:               &TemplatedError{Template: "test"},
+			err:               errTest,
 		},
 		{
 			name:              "not_found",
-			definition:        NewTypedDefinition(registryTest{}).ValidatesTopLevel(testPresence{}),
+			definition:        NewDefinition(registryTestParent{}).ValidatesTopLevel(testPresence{}),
 			data:              registryNotFoundTest{},
 			expectedKeySuffix: notFoundRuleErrorKey,
 			err:               notFoundRuleError(reflect.ValueOf(registryNotFoundTest{})),
 		},
 		{
 			name: "not_found_field_Primitive",
-			definition: NewTypedDefinition(registryTest{}).
+			definition: NewDefinition(registryTestParent{}).
 				Validates(RuleMap{
 					"Primitive": {testPresence{}},
 				}),
@@ -91,27 +97,10 @@ func TestRegistry_Validate(t *testing.T) {
 	}
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
 			registry := &Registry{}
 			registry.RegisterType(tc.definition)
 
-			expected := MapResult{errorMap: ErrorMap{}}
-			if tc.err != nil {
-				expected.errorMap[joinKeys(typeNameKey(reflect.ValueOf(tc.data)), tc.expectedKeySuffix)] = tc.err
-			}
-			require.Equal(expected, registry.Validate(tc.data))
-			require.Equal(expected.errorMap, registry.ValidateValue(reflect.ValueOf(tc.data)))
-
-			errorMap := ErrorMap{
-				"Existing": nil,
-			}
-			expectedErrorMap := maps.Clone(errorMap)
-			if tc.err != nil {
-				expectedErrorMap[joinKeys("KEY.ME", tc.expectedKeySuffix)] = tc.err
-			}
-			registry.ValidateMerge(reflect.ValueOf(tc.data), "KEY.ME", errorMap)
-			require.Equal(expectedErrorMap, errorMap)
+			testValidates(t, registry, tc.data, tc.err, tc.expectedKeySuffix)
 		})
 	}
 }
@@ -120,10 +109,11 @@ func TestRegistry_DefaultedValidator(t *testing.T) {
 	require := require.New(t)
 
 	registry := &Registry{}
-	definition := NewTypedDefinition(registryTest{})
-	registry.RegisterType(definition)
+	registry.RegisterType(NewDefinition(registryTestParent{}).ValidatesTopLevel(testPresence{}))
 
-	require.Equal(definition.Validator(registry), registry.DefaultedValidator(reflect.ValueOf(registryTest{})))
+	structValidator := NewStructValidator(nil)
+	expected := NewValueValidator(testPresence{}, &structValidator)
+	require.Equal(&expected, registry.DefaultedValidator(reflect.ValueOf(registryTestParent{})))
 
 	notFoundValue := reflect.ValueOf(nil)
 	require.Equal(DefaultValidator, registry.DefaultedValidator(notFoundValue))
@@ -133,33 +123,30 @@ func TestRegistry_DefaultedValidator(t *testing.T) {
 }
 
 func TestRegistry_Validator(t *testing.T) {
-	require := require.New(t)
-
-	registry := &Registry{}
-	definition := NewTypedDefinition(registryTest{})
-	registry.RegisterType(definition)
-
-	require.Equal(definition.Validator(registry), registry.Validator(reflect.ValueOf(registryTest{})))
-	require.Equal(definition.Validator(registry), registry.Validator(reflect.ValueOf(&registryTest{})))
-	require.Nil(registry.Validator(reflect.ValueOf(registryNotFoundTest{})))
-	require.Nil(registry.Validator(reflect.ValueOf(&registryNotFoundTest{})))
-	require.Nil(registry.Validator(reflect.ValueOf(Validator(nil))))
-	require.Nil(registry.Validator(reflect.ValueOf(nil)))
-	require.Nil(registry.Validator(reflect.ValueOf(0)))
+	testRegistryValidatorF(t, func(registry *Registry, data any) any {
+		return registry.Validator(reflect.ValueOf(data))
+	})
 }
 
-func TestRegistry_Definition(t *testing.T) {
+func TestRegistry_ValidatorForType(t *testing.T) {
+	testRegistryValidatorF(t, func(registry *Registry, data any) any {
+		return registry.ValidatorForType(reflect.TypeOf(data))
+	})
+}
+
+func testRegistryValidatorF(t *testing.T, f func(registry *Registry, data any) any) {
 	require := require.New(t)
 
 	registry := &Registry{}
-	definition := NewTypedDefinition(registryTest{})
-	registry.RegisterType(definition)
+	registry.RegisterType(NewDefinition(registryTestParent{}).ValidatesTopLevel(testPresence{}))
 
-	require.Equal(definition, registry.Definition(reflect.ValueOf(registryTest{})))
-	require.Equal(definition, registry.Definition(reflect.ValueOf(&registryTest{})))
-	require.Nil(registry.Definition(reflect.ValueOf(registryNotFoundTest{})))
-	require.Nil(registry.Definition(reflect.ValueOf(&registryNotFoundTest{})))
-	require.Nil(registry.Definition(reflect.ValueOf(Validator(nil))))
-	require.Nil(registry.Definition(reflect.ValueOf(nil)))
-	require.Nil(registry.Definition(reflect.ValueOf(0)))
+	structValidator := NewStructValidator(nil)
+	expected := NewValueValidator(testPresence{}, &structValidator)
+	require.Equal(&expected, f(registry, registryTestParent{}))
+	require.Equal(&expected, f(registry, &registryTestParent{}))
+	require.Nil(f(registry, registryNotFoundTest{}))
+	require.Nil(f(registry, &registryNotFoundTest{}))
+	require.Nil(f(registry, Validator(nil)))
+	require.Nil(f(registry, nil))
+	require.Nil(f(registry, 0))
 }

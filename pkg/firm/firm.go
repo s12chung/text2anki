@@ -25,9 +25,7 @@ type NotFoundRule struct {
 
 // ValidateValue validates the value (always an error)
 func (n NotFoundRule) ValidateValue(value reflect.Value) ErrorMap {
-	return ErrorMap{
-		notFoundRuleErrorKey: notFoundRuleError(value),
-	}
+	return ErrorMap{notFoundRuleErrorKey: notFoundRuleError(value)}
 }
 
 const notFoundRuleErrorKey = "NotFound"
@@ -87,12 +85,10 @@ func (t *TemplatedError) Error() string {
 const nilName = "nil"
 
 func typeName(value reflect.Value) string {
-	name := nilName
-	if value.IsValid() {
-		value = indirect(value)
-		name = value.Type().Name()
+	if !value.IsValid() {
+		return nilName
 	}
-	return name
+	return indirect(value).Type().Name()
 }
 
 func typeNameKey(value reflect.Value) ErrorKey {
@@ -104,6 +100,13 @@ func indirect(value reflect.Value) reflect.Value {
 		value = value.Elem()
 	}
 	return value
+}
+
+func indirectType(typ reflect.Type) reflect.Type {
+	for typ.Kind() == reflect.Pointer {
+		typ = typ.Elem()
+	}
+	return typ
 }
 
 const keySeparator = "."

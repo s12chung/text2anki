@@ -10,10 +10,14 @@ import (
 type testPresence struct {
 }
 
+const testPresenceKey = "testPresence"
+
+var errTest = &TemplatedError{Template: "test"}
+
 func (p testPresence) ValidateValue(value reflect.Value) ErrorMap {
 	if !value.IsValid() || value.IsZero() {
 		return ErrorMap{
-			"testPresence": &TemplatedError{Template: "test"},
+			testPresenceKey: errTest,
 		}
 	}
 	return nil
