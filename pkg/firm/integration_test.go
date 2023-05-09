@@ -60,7 +60,7 @@ var testRegistry = &Registry{}
 
 func init() {
 	testRegistry.RegisterType(
-		NewTypedDefinition(parent{}).
+		NewDefinition(parent{}).
 			Validates(RuleMap{
 				"Primitive":               {testPresence{}},
 				"Basic":                   {testPresence{}},
@@ -76,12 +76,12 @@ func init() {
 				"ArrayPtValidates":        {},
 			}))
 	testRegistry.RegisterType(
-		NewTypedDefinition(child{}).
+		NewDefinition(child{}).
 			Validates(RuleMap{
 				"Validates": {testPresence{}},
 			}))
 	testRegistry.RegisterType(
-		NewTypedDefinition(topLevelValidates{}).
+		NewDefinition(topLevelValidates{}).
 			ValidatesTopLevel(testPresence{}))
 }
 

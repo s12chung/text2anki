@@ -10,10 +10,14 @@ import (
 type testPresence struct {
 }
 
+const testPresenceKey = "testPresence"
+
+var errTest = &TemplatedError{Template: "test"}
+
 func (p testPresence) ValidateValue(value reflect.Value) ErrorMap {
 	if !value.IsValid() || value.IsZero() {
 		return ErrorMap{
-			"testPresence": &TemplatedError{Template: "test"},
+			testPresenceKey: errTest,
 		}
 	}
 	return nil
@@ -50,20 +54,57 @@ func TestTemplatedError_Error(t *testing.T) {
 	require := require.New(t)
 
 	err := &TemplatedError{
-		Key:      "KEY.ME",
 		Template: "the error we go with {{ .Him }} and {{ .Her }}. yay",
 		TemplateFields: map[string]string{
 			"Him": "Jack",
 			"Her": "Jill",
 		},
 	}
-	require.Equal("invalid KEY.ME: the error we go with Jack and Jill. yay", err.Error())
+	require.Equal("the error we go with Jack and Jill. yay", err.Error())
 
 	err.TemplateFields = map[string]string{
 		"Her": "Jill",
 	}
-	require.Equal("invalid KEY.ME: the error we go with <no value> and Jill. yay", err.Error())
+	require.Equal("the error we go with <no value> and Jill. yay", err.Error())
 
 	err.Template = "{{ a }}"
-	require.Equal("invalid KEY.ME: {{ a }} (bad format)", err.Error())
+	require.Equal("{{ a }} (bad format)", err.Error())
+}
+
+func TestErrorKey_TypeName(t *testing.T) {
+	tcs := []struct {
+		name     string
+		errorKey ErrorKey
+		expected string
+	}{
+		{name: "deep", errorKey: "parent.Field[0].InnerField.ErrorName", expected: "parent"},
+		{name: "one_level", errorKey: "parent.Field.ErrorName", expected: "parent"},
+		{name: "top_level", errorKey: "parent.ErrorName", expected: "parent"},
+		{name: "empty", errorKey: "", expected: ""},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			require.Equal(tc.expected, tc.errorKey.TypeName())
+		})
+	}
+}
+
+func TestErrorKey_ErrorName(t *testing.T) {
+	tcs := []struct {
+		name     string
+		errorKey ErrorKey
+		expected string
+	}{
+		{name: "deep", errorKey: "parent.Field[0].InnerField.TheError", expected: "TheError"},
+		{name: "one_level", errorKey: "parent.Field.TheError", expected: "TheError"},
+		{name: "top_level", errorKey: "parent.TheError", expected: "TheError"},
+		{name: "empty", errorKey: "", expected: ""},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			require.Equal(tc.expected, tc.errorKey.ErrorName())
+		})
+	}
 }

@@ -11,7 +11,7 @@ import (
 type structValidatorTestCase struct {
 	name      string
 	f         func() parent
-	errorKeys []string
+	errorKeys []ErrorKey
 }
 
 var structValidatorTestCases = []structValidatorTestCase{
@@ -23,7 +23,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	//
 	// Primitive
 	//
-	{name: "Primitive___zero", errorKeys: []string{"Primitive"}, f: func() parent {
+	{name: "Primitive___zero", errorKeys: []ErrorKey{"Primitive"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.Primitive = 0
 		return changeParent
@@ -37,12 +37,12 @@ var structValidatorTestCases = []structValidatorTestCase{
 		changeParent.Basic.NoValidates = ""
 		return changeParent
 	}},
-	{name: "Basic___child_validates_zero", errorKeys: []string{"Basic.Validates"}, f: func() parent {
+	{name: "Basic___child_validates_zero", errorKeys: []ErrorKey{"Basic.Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.Basic.Validates = ""
 		return changeParent
 	}},
-	{name: "Basic___child_empty", errorKeys: []string{"Basic", "Basic.Validates"}, f: func() parent {
+	{name: "Basic___child_empty", errorKeys: []ErrorKey{"Basic", "Basic.Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.Basic = child{}
 		return changeParent
@@ -56,17 +56,17 @@ var structValidatorTestCases = []structValidatorTestCase{
 		changeParent.Pt.NoValidates = ""
 		return changeParent
 	}},
-	{name: "Pt___child_validates_zero", errorKeys: []string{"Pt.Validates"}, f: func() parent {
+	{name: "Pt___child_validates_zero", errorKeys: []ErrorKey{"Pt.Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.Pt.Validates = ""
 		return changeParent
 	}},
-	{name: "Pt___child_empty", errorKeys: []string{"Pt.Validates"}, f: func() parent {
+	{name: "Pt___child_empty", errorKeys: []ErrorKey{"Pt.Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.Pt = &child{}
 		return changeParent
 	}},
-	{name: "Pt___nil", errorKeys: []string{"Pt"}, f: func() parent {
+	{name: "Pt___nil", errorKeys: []ErrorKey{"Pt"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.Pt = nil
 		return changeParent
@@ -85,7 +85,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 		changeParent.Any = &child{}
 		return changeParent
 	}},
-	{name: "Any___nil", errorKeys: []string{"Any"}, f: func() parent {
+	{name: "Any___nil", errorKeys: []ErrorKey{"Any"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.Any = nil
 		return changeParent
@@ -101,13 +101,13 @@ var structValidatorTestCases = []structValidatorTestCase{
 		}
 		return changeParent
 	}},
-	{name: "Array___child_validates_zero", errorKeys: []string{"Array[0].Validates", "Array[1].Validates"}, f: func() parent {
+	{name: "Array___child_validates_zero", errorKeys: []ErrorKey{"Array.[0].Validates", "Array.[1].Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.Array[0].Validates = ""
 		changeParent.Array[1].Validates = ""
 		return changeParent
 	}},
-	{name: "Array___child_validates_one_zero", errorKeys: []string{"Array[0].Validates"}, f: func() parent {
+	{name: "Array___child_validates_one_zero", errorKeys: []ErrorKey{"Array.[0].Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.Array[0].Validates = ""
 		return changeParent
@@ -117,7 +117,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 		changeParent.Array = []child{}
 		return changeParent
 	}},
-	{name: "Array___nil", errorKeys: []string{"Array"}, f: func() parent {
+	{name: "Array___nil", errorKeys: []ErrorKey{"Array"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.Array = nil
 		return changeParent
@@ -133,13 +133,13 @@ var structValidatorTestCases = []structValidatorTestCase{
 		}
 		return changeParent
 	}},
-	{name: "ArrayPt___child_validates_zero", errorKeys: []string{"ArrayPt[0].Validates", "ArrayPt[1].Validates"}, f: func() parent {
+	{name: "ArrayPt___child_validates_zero", errorKeys: []ErrorKey{"ArrayPt.[0].Validates", "ArrayPt.[1].Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.ArrayPt[0].Validates = ""
 		changeParent.ArrayPt[1].Validates = ""
 		return changeParent
 	}},
-	{name: "ArrayPt___child_validates_one_zero", errorKeys: []string{"ArrayPt[0].Validates"}, f: func() parent {
+	{name: "ArrayPt___child_validates_one_zero", errorKeys: []ErrorKey{"ArrayPt.[0].Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.ArrayPt[0].Validates = ""
 		return changeParent
@@ -149,7 +149,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 		changeParent.ArrayPt = []*child{}
 		return changeParent
 	}},
-	{name: "ArrayPt___nil", errorKeys: []string{"ArrayPt"}, f: func() parent {
+	{name: "ArrayPt___nil", errorKeys: []ErrorKey{"ArrayPt"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.ArrayPt = nil
 		return changeParent
@@ -172,12 +172,12 @@ var structValidatorTestCases = []structValidatorTestCase{
 		changeParent.BasicEmptyValidates.NoValidates = ""
 		return changeParent
 	}},
-	{name: "BasicEmptyValidates___child_validates_zero", errorKeys: []string{"BasicEmptyValidates.Validates"}, f: func() parent {
+	{name: "BasicEmptyValidates___child_validates_zero", errorKeys: []ErrorKey{"BasicEmptyValidates.Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.BasicEmptyValidates.Validates = ""
 		return changeParent
 	}},
-	{name: "BasicEmptyValidates____child_empty", errorKeys: []string{"BasicEmptyValidates.Validates"}, f: func() parent {
+	{name: "BasicEmptyValidates____child_empty", errorKeys: []ErrorKey{"BasicEmptyValidates.Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.BasicEmptyValidates = child{}
 		return changeParent
@@ -191,12 +191,12 @@ var structValidatorTestCases = []structValidatorTestCase{
 		changeParent.PtEmptyValidates.NoValidates = ""
 		return changeParent
 	}},
-	{name: "PtEmptyValidates___child_validates_zero", errorKeys: []string{"PtEmptyValidates.Validates"}, f: func() parent {
+	{name: "PtEmptyValidates___child_validates_zero", errorKeys: []ErrorKey{"PtEmptyValidates.Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.PtEmptyValidates.Validates = ""
 		return changeParent
 	}},
-	{name: "PtEmptyValidates___child_empty", errorKeys: []string{"PtEmptyValidates.Validates"}, f: func() parent {
+	{name: "PtEmptyValidates___child_empty", errorKeys: []ErrorKey{"PtEmptyValidates.Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.PtEmptyValidates = &child{}
 		return changeParent
@@ -236,13 +236,14 @@ var structValidatorTestCases = []structValidatorTestCase{
 		}
 		return changeParent
 	}},
-	{name: "ArrayValidates___child_validates_zero", errorKeys: []string{"ArrayValidates[0].Validates", "ArrayValidates[1].Validates"}, f: func() parent {
-		changeParent := fullParent()
-		changeParent.ArrayValidates[0].Validates = ""
-		changeParent.ArrayValidates[1].Validates = ""
-		return changeParent
-	}},
-	{name: "ArrayValidates___child_validates_one_zero", errorKeys: []string{"ArrayValidates[0].Validates"}, f: func() parent {
+	{name: "ArrayValidates___child_validates_zero",
+		errorKeys: []ErrorKey{"ArrayValidates.[0].Validates", "ArrayValidates.[1].Validates"}, f: func() parent {
+			changeParent := fullParent()
+			changeParent.ArrayValidates[0].Validates = ""
+			changeParent.ArrayValidates[1].Validates = ""
+			return changeParent
+		}},
+	{name: "ArrayValidates___child_validates_one_zero", errorKeys: []ErrorKey{"ArrayValidates.[0].Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.ArrayValidates[0].Validates = ""
 		return changeParent
@@ -269,13 +270,13 @@ var structValidatorTestCases = []structValidatorTestCase{
 		return changeParent
 	}},
 	{name: "ArrayPtValidates___child_validates_zero",
-		errorKeys: []string{"ArrayPtValidates[0].Validates", "ArrayPtValidates[1].Validates"}, f: func() parent {
+		errorKeys: []ErrorKey{"ArrayPtValidates.[0].Validates", "ArrayPtValidates.[1].Validates"}, f: func() parent {
 			changeParent := fullParent()
 			changeParent.ArrayPtValidates[0].Validates = ""
 			changeParent.ArrayPtValidates[1].Validates = ""
 			return changeParent
 		}},
-	{name: "ArrayPtValidates___child_validates_one_zero", errorKeys: []string{"ArrayPtValidates[0].Validates"}, f: func() parent {
+	{name: "ArrayPtValidates___child_validates_one_zero", errorKeys: []ErrorKey{"ArrayPtValidates.[0].Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.ArrayPtValidates[0].Validates = ""
 		return changeParent
@@ -428,53 +429,75 @@ var structValidatorTestCases = []structValidatorTestCase{
 }
 
 func TestStructValidator_Validate(t *testing.T) {
-	validator := testRegistry.DefinitionForType(reflect.TypeOf(parent{})).Validator(testRegistry)
+	validator := testRegistry.ValidatorForType(reflect.TypeOf(parent{}))
 
 	t.Run("not_struct", func(t *testing.T) {
-		require := require.New(t)
-
 		data := 1
-		dataValue := reflect.ValueOf(data)
-		expected := MapResult{errorMap: ErrorMap{
-			joinKeys("int", structValidatorErrorKey): structValidatorError(dataValue),
-		}}
-		require.Equal(expected, validator.Validate(data))
-		require.Equal(expected.errorMap, validator.ValidateValue(dataValue))
-		errorMap := ErrorMap{
-			"Existing": nil,
-		}
-		expectedErrorMap := maps.Clone(errorMap)
-		expectedErrorMap[structValidatorErrorKey] = structValidatorError(dataValue)
-		validator.ValidateMerge(dataValue, "KEY.ME", errorMap)
+		testValidates(t, validator, data, structValidatorError(reflect.ValueOf(data)), structValidatorErrorKey)
 	})
 
 	for _, tc := range structValidatorTestCases {
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
 			rawData := tc.f()
-			expected := MapResult{errorMap: ErrorMap{}}
-			for _, errorKey := range tc.errorKeys {
-				key := joinKeys(typeName(reflect.ValueOf(rawData)), errorKey, "testPresence")
-				expected.errorMap[key] = &TemplatedError{Template: "test"}
+			errKeys := make([]ErrorKey, len(tc.errorKeys))
+			for i, key := range tc.errorKeys {
+				errKeys[i] = joinKeys(key, testPresenceKey)
 			}
+			testValidates(t, validator, rawData, errTest, errKeys...)
+			testValidates(t, validator, &rawData, errTest, errKeys...)
+		})
+	}
+}
 
-			for _, data := range []any{rawData, &rawData} {
-				dataValue := reflect.ValueOf(data)
-				require.Equal(expected, validator.Validate(data))
-				require.Equal(expected.errorMap, validator.ValidateValue(dataValue))
+type sliceValidatorElement struct {
+	Int  int
+	UInt uint
+}
 
-				errorMap := ErrorMap{
-					"Existing": nil,
-				}
-				expectedErrorMap := maps.Clone(errorMap)
-				for _, errorKey := range tc.errorKeys {
-					key := joinKeys("KEY.ME", errorKey, "testPresence")
-					expectedErrorMap[key] = &TemplatedError{Template: "test"}
-				}
-				validator.ValidateMerge(dataValue, "KEY.ME", errorMap)
-				require.Equal(expectedErrorMap, errorMap)
+type sliceValidatorTestCase struct {
+	name      string
+	f         func() []sliceValidatorElement
+	errorKeys []ErrorKey
+}
+
+var sliceValidatorTestCases = []sliceValidatorTestCase{
+	{name: "Full", errorKeys: nil, f: func() []sliceValidatorElement {
+		return []sliceValidatorElement{{1, 1}, {2, 2}, {3, 3}}
+	}},
+	{name: "Empty", errorKeys: nil, f: func() []sliceValidatorElement {
+		return []sliceValidatorElement{}
+	}},
+	{name: "Nil", errorKeys: nil, f: func() []sliceValidatorElement {
+		return nil
+	}},
+	{name: "Element_Not_Full", errorKeys: nil, f: func() []sliceValidatorElement {
+		return []sliceValidatorElement{{Int: 1}, {Int: 2}}
+	}},
+	{name: "Element_Invalid", errorKeys: []ErrorKey{"[0].Int", "[1].Int"}, f: func() []sliceValidatorElement {
+		return []sliceValidatorElement{{UInt: 1}, {UInt: 2}}
+	}},
+	{name: "Element_Empty", errorKeys: []ErrorKey{"[0]", "[1]", "[0].Int", "[1].Int"}, f: func() []sliceValidatorElement {
+		return []sliceValidatorElement{{}, {}}
+	}},
+}
+
+func TestSliceValidator_Validate(t *testing.T) {
+	validator := NewSliceValidator(testPresence{}, NewStructValidator(RuleMap{"Int": {testPresence{}}}))
+
+	t.Run("not_slice", func(t *testing.T) {
+		data := 1
+		testValidates(t, validator, data, sliceValidatorError(reflect.ValueOf(data)), sliceValidatorErrorKey)
+	})
+
+	for _, tc := range sliceValidatorTestCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rawData := tc.f()
+			errKeys := make([]ErrorKey, len(tc.errorKeys))
+			for i, key := range tc.errorKeys {
+				errKeys[i] = joinKeys(key, testPresenceKey)
 			}
+			testValidates(t, validator, rawData, errTest, errKeys...)
+			testValidates(t, validator, &rawData, errTest, errKeys...)
 		})
 	}
 }
@@ -494,31 +517,39 @@ func TestValueValidator_Validate(t *testing.T) {
 		{
 			name: "zero",
 			data: 0,
-			err:  &TemplatedError{Template: "test"},
+			err:  errTest,
 		},
 	}
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
 			validator := NewValueValidator(testPresence{})
-
-			expected := MapResult{errorMap: ErrorMap{}}
-			if tc.err != nil {
-				expected.errorMap[joinKeys(typeName(reflect.ValueOf(tc.data)), "testPresence")] = tc.err
-			}
-			require.Equal(expected, validator.Validate(tc.data))
-			require.Equal(expected.errorMap, validator.ValidateValue(reflect.ValueOf(tc.data)))
-
-			errorMap := ErrorMap{
-				"Existing": nil,
-			}
-			expectedErrorMap := maps.Clone(errorMap)
-			if tc.err != nil {
-				expectedErrorMap[joinKeys("KEY.ME", "testPresence")] = tc.err
-			}
-			validator.ValidateMerge(reflect.ValueOf(tc.data), "KEY.ME", errorMap)
-			require.Equal(expectedErrorMap, errorMap)
+			testValidates(t, validator, tc.data, tc.err, testPresenceKey)
 		})
 	}
+}
+
+func testValidates(t *testing.T, validator Validator, data any, err *TemplatedError, keySuffixes ...ErrorKey) {
+	require := require.New(t)
+
+	validateValueExpected := ErrorMap{}
+	if err != nil {
+		for _, key := range keySuffixes {
+			validateValueExpected[key] = err
+		}
+	}
+	validateExpected := ErrorMap{}
+	MergeErrorMap(typeNameKey(reflect.ValueOf(data)), validateValueExpected, validateExpected)
+
+	require.Equal(MapResult{errorMap: validateExpected}, validator.Validate(data))
+	require.Equal(validateValueExpected, validator.ValidateValue(reflect.ValueOf(data)))
+
+	errorMap := ErrorMap{"Existing": nil}
+	expectedErrorMap := maps.Clone(errorMap)
+	if err != nil {
+		for _, key := range keySuffixes {
+			expectedErrorMap[joinKeys("KEY.ME", key)] = err
+		}
+	}
+	validator.ValidateMerge(reflect.ValueOf(data), "KEY.ME", errorMap)
+	require.Equal(expectedErrorMap, errorMap)
 }
