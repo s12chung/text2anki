@@ -11,8 +11,8 @@ import (
 )
 
 // New returns a new KrDict
-func New(database *sql.DB) *KrDict {
-	return &KrDict{db: database, queries: db.New(database)}
+func New(database *sql.DB) KrDict {
+	return KrDict{db: database, queries: db.New(database)}
 }
 
 // KrDict is a Korean dictionary connected to a database
@@ -60,7 +60,7 @@ var mergePosMap = map[lang.PartOfSpeech]lang.PartOfSpeech{
 }
 
 // Search searches for the query inside the dictionary
-func (k *KrDict) Search(q string, pos lang.PartOfSpeech) ([]dictionary.Term, error) {
+func (k KrDict) Search(q string, pos lang.PartOfSpeech) ([]dictionary.Term, error) {
 	pos = mergePosMap[pos]
 
 	rows, err := k.queries.TermsSearch(context.Background(), q, pos)

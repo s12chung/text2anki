@@ -1,5 +1,3 @@
--- sqlc can't read this table:
---
 CREATE TABLE terms (
    text TEXT NOT NULL,
    variants TEXT NOT NULL,
