@@ -21,8 +21,8 @@ type Parser struct {
 }
 
 // NewParser returns a new parser
-func NewParser(sourceLanguage, translationLanguage Language) *Parser {
-	return &Parser{SourceLanguage: sourceLanguage, TranslationLanguage: translationLanguage}
+func NewParser(sourceLanguage, translationLanguage Language) Parser {
+	return Parser{SourceLanguage: sourceLanguage, TranslationLanguage: translationLanguage}
 }
 
 // Language represents a language to parse translations with
@@ -122,7 +122,7 @@ var errExtraTranslationLine = fmt.Errorf("there are more translation lines than 
 // TextsFromString returns an array of Text from the given string
 //
 //nolint:gocognit // too many states for simplification at O(n) time
-func (p *Parser) TextsFromString(s string) ([]Text, error) {
+func (p Parser) TextsFromString(s string) ([]Text, error) {
 	lines := strings.Split(strings.ReplaceAll(s, "\r\n", "\n"), "\n")
 	detector := lingua.NewLanguageDetectorBuilder().
 		FromLanguages(lingua.Language(p.SourceLanguage), lingua.Language(p.TranslationLanguage)).
