@@ -3,6 +3,7 @@ package text
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/pemistahl/lingua-go"
@@ -186,4 +187,25 @@ func (p Parser) TextsFromString(s string) ([]Text, error) {
 	}
 
 	return texts, nil
+}
+
+// CleanSpeaker removes the CleanSpeakerString names from the next
+func CleanSpeaker(texts []Text) []Text {
+	cleanedTexts := make([]Text, len(texts))
+	for i, t := range texts {
+		cleanedTexts[i] = Text{
+			Text:        CleanSpeakerString(t.Text),
+			Translation: CleanSpeakerString(t.Translation),
+		}
+	}
+	return cleanedTexts
+}
+
+var speakerRegex = regexp.MustCompile(`\A[^:\d]{0,25}:`)
+
+// CleanSpeakerString cleans the speaker from the string
+func CleanSpeakerString(s string) string {
+	s = speakerRegex.ReplaceAllString(s, "")
+	s = strings.TrimSpace(s)
+	return s
 }

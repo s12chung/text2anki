@@ -21,7 +21,6 @@ import (
 	"github.com/s12chung/text2anki/pkg/tokenizers/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizers/komoran"
 	"github.com/s12chung/text2anki/pkg/util/ioutils"
-	"github.com/s12chung/text2anki/pkg/util/stringclean"
 )
 
 var cleanSpeaker bool
@@ -97,28 +96,15 @@ func tokenizeFile(filename string) ([]text.TokenizedText, error) {
 		fmt.Println(string(bytes))
 		return nil, err
 	}
-	texts = cleanTexts(texts)
+	if cleanSpeaker {
+		texts = text.CleanSpeaker(texts)
+	}
 
 	tokenizedTexts, err := text.TokenizeTexts(tokenizer, texts)
 	if err != nil {
 		return nil, err
 	}
 	return tokenizedTexts, err
-}
-
-func cleanTexts(texts []text.Text) []text.Text {
-	if !cleanSpeaker {
-		return texts
-	}
-
-	cleanedTexts := make([]text.Text, len(texts))
-	for i, t := range texts {
-		cleanedTexts[i] = text.Text{
-			Text:        stringclean.Speaker(t.Text),
-			Translation: stringclean.Speaker(t.Translation),
-		}
-	}
-	return cleanedTexts
 }
 
 func runUI(tokenizedTexts []text.TokenizedText) ([]anki.Note, error) {
