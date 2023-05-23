@@ -42,7 +42,7 @@ func TestParser_TextsFromString(t *testing.T) {
 				require.Equal(tc.err, err)
 				return
 			}
-			require.Nil(err)
+			require.NoError(err)
 
 			fixture.CompareReadOrUpdate(t, testNamePath+tc.name+".json", fixture.JSON(t, texts))
 		})

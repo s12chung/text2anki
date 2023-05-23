@@ -11,15 +11,13 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/anki"
+	"github.com/s12chung/text2anki/pkg/app"
 	"github.com/s12chung/text2anki/pkg/cmd/prompt"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
 	"github.com/s12chung/text2anki/pkg/dictionary/krdict"
 	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
 	"github.com/s12chung/text2anki/pkg/text"
-	"github.com/s12chung/text2anki/pkg/tokenizers"
-	"github.com/s12chung/text2anki/pkg/tokenizers/khaiii"
-	"github.com/s12chung/text2anki/pkg/tokenizers/komoran"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
@@ -32,14 +30,6 @@ func init() {
 
 var parser = text.NewParser(text.Korean, text.English)
 var synth = azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
-var tokenizer = func() tokenizers.Tokenizer {
-	switch os.Getenv("TOKENIZER") {
-	case "komoran":
-		return komoran.New()
-	default:
-		return khaiii.New()
-	}
-}()
 var dict = func() dictionary.Dictionary {
 	switch os.Getenv("DICTIONARY") {
 	case "koreanbasic":
@@ -83,7 +73,7 @@ func run(textStringFilename, exportDir string) error {
 	return exportFiles(notes, exportDir)
 }
 
-func tokenizeFile(filename string) ([]text.TokenizedText, error) {
+func tokenizeFile(filename string) ([]db.TokenizedText, error) {
 	//nolint:gosec // required for binary to work
 	fileBytes, err := os.ReadFile(filename)
 	if err != nil {
@@ -100,14 +90,14 @@ func tokenizeFile(filename string) ([]text.TokenizedText, error) {
 		texts = text.CleanSpeaker(texts)
 	}
 
-	tokenizedTexts, err := text.TokenizeTexts(tokenizer, texts)
+	tokenizedTexts, err := app.TextTokenizer.TokenizeTexts(texts)
 	if err != nil {
 		return nil, err
 	}
 	return tokenizedTexts, err
 }
 
-func runUI(tokenizedTexts []text.TokenizedText) ([]anki.Note, error) {
+func runUI(tokenizedTexts []db.TokenizedText) ([]anki.Note, error) {
 	notes, err := prompt.CreateCards(tokenizedTexts, dict())
 	if err != nil {
 		return nil, err

@@ -1,0 +1,50 @@
+[
+  {
+    "Text": "이것은 샘플 파일입니다. tmp/in.txt에 자신의 텍스트를 입력합니다.",
+    "Translation": "This is a sample file. Put your own text at: tmp/in.txt.",
+    "Tokens": [
+      {
+        "Text": "이것은",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 0,
+        "Length": 9
+      },
+      {
+        "Text": "샘플",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 10,
+        "Length": 6
+      },
+      {
+        "Text": "파일입니다.",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 17,
+        "Length": 16
+      },
+      {
+        "Text": "tmp/in.txt에",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 34,
+        "Length": 13
+      },
+      {
+        "Text": "자신의",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 48,
+        "Length": 9
+      },
+      {
+        "Text": "텍스트를",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 58,
+        "Length": 12
+      },
+      {
+        "Text": "입력합니다.",
+        "PartOfSpeech": "Noun",
+        "StartIndex": 71,
+        "Length": 16
+      }
+    ]
+  }
+]
