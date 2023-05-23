@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/s12chung/text2anki/pkg/tokenizers/server"
+	"github.com/s12chung/text2anki/pkg/util/httputil"
 )
 
 // Tokenizer is the interface for the Tokenizer that the Server works with
@@ -84,7 +85,7 @@ func (s *ServerImpl) runWithoutStdin(port int) chan error {
 func (s *ServerImpl) setupServer(port int) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc(server.HealthzPath, handleHeathzfunc)
-	mux.HandleFunc(server.TokenizePath, handleWrapper(s.handleTokenize))
+	mux.HandleFunc(server.TokenizePath, httputil.RespondJSONWrap(s.handleTokenize))
 
 	server := &http.Server{
 		Addr:              fmt.Sprintf(":%v", port),
@@ -151,24 +152,7 @@ func handleHeathzfunc(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "ok\n%s", time.Now().Format(time.RFC3339))
 }
 
-type handleWrapperFunc func(r *http.Request) ([]byte, int, error)
-
-func handleWrapper(f handleWrapperFunc) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		resp, status, err := f(r)
-		if err != nil {
-			http.Error(w, err.Error(), status)
-			return
-		}
-		w.Header().Set("Content-Type", mime.TypeByExtension(".json"))
-		_, err = w.Write(resp)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-	}
-}
-
-func (s *ServerImpl) handleTokenize(r *http.Request) ([]byte, int, error) {
+func (s *ServerImpl) handleTokenize(r *http.Request) (any, int, error) {
 	if r.Method != http.MethodPost {
 		return nil, http.StatusMethodNotAllowed, fmt.Errorf("405 Method Not Allowed")
 	}
@@ -182,10 +166,5 @@ func (s *ServerImpl) handleTokenize(r *http.Request) ([]byte, int, error) {
 	if err != nil {
 		return nil, http.StatusUnprocessableEntity, err
 	}
-
-	b, err := json.Marshal(tokens)
-	if err != nil {
-		return nil, http.StatusInternalServerError, err
-	}
-	return b, 0, nil
+	return tokens, 0, nil
 }

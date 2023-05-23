@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"mime"
 	"net/http"
 	"os"
 	"strings"
@@ -14,6 +13,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/pkg/tokenizers/server"
+	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/test"
 )
 
 const host = "http://localhost"
@@ -82,12 +83,10 @@ func TestTokenize(t *testing.T) {
 	input := server.TokenizeRequest{
 		String: "my example",
 	}
-	payload, err := json.Marshal(input)
-	require.NoError(err)
 
 	resp, err := http.Post(getURI(server.TokenizePath),
-		mime.TypeByExtension(".json"),
-		bytes.NewBuffer(payload))
+		httputil.JSONContentType,
+		bytes.NewBuffer(test.JSON(t, input)))
 	require.NoError(err)
 	defer func() {
 		require.NoError(resp.Body.Close())
@@ -96,7 +95,7 @@ func TestTokenize(t *testing.T) {
 	require.Equal(http.StatusOK, resp.StatusCode)
 
 	contentType := resp.Header.Get("Content-Type")
-	require.Equal("application/json", contentType)
+	require.Equal(httputil.JSONContentType, contentType)
 
 	data := &tokenizeResponse{}
 	err = json.NewDecoder(resp.Body).Decode(data)
