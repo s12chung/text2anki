@@ -33,7 +33,6 @@ func TestParser_TextsFromString(t *testing.T) {
 
 	parser := NewParser(Korean, English)
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 

@@ -119,6 +119,9 @@ const (
 var errExtraTextLine = fmt.Errorf("there are more text lines than translation lines")
 var errExtraTranslationLine = fmt.Errorf("there are more translation lines than text lines")
 
+// SplitDelimiter is the delimiter for splitTranslation in TextsFromString
+const SplitDelimiter = "==="
+
 // TextsFromString returns an array of Text from the given string
 //
 //nolint:gocognit // too many states for simplification at O(n) time
@@ -139,7 +142,7 @@ func (p Parser) TextsFromString(s string) ([]Text, error) {
 		}
 		//nolint:nestif // complex case
 		if mode == noTranslation {
-			if line == "===" {
+			if line == SplitDelimiter {
 				if nonEmptyIndex == 1 {
 					texts = append(texts, text)
 				}

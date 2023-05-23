@@ -29,7 +29,6 @@ func TestGenerateFilename(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, GenerateFilename(tc.name, tc.ext))
