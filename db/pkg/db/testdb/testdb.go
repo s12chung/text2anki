@@ -39,7 +39,7 @@ func Seed(t *testing.T) {
 	_, callerPath, _, ok := runtime.Caller(0)
 	require.True(ok)
 
-	bytes, err := os.ReadFile(path.Join(path.Dir(callerPath), fixture.TestDataDir, "Seed") + ".json")
+	bytes, err := os.ReadFile(path.Join(path.Dir(callerPath), fixture.TestDataDir, "TermsSeed") + ".json")
 	require.NoError(err)
 
 	var terms []db.Term
