@@ -11,19 +11,19 @@ type Dictionary interface {
 
 // Term is a word or phrase
 //
-//nolint:musttag // Used for Temp UI only
+//nolint:musttag // Used for Temp UI only for YAML
 type Term struct {
-	Text         string
-	Variants     []string
-	PartOfSpeech lang.PartOfSpeech
-	CommonLevel  lang.CommonLevel
-	Translations []Translation
+	Text         string            `json:"text,omitempty"`
+	Variants     []string          `json:"variants,omitempty"`
+	PartOfSpeech lang.PartOfSpeech `json:"part_of_speech,omitempty"`
+	CommonLevel  lang.CommonLevel  `json:"common_level,omitempty"`
+	Translations []Translation     `json:"translations,omitempty"`
 
-	DictionarySource string
+	DictionarySource string `json:"dictionary_source,omitempty"`
 }
 
 // Translation is a translation of a word or phrase
 type Translation struct {
-	Text        string
-	Explanation string
+	Text        string `json:"text,omitempty"`
+	Explanation string `json:"explanation,omitempty"`
 }

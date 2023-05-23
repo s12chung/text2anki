@@ -1,28 +1,24 @@
 [
   {
-    "Text": "마음 같아서는",
-    "Variants": [],
-    "PartOfSpeech": "Verb",
-    "CommonLevel": 0,
-    "Translations": [
+    "text": "마음 같아서는",
+    "part_of_speech": "Verb",
+    "translations": [
       {
-        "Text": "if it's like my mind",
-        "Explanation": "If one follows as one thinks."
+        "text": "if it's like my mind",
+        "explanation": "If one follows as one thinks."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary (23-03)"
+    "dictionary_source": "Korean Basic Dictionary (23-03)"
   },
   {
-    "Text": "마음에 걸리다",
-    "Variants": [],
-    "PartOfSpeech": "Unknown",
-    "CommonLevel": 0,
-    "Translations": [
+    "text": "마음에 걸리다",
+    "part_of_speech": "Unknown",
+    "translations": [
       {
-        "Text": "be caught in one's mind",
-        "Explanation": "To feel uncomfortable out of worry."
+        "text": "be caught in one's mind",
+        "explanation": "To feel uncomfortable out of worry."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary (23-03)"
+    "dictionary_source": "Korean Basic Dictionary (23-03)"
   }
 ]

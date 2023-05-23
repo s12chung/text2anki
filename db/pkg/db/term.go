@@ -67,20 +67,20 @@ var termsSearch string
 
 // TermsSearchRow is the row returned by TermsSearch
 type TermsSearchRow struct {
-	Term
-	PosCalc    sql.NullFloat64
-	PopCalc    sql.NullFloat64
-	CommonCalc sql.NullFloat64
-	LenCalc    sql.NullFloat64
+	Term       `json:"term"`
+	PosCalc    sql.NullFloat64 `json:"pos_calc"`
+	PopCalc    sql.NullFloat64 `json:"pop_calc"`
+	CommonCalc sql.NullFloat64 `json:"common_calc"`
+	LenCalc    sql.NullFloat64 `json:"len_calc"`
 }
 
 // TermsSearchConfig is the config for TermsSearchRaw
 type TermsSearchConfig struct {
-	PosWeight    int
-	PopLog       int
-	PopWeight    int
-	CommonWeight int
-	LenLog       int
+	PosWeight    int `json:"pos_weight,omitempty"`
+	PopLog       int `json:"pop_log,omitempty"`
+	PopWeight    int `json:"pop_weight,omitempty"`
+	CommonWeight int `json:"common_weight,omitempty"`
+	LenLog       int `json:"len_log,omitempty"`
 }
 
 var defaultTermsSearchConfig = TermsSearchConfig{

@@ -45,10 +45,10 @@ func TestTerm_DictionaryTerm(t *testing.T) {
 			err := json.Unmarshal(fixture.Read(t, path.Join(testName, tc.name+"Src.json")), &term)
 			require.NoError(err)
 
-			dbTerm, err := term.DictionaryTerm()
+			dictTerm, err := term.DictionaryTerm()
 			require.NoError(err)
 
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, dbTerm))
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, dictTerm))
 		})
 	}
 }

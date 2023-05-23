@@ -1,48 +1,52 @@
 [
   {
-    "Text": "마음 같아서는",
-    "Variants": "",
-    "PartOfSpeech": "Verb",
-    "CommonLevel": 0,
-    "Translations": "[{\"Text\":\"if it's like my mind\",\"Explanation\":\"If one follows as one thinks.\"}]",
-    "Popularity": 2,
-    "PosCalc": {
+    "term": {
+      "text": "마음 같아서는",
+      "variants": "",
+      "part_of_speech": "Verb",
+      "common_level": 0,
+      "translations": "[{\"text\":\"if it's like my mind\",\"explanation\":\"If one follows as one thinks.\"}]",
+      "popularity": 2
+    },
+    "pos_calc": {
       "Float64": 0,
       "Valid": true
     },
-    "PopCalc": {
+    "pop_calc": {
       "Float64": 39.35897776853416,
       "Valid": true
     },
-    "CommonCalc": {
+    "common_calc": {
       "Float64": 0,
       "Valid": true
     },
-    "LenCalc": {
+    "len_calc": {
       "Float64": 3.5620718710802217,
       "Valid": true
     }
   },
   {
-    "Text": "마음에 걸리다",
-    "Variants": "",
-    "PartOfSpeech": "Unknown",
-    "CommonLevel": 0,
-    "Translations": "[{\"Text\":\"be caught in one's mind\",\"Explanation\":\"To feel uncomfortable out of worry.\"}]",
-    "Popularity": 3,
-    "PosCalc": {
+    "term": {
+      "text": "마음에 걸리다",
+      "variants": "",
+      "part_of_speech": "Unknown",
+      "common_level": 0,
+      "translations": "[{\"text\":\"be caught in one's mind\",\"explanation\":\"To feel uncomfortable out of worry.\"}]",
+      "popularity": 3
+    },
+    "pos_calc": {
       "Float64": 0,
       "Valid": true
     },
-    "PopCalc": {
+    "pop_calc": {
       "Float64": 38.76662735963689,
       "Valid": true
     },
-    "CommonCalc": {
+    "common_calc": {
       "Float64": 0,
       "Valid": true
     },
-    "LenCalc": {
+    "len_calc": {
       "Float64": 3.5620718710802217,
       "Valid": true
     }
