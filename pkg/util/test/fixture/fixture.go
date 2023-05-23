@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/util/ioutils"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
 // TestDataDir returns the testdata dir
@@ -46,7 +46,7 @@ func Update(t *testing.T, fixtureFilename string, resultBytes []byte) {
 	err := os.MkdirAll(TestDataDir, os.ModePerm)
 	assert.NoError(err)
 
-	err = os.WriteFile(JoinTestData(fixtureFilename), resultBytes, ioutils.OwnerRWGroupR)
+	err = os.WriteFile(JoinTestData(fixtureFilename), resultBytes, ioutil.OwnerRWGroupR)
 	assert.NoError(err)
 
 	if WillUpdate() {
@@ -123,7 +123,7 @@ func compareOrUpdateDirName(t *testing.T, expected, result string) {
 	require := require.New(t)
 
 	if WillUpdate() {
-		require.NoError(os.Mkdir(expected, ioutils.OwnerRWXGroupRX))
+		require.NoError(os.Mkdir(expected, ioutil.OwnerRWXGroupRX))
 		return
 	}
 
@@ -139,7 +139,7 @@ func compareOrUpdateFile(t *testing.T, expected, result string) {
 	require.NoError(err)
 
 	if WillUpdate() {
-		require.NoError(os.WriteFile(expected, resultBytes, ioutils.OwnerRWGroupR)) //nolint:gosec // for tests
+		require.NoError(os.WriteFile(expected, resultBytes, ioutil.OwnerRWGroupR)) //nolint:gosec // for tests
 		return
 	}
 

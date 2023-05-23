@@ -9,7 +9,7 @@ import (
 	yaml "gopkg.in/yaml.v3"
 
 	"github.com/s12chung/text2anki/pkg/text"
-	"github.com/s12chung/text2anki/pkg/util/ioutils"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
 func main() {
@@ -46,7 +46,7 @@ func run(textStringFilename, exportFile string) error {
 		output[i] = text.Text + "\n" + text.Translation
 	}
 
-	return os.WriteFile(exportFile, []byte(strings.Join(output, "\n")), ioutils.OwnerRWGroupR)
+	return os.WriteFile(exportFile, []byte(strings.Join(output, "\n")), ioutil.OwnerRWGroupR)
 }
 
 func readTextString(filename string) (string, error) {

@@ -20,7 +20,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/tokenizers"
 	"github.com/s12chung/text2anki/pkg/tokenizers/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizers/komoran"
-	"github.com/s12chung/text2anki/pkg/util/ioutils"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
 var cleanSpeaker bool
@@ -119,7 +119,7 @@ func exportFiles(notes []anki.Note, exportDir string) error {
 	if err := createAudio(notes); err != nil {
 		return err
 	}
-	if err := os.Mkdir(exportDir, ioutils.OwnerRWXGroupRX); err != nil {
+	if err := os.Mkdir(exportDir, ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
 	if err := anki.ExportFiles(notes, exportDir); err != nil {
