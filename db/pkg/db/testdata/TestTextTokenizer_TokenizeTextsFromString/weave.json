@@ -1,49 +1,48 @@
 [
   {
-    "Text": "이것은 샘플 파일입니다. tmp/in.txt에 자신의 텍스트를 입력합니다.",
-    "Translation": "This is a sample file. Put your own text at: tmp/in.txt.",
-    "Tokens": [
+    "text": "이것은 샘플 파일입니다. tmp/in.txt에 자신의 텍스트를 입력합니다.",
+    "translation": "This is a sample file. Put your own text at: tmp/in.txt.",
+    "tokens": [
       {
-        "Text": "이것은",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 0,
-        "Length": 9
+        "text": "이것은",
+        "part_of_speech": "Noun",
+        "length": 9
       },
       {
-        "Text": "샘플",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 10,
-        "Length": 6
+        "text": "샘플",
+        "part_of_speech": "Noun",
+        "start_index": 10,
+        "length": 6
       },
       {
-        "Text": "파일입니다.",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 17,
-        "Length": 16
+        "text": "파일입니다.",
+        "part_of_speech": "Noun",
+        "start_index": 17,
+        "length": 16
       },
       {
-        "Text": "tmp/in.txt에",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 34,
-        "Length": 13
+        "text": "tmp/in.txt에",
+        "part_of_speech": "Noun",
+        "start_index": 34,
+        "length": 13
       },
       {
-        "Text": "자신의",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 48,
-        "Length": 9
+        "text": "자신의",
+        "part_of_speech": "Noun",
+        "start_index": 48,
+        "length": 9
       },
       {
-        "Text": "텍스트를",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 58,
-        "Length": 12
+        "text": "텍스트를",
+        "part_of_speech": "Noun",
+        "start_index": 58,
+        "length": 12
       },
       {
-        "Text": "입력합니다.",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 71,
-        "Length": 16
+        "text": "입력합니다.",
+        "part_of_speech": "Noun",
+        "start_index": 71,
+        "length": 16
       }
     ]
   }

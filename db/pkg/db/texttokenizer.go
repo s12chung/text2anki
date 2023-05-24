@@ -15,7 +15,7 @@ type TextTokenizer struct {
 // TokenizedText is the text grouped with its tokens
 type TokenizedText struct {
 	text.Text
-	Tokens []tokenizers.Token
+	Tokens []tokenizers.Token `json:"tokens,omitempty"`
 }
 
 // TokenizeTextsFromString converts a string to TokenizedText

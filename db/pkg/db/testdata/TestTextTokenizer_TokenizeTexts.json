@@ -1,79 +1,73 @@
 [
   {
-    "Text": "super mario go",
-    "Translation": "",
-    "Tokens": [
+    "text": "super mario go",
+    "tokens": [
       {
-        "Text": "super",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 0,
-        "Length": 5
+        "text": "super",
+        "part_of_speech": "Noun",
+        "length": 5
       },
       {
-        "Text": "mario",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 6,
-        "Length": 5
+        "text": "mario",
+        "part_of_speech": "Noun",
+        "start_index": 6,
+        "length": 5
       },
       {
-        "Text": "go",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 12,
-        "Length": 2
+        "text": "go",
+        "part_of_speech": "Noun",
+        "start_index": 12,
+        "length": 2
       }
     ]
   },
   {
-    "Text": "waka waka",
-    "Translation": "",
-    "Tokens": [
+    "text": "waka waka",
+    "tokens": [
       {
-        "Text": "waka",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 0,
-        "Length": 4
+        "text": "waka",
+        "part_of_speech": "Noun",
+        "length": 4
       },
       {
-        "Text": "waka",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 5,
-        "Length": 4
+        "text": "waka",
+        "part_of_speech": "Noun",
+        "start_index": 5,
+        "length": 4
       }
     ]
   },
   {
-    "Text": "all this to learn korean",
-    "Translation": "",
-    "Tokens": [
+    "text": "all this to learn korean",
+    "tokens": [
       {
-        "Text": "all",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 0,
-        "Length": 3
+        "text": "all",
+        "part_of_speech": "Noun",
+        "length": 3
       },
       {
-        "Text": "this",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 4,
-        "Length": 4
+        "text": "this",
+        "part_of_speech": "Noun",
+        "start_index": 4,
+        "length": 4
       },
       {
-        "Text": "to",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 9,
-        "Length": 2
+        "text": "to",
+        "part_of_speech": "Noun",
+        "start_index": 9,
+        "length": 2
       },
       {
-        "Text": "learn",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 12,
-        "Length": 5
+        "text": "learn",
+        "part_of_speech": "Noun",
+        "start_index": 12,
+        "length": 5
       },
       {
-        "Text": "korean",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 18,
-        "Length": 6
+        "text": "korean",
+        "part_of_speech": "Noun",
+        "start_index": 18,
+        "length": 6
       }
     ]
   }

@@ -11,8 +11,8 @@ import (
 
 // Text represents a text line given from the source
 type Text struct {
-	Text        string
-	Translation string
+	Text        string `json:"text,omitempty"`
+	Translation string `json:"translation,omitempty"`
 }
 
 // Parser parses text into Text arrays (text and translation)

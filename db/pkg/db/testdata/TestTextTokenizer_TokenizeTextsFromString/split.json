@@ -1,175 +1,170 @@
 [
   {
-    "Text": "내가 가는 이길이",
-    "Translation": "The road that I’m taking",
-    "Tokens": [
+    "text": "내가 가는 이길이",
+    "translation": "The road that I’m taking",
+    "tokens": [
       {
-        "Text": "내가",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 0,
-        "Length": 6
+        "text": "내가",
+        "part_of_speech": "Noun",
+        "length": 6
       },
       {
-        "Text": "가는",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 7,
-        "Length": 6
+        "text": "가는",
+        "part_of_speech": "Noun",
+        "start_index": 7,
+        "length": 6
       },
       {
-        "Text": "이길이",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 14,
-        "Length": 9
+        "text": "이길이",
+        "part_of_speech": "Noun",
+        "start_index": 14,
+        "length": 9
       }
     ]
   },
   {
-    "Text": "어디로 가는지",
-    "Translation": "Where it’s leading me to, where it’s taking me",
-    "Tokens": [
+    "text": "어디로 가는지",
+    "translation": "Where it’s leading me to, where it’s taking me",
+    "tokens": [
       {
-        "Text": "어디로",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 0,
-        "Length": 9
+        "text": "어디로",
+        "part_of_speech": "Noun",
+        "length": 9
       },
       {
-        "Text": "가는지",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 10,
-        "Length": 9
+        "text": "가는지",
+        "part_of_speech": "Noun",
+        "start_index": 10,
+        "length": 9
       }
     ]
   },
   {
-    "Text": "어디로 날 데려가는지 그 곳은 어딘지",
-    "Translation": "Or where the final destination is",
-    "Tokens": [
+    "text": "어디로 날 데려가는지 그 곳은 어딘지",
+    "translation": "Or where the final destination is",
+    "tokens": [
       {
-        "Text": "어디로",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 0,
-        "Length": 9
+        "text": "어디로",
+        "part_of_speech": "Noun",
+        "length": 9
       },
       {
-        "Text": "날",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 10,
-        "Length": 3
+        "text": "날",
+        "part_of_speech": "Noun",
+        "start_index": 10,
+        "length": 3
       },
       {
-        "Text": "데려가는지",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 14,
-        "Length": 15
+        "text": "데려가는지",
+        "part_of_speech": "Noun",
+        "start_index": 14,
+        "length": 15
       },
       {
-        "Text": "그",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 30,
-        "Length": 3
+        "text": "그",
+        "part_of_speech": "Noun",
+        "start_index": 30,
+        "length": 3
       },
       {
-        "Text": "곳은",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 34,
-        "Length": 6
+        "text": "곳은",
+        "part_of_speech": "Noun",
+        "start_index": 34,
+        "length": 6
       },
       {
-        "Text": "어딘지",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 41,
-        "Length": 9
+        "text": "어딘지",
+        "part_of_speech": "Noun",
+        "start_index": 41,
+        "length": 9
       }
     ]
   },
   {
-    "Text": "알 수 없지만 알 수 없지만 알 수 없지만",
-    "Translation": "I have no idea, no idea, no idea",
-    "Tokens": [
+    "text": "알 수 없지만 알 수 없지만 알 수 없지만",
+    "translation": "I have no idea, no idea, no idea",
+    "tokens": [
       {
-        "Text": "알",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 0,
-        "Length": 3
+        "text": "알",
+        "part_of_speech": "Noun",
+        "length": 3
       },
       {
-        "Text": "수",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 4,
-        "Length": 3
+        "text": "수",
+        "part_of_speech": "Noun",
+        "start_index": 4,
+        "length": 3
       },
       {
-        "Text": "없지만",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 8,
-        "Length": 9
+        "text": "없지만",
+        "part_of_speech": "Noun",
+        "start_index": 8,
+        "length": 9
       },
       {
-        "Text": "알",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 18,
-        "Length": 3
+        "text": "알",
+        "part_of_speech": "Noun",
+        "start_index": 18,
+        "length": 3
       },
       {
-        "Text": "수",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 22,
-        "Length": 3
+        "text": "수",
+        "part_of_speech": "Noun",
+        "start_index": 22,
+        "length": 3
       },
       {
-        "Text": "없지만",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 26,
-        "Length": 9
+        "text": "없지만",
+        "part_of_speech": "Noun",
+        "start_index": 26,
+        "length": 9
       },
       {
-        "Text": "알",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 36,
-        "Length": 3
+        "text": "알",
+        "part_of_speech": "Noun",
+        "start_index": 36,
+        "length": 3
       },
       {
-        "Text": "수",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 40,
-        "Length": 3
+        "text": "수",
+        "part_of_speech": "Noun",
+        "start_index": 40,
+        "length": 3
       },
       {
-        "Text": "없지만",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 44,
-        "Length": 9
+        "text": "없지만",
+        "part_of_speech": "Noun",
+        "start_index": 44,
+        "length": 9
       }
     ]
   },
   {
-    "Text": "오늘도 난 걸어가고 있네",
-    "Translation": "Yet I’m still following this path today",
-    "Tokens": [
+    "text": "오늘도 난 걸어가고 있네",
+    "translation": "Yet I’m still following this path today",
+    "tokens": [
       {
-        "Text": "오늘도",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 0,
-        "Length": 9
+        "text": "오늘도",
+        "part_of_speech": "Noun",
+        "length": 9
       },
       {
-        "Text": "난",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 10,
-        "Length": 3
+        "text": "난",
+        "part_of_speech": "Noun",
+        "start_index": 10,
+        "length": 3
       },
       {
-        "Text": "걸어가고",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 14,
-        "Length": 12
+        "text": "걸어가고",
+        "part_of_speech": "Noun",
+        "start_index": 14,
+        "length": 12
       },
       {
-        "Text": "있네",
-        "PartOfSpeech": "Noun",
-        "StartIndex": 27,
-        "Length": 6
+        "text": "있네",
+        "part_of_speech": "Noun",
+        "start_index": 27,
+        "length": 6
       }
     ]
   }
