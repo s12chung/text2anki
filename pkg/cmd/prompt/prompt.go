@@ -11,6 +11,7 @@ import (
 	"github.com/AlecAivazis/survey/v2/terminal"
 	yaml "gopkg.in/yaml.v3"
 
+	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/cmd/survey"
 	"github.com/s12chung/text2anki/pkg/dictionary"
@@ -19,7 +20,7 @@ import (
 )
 
 // CreateCards initializes the create card UI prompt
-func CreateCards(tokenizedTexts []text.TokenizedText, dict dictionary.Dictionary) ([]anki.Note, error) {
+func CreateCards(tokenizedTexts []db.TokenizedText, dict dictionary.Dictionary) ([]anki.Note, error) {
 	return (&createCards{
 		tokenizedTexts: tokenizedTexts,
 		dictionary:     dict,
@@ -27,7 +28,7 @@ func CreateCards(tokenizedTexts []text.TokenizedText, dict dictionary.Dictionary
 }
 
 type createCards struct {
-	tokenizedTexts []text.TokenizedText
+	tokenizedTexts []db.TokenizedText
 	dictionary     dictionary.Dictionary
 
 	tokenizedTextIndex int
@@ -63,7 +64,7 @@ func (c *createCards) start() ([]anki.Note, error) {
 	}
 }
 
-func (c *createCards) showTokenizedText(tokenizedText text.TokenizedText) (transition, error) {
+func (c *createCards) showTokenizedText(tokenizedText db.TokenizedText) (transition, error) {
 	for {
 		context := tokenizedText.Text
 		selectText := fmt.Sprintf("%v/%v: %v\n%v\n",
@@ -112,7 +113,7 @@ var ignorePOS = map[lang.PartOfSpeech]bool{
 	lang.PartOfSpeechUnknown:     true,
 }
 
-func tokenOptions(tokenizedText text.TokenizedText) ([]string, bool) {
+func tokenOptions(tokenizedText db.TokenizedText) ([]string, bool) {
 	options := make([]string, 0, len(tokenizedText.Tokens))
 	for _, token := range tokenizedText.Tokens {
 		if ignorePOS[token.PartOfSpeech] {

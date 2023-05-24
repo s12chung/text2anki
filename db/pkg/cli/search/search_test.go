@@ -10,7 +10,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
-	"github.com/s12chung/text2anki/pkg/util/ioutils"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -18,8 +18,7 @@ import (
 func TestTermsSearchToCSVRows(t *testing.T) {
 	require := require.New(t)
 	testName := "TestTermsSearchToCSVRows"
-	testdb.SetupTempDBT(t, testName)
-	testdb.Seed(t)
+	testdb.SetupAndSeed(t, testName)
 
 	terms, err := db.Qs().TermsSearchRaw(context.Background(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
 	require.NoError(err)
@@ -69,7 +68,7 @@ func TestGetOrDefaultConfig(t *testing.T) {
 	require.NoError(err)
 	require.Equal(string(fixture.JSON(t, testConfig)), string(fileConfig))
 
-	err = os.WriteFile(configPath, fixture.JSON(t, changedTestConfig), ioutils.OwnerRWGroupR)
+	err = os.WriteFile(configPath, fixture.JSON(t, changedTestConfig), ioutil.OwnerRWGroupR)
 	require.NoError(err)
 	config, err = GetOrDefaultConfig(configPath)
 	require.NoError(err)

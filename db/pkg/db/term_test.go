@@ -38,7 +38,6 @@ func TestTerm_DictionaryTerm(t *testing.T) {
 		{name: "EmptyVariants"},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -46,10 +45,10 @@ func TestTerm_DictionaryTerm(t *testing.T) {
 			err := json.Unmarshal(fixture.Read(t, path.Join(testName, tc.name+"Src.json")), &term)
 			require.NoError(err)
 
-			dbTerm, err := term.DictionaryTerm()
+			dictTerm, err := term.DictionaryTerm()
 			require.NoError(err)
 
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, dbTerm))
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, dictTerm))
 		})
 	}
 }
@@ -70,8 +69,6 @@ func TestQueries_TermsSearchRaw(t *testing.T) {
 	require := require.New(t)
 	testName := "TestQueries_TermsSearch"
 	ctx := context.Background()
-	testdb.SetupTempDBT(t, testName)
-	testdb.Seed(t)
 
 	results, err := db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechEmpty, testdb.SearchConfig)
 	require.NoError(err)

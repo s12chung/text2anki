@@ -4,13 +4,21 @@
 
 package db
 
-import ()
+import (
+	"database/sql"
+)
+
+type Source struct {
+	ID             int64        `json:"id"`
+	TokenizedTexts string       `json:"tokenized_texts"`
+	CreatedAt      sql.NullTime `json:"created_at"`
+}
 
 type Term struct {
-	Text         string
-	Variants     string
-	PartOfSpeech string
-	CommonLevel  int64
-	Translations string
-	Popularity   int64
+	Text         string `json:"text"`
+	Variants     string `json:"variants"`
+	PartOfSpeech string `json:"part_of_speech"`
+	CommonLevel  int64  `json:"common_level"`
+	Translations string `json:"translations"`
+	Popularity   int64  `json:"popularity"`
 }

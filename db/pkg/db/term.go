@@ -33,7 +33,7 @@ func ToDBTerm(term dictionary.Term, popularity int) (Term, error) {
 }
 
 // DictionaryTerm converts the term to a dictionary.Term
-func (t *Term) DictionaryTerm() (dictionary.Term, error) {
+func (t Term) DictionaryTerm() (dictionary.Term, error) {
 	variants := stringclean.Split(t.Variants, arraySeparator)
 	var translations []dictionary.Translation
 	if err := json.Unmarshal([]byte(t.Translations), &translations); err != nil {
@@ -51,36 +51,26 @@ func (t *Term) DictionaryTerm() (dictionary.Term, error) {
 }
 
 // CreateParams converts the term to a TermCreateParams
-func (t *Term) CreateParams() TermCreateParams {
-	return TermCreateParams{
-		Text:         t.Text,
-		Variants:     t.Variants,
-		PartOfSpeech: t.PartOfSpeech,
-		CommonLevel:  t.CommonLevel,
-		Translations: t.Translations,
-		Popularity:   t.Popularity,
-	}
+func (t Term) CreateParams() TermCreateParams {
+	return TermCreateParams(t)
 }
-
-//go:embed custom/TermsSearch.sql
-var termsSearch string
 
 // TermsSearchRow is the row returned by TermsSearch
 type TermsSearchRow struct {
-	Term
-	PosCalc    sql.NullFloat64
-	PopCalc    sql.NullFloat64
-	CommonCalc sql.NullFloat64
-	LenCalc    sql.NullFloat64
+	Term       `json:"term"`
+	PosCalc    sql.NullFloat64 `json:"pos_calc"`
+	PopCalc    sql.NullFloat64 `json:"pop_calc"`
+	CommonCalc sql.NullFloat64 `json:"common_calc"`
+	LenCalc    sql.NullFloat64 `json:"len_calc"`
 }
 
 // TermsSearchConfig is the config for TermsSearchRaw
 type TermsSearchConfig struct {
-	PosWeight    int
-	PopLog       int
-	PopWeight    int
-	CommonWeight int
-	LenLog       int
+	PosWeight    int `json:"pos_weight,omitempty"`
+	PopLog       int `json:"pop_log,omitempty"`
+	PopWeight    int `json:"pop_weight,omitempty"`
+	CommonWeight int `json:"common_weight,omitempty"`
+	LenLog       int `json:"len_log,omitempty"`
 }
 
 var defaultTermsSearchConfig = TermsSearchConfig{
@@ -101,13 +91,16 @@ func (q *Queries) TermsSearch(ctx context.Context, query string, pos lang.PartOf
 	return q.TermsSearchRaw(ctx, query, pos, DefaultTermsSearchConfig())
 }
 
+//go:embed custom/TermsSearch.sql
+var termsSearchSQL string
+
 // TermsSearchRaw searches within Terms for text given the config
 func (q *Queries) TermsSearchRaw(ctx context.Context, query string, pos lang.PartOfSpeech, c TermsSearchConfig) ([]TermsSearchRow, error) {
 	if c.PosWeight+c.PopWeight+c.CommonWeight > 100 {
 		return nil, fmt.Errorf("c.PosWeight + config.PopWeight + config.CommonWeight > 100: %v, %v, %v", c.PosWeight, c.PopWeight, c.CommonWeight)
 	}
 
-	rows, err := q.db.QueryContext(ctx, termsSearch, query, pos, c.PosWeight, c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog)
+	rows, err := q.db.QueryContext(ctx, termsSearchSQL, query, pos, c.PosWeight, c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog)
 	if err != nil {
 		return nil, err
 	}

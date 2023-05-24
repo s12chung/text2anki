@@ -1,5 +1,5 @@
-// Package ioutils contains utils for io
-package ioutils
+// Package ioutil contains utils for io
+package ioutil
 
 import (
 	"io"

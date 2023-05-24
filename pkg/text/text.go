@@ -3,6 +3,7 @@ package text
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/pemistahl/lingua-go"
@@ -10,8 +11,8 @@ import (
 
 // Text represents a text line given from the source
 type Text struct {
-	Text        string
-	Translation string
+	Text        string `json:"text,omitempty"`
+	Translation string `json:"translation,omitempty"`
 }
 
 // Parser parses text into Text arrays (text and translation)
@@ -119,6 +120,9 @@ const (
 var errExtraTextLine = fmt.Errorf("there are more text lines than translation lines")
 var errExtraTranslationLine = fmt.Errorf("there are more translation lines than text lines")
 
+// SplitDelimiter is the delimiter for splitTranslation in TextsFromString
+const SplitDelimiter = "==="
+
 // TextsFromString returns an array of Text from the given string
 //
 //nolint:gocognit // too many states for simplification at O(n) time
@@ -139,7 +143,7 @@ func (p Parser) TextsFromString(s string) ([]Text, error) {
 		}
 		//nolint:nestif // complex case
 		if mode == noTranslation {
-			if line == "===" {
+			if line == SplitDelimiter {
 				if nonEmptyIndex == 1 {
 					texts = append(texts, text)
 				}
@@ -183,4 +187,25 @@ func (p Parser) TextsFromString(s string) ([]Text, error) {
 	}
 
 	return texts, nil
+}
+
+// CleanSpeaker removes the CleanSpeakerString names from the next
+func CleanSpeaker(texts []Text) []Text {
+	cleanedTexts := make([]Text, len(texts))
+	for i, t := range texts {
+		cleanedTexts[i] = Text{
+			Text:        CleanSpeakerString(t.Text),
+			Translation: CleanSpeakerString(t.Translation),
+		}
+	}
+	return cleanedTexts
+}
+
+var speakerRegex = regexp.MustCompile(`\A[^:\d]{0,25}:`)
+
+// CleanSpeakerString cleans the speaker from the string
+func CleanSpeakerString(s string) string {
+	s = speakerRegex.ReplaceAllString(s, "")
+	s = strings.TrimSpace(s)
+	return s
 }

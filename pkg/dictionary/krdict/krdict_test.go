@@ -15,9 +15,7 @@ import (
 func TestKrDict_Search(t *testing.T) {
 	require := require.New(t)
 	testName := "TestKrDict_Search"
-	testdb.SetupTempDBT(t, testName)
-	testdb.Seed(t)
-
+	testdb.SetupAndSeed(t, testName)
 	dict := New(db.DB())
 
 	// PartOfSpeechOther will convert to PartOfSpeechEmpty

@@ -14,7 +14,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/lang"
-	"github.com/s12chung/text2anki/pkg/util/ioutils"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
 // TermsSearchToCSVRows gives the CSV rows for the given TermsSearchRows
@@ -97,14 +97,14 @@ func GetOrDefaultConfig(p string) (Config, error) {
 }
 
 func writeDefaultConfig(p string) error {
-	if err := os.MkdirAll(path.Dir(p), ioutils.OwnerRWXGroupRX); err != nil {
+	if err := os.MkdirAll(path.Dir(p), ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
 	bytes, err := json.MarshalIndent(&defaultConfig, "", "  ")
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(p, bytes, ioutils.OwnerRWGroupR)
+	return os.WriteFile(p, bytes, ioutil.OwnerRWGroupR)
 }
 
 func getConfig(p string) (Config, error) {

@@ -4,7 +4,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/s12chung/text2anki/pkg/util/ioutils"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
 var config Config
@@ -47,7 +47,7 @@ func SetupDefaultConfig() error {
 	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll(c.NotesCacheDir, ioutils.OwnerRWXGroupRX); err != nil {
+	if err := os.MkdirAll(c.NotesCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
 	SetConfig(c)

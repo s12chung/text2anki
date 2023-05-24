@@ -1,608 +1,595 @@
 [
   {
-    "Text": "가다",
-    "Variants": [],
-    "PartOfSpeech": "Verb",
-    "CommonLevel": 3,
-    "Translations": [
+    "text": "가다",
+    "part_of_speech": "Verb",
+    "common_level": 3,
+    "translations": [
       {
-        "Text": "go; travel",
-        "Explanation": "To move from one place to another place."
+        "text": "go; travel",
+        "explanation": "To move from one place to another place."
       },
       {
-        "Text": "go; head for; be bound for",
-        "Explanation": "For ships, planes, cars, etc., to travel to or from a specific place."
+        "text": "go; head for; be bound for",
+        "explanation": "For ships, planes, cars, etc., to travel to or from a specific place."
       },
       {
-        "Text": "go",
-        "Explanation": "To move to attend a certain meeting that has a specific purpose."
+        "text": "go",
+        "explanation": "To move to attend a certain meeting that has a specific purpose."
       },
       {
-        "Text": "go",
-        "Explanation": "To move to a certain place with a specific purpose."
+        "text": "go",
+        "explanation": "To move to a certain place with a specific purpose."
       },
       {
-        "Text": "go; enter; join",
-        "Explanation": "To become a member of a certain group or organization."
+        "text": "go; enter; join",
+        "explanation": "To become a member of a certain group or organization."
       },
       {
-        "Text": "go; transfer",
-        "Explanation": "To transfer to another place to undertake a specific work."
+        "text": "go; transfer",
+        "explanation": "To transfer to another place to undertake a specific work."
       },
       {
-        "Text": "go",
-        "Explanation": "For objects, rights, etc., to belong to someone."
+        "text": "go",
+        "explanation": "For objects, rights, etc., to belong to someone."
       },
       {
-        "Text": "be drawn to; be attracted",
-        "Explanation": "For one's attention or gaze to be drawn to a certain object."
+        "text": "be drawn to; be attracted",
+        "explanation": "For one's attention or gaze to be drawn to a certain object."
       },
       {
-        "Text": "be sent; be delivered",
-        "Explanation": "For words, news, etc., to be known or delivered."
+        "text": "be sent; be delivered",
+        "explanation": "For words, news, etc., to be known or delivered."
       },
       {
-        "Text": "move toward; go toward",
-        "Explanation": "To move toward a certain state or situation."
+        "text": "move toward; go toward",
+        "explanation": "To move toward a certain state or situation."
       },
       {
-        "Text": "reach; rank",
-        "Explanation": "To reach a certain level or degree."
+        "text": "reach; rank",
+        "explanation": "To reach a certain level or degree."
       },
       {
-        "Text": "reach; come",
-        "Explanation": "To reach a certain point of time or a place."
+        "text": "reach; come",
+        "explanation": "To reach a certain point of time or a place."
       },
       {
-        "Text": "last; hold",
-        "Explanation": "For a certain phenomenon or state to be maintained."
+        "text": "last; hold",
+        "explanation": "For a certain phenomenon or state to be maintained."
       },
       {
-        "Text": "go; walk; travel",
-        "Explanation": "To travel through a certain route."
+        "text": "go; walk; travel",
+        "explanation": "To travel through a certain route."
       },
       {
-        "Text": "go; move",
-        "Explanation": "To move to another place to do a certain task."
+        "text": "go; move",
+        "explanation": "To move to another place to do a certain task."
       },
       {
-        "Text": "lead to",
-        "Explanation": "To head for or lead to a certain place."
+        "text": "lead to",
+        "explanation": "To head for or lead to a certain place."
       },
       {
-        "Text": "be gone; vanish",
-        "Explanation": "To disappear and become invisible."
+        "text": "be gone; vanish",
+        "explanation": "To disappear and become invisible."
       },
       {
-        "Text": "proceed",
-        "Explanation": "For a certain task or job to move forward."
+        "text": "proceed",
+        "explanation": "For a certain task or job to move forward."
       },
       {
-        "Text": "be done; be inflicted; occur",
-        "Explanation": "For good or harm to be done to someone or something."
+        "text": "be done; be inflicted; occur",
+        "explanation": "For good or harm to be done to someone or something."
       },
       {
-        "Text": "be done; be inflicted; occur",
-        "Explanation": "For harm to be done to someone's health."
+        "text": "be done; be inflicted; occur",
+        "explanation": "For harm to be done to someone's health."
       },
       {
-        "Text": "require; necessitate",
-        "Explanation": "For certain work to require a lot of effort"
+        "text": "require; necessitate",
+        "explanation": "For certain work to require a lot of effort"
       },
       {
-        "Text": "come into being",
-        "Explanation": "For lines, wrinkles, scratches, etc., to be formed."
+        "text": "come into being",
+        "explanation": "For lines, wrinkles, scratches, etc., to be formed."
       },
       {
-        "Text": "occur; inspire; become possible",
-        "Explanation": "To come to think of or understand a certain thing."
+        "text": "occur; inspire; become possible",
+        "explanation": "To come to think of or understand a certain thing."
       },
       {
-        "Text": "go; be drawn to",
-        "Explanation": "To be applied to a certain object."
+        "text": "go; be drawn to",
+        "explanation": "To be applied to a certain object."
       },
       {
-        "Text": "go; be drawn to",
-        "Explanation": "For efforts or force to reach a certain object."
+        "text": "go; be drawn to",
+        "explanation": "For efforts or force to reach a certain object."
       },
       {
-        "Text": "pass; flow",
-        "Explanation": "For time to pass or flow."
+        "text": "pass; flow",
+        "explanation": "For time to pass or flow."
       },
       {
-        "Text": "work; operate; move",
-        "Explanation": "For machines, etc., to work or operate."
+        "text": "work; operate; move",
+        "explanation": "For machines, etc., to work or operate."
       },
       {
-        "Text": "go bad; go sour",
-        "Explanation": "To go bad or spoil."
+        "text": "go bad; go sour",
+        "explanation": "To go bad or spoil."
       },
       {
-        "Text": "come off",
-        "Explanation": "For stains or spots to be easily removed."
+        "text": "come off",
+        "explanation": "For stains or spots to be easily removed."
       },
       {
-        "Text": "be affected",
-        "Explanation": "To lose one's senses, being shocked or affected by something."
+        "text": "be affected",
+        "explanation": "To lose one's senses, being shocked or affected by something."
       },
       {
-        "Text": "reach",
-        "Explanation": "To hear a signal sound indicating connection in communication."
+        "text": "reach",
+        "explanation": "To hear a signal sound indicating connection in communication."
       },
       {
-        "Text": "go on; last; continue",
-        "Explanation": "To continue to be in a certain state."
+        "text": "go on; last; continue",
+        "explanation": "To continue to be in a certain state."
       },
       {
-        "Text": "die; pass away",
-        "Explanation": "For a person to die."
+        "text": "die; pass away",
+        "explanation": "For a person to die."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   },
   {
-    "Text": "가다",
-    "Variants": [],
-    "PartOfSpeech": "AuxiliaryVerb",
-    "CommonLevel": 0,
-    "Translations": [
+    "text": "가다",
+    "part_of_speech": "AuxiliaryVerb",
+    "translations": [
       {
-        "Text": "become; turn",
-        "Explanation": "An auxiliary verb used to indicate the continuation or progress of a motion, state, or change of state in the preceding statement."
+        "text": "become; turn",
+        "explanation": "An auxiliary verb used to indicate the continuation or progress of a motion, state, or change of state in the preceding statement."
       },
       {
-        "Text": "do something while doing something",
-        "Explanation": "An auxiliary verb used to indicate the occasional repetition of an action to the preceding statement."
+        "text": "do something while doing something",
+        "explanation": "An auxiliary verb used to indicate the occasional repetition of an action to the preceding statement."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   },
   {
-    "Text": "가다듬다",
-    "Variants": [],
-    "PartOfSpeech": "Verb",
-    "CommonLevel": 1,
-    "Translations": [
+    "text": "가다듬다",
+    "part_of_speech": "Verb",
+    "common_level": 1,
+    "translations": [
       {
-        "Text": "brace; pull oneself together",
-        "Explanation": "To collect one's mind, spirit, etc. together."
+        "text": "brace; pull oneself together",
+        "explanation": "To collect one's mind, spirit, etc. together."
       },
       {
-        "Text": "adjust oneself",
-        "Explanation": "To straighten one's conduct, posture, etc."
+        "text": "adjust oneself",
+        "explanation": "To straighten one's conduct, posture, etc."
       },
       {
-        "Text": "clear; adjust",
-        "Explanation": "To clear one's throat or adjust one's breath."
+        "text": "clear; adjust",
+        "explanation": "To clear one's throat or adjust one's breath."
       },
       {
-        "Text": "set in good order",
-        "Explanation": "To prepare to fight by adjusting a line, organization, etc."
+        "text": "set in good order",
+        "explanation": "To prepare to fight by adjusting a line, organization, etc."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   },
   {
-    "Text": "가다가",
-    "Variants": [],
-    "PartOfSpeech": "Adverb",
-    "CommonLevel": 0,
-    "Translations": [
+    "text": "가다가",
+    "part_of_speech": "Adverb",
+    "translations": [
       {
-        "Text": "sometimes; occasionally",
-        "Explanation": "Every now and then while doing something."
+        "text": "sometimes; occasionally",
+        "explanation": "Every now and then while doing something."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   },
   {
-    "Text": "나가다",
-    "Variants": [],
-    "PartOfSpeech": "Verb",
-    "CommonLevel": 3,
-    "Translations": [
+    "text": "나가다",
+    "part_of_speech": "Verb",
+    "common_level": 3,
+    "translations": [
       {
-        "Text": "go out; leave",
-        "Explanation": "To move from the inside to the outside of an area or space."
+        "text": "go out; leave",
+        "explanation": "To move from the inside to the outside of an area or space."
       },
       {
-        "Text": "go forward",
-        "Explanation": "To move forward."
+        "text": "go forward",
+        "explanation": "To move forward."
       },
       {
-        "Text": "be spread",
-        "Explanation": "For objects, etc., to be made and spread across the society."
+        "text": "be spread",
+        "explanation": "For objects, etc., to be made and spread across the society."
       },
       {
-        "Text": "be revealed; become known",
-        "Explanation": "For something to be revealed or become known through media sources."
+        "text": "be revealed; become known",
+        "explanation": "For something to be revealed or become known through media sources."
       },
       {
-        "Text": "become known",
-        "Explanation": "For words, facts, rumors, etc., to become known."
+        "text": "become known",
+        "explanation": "For words, facts, rumors, etc., to become known."
       },
       {
-        "Text": "begin action",
-        "Explanation": "To go into action in a new place, area, etc."
+        "text": "begin action",
+        "explanation": "To go into action in a new place, area, etc."
       },
       {
-        "Text": "work",
-        "Explanation": "To go to work at a certain place."
+        "text": "work",
+        "explanation": "To go to work at a certain place."
       },
       {
-        "Text": "go",
-        "Explanation": "To go to a place with a purpose."
+        "text": "go",
+        "explanation": "To go to a place with a purpose."
       },
       {
-        "Text": "attend; participate; run for",
-        "Explanation": "To attend a meeting, participate in a sports game, or run for a candidate in an election, etc."
+        "text": "attend; participate; run for",
+        "explanation": "To attend a meeting, participate in a sports game, or run for a candidate in an election, etc."
       },
       {
-        "Text": "leave",
-        "Explanation": "To leave or get out of an area, space, or a place that one belonged to."
+        "text": "leave",
+        "explanation": "To leave or get out of an area, space, or a place that one belonged to."
       },
       {
-        "Text": "maintain a certain attitude",
-        "Explanation": "To do something or maintain a certain attitude."
+        "text": "maintain a certain attitude",
+        "explanation": "To do something or maintain a certain attitude."
       },
       {
-        "Text": "be worth; weigh",
-        "Explanation": "For a price, weight, etc., to reach a certain extent."
+        "text": "be worth; weigh",
+        "explanation": "For a price, weight, etc., to reach a certain extent."
       },
       {
-        "Text": "spend; receive",
-        "Explanation": "For money, objects, etc., to be given or spent."
+        "text": "spend; receive",
+        "explanation": "For money, objects, etc., to be given or spent."
       },
       {
-        "Text": "be worn out",
-        "Explanation": "For clothes, shoes, socks, etc., to be worn out or torn."
+        "text": "be worn out",
+        "explanation": "For clothes, shoes, socks, etc., to be worn out or torn."
       },
       {
-        "Text": "break; injure",
-        "Explanation": "For an object, etc., to be broken or for one's body part to be hurt."
+        "text": "break; injure",
+        "explanation": "For an object, etc., to be broken or for one's body part to be hurt."
       },
       {
-        "Text": "become unconscious",
-        "Explanation": "To lose one's consciousness or mind."
+        "text": "become unconscious",
+        "explanation": "To lose one's consciousness or mind."
       },
       {
-        "Text": "recover",
-        "Explanation": "To recover from an illness such as a cold, etc."
+        "text": "recover",
+        "explanation": "To recover from an illness such as a cold, etc."
       },
       {
-        "Text": "be taken; be sold",
-        "Explanation": "For the contract of a house, room, etc., on sale to be completed."
+        "text": "be taken; be sold",
+        "explanation": "For the contract of a house, room, etc., on sale to be completed."
       },
       {
-        "Text": "go off; go out",
-        "Explanation": "For the electricity to be cut off or an electric light to go off."
+        "text": "go off; go out",
+        "explanation": "For the electricity to be cut off or an electric light to go off."
       },
       {
-        "Text": "work well",
-        "Explanation": "For an object with a blade to work well."
+        "text": "work well",
+        "explanation": "For an object with a blade to work well."
       },
       {
-        "Text": "be sold",
-        "Explanation": "For an object to be sold well."
+        "text": "be sold",
+        "explanation": "For an object to be sold well."
       },
       {
-        "Text": "go to work",
-        "Explanation": "To go to do something."
+        "text": "go to work",
+        "explanation": "To go to do something."
       },
       {
-        "Text": "move",
-        "Explanation": "To move from where one lived to another place."
+        "text": "move",
+        "explanation": "To move from where one lived to another place."
       },
       {
-        "Text": "progress; proceed",
-        "Explanation": "For something to be proceeded to a certain extent."
+        "text": "progress; proceed",
+        "explanation": "For something to be proceeded to a certain extent."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   },
   {
-    "Text": "지나가다",
-    "Variants": [],
-    "PartOfSpeech": "Verb",
-    "CommonLevel": 3,
-    "Translations": [
+    "text": "지나가다",
+    "part_of_speech": "Verb",
+    "common_level": 3,
+    "translations": [
       {
-        "Text": "pass; go by",
-        "Explanation": "For a certain period to end as time passes by."
+        "text": "pass; go by",
+        "explanation": "For a certain period to end as time passes by."
       },
       {
-        "Text": "pass; go by",
-        "Explanation": "For a certain task or event to end."
+        "text": "pass; go by",
+        "explanation": "For a certain task or event to end."
       },
       {
-        "Text": "say in passing",
-        "Explanation": "To say something without any special meaning."
+        "text": "say in passing",
+        "explanation": "To say something without any special meaning."
       },
       {
-        "Text": "tolerate",
-        "Explanation": "To not make something a problem."
+        "text": "tolerate",
+        "explanation": "To not make something a problem."
       },
       {
-        "Text": "pass; cross",
-        "Explanation": "To go through a place."
+        "text": "pass; cross",
+        "explanation": "To go through a place."
       },
       {
-        "Text": "pass by",
-        "Explanation": "To go past the surroundings of an object."
+        "text": "pass by",
+        "explanation": "To go past the surroundings of an object."
       },
       {
-        "Text": "pass",
-        "Explanation": "For the wind to stop blowing, or for the rain to stop falling."
+        "text": "pass",
+        "explanation": "For the wind to stop blowing, or for the rain to stop falling."
       },
       {
-        "Text": "cross; pass",
-        "Explanation": "For a facial expression, idea, etc., to appear suddenly and then disappear."
+        "text": "cross; pass",
+        "explanation": "For a facial expression, idea, etc., to appear suddenly and then disappear."
       },
       {
-        "Text": "pass by",
-        "Explanation": "To skip something."
+        "text": "pass by",
+        "explanation": "To skip something."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   },
   {
-    "Text": "올라가다",
-    "Variants": [],
-    "PartOfSpeech": "Verb",
-    "CommonLevel": 3,
-    "Translations": [
+    "text": "올라가다",
+    "part_of_speech": "Verb",
+    "common_level": 3,
+    "translations": [
       {
-        "Text": "go up; rise; ascend",
-        "Explanation": "To move from the bottom to the top, or from a lower place to a higher one."
+        "text": "go up; rise; ascend",
+        "explanation": "To move from the bottom to the top, or from a lower place to a higher one."
       },
       {
-        "Text": "go up to the capital; go up to Seoul",
-        "Explanation": "To go to the capital city from a provincial area."
+        "text": "go up to the capital; go up to Seoul",
+        "explanation": "To go to the capital city from a provincial area."
       },
       {
-        "Text": "advance",
-        "Explanation": "To move one's position to a higher organization or department."
+        "text": "advance",
+        "explanation": "To move one's position to a higher organization or department."
       },
       {
-        "Text": "go northward; go up",
-        "Explanation": "To go from the south to the north."
+        "text": "go northward; go up",
+        "explanation": "To go from the south to the north."
       },
       {
-        "Text": "go ashore; go on shore",
-        "Explanation": "To move from water to land."
+        "text": "go ashore; go on shore",
+        "explanation": "To move from water to land."
       },
       {
-        "Text": "go to heaven",
-        "Explanation": "(figurative) To die."
+        "text": "go to heaven",
+        "explanation": "(figurative) To die."
       },
       {
-        "Text": "be submitted; be sent",
-        "Explanation": "For the document, etc., of a sub-organization to be submitted to an upper organization."
+        "text": "be submitted; be sent",
+        "explanation": "For the document, etc., of a sub-organization to be submitted to an upper organization."
       },
       {
-        "Text": "go up",
-        "Explanation": "To keep going from a certain point to a place that looks rather high."
+        "text": "go up",
+        "explanation": "To keep going from a certain point to a place that looks rather high."
       },
       {
-        "Text": "go back; trace back",
-        "Explanation": "To go toward a source by going back to the past."
+        "text": "go back; trace back",
+        "explanation": "To go toward a source by going back to the past."
       },
       {
-        "Text": "be promoted; be raised",
-        "Explanation": "For one's rank, position, etc., to become higher."
+        "text": "be promoted; be raised",
+        "explanation": "For one's rank, position, etc., to become higher."
       },
       {
-        "Text": "improve",
-        "Explanation": "For quality, a level, etc., to become higher."
+        "text": "improve",
+        "explanation": "For quality, a level, etc., to become higher."
       },
       {
-        "Text": "go up; rise; soar",
-        "Explanation": "For a numerical value such as temperature, prices, etc., to increase or become higher."
+        "text": "go up; rise; soar",
+        "explanation": "For a numerical value such as temperature, prices, etc., to increase or become higher."
       },
       {
-        "Text": "go up; go upstream",
-        "Explanation": "To go against the current of water."
+        "text": "go up; go upstream",
+        "explanation": "To go against the current of water."
       },
       {
-        "Text": "increase",
-        "Explanation": "For force, energy, passion, etc., to increase gradually."
+        "text": "increase",
+        "explanation": "For force, energy, passion, etc., to increase gradually."
       },
       {
-        "Text": "be built; rise",
-        "Explanation": "For a building, etc., to be constructed."
+        "text": "be built; rise",
+        "explanation": "For a building, etc., to be constructed."
       },
       {
-        "Text": "climb; ascend",
-        "Explanation": "To go toward a high place."
+        "text": "climb; ascend",
+        "explanation": "To go toward a high place."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   },
   {
-    "Text": "들어가다",
-    "Variants": [],
-    "PartOfSpeech": "Verb",
-    "CommonLevel": 3,
-    "Translations": [
+    "text": "들어가다",
+    "part_of_speech": "Verb",
+    "common_level": 3,
+    "translations": [
       {
-        "Text": "enter; go into",
-        "Explanation": "To go inside from outside."
+        "text": "enter; go into",
+        "explanation": "To go inside from outside."
       },
       {
-        "Text": "be installed; be laid in place",
-        "Explanation": "For the hardware of utilities such as electricity, water, etc., to be installed."
+        "text": "be installed; be laid in place",
+        "explanation": "For the hardware of utilities such as electricity, water, etc., to be installed."
       },
       {
-        "Text": "start",
-        "Explanation": "For a new state or period to start."
+        "text": "start",
+        "explanation": "For a new state or period to start."
       },
       {
-        "Text": "be used",
-        "Explanation": "For money, effort, resources, etc., to be spent on a certain project."
+        "text": "be used",
+        "explanation": "For money, effort, resources, etc., to be spent on a certain project."
       },
       {
-        "Text": "be inserted",
-        "Explanation": "To be inserted in something."
+        "text": "be inserted",
+        "explanation": "To be inserted in something."
       },
       {
-        "Text": "be permeated",
-        "Explanation": "To be permeated to the inside."
+        "text": "be permeated",
+        "explanation": "To be permeated to the inside."
       },
       {
-        "Text": "be handed; be owned",
-        "Explanation": "For something to be delivered or owned by another person, organization, etc."
+        "text": "be handed; be owned",
+        "explanation": "For something to be delivered or owned by another person, organization, etc."
       },
       {
-        "Text": "join; be employed; be accepted",
-        "Explanation": "To become a member of a certain group."
+        "text": "join; be employed; be accepted",
+        "explanation": "To become a member of a certain group."
       },
       {
-        "Text": "be included",
-        "Explanation": "To be included in a certain range or to meet a standard."
+        "text": "be included",
+        "explanation": "To be included in a certain range or to meet a standard."
       },
       {
-        "Text": "be understood",
-        "Explanation": "For certain content to be understood and kept in memory."
+        "text": "be understood",
+        "explanation": "For certain content to be understood and kept in memory."
       },
       {
-        "Text": "be sunken",
-        "Explanation": "For the surface of an object to become sunken."
+        "text": "be sunken",
+        "explanation": "For the surface of an object to become sunken."
       },
       {
-        "Text": "disappear",
-        "Explanation": "For a clear phenomenon to disappear."
+        "text": "disappear",
+        "explanation": "For a clear phenomenon to disappear."
       },
       {
-        "Text": "get to learn",
-        "Explanation": "To get to know a field of study or obtain knowledge, etc."
+        "text": "get to learn",
+        "explanation": "To get to know a field of study or obtain knowledge, etc."
       },
       {
-        "Text": "fit",
-        "Explanation": "For clothes, shoes, etc., to fit one's body."
+        "text": "fit",
+        "explanation": "For clothes, shoes, etc., to fit one's body."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   },
   {
-    "Text": "돌아가다",
-    "Variants": [],
-    "PartOfSpeech": "Verb",
-    "CommonLevel": 3,
-    "Translations": [
+    "text": "돌아가다",
+    "part_of_speech": "Verb",
+    "common_level": 3,
+    "translations": [
       {
-        "Text": "spin; rotate",
-        "Explanation": "For an object to move in a circle around a point."
+        "text": "spin; rotate",
+        "explanation": "For an object to move in a circle around a point."
       },
       {
-        "Text": "become",
-        "Explanation": "For a job or situation to reach a certain state."
+        "text": "become",
+        "explanation": "For a job or situation to reach a certain state."
       },
       {
-        "Text": "be delivered",
-        "Explanation": "For something to be delivered within a certain range and in order."
+        "text": "be delivered",
+        "explanation": "For something to be delivered within a certain range and in order."
       },
       {
-        "Text": "take turns",
-        "Explanation": "To do something in an order, one after another."
+        "text": "take turns",
+        "explanation": "To do something in an order, one after another."
       },
       {
-        "Text": "work; function",
-        "Explanation": "To function properly."
+        "text": "work; function",
+        "explanation": "To function properly."
       },
       {
-        "Text": "be circulated",
-        "Explanation": "For money, goods, etc., to be circulated actively."
+        "text": "be circulated",
+        "explanation": "For money, goods, etc., to be circulated actively."
       },
       {
-        "Text": "be dizzy; feel giddy",
-        "Explanation": "To be dizzy or giddy enough to lose one's senses."
+        "text": "be dizzy; feel giddy",
+        "explanation": "To be dizzy or giddy enough to lose one's senses."
       },
       {
-        "Text": "die",
-        "Explanation": "(honorific) To die."
+        "text": "die",
+        "explanation": "(honorific) To die."
       },
       {
-        "Text": "go back; return",
-        "Explanation": "To go back to where one was before, or to be in such a state again."
+        "text": "go back; return",
+        "explanation": "To go back to where one was before, or to be in such a state again."
       },
       {
-        "Text": "be given",
-        "Explanation": "For the result or responsibility of something to be given to an individual, group, organization, etc."
+        "text": "be given",
+        "explanation": "For the result or responsibility of something to be given to an individual, group, organization, etc."
       },
       {
-        "Text": "be distributed; be divided",
-        "Explanation": "To be divided and distributed."
+        "text": "be distributed; be divided",
+        "explanation": "To be divided and distributed."
       },
       {
-        "Text": "end; finish",
-        "Explanation": "To finish in a certain state."
+        "text": "end; finish",
+        "explanation": "To finish in a certain state."
       },
       {
-        "Text": "",
-        "Explanation": "For the direction to be changed or tilted to one side."
+        "explanation": "For the direction to be changed or tilted to one side."
       },
       {
-        "Text": "detour",
-        "Explanation": "To go the long way."
+        "text": "detour",
+        "explanation": "To go the long way."
       },
       {
-        "Text": "go around",
-        "Explanation": "To move around a location as if to draw a circle, or to pass by a curved path."
+        "text": "go around",
+        "explanation": "To move around a location as if to draw a circle, or to pass by a curved path."
       },
       {
-        "Text": "go around",
-        "Explanation": "To pace around a certain area."
+        "text": "go around",
+        "explanation": "To pace around a certain area."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   },
   {
-    "Text": "내려가다",
-    "Variants": [],
-    "PartOfSpeech": "Verb",
-    "CommonLevel": 3,
-    "Translations": [
+    "text": "내려가다",
+    "part_of_speech": "Verb",
+    "common_level": 3,
+    "translations": [
       {
-        "Text": "go down; step down; descend",
-        "Explanation": "To move from up to down."
+        "text": "go down; step down; descend",
+        "explanation": "To move from up to down."
       },
       {
-        "Text": "go to a rural area",
-        "Explanation": "To move from a city or central area to a rural area."
+        "text": "go to a rural area",
+        "explanation": "To move from a city or central area to a rural area."
       },
       {
-        "Text": "go southward",
-        "Explanation": "To move from the north to the south."
+        "text": "go southward",
+        "explanation": "To move from the north to the south."
       },
       {
-        "Text": "drop; be degraded; be demoted",
-        "Explanation": "To move a level or grade from up to down."
+        "text": "drop; be degraded; be demoted",
+        "explanation": "To move a level or grade from up to down."
       },
       {
-        "Text": "be descended",
-        "Explanation": "To descend from or be a descendant of, and continue to exist in the future."
+        "text": "be descended",
+        "explanation": "To descend from or be a descendant of, and continue to exist in the future."
       },
       {
-        "Text": "be digested",
-        "Explanation": "For food to be digested."
+        "text": "be digested",
+        "explanation": "For food to be digested."
       },
       {
-        "Text": "drop; fall; go down",
-        "Explanation": "For a value, statistical number, temperature, price, etc., to be lowered."
+        "text": "drop; fall; go down",
+        "explanation": "For a value, statistical number, temperature, price, etc., to be lowered."
       },
       {
-        "Text": "go down",
-        "Explanation": "For a musical note to go down."
+        "text": "go down",
+        "explanation": "For a musical note to go down."
       },
       {
-        "Text": "walk down; step down",
-        "Explanation": "To walk down from a high place to a lower place."
+        "text": "walk down; step down",
+        "explanation": "To walk down from a high place to a lower place."
       },
       {
-        "Text": "carry down",
-        "Explanation": "To carry something from a high place to a lower place."
+        "text": "carry down",
+        "explanation": "To carry something from a high place to a lower place."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   }
 ]

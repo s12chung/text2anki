@@ -1,32 +1,28 @@
 [
   {
-    "Text": "가다",
-    "Variants": [],
-    "PartOfSpeech": "AuxiliaryVerb",
-    "CommonLevel": 0,
-    "Translations": [
+    "text": "가다",
+    "part_of_speech": "AuxiliaryVerb",
+    "translations": [
       {
-        "Text": "become; turn",
-        "Explanation": "An auxiliary verb used to indicate the continuation or progress of a motion, state, or change of state in the preceding statement."
+        "text": "become; turn",
+        "explanation": "An auxiliary verb used to indicate the continuation or progress of a motion, state, or change of state in the preceding statement."
       },
       {
-        "Text": "do something while doing something",
-        "Explanation": "An auxiliary verb used to indicate the occasional repetition of an action to the preceding statement."
+        "text": "do something while doing something",
+        "explanation": "An auxiliary verb used to indicate the occasional repetition of an action to the preceding statement."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   },
   {
-    "Text": "나가다",
-    "Variants": [],
-    "PartOfSpeech": "AuxiliaryVerb",
-    "CommonLevel": 0,
-    "Translations": [
+    "text": "나가다",
+    "part_of_speech": "AuxiliaryVerb",
+    "translations": [
       {
-        "Text": "nagada",
-        "Explanation": "An auxiliary verb used to indicate the continuation of the action of the preceding statement."
+        "text": "nagada",
+        "explanation": "An auxiliary verb used to indicate the continuation of the action of the preceding statement."
       }
     ],
-    "DictionarySource": "Korean Basic Dictionary"
+    "dictionary_source": "Korean Basic Dictionary"
   }
 ]

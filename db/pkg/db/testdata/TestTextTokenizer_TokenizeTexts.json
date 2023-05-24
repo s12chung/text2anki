@@ -1,0 +1,42 @@
+[
+  {
+    "text": "내가 가는 이길이",
+    "translation": "The road that I’m taking",
+    "tokens": [
+      {
+        "text": "내가",
+        "part_of_speech": "Noun",
+        "length": 6
+      },
+      {
+        "text": "가는",
+        "part_of_speech": "Noun",
+        "start_index": 7,
+        "length": 6
+      },
+      {
+        "text": "이길이",
+        "part_of_speech": "Noun",
+        "start_index": 14,
+        "length": 9
+      }
+    ]
+  },
+  {
+    "text": "어디로 가는지",
+    "translation": "Where it’s leading me to, where it’s taking me",
+    "tokens": [
+      {
+        "text": "어디로",
+        "part_of_speech": "Noun",
+        "length": 9
+      },
+      {
+        "text": "가는지",
+        "part_of_speech": "Noun",
+        "start_index": 10,
+        "length": 9
+      }
+    ]
+  }
+]

@@ -1,22 +1,22 @@
 [
   {
-    "Text": "저는 오늘 평소보다 조금 더 천천히 말을 할 거예요.",
-    "Translation": "Today, I’m going to speak a bit more slowly than usual."
+    "text": "저는 오늘 평소보다 조금 더 천천히 말을 할 거예요.",
+    "translation": "Today, I’m going to speak a bit more slowly than usual."
   },
   {
-    "Text": "혹시 여러분은 소풍을 가거나, 야외에 나갈 때 어떤 음식을 먹어요?",
-    "Translation": "When you go on a picnic or go outdoors, what kind of food do you eat?"
+    "text": "혹시 여러분은 소풍을 가거나, 야외에 나갈 때 어떤 음식을 먹어요?",
+    "translation": "When you go on a picnic or go outdoors, what kind of food do you eat?"
   },
   {
-    "Text": "한국에서는 소풍을 가거나, 야외에 나갈 때 꼭 이 음식을 먹어요.",
-    "Translation": "In Korea, when people go on a picnic or go outdoors, they always eat this food."
+    "text": "한국에서는 소풍을 가거나, 야외에 나갈 때 꼭 이 음식을 먹어요.",
+    "translation": "In Korea, when people go on a picnic or go outdoors, they always eat this food."
   },
   {
-    "Text": "짜잔!",
-    "Translation": "Tada!"
+    "text": "짜잔!",
+    "translation": "Tada!"
   },
   {
-    "Text": "김밥입니다.",
-    "Translation": "It’s gimbap (rice rolled in seaweed)."
+    "text": "김밥입니다.",
+    "translation": "It’s gimbap (rice rolled in seaweed)."
   }
 ]

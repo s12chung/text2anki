@@ -30,7 +30,6 @@ func TestPresenceRule_Valid(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, Rule.ValidateValue(reflect.ValueOf(tc.value)))

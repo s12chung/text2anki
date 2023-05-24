@@ -1,38 +1,37 @@
 [
   {
-    "Text": "대한민국",
-    "PartOfSpeech": "Noun",
-    "StartIndex": 0,
-    "Length": 4
+    "text": "대한민국",
+    "part_of_speech": "Noun",
+    "length": 4
   },
   {
-    "Text": "은",
-    "PartOfSpeech": "Postposition",
-    "StartIndex": 4,
-    "Length": 1
+    "text": "은",
+    "part_of_speech": "Postposition",
+    "start_index": 4,
+    "length": 1
   },
   {
-    "Text": "민주공화국",
-    "PartOfSpeech": "Noun",
-    "StartIndex": 6,
-    "Length": 5
+    "text": "민주공화국",
+    "part_of_speech": "Noun",
+    "start_index": 6,
+    "length": 5
   },
   {
-    "Text": "이",
-    "PartOfSpeech": "Copula",
-    "StartIndex": 11,
-    "Length": 1
+    "text": "이",
+    "part_of_speech": "Copula",
+    "start_index": 11,
+    "length": 1
   },
   {
-    "Text": "다",
-    "PartOfSpeech": "Ending",
-    "StartIndex": 12,
-    "Length": 1
+    "text": "다",
+    "part_of_speech": "Ending",
+    "start_index": 12,
+    "length": 1
   },
   {
-    "Text": ".",
-    "PartOfSpeech": "Punctuation",
-    "StartIndex": 13,
-    "Length": 1
+    "text": ".",
+    "part_of_speech": "Punctuation",
+    "start_index": 13,
+    "length": 1
   }
 ]

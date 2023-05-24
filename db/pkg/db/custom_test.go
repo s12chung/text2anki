@@ -2,27 +2,36 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/s12chung/text2anki/pkg/util/test"
 )
 
 func dBPath(testName string) string {
-	filename := fmt.Sprintf("text2anki-%v-%v.sqlite3", testName, time.Now().Unix())
-	return path.Join(os.TempDir(), filename)
+	return path.Join(os.TempDir(), test.GenerateFilename(testName, ".sqlite3"))
 }
 
 func TestSetDB(t *testing.T) {
+	oldDB := database
+	defer func() {
+		database = oldDB
+	}()
+
 	require := require.New(t)
 	err := SetDB(dBPath("TestSetDB"))
 	require.NoError(err)
 }
 
 func TestCreate(t *testing.T) {
+	oldDB := database
+	defer func() {
+		database = oldDB
+	}()
+
 	require := require.New(t)
 	err := SetDB(dBPath("TestCreate"))
 	require.NoError(err)

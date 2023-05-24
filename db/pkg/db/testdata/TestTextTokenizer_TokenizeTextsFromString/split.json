@@ -1,0 +1,171 @@
+[
+  {
+    "text": "내가 가는 이길이",
+    "translation": "The road that I’m taking",
+    "tokens": [
+      {
+        "text": "내가",
+        "part_of_speech": "Noun",
+        "length": 6
+      },
+      {
+        "text": "가는",
+        "part_of_speech": "Noun",
+        "start_index": 7,
+        "length": 6
+      },
+      {
+        "text": "이길이",
+        "part_of_speech": "Noun",
+        "start_index": 14,
+        "length": 9
+      }
+    ]
+  },
+  {
+    "text": "어디로 가는지",
+    "translation": "Where it’s leading me to, where it’s taking me",
+    "tokens": [
+      {
+        "text": "어디로",
+        "part_of_speech": "Noun",
+        "length": 9
+      },
+      {
+        "text": "가는지",
+        "part_of_speech": "Noun",
+        "start_index": 10,
+        "length": 9
+      }
+    ]
+  },
+  {
+    "text": "어디로 날 데려가는지 그 곳은 어딘지",
+    "translation": "Or where the final destination is",
+    "tokens": [
+      {
+        "text": "어디로",
+        "part_of_speech": "Noun",
+        "length": 9
+      },
+      {
+        "text": "날",
+        "part_of_speech": "Noun",
+        "start_index": 10,
+        "length": 3
+      },
+      {
+        "text": "데려가는지",
+        "part_of_speech": "Noun",
+        "start_index": 14,
+        "length": 15
+      },
+      {
+        "text": "그",
+        "part_of_speech": "Noun",
+        "start_index": 30,
+        "length": 3
+      },
+      {
+        "text": "곳은",
+        "part_of_speech": "Noun",
+        "start_index": 34,
+        "length": 6
+      },
+      {
+        "text": "어딘지",
+        "part_of_speech": "Noun",
+        "start_index": 41,
+        "length": 9
+      }
+    ]
+  },
+  {
+    "text": "알 수 없지만 알 수 없지만 알 수 없지만",
+    "translation": "I have no idea, no idea, no idea",
+    "tokens": [
+      {
+        "text": "알",
+        "part_of_speech": "Noun",
+        "length": 3
+      },
+      {
+        "text": "수",
+        "part_of_speech": "Noun",
+        "start_index": 4,
+        "length": 3
+      },
+      {
+        "text": "없지만",
+        "part_of_speech": "Noun",
+        "start_index": 8,
+        "length": 9
+      },
+      {
+        "text": "알",
+        "part_of_speech": "Noun",
+        "start_index": 18,
+        "length": 3
+      },
+      {
+        "text": "수",
+        "part_of_speech": "Noun",
+        "start_index": 22,
+        "length": 3
+      },
+      {
+        "text": "없지만",
+        "part_of_speech": "Noun",
+        "start_index": 26,
+        "length": 9
+      },
+      {
+        "text": "알",
+        "part_of_speech": "Noun",
+        "start_index": 36,
+        "length": 3
+      },
+      {
+        "text": "수",
+        "part_of_speech": "Noun",
+        "start_index": 40,
+        "length": 3
+      },
+      {
+        "text": "없지만",
+        "part_of_speech": "Noun",
+        "start_index": 44,
+        "length": 9
+      }
+    ]
+  },
+  {
+    "text": "오늘도 난 걸어가고 있네",
+    "translation": "Yet I’m still following this path today",
+    "tokens": [
+      {
+        "text": "오늘도",
+        "part_of_speech": "Noun",
+        "length": 9
+      },
+      {
+        "text": "난",
+        "part_of_speech": "Noun",
+        "start_index": 10,
+        "length": 3
+      },
+      {
+        "text": "걸어가고",
+        "part_of_speech": "Noun",
+        "start_index": 14,
+        "length": 12
+      },
+      {
+        "text": "있네",
+        "part_of_speech": "Noun",
+        "start_index": 27,
+        "length": 6
+      }
+    ]
+  }
+]

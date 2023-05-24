@@ -1,21 +1,25 @@
 package testdb
 
 import (
+	"os"
+	"path"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
+	"github.com/s12chung/text2anki/pkg/api"
+	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestGen___Seed(t *testing.T) {
+func TestGen___TermsSeed(t *testing.T) {
 	if !fixture.WillUpdate() {
 		t.Skip("TestGen___ test generates fixtures")
 	}
 	require := require.New(t)
-	lexes, err := seedkrdict.UnmarshallRscPath(fixture.JoinTestData("TestGen___Seed"))
+	lexes, err := seedkrdict.UnmarshallRscPath(fixture.JoinTestData("TestGen___TermsSeed"))
 	require.NoError(err)
 
 	var terms []db.Term
@@ -31,5 +35,43 @@ func TestGen___Seed(t *testing.T) {
 		}
 		basePopularity += len(lex.LexicalEntries)
 	}
-	fixture.Update(t, "Seed.json", fixture.JSON(t, terms))
+	fixture.Update(t, "TermsSeed.json", fixture.JSON(t, terms))
+}
+
+func TestGen___SourcesSeed(t *testing.T) {
+	if !fixture.WillUpdate() {
+		t.Skip("TestGen___ test generates fixtures")
+	}
+	require := require.New(t)
+	require.NoError(api.DefaultRoutes.Setup())
+	defer func() {
+		require.NoError(api.DefaultRoutes.Cleanup())
+	}()
+
+	fixture.JoinTestData("TestGen___SourcesSeed")
+
+	filepaths := allFilePaths(t, fixture.JoinTestData("TestGen___SourcesSeed"))
+	sources := make([]db.SourceSerialized, len(filepaths))
+	for i, fp := range filepaths {
+		tokenizedTexts, err := api.DefaultRoutes.TextTokenizer.TokenizeTextsFromString(string(test.Read(t, fp)))
+		require.NoError(err)
+		sources[i] = db.SourceSerialized{TokenizedTexts: tokenizedTexts}
+	}
+	fixture.Update(t, "SourcesSeed.json", fixture.JSON(t, sources))
+}
+
+func allFilePaths(t *testing.T, p string) []string {
+	require := require.New(t)
+
+	paths := []string{}
+	files, err := os.ReadDir(p)
+	require.NoError(err)
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		paths = append(paths, path.Join(p, path.Join(file.Name())))
+	}
+	return paths
 }

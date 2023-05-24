@@ -13,7 +13,7 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
-	"github.com/s12chung/text2anki/pkg/util/ioutils"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
 // Note is an Anki Note, which contains data to create cards from
@@ -43,7 +43,7 @@ func (n *Note) Valid() bool {
 
 // SetSound sets the sound for the note
 func (n *Note) SetSound(sound []byte, soundSource string) error {
-	err := os.WriteFile(path.Join(config.NotesCacheDir, n.soundFilename()), sound, ioutils.OwnerRWGroupR)
+	err := os.WriteFile(path.Join(config.NotesCacheDir, n.soundFilename()), sound, ioutil.OwnerRWGroupR)
 	if err != nil {
 		return err
 	}
@@ -102,7 +102,7 @@ func ExportFiles(notes []Note, dst string) error {
 		return err
 	}
 
-	if err := os.MkdirAll(path.Join(dst, "files"), ioutils.OwnerRWXGroupRX); err != nil {
+	if err := os.MkdirAll(path.Join(dst, "files"), ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
 	if err := ExportSounds(notes, path.Join(dst, "files")); err != nil {
@@ -119,7 +119,7 @@ func ExportSounds(notes []Note, dst string) error {
 		}
 
 		src := path.Join(config.NotesCacheDir, note.soundFilename())
-		if err := ioutils.CopyFile(path.Join(dst, note.soundFilename()), src, ioutils.OwnerGroupR); err != nil {
+		if err := ioutil.CopyFile(path.Join(dst, note.soundFilename()), src, ioutil.OwnerGroupR); err != nil {
 			return fmt.Errorf("error copying file: %w", err)
 		}
 	}

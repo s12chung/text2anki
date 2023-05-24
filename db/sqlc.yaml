@@ -7,3 +7,4 @@ sql:
     gen:
       go:
         out: "pkg/db"
+        emit_json_tags: true
