@@ -10,14 +10,14 @@ import (
 
 func TestGenerateFilename(t *testing.T) {
 	oldTime := timeNow
-	unixTime := int64(1605139200) // This is 2020-11-12 00:00:00 +0000 UTC
+	formattedTime := int64(1605139200) // This is 2020-11-12 00:00:00 +0000 UTC
 	timeNow = func() time.Time {
-		return time.Unix(unixTime, 0)
+		return time.Unix(formattedTime, 0)
 	}
 	defer func() {
 		timeNow = oldTime
 	}()
-	expected := fmt.Sprintf("text2anki-waka-%v.blah", unixTime)
+	expected := fmt.Sprintf("text2anki-waka-%v.blah", timeNow().Format(time.StampMilli))
 
 	tcs := []struct {
 		name     string

@@ -29,24 +29,24 @@ func JoinTestData(elem ...string) string {
 }
 
 // Read reads the fixture
-func Read(t *testing.T, fixtureFilename string) []byte {
+func Read(t *testing.T, fixturePath string) []byte {
 	require := require.New(t)
-	expected, err := os.ReadFile(JoinTestData(fixtureFilename)) //nolint:gosec // for tests
+	expected, err := os.ReadFile(JoinTestData(fixturePath)) //nolint:gosec // for tests
 	require.NoError(err)
 	return []byte(strings.TrimSpace(string(expected)))
 }
 
 // Update updates fixture, used externally initial creation of test only
-func Update(t *testing.T, fixtureFilename string, resultBytes []byte) {
+func Update(t *testing.T, fixturePath string, resultBytes []byte) {
 	assert := assert.New(t)
 	if !WillUpdate() {
 		assert.Fail("fixtures.Update() is called without WillUpdate() == true")
 	}
 
-	err := os.MkdirAll(TestDataDir, os.ModePerm)
+	err := os.MkdirAll(path.Join(TestDataDir, filepath.Dir(fixturePath)), os.ModePerm)
 	assert.NoError(err)
 
-	err = os.WriteFile(JoinTestData(fixtureFilename), resultBytes, ioutil.OwnerRWGroupR)
+	err = os.WriteFile(JoinTestData(fixturePath), resultBytes, ioutil.OwnerRWGroupR)
 	assert.NoError(err)
 
 	if WillUpdate() {
@@ -55,9 +55,9 @@ func Update(t *testing.T, fixtureFilename string, resultBytes []byte) {
 }
 
 // SafeUpdate calls Update(), only when WillUpdate() is true
-func SafeUpdate(t *testing.T, fixtureFilename string, resultBytes []byte) {
+func SafeUpdate(t *testing.T, fixturePath string, resultBytes []byte) {
 	if WillUpdate() {
-		Update(t, fixtureFilename, resultBytes)
+		Update(t, fixturePath, resultBytes)
 	}
 }
 
@@ -70,24 +70,24 @@ func WillUpdate() bool {
 }
 
 // ReadOrUpdate reads the fixture or updates it if WillUpdate is true
-func ReadOrUpdate(t *testing.T, fixtureFilename string, resultBytes []byte) []byte {
+func ReadOrUpdate(t *testing.T, fixturePath string, resultBytes []byte) []byte {
 	if WillUpdate() {
-		Update(t, fixtureFilename, resultBytes)
+		Update(t, fixturePath, resultBytes)
 	}
-	return Read(t, fixtureFilename)
+	return Read(t, fixturePath)
 }
 
 // CompareReadOrUpdate calls ReadOrUpdate and compares the result against it
-func CompareReadOrUpdate(t *testing.T, fixtureFilename string, resultBytes []byte) {
+func CompareReadOrUpdate(t *testing.T, fixturePath string, resultBytes []byte) {
 	require := require.New(t)
-	expected := ReadOrUpdate(t, fixtureFilename, resultBytes)
+	expected := ReadOrUpdate(t, fixturePath, resultBytes)
 	require.Equal(string(expected), strings.TrimSpace(string(resultBytes)))
 }
 
 // CompareRead calls Read and compares the result against it
-func CompareRead(t *testing.T, fixtureFilename string, resultBytes []byte) {
+func CompareRead(t *testing.T, fixturePath string, resultBytes []byte) {
 	require := require.New(t)
-	expected := Read(t, fixtureFilename)
+	expected := Read(t, fixturePath)
 	require.Equal(string(expected), strings.TrimSpace(string(resultBytes)))
 }
 

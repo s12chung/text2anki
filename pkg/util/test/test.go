@@ -30,7 +30,7 @@ func GenerateFilename(name, ext string) string {
 	if ext[0] != '.' {
 		ext = "." + ext
 	}
-	return fmt.Sprintf("text2anki-%v-%v%v", name, timeNow().Unix(), ext)
+	return fmt.Sprintf("text2anki-%v-%v%v", name, timeNow().Format(time.StampMilli), ext)
 }
 
 // JSON returns indented json

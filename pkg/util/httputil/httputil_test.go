@@ -68,7 +68,7 @@ func TestRespondJSONWrap(t *testing.T) {
 	var testVal string
 	var testStatus int
 	var testErr error
-	f := RespondJSONWrap(func(r *http.Request) (any, int, error) {
+	handlerFunc := RespondJSONWrap(func(r *http.Request) (any, int, error) {
 		if r.Method != http.MethodGet {
 			return nil, http.StatusInternalServerError, fmt.Errorf("not a GET")
 		}
@@ -95,7 +95,7 @@ func TestRespondJSONWrap(t *testing.T) {
 			testVal, testStatus, testErr = tc.val, tc.status, tc.err
 
 			resp := httptest.NewRecorder()
-			f(resp, httptest.NewRequest(tc.method, "/", nil))
+			handlerFunc(resp, httptest.NewRequest(tc.method, "/", nil))
 
 			require.Equal(tc.status, resp.Code)
 			require.Equal(tc.expectedBody, resp.Body.String())
@@ -131,21 +131,21 @@ func TestRespondJSON(t *testing.T) {
 
 func TestBindJSON(t *testing.T) {
 	testCases := []struct {
-		name           string
-		data           []byte
-		bindTo         any
-		expectedValue  string
-		expectedStatus int
-		expectedError  string
+		name          string
+		data          []byte
+		bindTo        any
+		expectedValue string
+		expectedCode  int
+		expectedError string
 	}{
 		{name: "normal", data: test.JSON(t, testObj{Val: "testy"}), bindTo: &testObj{}, expectedValue: "testy"},
 		{name: "empty data", data: []byte("{}"), bindTo: &testObj{}, expectedValue: ""},
 		{name: "not applicable data", data: []byte("{ \"ok\": \"me\" }"), bindTo: &testObj{}, expectedValue: ""},
-		{name: "bad data", data: nil, bindTo: &testObj{}, expectedStatus: http.StatusBadRequest,
+		{name: "bad data", data: nil, bindTo: &testObj{}, expectedCode: http.StatusBadRequest,
 			expectedError: "unexpected end of JSON input"},
-		{name: "non-json", data: []byte("abc"), bindTo: &testObj{}, expectedStatus: http.StatusBadRequest,
+		{name: "non-json", data: []byte("abc"), bindTo: &testObj{}, expectedCode: http.StatusBadRequest,
 			expectedError: "invalid character 'a' looking for beginning of value"},
-		{name: "empty bind", data: []byte("{}"), bindTo: nil, expectedStatus: http.StatusBadRequest,
+		{name: "empty bind", data: []byte("{}"), bindTo: nil, expectedCode: http.StatusBadRequest,
 			expectedError: "json: Unmarshal(nil)"},
 	}
 	for _, tc := range testCases {
@@ -154,7 +154,7 @@ func TestBindJSON(t *testing.T) {
 			req := httptest.NewRequest("", "/", bytes.NewBuffer(tc.data))
 
 			status, err := BindJSON(req, tc.bindTo)
-			require.Equal(tc.expectedStatus, status)
+			require.Equal(tc.expectedCode, status)
 			if tc.expectedError == "" {
 				require.NoError(err)
 				bindTo, ok := tc.bindTo.(*testObj)
