@@ -1,5 +1,5 @@
-// Package app contains the app configured structures
-package app
+// Package api contains the app configured structures
+package api
 
 import (
 	"os"

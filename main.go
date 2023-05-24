@@ -11,7 +11,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/anki"
-	"github.com/s12chung/text2anki/pkg/app"
+	"github.com/s12chung/text2anki/pkg/api"
 	"github.com/s12chung/text2anki/pkg/cmd/prompt"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
@@ -90,7 +90,7 @@ func tokenizeFile(filename string) ([]db.TokenizedText, error) {
 		texts = text.CleanSpeaker(texts)
 	}
 
-	tokenizedTexts, err := app.TextTokenizer.TokenizeTexts(texts)
+	tokenizedTexts, err := api.TextTokenizer.TokenizeTexts(texts)
 	if err != nil {
 		return nil, err
 	}
