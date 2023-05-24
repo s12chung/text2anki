@@ -6,3 +6,9 @@ CREATE TABLE terms (
     translations TEXT NOT NULL,
     popularity INTEGER NOT NULL
 );
+
+CREATE TABLE sources (
+    id INTEGER PRIMARY KEY,
+    tokenized_texts TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)

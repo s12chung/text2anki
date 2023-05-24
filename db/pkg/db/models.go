@@ -4,7 +4,15 @@
 
 package db
 
-import ()
+import (
+	"database/sql"
+)
+
+type Source struct {
+	ID             int64        `json:"id"`
+	TokenizedTexts string       `json:"tokenized_texts"`
+	CreatedAt      sql.NullTime `json:"created_at"`
+}
 
 type Term struct {
 	Text         string `json:"text"`

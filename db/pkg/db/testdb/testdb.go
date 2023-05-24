@@ -4,6 +4,7 @@ package testdb
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path"
 	"runtime"
@@ -16,6 +17,24 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
+
+// MustSetupAndSeed calls Setup() and Seed(), if it fails, it exits
+func MustSetupAndSeed(testName string) {
+	if err := SetupTempDB(testName); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+	if err := Seed(); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+}
+
+// SetupAndSeed calls Setup() and Seed()
+func SetupAndSeed(t *testing.T, testName string) {
+	SetupTempDBT(t, testName)
+	SeedT(t)
+}
 
 // SetupTempDB calls db.SetDB with a temp file
 func SetupTempDB(testName string) error {
@@ -34,23 +53,48 @@ func SetupTempDBT(t *testing.T, testName string) {
 }
 
 // Seed seeds the database with a small amount of data
-func Seed(t *testing.T) {
-	require := require.New(t)
+func Seed() error {
 	_, callerPath, _, ok := runtime.Caller(0)
-	require.True(ok)
-
-	bytes, err := os.ReadFile(path.Join(path.Dir(callerPath), fixture.TestDataDir, "TermsSeed") + ".json")
-	require.NoError(err)
-
-	var terms []db.Term
-	err = json.Unmarshal(bytes, &terms)
-	require.NoError(err)
+	if !ok {
+		return fmt.Errorf("runtime.Caller not ok for Seed()")
+	}
 
 	queries := db.Qs()
-	for _, term := range terms {
-		_, err = queries.TermCreate(context.Background(), term.CreateParams())
-		require.NoError(err)
+
+	var terms []db.Term
+	if err := unmarshall(callerPath, "TermsSeed", &terms); err != nil {
+		return err
 	}
+	for _, term := range terms {
+		if _, err := queries.TermCreate(context.Background(), term.CreateParams()); err != nil {
+			return err
+		}
+	}
+
+	var sourceSerializeds []db.SourceSerialized
+	if err := unmarshall(callerPath, "SourcesSeed", &sourceSerializeds); err != nil {
+		return err
+	}
+	for _, sourceSerialized := range sourceSerializeds {
+		if _, err := queries.SourceSerializedCreate(context.Background(), sourceSerialized.TokenizedTexts); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// SeedT seeds the database with a small amount of data
+func SeedT(t *testing.T) {
+	require := require.New(t)
+	require.NoError(Seed())
+}
+
+func unmarshall(callerPath, filename string, data any) error {
+	bytes, err := os.ReadFile(path.Join(path.Dir(callerPath), fixture.TestDataDir, filename) + ".json")
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(bytes, data)
 }
 
 // SearchTerm is a search term used for tests

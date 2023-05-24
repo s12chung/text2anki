@@ -69,8 +69,6 @@ func TestQueries_TermsSearchRaw(t *testing.T) {
 	require := require.New(t)
 	testName := "TestQueries_TermsSearch"
 	ctx := context.Background()
-	testdb.SetupTempDBT(t, testName)
-	testdb.Seed(t)
 
 	results, err := db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechEmpty, testdb.SearchConfig)
 	require.NoError(err)

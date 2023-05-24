@@ -2,13 +2,10 @@
 package test
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/require"
 )
 
 // IsCI returns true if the test envirnment is under CI
@@ -31,12 +28,4 @@ func GenerateFilename(name, ext string) string {
 		ext = "." + ext
 	}
 	return fmt.Sprintf("text2anki-%v-%v%v", name, timeNow().Format(time.StampMilli), ext)
-}
-
-// JSON returns indented json
-func JSON(t *testing.T, v any) []byte {
-	require := require.New(t)
-	bytes, err := json.MarshalIndent(v, "", "  ")
-	require.NoError(err)
-	return bytes
 }

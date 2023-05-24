@@ -9,12 +9,34 @@ import (
 	"context"
 )
 
+const sourceCreate = `-- name: SourceCreate :one
+INSERT INTO sources (
+    tokenized_texts
+) VALUES (?) RETURNING id, tokenized_texts, created_at
+`
+
+func (q *Queries) SourceCreate(ctx context.Context, tokenizedTexts string) (Source, error) {
+	row := q.db.QueryRowContext(ctx, sourceCreate, tokenizedTexts)
+	var i Source
+	err := row.Scan(&i.ID, &i.TokenizedTexts, &i.CreatedAt)
+	return i, err
+}
+
+const sourceGet = `-- name: SourceGet :one
+SELECT id, tokenized_texts, created_at FROM sources WHERE id = ? LIMIT 1
+`
+
+func (q *Queries) SourceGet(ctx context.Context, id int64) (Source, error) {
+	row := q.db.QueryRowContext(ctx, sourceGet, id)
+	var i Source
+	err := row.Scan(&i.ID, &i.TokenizedTexts, &i.CreatedAt)
+	return i, err
+}
+
 const termCreate = `-- name: TermCreate :one
 INSERT INTO terms (
     text, variants, part_of_speech, common_level, translations, popularity
-)
-VALUES (?, ?, ?, ?, ?, ?)
-RETURNING text, variants, part_of_speech, common_level, translations, popularity
+) VALUES (?, ?, ?, ?, ?, ?) RETURNING text, variants, part_of_speech, common_level, translations, popularity
 `
 
 type TermCreateParams struct {

@@ -4,8 +4,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
+	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
 
@@ -13,37 +17,58 @@ import (
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/api"
 	"github.com/s12chung/text2anki/pkg/cmd/prompt"
-	"github.com/s12chung/text2anki/pkg/dictionary"
-	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
-	"github.com/s12chung/text2anki/pkg/dictionary/krdict"
-	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
 var cleanSpeaker bool
+var cli bool
 
 func init() {
+	flag.BoolVar(&cli, "cli", false, "use cli")
 	flag.BoolVar(&cleanSpeaker, "clean-speaker", false, "clean 'speaker name:' from text")
 	flag.Parse()
 }
 
-var parser = text.NewParser(text.Korean, text.English)
-var synth = azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
-var dict = func() dictionary.Dictionary {
-	switch os.Getenv("DICTIONARY") {
-	case "koreanbasic":
-		return koreanbasic.New(koreanbasic.GetAPIKeyFromEnv())
-	default:
-		if err := db.SetDB("db/data.sqlite3"); err != nil {
-			fmt.Println("failure to SetDB()\n", err)
-			os.Exit(-1)
-		}
-		return krdict.New(db.DB())
+func main() {
+	if cli {
+		mainAgain()
+		return
+	}
+
+	if err := run(); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
 	}
 }
 
-func main() {
+func run() error {
+	if err := api.DefaultRoutes.Setup(); err != nil {
+		return err
+	}
+	defer func() {
+		if err := api.DefaultRoutes.Cleanup(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Heartbeat("/healthz"))
+	r.Mount("/", api.DefaultRoutes.Router())
+
+	server := http.Server{
+		Addr:              ":3000",
+		Handler:           r,
+		ReadHeaderTimeout: time.Second,
+	}
+	if err := server.ListenAndServe(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func mainAgain() {
 	args := flag.Args()
 	if len(args) != 2 {
 		fmt.Printf("usage: %v textStringFilename exportDir\n", os.Args[0])
@@ -52,13 +77,22 @@ func main() {
 
 	textStringFilename, exportDir := args[0], args[1]
 
-	if err := run(textStringFilename, exportDir); err != nil {
+	if err := runAgain(textStringFilename, exportDir); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
 }
 
-func run(textStringFilename, exportDir string) error {
+func runAgain(textStringFilename, exportDir string) error {
+	if err := api.DefaultRoutes.Setup(); err != nil {
+		return err
+	}
+	defer func() {
+		if err := api.DefaultRoutes.Cleanup(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
 	if err := anki.SetupDefaultConfig(); err != nil {
 		return err
 	}
@@ -80,7 +114,7 @@ func tokenizeFile(filename string) ([]db.TokenizedText, error) {
 		return nil, err
 	}
 
-	texts, err := parser.TextsFromString(string(fileBytes))
+	texts, err := api.DefaultRoutes.TextTokenizer.Parser.TextsFromString(string(fileBytes))
 	if err != nil {
 		bytes, _ := yaml.Marshal(texts)
 		fmt.Println(string(bytes))
@@ -90,7 +124,7 @@ func tokenizeFile(filename string) ([]db.TokenizedText, error) {
 		texts = text.CleanSpeaker(texts)
 	}
 
-	tokenizedTexts, err := api.TextTokenizer.TokenizeTexts(texts)
+	tokenizedTexts, err := api.DefaultRoutes.TextTokenizer.TokenizeTexts(texts)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +132,7 @@ func tokenizeFile(filename string) ([]db.TokenizedText, error) {
 }
 
 func runUI(tokenizedTexts []db.TokenizedText) ([]anki.Note, error) {
-	notes, err := prompt.CreateCards(tokenizedTexts, dict())
+	notes, err := prompt.CreateCards(tokenizedTexts, api.DefaultRoutes.Dictionary)
 	if err != nil {
 		return nil, err
 	}
@@ -119,6 +153,7 @@ func exportFiles(notes []anki.Note, exportDir string) error {
 }
 
 func createAudio(notes []anki.Note) error {
+	synth := api.DefaultRoutes.Synthesizer
 	for i := range notes {
 		note := &notes[i]
 		speech, err := synth.TextToSpeech(note.Usage)

@@ -18,8 +18,7 @@ import (
 func TestTermsSearchToCSVRows(t *testing.T) {
 	require := require.New(t)
 	testName := "TestTermsSearchToCSVRows"
-	testdb.SetupTempDBT(t, testName)
-	testdb.Seed(t)
+	testdb.SetupAndSeed(t, testName)
 
 	terms, err := db.Qs().TermsSearchRaw(context.Background(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
 	require.NoError(err)
