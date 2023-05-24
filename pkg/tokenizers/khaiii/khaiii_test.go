@@ -13,8 +13,6 @@ const testPort = 9001
 
 func TestKhaiii_Tokenize(t *testing.T) {
 	test.CISkip(t, "can't run C environment in CI")
-
-	binPath = "../../../" + binPath
 	require := require.New(t)
 
 	tokenizer := newKhaiii(testPort)
