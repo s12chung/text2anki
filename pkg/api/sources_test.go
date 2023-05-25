@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
@@ -100,12 +101,16 @@ func sourcePostReqFromFile(t *testing.T, testName, name string) *SourcePostReque
 
 func TestRoutes_SourceDestroy(t *testing.T) {
 	testName := "TestRoutes_SourceDestroy"
+
+	created, err := db.Qs().SourceSerializedCreate(context.Background(), testdb.SourceSerializedsT(t)[1].TokenizedTexts)
+	require.NoError(t, err)
+
 	testCases := []struct {
 		name         string
 		path         string
 		expectedCode int
 	}{
-		{name: "normal", path: "/2", expectedCode: http.StatusOK},
+		{name: "normal", path: fmt.Sprintf("/%v", created.ID), expectedCode: http.StatusOK},
 		{name: "invalid_id", path: "/9999", expectedCode: http.StatusNotFound},
 		{name: "not_a_number", path: "/nan", expectedCode: http.StatusNotFound},
 	}
@@ -116,12 +121,11 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodDelete, tc.path, nil))
 			require.Equal(tc.expectedCode, resp.Code)
 
-			sourceSerialized := db.SourceSerialized{}
-			jsonBody := test.StaticCopyOrIndent(t, resp.Code, resp.Body.Bytes(), &sourceSerialized)
+			jsonBody := test.StaticCopyOrIndent(t, resp.Code, resp.Body.Bytes(), &db.SourceSerialized{})
 			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), jsonBody)
 
 			if resp.Code == http.StatusOK {
-				_, err := db.Qs().SourceGet(context.Background(), sourceSerialized.ID)
+				_, err := db.Qs().SourceGet(context.Background(), created.ID)
 				require.Equal(fmt.Errorf("sql: no rows in result set"), err)
 			}
 		})
