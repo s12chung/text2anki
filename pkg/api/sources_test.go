@@ -3,34 +3,31 @@ package api
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"path"
 	"strings"
 	"testing"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/text"
-	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
+func TestRoutes_SourceList(t *testing.T) {
+	require := require.New(t)
+	testName := "TestRoutes_SourceList"
+
+	resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "", nil))
+	require.Equal(http.StatusOK, resp.Code)
+	fixture.CompareReadOrUpdate(t, testName+".json", test.StaticCopySlice(t, resp.Body.Bytes(), &[]db.SourceSerialized{}))
+}
+
 func TestRoutes_SourceGet(t *testing.T) {
 	testName := "TestRoutes_SourceGet"
-
-	r := chi.NewRouter()
-	r.Route("/{sourceID}", func(r chi.Router) {
-		r.Use(httputil.RequestWrap(SourceCtx))
-		r.Get("/", httputil.RespondJSONWrap(DefaultRoutes.SourceGet))
-	})
-
-	server := httptest.NewServer(r)
-	defer server.Close()
-
 	testCases := []struct {
 		name         string
 		path         string
@@ -40,15 +37,11 @@ func TestRoutes_SourceGet(t *testing.T) {
 		{name: "invalid_id", path: "/9999", expectedCode: http.StatusNotFound},
 		{name: "not_a_number", path: "/nan", expectedCode: http.StatusNotFound},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			req, err := http.NewRequest(http.MethodGet, server.URL+tc.path, nil)
-			require.NoError(err)
-
-			resp := test.HTTPDo(t, req)
+			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, tc.path, nil))
 			require.Equal(tc.expectedCode, resp.Code)
 
 			jsonBody := test.StaticCopyOrIndent(t, resp.Code, resp.Body.Bytes(), &db.SourceSerialized{})
@@ -57,16 +50,14 @@ func TestRoutes_SourceGet(t *testing.T) {
 	}
 }
 
-func TestRoutes_SourcePost(t *testing.T) {
+func TestRoutes_SourceCreate(t *testing.T) {
+	testName := "TestRoutes_SourceCreate"
 	test.CISkip(t, "can't run C environment in CI")
+
 	require.NoError(t, DefaultRoutes.Setup())
 	defer func() {
 		require.NoError(t, DefaultRoutes.Cleanup())
 	}()
-
-	testName := "TestRoutes_SourcePost"
-
-	handlerFunc := httputil.RespondJSONWrap(DefaultRoutes.SourcePost)
 
 	testCases := []struct {
 		name         string
@@ -81,10 +72,7 @@ func TestRoutes_SourcePost(t *testing.T) {
 			require := require.New(t)
 
 			reqBody := test.JSON(t, sourcePostReqFromFile(t, testName, tc.name+".txt"))
-			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(reqBody))
-			resp := httptest.NewRecorder()
-
-			handlerFunc(resp, req)
+			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPost, "", bytes.NewReader(reqBody)))
 			require.Equal(tc.expectedCode, resp.Code)
 
 			sourceSerialized := db.SourceSerialized{}
@@ -108,4 +96,34 @@ func sourcePostReqFromFile(t *testing.T, testName, name string) *SourcePostReque
 		return &SourcePostRequest{Text: s}
 	}
 	return &SourcePostRequest{Text: split[0], Translation: split[1]}
+}
+
+func TestRoutes_SourceDestroy(t *testing.T) {
+	testName := "TestRoutes_SourceDestroy"
+	testCases := []struct {
+		name         string
+		path         string
+		expectedCode int
+	}{
+		{name: "normal", path: "/2", expectedCode: http.StatusOK},
+		{name: "invalid_id", path: "/9999", expectedCode: http.StatusNotFound},
+		{name: "not_a_number", path: "/nan", expectedCode: http.StatusNotFound},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+
+			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodDelete, tc.path, nil))
+			require.Equal(tc.expectedCode, resp.Code)
+
+			sourceSerialized := db.SourceSerialized{}
+			jsonBody := test.StaticCopyOrIndent(t, resp.Code, resp.Body.Bytes(), &sourceSerialized)
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), jsonBody)
+
+			if resp.Code == http.StatusOK {
+				_, err := db.Qs().SourceGet(context.Background(), sourceSerialized.ID)
+				require.Equal(fmt.Errorf("sql: no rows in result set"), err)
+			}
+		})
+	}
 }

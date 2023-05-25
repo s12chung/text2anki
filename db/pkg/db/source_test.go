@@ -74,20 +74,3 @@ func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 
 	fixture.CompareReadOrUpdate(t, "TestTextTokenizer_TokenizeTexts.json", fixture.JSON(t, tokenizedTexts))
 }
-
-func TestQueries_SourceSerializedCreate(t *testing.T) {
-	require := require.New(t)
-
-	texts := []text.Text{
-		{Text: "내가 가는 이길이", Translation: "The road that I’m taking"},
-	}
-	tokenizedTexts, err := textTokenizer.TokenizeTexts(texts)
-	require.NoError(err)
-
-	ctx := context.Background()
-	sourceSerialized, err := db.Qs().SourceSerializedCreate(ctx, tokenizedTexts)
-	require.NoError(err)
-	source, err := db.Qs().SourceGet(ctx, sourceSerialized.ID)
-	require.NoError(err)
-	reflect.DeepEqual(source, sourceSerialized.ToSource())
-}
