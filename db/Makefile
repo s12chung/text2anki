@@ -10,11 +10,13 @@ seed: build
 search: build
 	$(BIN) search
 
-generate:
+generate: build
+	$(BIN) generate
 	sqlc generate
 
-diff:
+diff: build
 	sqlc diff
+	$(BIN) diff
 
 TEST ?= ./...
 test:

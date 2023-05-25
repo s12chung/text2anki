@@ -10,22 +10,28 @@ import (
 	"os"
 	"reflect"
 
+	"github.com/pmezard/go-difflib/difflib"
+
 	"github.com/s12chung/text2anki/db/pkg/cli/search"
 	"github.com/s12chung/text2anki/db/pkg/csv"
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 	"github.com/s12chung/text2anki/pkg/firm"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
 func init() {
 	flag.Parse()
 }
 
+const cmdStringGenerate = "generate"
+const cmdStringDiff = "diff"
 const cmdStringCreate = "create"
 const cmdStringSeed = "seed"
 const cmdStringSchema = "schema"
 const cmdStringSearch = "search"
-const commands = cmdStringCreate + "/" + cmdStringSeed + "/" + cmdStringSchema + "/" + cmdStringSchema
+const commands = cmdStringGenerate + "/" + cmdStringDiff + "/" + cmdStringCreate + "/" + cmdStringSeed + "/" + cmdStringSchema + "/" + cmdStringSchema
 const usage = "usage: %v [" + commands + "]"
 
 func main() {
@@ -45,6 +51,10 @@ func main() {
 
 func run(cmd string) error {
 	switch cmd {
+	case cmdStringGenerate:
+		return cmdGenerate()
+	case cmdStringDiff:
+		return cmdDiff()
 	case cmdStringCreate:
 		return cmdCreate()
 	case cmdStringSeed:
@@ -61,6 +71,45 @@ func run(cmd string) error {
 func setDB() error {
 	if err := db.SetDB("data.sqlite3"); err != nil {
 		return err
+	}
+	return nil
+}
+
+const generateFile = "pkg/db/testdb/models.go"
+
+func cmdGenerate() error {
+	code, err := testdb.GenerateModelsCode()
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(generateFile, code, ioutil.OwnerRWGroupR)
+}
+
+func cmdDiff() error {
+	existingCode, err := os.ReadFile(generateFile)
+	if err != nil {
+		return err
+	}
+
+	code, err := testdb.GenerateModelsCode()
+	if err != nil {
+		return err
+	}
+
+	diff := difflib.UnifiedDiff{
+		A:        difflib.SplitLines(string(existingCode)),
+		B:        difflib.SplitLines(string(code)),
+		FromFile: "Original",
+		ToFile:   "Generated",
+		Context:  3,
+	}
+	text, err := difflib.GetUnifiedDiffString(diff)
+	if err != nil {
+		return err
+	}
+	if text != "" {
+		fmt.Println(text)
+		return fmt.Errorf("diff exists")
 	}
 	return nil
 }

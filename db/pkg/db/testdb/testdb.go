@@ -2,20 +2,21 @@
 package testdb
 
 import (
+	"bytes"
 	"context"
-	"encoding/json"
+	_ "embed"
 	"fmt"
 	"os"
 	"path"
-	"runtime"
+	"strings"
 	"testing"
+	"text/template"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/test"
-	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 // MustSetupAndSeed calls Setup() and Seed(), if it fails, it exits
@@ -52,49 +53,60 @@ func SetupTempDBT(t *testing.T, testName string) {
 	require.NoError(err)
 }
 
-// Seed seeds the database with a small amount of data
-func Seed() error {
-	_, callerPath, _, ok := runtime.Caller(0)
-	if !ok {
-		return fmt.Errorf("runtime.Caller not ok for Seed()")
-	}
-
-	queries := db.Qs()
-
-	var terms []db.Term
-	if err := unmarshall(callerPath, "TermsSeed", &terms); err != nil {
-		return err
-	}
-	for _, term := range terms {
-		if _, err := queries.TermCreate(context.Background(), term.CreateParams()); err != nil {
-			return err
-		}
-	}
-
-	var sourceSerializeds []db.SourceSerialized
-	if err := unmarshall(callerPath, "SourcesSeed", &sourceSerializeds); err != nil {
-		return err
-	}
-	for _, sourceSerialized := range sourceSerializeds {
-		if _, err := queries.SourceSerializedCreate(context.Background(), sourceSerialized.TokenizedTexts); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // SeedT seeds the database with a small amount of data
 func SeedT(t *testing.T) {
 	require := require.New(t)
 	require.NoError(Seed())
 }
 
-func unmarshall(callerPath, filename string, data any) error {
-	bytes, err := os.ReadFile(path.Join(path.Dir(callerPath), fixture.TestDataDir, filename) + ".json")
+// Seed seeds the database with a small amount of data
+func Seed() error {
+	return SeedModels()
+}
+
+var modelDatas = []generateModelsCodeData{
+	{Name: "Term", CreateCode: "queries.TermCreate(context.Background(), term.CreateParams())"},
+	{Name: "SourceSerialized", CreateCode: "queries.SourceSerializedCreate(context.Background(), sourceSerialized.TokenizedTexts)"},
+}
+
+type generateModelsCodeData struct {
+	Name       string
+	CreateCode string
+}
+
+//go:embed generate_models.go.tmpl
+var generateModelsCodeTemplate string
+
+// GenerateModelsCode generates code for the testdb models
+func GenerateModelsCode() ([]byte, error) {
+	temp, err := template.New("top").Funcs(template.FuncMap{
+		"pluralize": pluralize,
+		"lower":     lower,
+	}).Parse(generateModelsCodeTemplate)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return json.Unmarshal(bytes, data)
+
+	buffer := bytes.Buffer{}
+	if err = temp.Execute(&buffer, modelDatas); err != nil {
+		return nil, err
+	}
+	return buffer.Bytes(), nil
+}
+
+func pluralize(s string) string {
+	if strings.HasSuffix(s, "s") {
+		return s
+	}
+	return s + "s"
+}
+
+func lower(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+	firstChar := strings.ToLower(string(s[0]))
+	return firstChar + s[1:]
 }
 
 // SearchTerm is a search term used for tests
