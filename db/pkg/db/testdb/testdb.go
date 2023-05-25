@@ -2,25 +2,40 @@
 package testdb
 
 import (
+	"bytes"
 	"context"
-	"encoding/json"
+	_ "embed"
 	"fmt"
 	"os"
 	"path"
 	"runtime"
+	"strings"
 	"testing"
+	"text/template"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/lang"
-	"github.com/s12chung/text2anki/pkg/util/test"
-	"github.com/s12chung/text2anki/pkg/util/test/fixture"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
+var callerPath string
+var dbPath string
+
+func init() {
+	_, callerFilePath, _, ok := runtime.Caller(0)
+	if !ok {
+		fmt.Println("runtime.Caller not ok for Seed()")
+		os.Exit(-1)
+	}
+	callerPath = path.Dir(callerFilePath)
+	dbPath = path.Join(callerPath, "..", "..", "..", "tmp", "testdb.sqlite3")
+}
+
 // MustSetupAndSeed calls Setup() and Seed(), if it fails, it exits
-func MustSetupAndSeed(testName string) {
-	if err := SetupTempDB(testName); err != nil {
+func MustSetupAndSeed() {
+	if err := Setup(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
@@ -30,71 +45,82 @@ func MustSetupAndSeed(testName string) {
 	}
 }
 
-// SetupAndSeed calls Setup() and Seed()
-func SetupAndSeed(t *testing.T, testName string) {
-	SetupTempDBT(t, testName)
-	SeedT(t)
+// SetupAndSeedT calls Setup() and Seed()
+func SetupAndSeedT(t *testing.T) {
+	require := require.New(t)
+	SetupT(t)
+	require.NoError(Seed())
 }
 
-// SetupTempDB calls db.SetDB with a temp file
-func SetupTempDB(testName string) error {
-	filename := test.GenerateFilename(testName, ".sqlite3")
-	if err := db.SetDB(path.Join(os.TempDir(), filename)); err != nil {
+// SetupT setups up an empty db and checks errors
+func SetupT(t *testing.T) {
+	require := require.New(t)
+	err := Setup()
+	require.NoError(err)
+}
+
+// Setup setups up an empty db
+func Setup() error {
+	if err := os.MkdirAll(path.Dir(dbPath), ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
-	return db.Create(context.Background())
-}
-
-// SetupTempDBT calls SetupTempDB and checks errors
-func SetupTempDBT(t *testing.T, testName string) {
-	require := require.New(t)
-	err := SetupTempDB(testName)
-	require.NoError(err)
+	if err := db.SetDB(dbPath); err != nil {
+		return err
+	}
+	if err := db.Qs().Create(context.Background()); err != nil {
+		return err
+	}
+	return db.Qs().ClearAll(context.Background())
 }
 
 // Seed seeds the database with a small amount of data
 func Seed() error {
-	_, callerPath, _, ok := runtime.Caller(0)
-	if !ok {
-		return fmt.Errorf("runtime.Caller not ok for Seed()")
-	}
-
-	queries := db.Qs()
-
-	var terms []db.Term
-	if err := unmarshall(callerPath, "TermsSeed", &terms); err != nil {
-		return err
-	}
-	for _, term := range terms {
-		if _, err := queries.TermCreate(context.Background(), term.CreateParams()); err != nil {
-			return err
-		}
-	}
-
-	var sourceSerializeds []db.SourceSerialized
-	if err := unmarshall(callerPath, "SourcesSeed", &sourceSerializeds); err != nil {
-		return err
-	}
-	for _, sourceSerialized := range sourceSerializeds {
-		if _, err := queries.SourceSerializedCreate(context.Background(), sourceSerialized.TokenizedTexts); err != nil {
-			return err
-		}
-	}
-	return nil
+	return SeedModels()
 }
 
-// SeedT seeds the database with a small amount of data
-func SeedT(t *testing.T) {
-	require := require.New(t)
-	require.NoError(Seed())
+var modelDatas = []generateModelsCodeData{
+	{Name: "Term", CreateCode: "queries.TermCreate(context.Background(), term.CreateParams())"},
+	{Name: "SourceSerialized", CreateCode: "queries.SourceSerializedCreate(context.Background(), sourceSerialized.TokenizedTexts)"},
 }
 
-func unmarshall(callerPath, filename string, data any) error {
-	bytes, err := os.ReadFile(path.Join(path.Dir(callerPath), fixture.TestDataDir, filename) + ".json")
+type generateModelsCodeData struct {
+	Name       string
+	CreateCode string
+}
+
+//go:embed generate_models.go.tmpl
+var generateModelsCodeTemplate string
+
+// GenerateModelsCode generates code for the testdb models
+func GenerateModelsCode() ([]byte, error) {
+	temp, err := template.New("top").Funcs(template.FuncMap{
+		"pluralize": pluralize,
+		"lower":     lower,
+	}).Parse(generateModelsCodeTemplate)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return json.Unmarshal(bytes, data)
+
+	buffer := bytes.Buffer{}
+	if err = temp.Execute(&buffer, modelDatas); err != nil {
+		return nil, err
+	}
+	return buffer.Bytes(), nil
+}
+
+func pluralize(s string) string {
+	if strings.HasSuffix(s, "s") {
+		return s
+	}
+	return s + "s"
+}
+
+func lower(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+	firstChar := strings.ToLower(string(s[0]))
+	return firstChar + s[1:]
 }
 
 // SearchTerm is a search term used for tests

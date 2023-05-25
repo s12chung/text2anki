@@ -16,6 +16,7 @@ import (
 
 func TestKoreanBasic_Search(t *testing.T) {
 	testName := "TestKoreanBasic_Search"
+
 	dict := New(GetAPIKeyFromEnv())
 	clean := vcr.SetupVCR(t, fixture.JoinTestData(testName), dict, func(r *recorder.Recorder) {
 		r.AddHook(func(i *cassette.Interaction) error {

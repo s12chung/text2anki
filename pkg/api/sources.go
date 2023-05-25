@@ -29,16 +29,25 @@ func SourceCtx(r *http.Request) (*http.Request, int, error) {
 	return r, 0, nil
 }
 
+// SourceList returns a list of sources
+func (rs Routes) SourceList(r *http.Request) (any, int, error) {
+	sourceSerializeds, err := db.Qs().SourceSerializedList(r.Context())
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+	return sourceSerializeds, 0, nil
+}
+
 // SourceGet gets the source
 func (rs Routes) SourceGet(r *http.Request) (any, int, error) {
-	sourceSerialized, ok := r.Context().Value(contextSource).(db.SourceSerialized)
-	if !ok {
-		return nil, http.StatusInternalServerError, fmt.Errorf("cast to db.Source fail")
+	sourceSerialized, code, err := ctxSourceSerialized(r)
+	if err != nil {
+		return nil, code, err
 	}
 	return sourceSerialized, 0, nil
 }
 
-// SourcePostRequest represents the SourcePost request
+// SourcePostRequest represents the SourceCreate request
 type SourcePostRequest struct {
 	Text        string
 	Translation string
@@ -52,8 +61,8 @@ func (s *SourcePostRequest) TextsString() string {
 	return s.Text + "\n\n" + text.SplitDelimiter + "\n\n" + s.Translation
 }
 
-// SourcePost creates a new source
-func (rs Routes) SourcePost(r *http.Request) (any, int, error) {
+// SourceCreate creates a new source
+func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
 	req := SourcePostRequest{}
 	if code, err := httputil.BindJSON(r, &req); err != nil {
 		return nil, code, err
@@ -65,5 +74,28 @@ func (rs Routes) SourcePost(r *http.Request) (any, int, error) {
 	}
 
 	sourceSerialized, err := db.Qs().SourceSerializedCreate(r.Context(), tokenizedTexts)
-	return sourceSerialized, http.StatusInternalServerError, err
+	if err != nil {
+		return sourceSerialized, http.StatusInternalServerError, err
+	}
+	return sourceSerialized, 0, nil
+}
+
+// SourceDestroy destroys the source
+func (rs Routes) SourceDestroy(r *http.Request) (any, int, error) {
+	sourceSerialized, code, err := ctxSourceSerialized(r)
+	if err != nil {
+		return nil, code, err
+	}
+	if err := db.Qs().SourceDestroy(r.Context(), sourceSerialized.ID); err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+	return sourceSerialized, 0, nil
+}
+
+func ctxSourceSerialized(r *http.Request) (db.SourceSerialized, int, error) {
+	sourceSerialized, ok := r.Context().Value(contextSource).(db.SourceSerialized)
+	if !ok {
+		return db.SourceSerialized{}, http.StatusInternalServerError, fmt.Errorf("cast to db.SourceSerialized fail")
+	}
+	return sourceSerialized, 0, nil
 }

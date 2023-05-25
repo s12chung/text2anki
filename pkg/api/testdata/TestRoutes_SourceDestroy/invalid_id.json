@@ -1,0 +1,5 @@
+{
+  "error": "sql: no rows in result set",
+  "code": 404,
+  "status_text": "Not Found"
+}

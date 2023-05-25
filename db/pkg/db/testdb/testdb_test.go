@@ -38,7 +38,7 @@ func TestGen___TermsSeed(t *testing.T) {
 	fixture.Update(t, "TermsSeed.json", fixture.JSON(t, terms))
 }
 
-func TestGen___SourcesSeed(t *testing.T) {
+func TestGen___SourceSerializedsSeed(t *testing.T) {
 	if !fixture.WillUpdate() {
 		t.Skip("TestGen___ test generates fixtures")
 	}
@@ -48,16 +48,16 @@ func TestGen___SourcesSeed(t *testing.T) {
 		require.NoError(api.DefaultRoutes.Cleanup())
 	}()
 
-	fixture.JoinTestData("TestGen___SourcesSeed")
+	fixture.JoinTestData("TestGen___SourceSerializedsSeed")
 
-	filepaths := allFilePaths(t, fixture.JoinTestData("TestGen___SourcesSeed"))
+	filepaths := allFilePaths(t, fixture.JoinTestData("TestGen___SourceSerializedsSeed"))
 	sources := make([]db.SourceSerialized, len(filepaths))
 	for i, fp := range filepaths {
 		tokenizedTexts, err := api.DefaultRoutes.TextTokenizer.TokenizeTextsFromString(string(test.Read(t, fp)))
 		require.NoError(err)
 		sources[i] = db.SourceSerialized{TokenizedTexts: tokenizedTexts}
 	}
-	fixture.Update(t, "SourcesSeed.json", fixture.JSON(t, sources))
+	fixture.Update(t, "SourceSerializeds.json", fixture.JSON(t, sources))
 }
 
 func allFilePaths(t *testing.T, p string) []string {
@@ -74,4 +74,13 @@ func allFilePaths(t *testing.T, p string) []string {
 		paths = append(paths, path.Join(p, path.Join(file.Name())))
 	}
 	return paths
+}
+
+func TestGenerateModelsCode(t *testing.T) {
+	require := require.New(t)
+	testName := "TestGenerateModelsCode"
+
+	code, err := GenerateModelsCode()
+	require.NoError(err)
+	fixture.CompareReadOrUpdate(t, testName+".go.txt", code)
 }

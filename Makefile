@@ -34,11 +34,18 @@ TEST ?= ./...
 
 test: test.diff
 	go test -tags "$(TAGS)" $(TEST)
+test.nocache:
+	go test -count=1 -tags "$(TAGS)" $(TEST)
 test.diff: db.diff
 test.fixtures:
 	# generate top level fixtures first
 	UPDATE_FIXTURES=true go test $(TEST) -run TestGen___ || true
 	UPDATE_FIXTURES=true make test
+test.slow:
+	go test -v -count=1 -json -tags "$(TAGS)" $(TEST) \
+	| jq -r 'select(.Action == "pass" and .Test != null) | .Test + "," + (.Elapsed | tostring)' \
+	| sort -k2 -n -t, \
+	| tail -n 25
 
 lint:
 	golangci-lint run
@@ -48,7 +55,7 @@ lint.fix:
 ci.build: build
 ci.diff: test.diff
 ci.test:
-	go test -tags "$(TAGS)" -v $(TEST)
+	go test -v -tags "$(TAGS)" $(TEST)
 ci.setup:
 	mkdir -p $(CI_BIN)
 	cd db; make ci.setup

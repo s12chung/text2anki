@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -68,6 +70,54 @@ func StaticCopyOrIndent(t *testing.T, code int, b []byte, data StaticCopyable) [
 		return StaticCopy(t, b, data)
 	}
 	return IndentJSON(t, b)
+}
+
+// StaticCopySlice returns a static JSON copy of a datas slice
+func StaticCopySlice(t *testing.T, b []byte, datas any) []byte {
+	require := require.New(t)
+
+	value := reflect.ValueOf(datas)
+	typ := value.Type()
+
+	require.True(typ.Kind() == reflect.Ptr)
+	require.True(typ.Elem().Kind() == reflect.Slice)
+	require.True(typ.Elem().Elem().Implements(reflect.TypeOf((*StaticCopyable)(nil)).Elem()))
+
+	Unmarshall(t, b, datas)
+
+	sliceValue := value.Elem()
+	length := sliceValue.Len()
+	staticCopies := make([]any, length)
+	for i := 0; i < length; i++ {
+		element := sliceValue.Index(i)
+		copyable, ok := element.Interface().(StaticCopyable)
+		if !ok {
+			require.Fail("Element is not StaticCopyable (should never happen due to check above)")
+		}
+		staticCopies[i] = copyable.StaticCopy()
+	}
+	return JSON(t, staticCopies)
+}
+
+// Server is wrapper around httptest.Server for convenience
+type Server struct {
+	pathPrefix string
+	*httptest.Server
+}
+
+// NewRequest returns a new request for the server
+func (s Server) NewRequest(t *testing.T, method, path string, body io.Reader) *http.Request {
+	require := require.New(t)
+	req, err := http.NewRequest(method, s.URL+s.pathPrefix+path, body)
+	require.NoError(err)
+	return req
+}
+
+// WithPathPrefix returns a new server with the pathPrefix set for NewRequest
+func (s Server) WithPathPrefix(prefix string) Server {
+	dup := s
+	dup.pathPrefix += prefix
+	return dup
 }
 
 // HTTPDo does a http.DefaultClient.Do and returns a Response

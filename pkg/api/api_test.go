@@ -16,9 +16,17 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
+var server test.Server
+var sourcesServer test.Server
+
 func TestMain(m *testing.M) {
-	testdb.MustSetupAndSeed("api.TestMain()")
+	testdb.MustSetupAndSeed()
+
+	server = test.Server{Server: httptest.NewServer(DefaultRoutes.Router())}
+	sourcesServer = server.WithPathPrefix("/sources")
+
 	code := m.Run()
+	server.Close()
 	os.Exit(code)
 }
 

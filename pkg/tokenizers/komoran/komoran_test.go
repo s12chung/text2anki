@@ -13,6 +13,7 @@ const testPort = 9002
 
 func TestKomoran_Tokenize(t *testing.T) {
 	test.CISkip(t, "can't run java environment in CI")
+	t.Parallel()
 	require := require.New(t)
 
 	tokenizer := newKomoran(testPort)

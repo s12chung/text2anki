@@ -1,4 +1,4 @@
-CREATE TABLE terms (
+CREATE TABLE IF NOT EXISTS terms (
     text TEXT NOT NULL,
     variants TEXT NOT NULL,
     part_of_speech TEXT NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE terms (
     popularity INTEGER NOT NULL
 );
 
-CREATE TABLE sources (
+CREATE TABLE IF NOT EXISTS sources (
     id INTEGER PRIMARY KEY,
     tokenized_texts TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP

@@ -31,7 +31,7 @@ func TestSeedFile(t *testing.T) {
 func testSeed(t *testing.T, testName string, f func() error) {
 	require := require.New(t)
 	ctx := context.Background()
-	testdb.SetupTempDBT(t, testName)
+	testdb.SetupT(t)
 
 	err := f()
 	require.NoError(err)
@@ -103,6 +103,7 @@ func TestLexicalEntry_Term(t *testing.T) {
 
 func TestFindGoodExample(t *testing.T) {
 	test.CISkip(t, "rsc files not in CI")
+	t.Parallel()
 
 	entry := findGoodExample(t)
 	// fmt.Println(string(fixture.JSON(t, entry)))

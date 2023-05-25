@@ -120,13 +120,24 @@ func (t TextTokenizer) TokenizeTexts(texts []text.Text) (tokenizedTexts []Tokeni
 	return tokenizedTexts, nil
 }
 
+// SourceSerializedList returns a SourceSerialized from the DB
+func (q *Queries) SourceSerializedList(ctx context.Context) ([]SourceSerialized, error) {
+	sources, err := q.SourceList(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	sourceSerializeds := make([]SourceSerialized, len(sources))
+	for i, source := range sources {
+		sourceSerializeds[i] = source.ToSourceSerialized()
+	}
+	return sourceSerializeds, nil
+}
+
 // SourceSerializedCreate creates a source in the DB
 func (q *Queries) SourceSerializedCreate(ctx context.Context, tokenizedTexts []TokenizedText) (SourceSerialized, error) {
-	bytes, err := json.Marshal(tokenizedTexts)
-	if err != nil {
-		return SourceSerialized{}, err
-	}
-	source, err := q.SourceCreate(ctx, string(bytes))
+	sourceSerialized := SourceSerialized{TokenizedTexts: tokenizedTexts}
+	source, err := q.SourceCreate(ctx, sourceSerialized.ToSource().TokenizedTexts)
 	if err != nil {
 		return SourceSerialized{}, err
 	}

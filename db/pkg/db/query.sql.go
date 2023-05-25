@@ -22,6 +22,15 @@ func (q *Queries) SourceCreate(ctx context.Context, tokenizedTexts string) (Sour
 	return i, err
 }
 
+const sourceDestroy = `-- name: SourceDestroy :exec
+DELETE FROM sources WHERE id = ?
+`
+
+func (q *Queries) SourceDestroy(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, sourceDestroy, id)
+	return err
+}
+
 const sourceGet = `-- name: SourceGet :one
 SELECT id, tokenized_texts, created_at FROM sources WHERE id = ? LIMIT 1
 `
@@ -31,6 +40,33 @@ func (q *Queries) SourceGet(ctx context.Context, id int64) (Source, error) {
 	var i Source
 	err := row.Scan(&i.ID, &i.TokenizedTexts, &i.CreatedAt)
 	return i, err
+}
+
+const sourceList = `-- name: SourceList :many
+SELECT id, tokenized_texts, created_at FROM sources ORDER BY created_at DESC
+`
+
+func (q *Queries) SourceList(ctx context.Context) ([]Source, error) {
+	rows, err := q.db.QueryContext(ctx, sourceList)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Source
+	for rows.Next() {
+		var i Source
+		if err := rows.Scan(&i.ID, &i.TokenizedTexts, &i.CreatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const termCreate = `-- name: TermCreate :one

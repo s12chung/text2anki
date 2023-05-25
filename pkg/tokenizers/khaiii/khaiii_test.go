@@ -13,6 +13,7 @@ const testPort = 9001
 
 func TestKhaiii_Tokenize(t *testing.T) {
 	test.CISkip(t, "can't run C environment in CI")
+	t.Parallel()
 	require := require.New(t)
 
 	tokenizer := newKhaiii(testPort)
