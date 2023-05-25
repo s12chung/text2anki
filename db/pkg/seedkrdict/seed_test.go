@@ -103,6 +103,7 @@ func TestLexicalEntry_Term(t *testing.T) {
 
 func TestFindGoodExample(t *testing.T) {
 	test.CISkip(t, "rsc files not in CI")
+	t.Parallel()
 
 	entry := findGoodExample(t)
 	// fmt.Println(string(fixture.JSON(t, entry)))

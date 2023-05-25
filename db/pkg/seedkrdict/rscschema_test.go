@@ -11,6 +11,7 @@ import (
 
 func TestRscSchema(t *testing.T) {
 	test.CISkip(t, "rsc files not in CI")
+	t.Parallel()
 
 	require := require.New(t)
 
