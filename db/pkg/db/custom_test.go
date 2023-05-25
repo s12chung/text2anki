@@ -35,6 +35,6 @@ func TestCreate(t *testing.T) {
 	require := require.New(t)
 	err := SetDB(dBPath("TestCreate"))
 	require.NoError(err)
-	err = Create(context.Background())
+	err = Qs().Create(context.Background())
 	require.NoError(err)
 }

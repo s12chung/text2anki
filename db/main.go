@@ -118,7 +118,7 @@ func cmdCreate() error {
 	if err := setDB(); err != nil {
 		return err
 	}
-	return db.Create(context.Background())
+	return db.Qs().Create(context.Background())
 }
 
 func cmdSeed() error {

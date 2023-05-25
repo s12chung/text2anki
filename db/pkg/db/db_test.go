@@ -9,7 +9,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	testdb.MustSetupAndSeed("db_test.TestMain()")
+	testdb.MustSetupAndSeed()
 	if err := textTokenizer.Setup(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"runtime"
 	"strings"
 	"testing"
 	"text/template"
@@ -16,12 +17,25 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/lang"
-	"github.com/s12chung/text2anki/pkg/util/test"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
+var callerPath string
+var dbPath string
+
+func init() {
+	_, callerFilePath, _, ok := runtime.Caller(0)
+	if !ok {
+		fmt.Println("runtime.Caller not ok for Seed()")
+		os.Exit(-1)
+	}
+	callerPath = path.Dir(callerFilePath)
+	dbPath = path.Join(callerPath, "..", "..", "..", "tmp", "testdb.sqlite3")
+}
+
 // MustSetupAndSeed calls Setup() and Seed(), if it fails, it exits
-func MustSetupAndSeed(testName string) {
-	if err := SetupTempDB(testName); err != nil {
+func MustSetupAndSeed() {
+	if err := Setup(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
@@ -31,32 +45,32 @@ func MustSetupAndSeed(testName string) {
 	}
 }
 
-// SetupAndSeed calls Setup() and Seed()
-func SetupAndSeed(t *testing.T, testName string) {
-	SetupTempDBT(t, testName)
-	SeedT(t)
-}
-
-// SetupTempDB calls db.SetDB with a temp file
-func SetupTempDB(testName string) error {
-	filename := test.GenerateFilename(testName, ".sqlite3")
-	if err := db.SetDB(path.Join(os.TempDir(), filename)); err != nil {
-		return err
-	}
-	return db.Create(context.Background())
-}
-
-// SetupTempDBT calls SetupTempDB and checks errors
-func SetupTempDBT(t *testing.T, testName string) {
+// SetupAndSeedT calls Setup() and Seed()
+func SetupAndSeedT(t *testing.T) {
 	require := require.New(t)
-	err := SetupTempDB(testName)
+	SetupT(t)
+	require.NoError(Seed())
+}
+
+// SetupT setups up an empty db and checks errors
+func SetupT(t *testing.T) {
+	require := require.New(t)
+	err := Setup()
 	require.NoError(err)
 }
 
-// SeedT seeds the database with a small amount of data
-func SeedT(t *testing.T) {
-	require := require.New(t)
-	require.NoError(Seed())
+// Setup setups up an empty db
+func Setup() error {
+	if err := os.MkdirAll(path.Dir(dbPath), ioutil.OwnerRWXGroupRX); err != nil {
+		return err
+	}
+	if err := db.SetDB(dbPath); err != nil {
+		return err
+	}
+	if err := db.Qs().Create(context.Background()); err != nil {
+		return err
+	}
+	return db.Qs().ClearAll(context.Background())
 }
 
 // Seed seeds the database with a small amount of data

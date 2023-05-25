@@ -4,10 +4,8 @@ package testdb
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"os"
 	"path"
-	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,17 +13,6 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
-
-var callerPath string
-
-func init() {
-	_, callerFilePath, _, ok := runtime.Caller(0)
-	if !ok {
-		fmt.Println("runtime.Caller not ok for Seed()")
-		os.Exit(-1)
-	}
-	callerPath = path.Dir(callerFilePath)
-}
 
 // SeedModels seeds the models for the testdb
 func SeedModels() error {
