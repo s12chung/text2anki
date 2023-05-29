@@ -42,6 +42,22 @@ func (s SourceSerialized) StaticCopy() any {
 	return c
 }
 
+// ToSourceUpdateParams returns the UpdateParams for the SourceSerialized
+func (s SourceSerialized) ToSourceUpdateParams() SourceUpdateParams {
+	return SourceUpdateParams{
+		Name: s.Name,
+		ID:   s.ID,
+	}
+}
+
+// ToSourceCreateParams returns the SourceCreateParams for the SourceSerialized
+func (s SourceSerialized) ToSourceCreateParams() SourceCreateParams {
+	return SourceCreateParams{
+		Name:           s.DefaultedName(),
+		TokenizedTexts: s.ToSource().TokenizedTexts,
+	}
+}
+
 // ToSource returns the Source of the SourceSerialized
 func (s SourceSerialized) ToSource() Source {
 	bytes, err := json.Marshal(s.TokenizedTexts)
@@ -143,16 +159,4 @@ func (q *Queries) SourceSerializedList(ctx context.Context) ([]SourceSerialized,
 		sourceSerializeds[i] = source.ToSourceSerialized()
 	}
 	return sourceSerializeds, nil
-}
-
-// SourceSerializedCreate creates a source in the DB
-func (q *Queries) SourceSerializedCreate(ctx context.Context, sourceSerialized SourceSerialized) (SourceSerialized, error) {
-	source, err := q.SourceCreate(ctx, SourceCreateParams{
-		Name:           sourceSerialized.DefaultedName(),
-		TokenizedTexts: sourceSerialized.ToSource().TokenizedTexts,
-	})
-	if err != nil {
-		return SourceSerialized{}, err
-	}
-	return source.ToSourceSerialized(), nil
 }

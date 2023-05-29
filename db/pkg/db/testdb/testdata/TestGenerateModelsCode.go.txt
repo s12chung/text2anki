@@ -33,7 +33,7 @@ func SeedModels() error {
 		return err
 	}
 	for _, sourceSerialized := range sourceSerializeds {
-		if _, err := queries.SourceSerializedCreate(context.Background(), sourceSerialized); err != nil {
+		if _, err := queries.SourceCreate(context.Background(), sourceSerialized.ToSourceCreateParams()); err != nil {
 			return err
 		}
 	}

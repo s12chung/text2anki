@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/firm"
+	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/util/chiutil"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
@@ -31,30 +33,60 @@ func SourceCtx(r *http.Request) (*http.Request, int, error) {
 
 // SourceList returns a list of sources
 func (rs Routes) SourceList(r *http.Request) (any, int, error) {
-	sourceSerializeds, err := db.Qs().SourceSerializedList(r.Context())
-	if err != nil {
-		return nil, http.StatusInternalServerError, err
-	}
-	return sourceSerializeds, 0, nil
+	return httputil.ReturnModelOr500(func() (any, error) {
+		return db.Qs().SourceSerializedList(r.Context())
+	})
 }
 
 // SourceGet gets the source
 func (rs Routes) SourceGet(r *http.Request) (any, int, error) {
+	return ctxSourceSerialized(r)
+}
+
+// SourceUpdateRequest represents the SourceUpdate request
+type SourceUpdateRequest struct {
+	Name string
+}
+
+func init() {
+	firm.RegisterType(firm.NewDefinition(SourceUpdateRequest{}).Validates(firm.RuleMap{
+		"Name": {rule.Presence{}},
+	}))
+}
+
+// SourceUpdate updates the source
+func (rs Routes) SourceUpdate(r *http.Request) (any, int, error) {
 	sourceSerialized, code, err := ctxSourceSerialized(r)
 	if err != nil {
 		return nil, code, err
 	}
-	return sourceSerialized, 0, nil
+
+	req := SourceUpdateRequest{}
+	if code, err = bindAndValidate(r, &req); err != nil {
+		return nil, code, err
+	}
+	sourceSerialized.Name = req.Name
+
+	return httputil.ReturnModelOr500(func() (any, error) {
+		source, err := db.Qs().SourceUpdate(r.Context(), sourceSerialized.ToSourceUpdateParams())
+		return source.ToSourceSerialized(), err
+	})
 }
 
-// SourcePostRequest represents the SourceCreate request
-type SourcePostRequest struct {
+// SourceCreateRequest represents the SourceCreate request
+type SourceCreateRequest struct {
 	Text        string
 	Translation string
 }
 
+func init() {
+	firm.RegisterType(firm.NewDefinition(SourceCreateRequest{}).Validates(firm.RuleMap{
+		"Text": {rule.Presence{}},
+	}))
+}
+
 // TextsString returns the string for TokenizeTextsFromString
-func (s *SourcePostRequest) TextsString() string {
+func (s *SourceCreateRequest) TextsString() string {
 	if s.Translation == "" {
 		return s.Text
 	}
@@ -63,8 +95,8 @@ func (s *SourcePostRequest) TextsString() string {
 
 // SourceCreate creates a new source
 func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
-	req := SourcePostRequest{}
-	if code, err := httputil.BindJSON(r, &req); err != nil {
+	req := SourceCreateRequest{}
+	if code, err := bindAndValidate(r, &req); err != nil {
 		return nil, code, err
 	}
 
@@ -73,13 +105,10 @@ func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
 		return nil, http.StatusUnprocessableEntity, err
 	}
 
-	sourceSerialized, err := db.Qs().SourceSerializedCreate(r.Context(), db.SourceSerialized{
-		TokenizedTexts: tokenizedTexts},
-	)
-	if err != nil {
-		return sourceSerialized, http.StatusInternalServerError, err
-	}
-	return sourceSerialized, 0, nil
+	return httputil.ReturnModelOr500(func() (any, error) {
+		source, err := db.Qs().SourceCreate(r.Context(), db.SourceSerialized{TokenizedTexts: tokenizedTexts}.ToSourceCreateParams())
+		return source.ToSourceSerialized(), err
+	})
 }
 
 // SourceDestroy destroys the source
@@ -88,10 +117,9 @@ func (rs Routes) SourceDestroy(r *http.Request) (any, int, error) {
 	if err != nil {
 		return nil, code, err
 	}
-	if err := db.Qs().SourceDestroy(r.Context(), sourceSerialized.ID); err != nil {
-		return nil, http.StatusInternalServerError, err
-	}
-	return sourceSerialized, 0, nil
+	return httputil.ReturnModelOr500(func() (any, error) {
+		return sourceSerialized, db.Qs().SourceDestroy(r.Context(), sourceSerialized.ID)
+	})
 }
 
 func ctxSourceSerialized(r *http.Request) (db.SourceSerialized, int, error) {

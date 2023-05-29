@@ -92,6 +92,30 @@ func (q *Queries) SourceList(ctx context.Context) ([]Source, error) {
 	return items, nil
 }
 
+const sourceUpdate = `-- name: SourceUpdate :one
+UPDATE sources
+SET name = ?
+WHERE id = ? RETURNING id, name, tokenized_texts, updated_at, created_at
+`
+
+type SourceUpdateParams struct {
+	Name string `json:"name"`
+	ID   int64  `json:"id"`
+}
+
+func (q *Queries) SourceUpdate(ctx context.Context, arg SourceUpdateParams) (Source, error) {
+	row := q.db.QueryRowContext(ctx, sourceUpdate, arg.Name, arg.ID)
+	var i Source
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.TokenizedTexts,
+		&i.UpdatedAt,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const termCreate = `-- name: TermCreate :one
 INSERT INTO terms (
     text, variants, part_of_speech, common_level, translations, popularity

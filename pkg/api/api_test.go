@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path"
 	"testing"
 
 	"github.com/go-chi/chi/v5"
@@ -28,6 +30,17 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 	server.Close()
 	os.Exit(code)
+}
+
+func idPath(path string, id int64) string {
+	return fmt.Sprintf(path+"/%v", id)
+}
+
+func testModelResponse(t *testing.T, resp test.Response, testName, name string, model test.StaticCopyable) string {
+	jsonBody := test.StaticCopyOrIndent(t, resp.Code, resp.Body.Bytes(), model)
+	fixtureFile := path.Join(testName, name+"_response.json")
+	fixture.CompareReadOrUpdate(t, fixtureFile, jsonBody)
+	return fixtureFile
 }
 
 func TestRoutes_Router(t *testing.T) {

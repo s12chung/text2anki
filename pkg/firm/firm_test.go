@@ -31,6 +31,16 @@ func TestNotFoundRule_ValidateValue(t *testing.T) {
 	require.Equal("type, int, not found in Registry", errorMap[notFoundRuleErrorKey].Error())
 }
 
+func TestErrorMap_String(t *testing.T) {
+	require := require.New(t)
+
+	errorMap := ErrorMap{
+		"A": &TemplatedError{Template: "field A message"},
+		"B": &TemplatedError{Template: "field B message"},
+	}
+	require.Equal("A: field A message, B: field B message", errorMap.String())
+}
+
 func TestMergeErrorMap(t *testing.T) {
 	require := require.New(t)
 
