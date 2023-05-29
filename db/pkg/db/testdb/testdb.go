@@ -63,31 +63,43 @@ func Setup() error {
 		return err
 	}
 
-	schemaSHA := fmt.Sprintf("%x", sha256.Sum256(db.SchemaBytes()))
-	if _, err := os.Stat(dbPath); err == nil {
-		//nolint:gosec // for tests, constant path
-		shaBytes, err := os.ReadFile(dbSHAPath)
-		if err != nil {
-			return err
-		}
-		if string(shaBytes) != schemaSHA {
-			if err = os.Remove(dbPath); err != nil {
-				return err
-			}
-		}
+	schemaSHA, reuseSchema, err := ensureSafeSchema()
+	if err != nil {
+		return err
 	}
 
 	if err := db.SetDB(dbPath); err != nil {
 		return err
 	}
-	if err := db.Qs().Create(context.Background()); err != nil {
-		return err
+	if !reuseSchema {
+		if err := db.Qs().Create(context.Background()); err != nil {
+			return err
+		}
 	}
 	if err := db.Qs().ClearAll(context.Background()); err != nil {
 		return err
 	}
 
 	return os.WriteFile(dbSHAPath, []byte(schemaSHA), ioutil.OwnerRWGroupR)
+}
+
+func ensureSafeSchema() (string, bool, error) {
+	schemaSHA := fmt.Sprintf("%x", sha256.Sum256(db.SchemaBytes()))
+
+	if _, err := os.Stat(dbPath); err != nil {
+		//nolint:nilerr // skip if dbPath it doesn't exist
+		return schemaSHA, false, nil
+	}
+
+	//nolint:gosec // for tests, constant path
+	shaBytes, err := os.ReadFile(dbSHAPath)
+	if err != nil {
+		return schemaSHA, false, err
+	}
+	if string(shaBytes) == schemaSHA {
+		return schemaSHA, true, nil
+	}
+	return schemaSHA, false, os.Remove(dbPath)
 }
 
 // Seed seeds the database with a small amount of data

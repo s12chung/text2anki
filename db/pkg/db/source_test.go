@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -73,4 +74,24 @@ func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 	require.NoError(err)
 
 	fixture.CompareReadOrUpdate(t, "TestTextTokenizer_TokenizeTexts.json", fixture.JSON(t, tokenizedTexts))
+}
+
+func TestQueries_SourceCreate(t *testing.T) {
+	require := require.New(t)
+	source, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceSerialized().ToSourceCreateParams())
+	require.NoError(err)
+	testRecentTimestamps(t, source.CreatedAt, source.UpdatedAt)
+}
+
+func TestQueries_SourceUpdate(t *testing.T) {
+	require := require.New(t)
+
+	newSource, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceSerialized().ToSourceCreateParams())
+	require.NoError(err)
+	time.Sleep(1 * time.Second)
+
+	source, err := db.Qs().SourceUpdate(context.Background(), newSource.ToSourceSerialized().ToSourceUpdateParams())
+	require.NoError(err)
+	testRecentTimestamps(t, source.UpdatedAt)
+	require.NotEqual(newSource.UpdatedAt, source.UpdatedAt)
 }
