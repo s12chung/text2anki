@@ -11,14 +11,25 @@ import (
 
 const sourceCreate = `-- name: SourceCreate :one
 INSERT INTO sources (
-    tokenized_texts
-) VALUES (?) RETURNING id, tokenized_texts, created_at
+    name, tokenized_texts
+) VALUES (?, ?) RETURNING id, name, tokenized_texts, updated_at, created_at
 `
 
-func (q *Queries) SourceCreate(ctx context.Context, tokenizedTexts string) (Source, error) {
-	row := q.db.QueryRowContext(ctx, sourceCreate, tokenizedTexts)
+type SourceCreateParams struct {
+	Name           string `json:"name"`
+	TokenizedTexts string `json:"tokenized_texts"`
+}
+
+func (q *Queries) SourceCreate(ctx context.Context, arg SourceCreateParams) (Source, error) {
+	row := q.db.QueryRowContext(ctx, sourceCreate, arg.Name, arg.TokenizedTexts)
 	var i Source
-	err := row.Scan(&i.ID, &i.TokenizedTexts, &i.CreatedAt)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.TokenizedTexts,
+		&i.UpdatedAt,
+		&i.CreatedAt,
+	)
 	return i, err
 }
 
@@ -32,18 +43,24 @@ func (q *Queries) SourceDestroy(ctx context.Context, id int64) error {
 }
 
 const sourceGet = `-- name: SourceGet :one
-SELECT id, tokenized_texts, created_at FROM sources WHERE id = ? LIMIT 1
+SELECT id, name, tokenized_texts, updated_at, created_at FROM sources WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) SourceGet(ctx context.Context, id int64) (Source, error) {
 	row := q.db.QueryRowContext(ctx, sourceGet, id)
 	var i Source
-	err := row.Scan(&i.ID, &i.TokenizedTexts, &i.CreatedAt)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.TokenizedTexts,
+		&i.UpdatedAt,
+		&i.CreatedAt,
+	)
 	return i, err
 }
 
 const sourceList = `-- name: SourceList :many
-SELECT id, tokenized_texts, created_at FROM sources ORDER BY created_at DESC
+SELECT id, name, tokenized_texts, updated_at, created_at FROM sources ORDER BY created_at DESC
 `
 
 func (q *Queries) SourceList(ctx context.Context) ([]Source, error) {
@@ -55,7 +72,13 @@ func (q *Queries) SourceList(ctx context.Context) ([]Source, error) {
 	var items []Source
 	for rows.Next() {
 		var i Source
-		if err := rows.Scan(&i.ID, &i.TokenizedTexts, &i.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.TokenizedTexts,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

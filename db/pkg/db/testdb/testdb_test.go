@@ -55,7 +55,7 @@ func TestGen___SourceSerializedsSeed(t *testing.T) {
 	for i, fp := range filepaths {
 		tokenizedTexts, err := api.DefaultRoutes.TextTokenizer.TokenizeTextsFromString(string(test.Read(t, fp)))
 		require.NoError(err)
-		sources[i] = db.SourceSerialized{TokenizedTexts: tokenizedTexts}
+		sources[i] = db.SourceSerialized{Name: path.Base(fp), TokenizedTexts: tokenizedTexts}
 	}
 	fixture.Update(t, sourceSerializedsSeedFilename, fixture.JSON(t, sources))
 }

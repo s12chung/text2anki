@@ -73,7 +73,9 @@ func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
 		return nil, http.StatusUnprocessableEntity, err
 	}
 
-	sourceSerialized, err := db.Qs().SourceSerializedCreate(r.Context(), tokenizedTexts)
+	sourceSerialized, err := db.Qs().SourceSerializedCreate(r.Context(), db.SourceSerialized{
+		TokenizedTexts: tokenizedTexts},
+	)
 	if err != nil {
 		return sourceSerialized, http.StatusInternalServerError, err
 	}

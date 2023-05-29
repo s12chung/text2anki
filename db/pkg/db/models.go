@@ -5,13 +5,15 @@
 package db
 
 import (
-	"database/sql"
+	"time"
 )
 
 type Source struct {
-	ID             int64        `json:"id"`
-	TokenizedTexts string       `json:"tokenized_texts"`
-	CreatedAt      sql.NullTime `json:"created_at"`
+	ID             int64     `json:"id"`
+	Name           string    `json:"name"`
+	TokenizedTexts string    `json:"tokenized_texts"`
+	UpdatedAt      time.Time `json:"updated_at"`
+	CreatedAt      time.Time `json:"created_at"`
 }
 
 type Term struct {

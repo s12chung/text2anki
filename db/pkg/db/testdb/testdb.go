@@ -101,7 +101,7 @@ func Seed() error {
 
 var modelDatas = []generateModelsCodeData{
 	{Name: "Term", CreateCode: "queries.TermCreate(context.Background(), term.CreateParams())"},
-	{Name: "SourceSerialized", CreateCode: "queries.SourceSerializedCreate(context.Background(), sourceSerialized.TokenizedTexts)"},
+	{Name: "SourceSerialized", CreateCode: "queries.SourceSerializedCreate(context.Background(), sourceSerialized)"},
 }
 
 type generateModelsCodeData struct {

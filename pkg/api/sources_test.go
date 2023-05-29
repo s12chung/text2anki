@@ -102,7 +102,7 @@ func sourcePostReqFromFile(t *testing.T, testName, name string) *SourcePostReque
 func TestRoutes_SourceDestroy(t *testing.T) {
 	testName := "TestRoutes_SourceDestroy"
 
-	created, err := db.Qs().SourceSerializedCreate(context.Background(), testdb.SourceSerializedsT(t)[1].TokenizedTexts)
+	created, err := db.Qs().SourceSerializedCreate(context.Background(), testdb.SourceSerializedsT(t)[1])
 	require.NoError(t, err)
 
 	testCases := []struct {

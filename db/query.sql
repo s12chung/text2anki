@@ -6,8 +6,8 @@ SELECT * FROM sources WHERE id = ? LIMIT 1;
 
 -- name: SourceCreate :one
 INSERT INTO sources (
-    tokenized_texts
-) VALUES (?) RETURNING *;
+    name, tokenized_texts
+) VALUES (?, ?) RETURNING *;
 
 -- name: SourceDestroy :exec
 DELETE FROM sources WHERE id = ?;
