@@ -11,8 +11,11 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 )
 
+type MustSetupAndSeed struct{}
+
 func TestMain(m *testing.M) {
-	testdb.MustSetupAndSeed()
+	testdb.MustSetupAndSeed(MustSetupAndSeed{})
+
 	if err := textTokenizer.Setup(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)

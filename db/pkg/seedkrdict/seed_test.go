@@ -16,6 +16,8 @@ import (
 
 func TestSeed(t *testing.T) {
 	testName := "TestSeed"
+	// Do not Parallelize with TestSeedFile
+	t.Parallel()
 	testSeed(t, testName, func() error {
 		return Seed(context.Background(), fixture.JoinTestData(testName))
 	})
@@ -31,7 +33,7 @@ func TestSeedFile(t *testing.T) {
 func testSeed(t *testing.T, testName string, f func() error) {
 	require := require.New(t)
 	ctx := context.Background()
-	testdb.SetupT(t)
+	testdb.SetupT(t, testName)
 
 	err := f()
 	require.NoError(err)

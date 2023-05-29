@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"reflect"
 	"runtime"
 	"testing"
 
@@ -18,8 +19,7 @@ import (
 )
 
 var callerPath string
-var dbPath string
-var dbSHAPath string
+var tmpPath string
 
 func init() {
 	_, callerFilePath, _, ok := runtime.Caller(0)
@@ -28,42 +28,49 @@ func init() {
 		os.Exit(-1)
 	}
 	callerPath = path.Dir(callerFilePath)
-	dbPath = path.Join(callerPath, "..", "..", "..", "tmp", "testdb.sqlite3")
-	dbSHAPath = path.Join(callerPath, "..", "..", "..", "tmp", "testdb-schema-sha.txt")
+	tmpPath = path.Join(callerPath, "..", "..", "..", "tmp")
 }
 
 // MustSetupAndSeed calls Setup() and Seed(), if it fails, it exits
-func MustSetupAndSeed() {
-	if err := Setup(); err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
+func MustSetupAndSeed(packageStruct any) {
+	MustSetup(packageStruct)
 	if err := Seed(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
 }
 
+// MustSetup calls Setup(), if it fails, it exits
+func MustSetup(packageStruct any) {
+	if err := Setup(path.Base(reflect.TypeOf(packageStruct).PkgPath())); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+}
+
 // SetupAndSeedT calls Setup() and Seed()
-func SetupAndSeedT(t *testing.T) {
+func SetupAndSeedT(t *testing.T, testName string) {
 	require := require.New(t)
-	SetupT(t)
+	SetupT(t, testName)
 	require.NoError(Seed())
 }
 
 // SetupT setups up an empty db and checks errors
-func SetupT(t *testing.T) {
+func SetupT(t *testing.T, testName string) {
 	require := require.New(t)
-	require.NoError(Setup())
+	require.NoError(Setup(testName))
 }
 
 // Setup setups up an empty db
-func Setup() error {
+func Setup(name string) error {
+	dbPath := path.Join(tmpPath, "testdb."+name+".sqlite3")
+	dbSHAPath := path.Join(tmpPath, "testdbsha."+name+".txt")
+
 	if err := os.MkdirAll(path.Dir(dbPath), ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
 
-	schemaSHA, reuseSchema, err := ensureSafeSchema()
+	schemaSHA, reuseSchema, err := ensureSafeSchema(dbPath, dbSHAPath)
 	if err != nil {
 		return err
 	}
@@ -83,7 +90,7 @@ func Setup() error {
 	return os.WriteFile(dbSHAPath, []byte(schemaSHA), ioutil.OwnerRWGroupR)
 }
 
-func ensureSafeSchema() (string, bool, error) {
+func ensureSafeSchema(dbPath, dbSHAPath string) (string, bool, error) {
 	schemaSHA := fmt.Sprintf("%x", sha256.Sum256(db.SchemaBytes()))
 
 	if _, err := os.Stat(dbPath); err != nil {

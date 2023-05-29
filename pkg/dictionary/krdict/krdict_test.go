@@ -1,6 +1,7 @@
 package krdict
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -12,10 +13,16 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
+type MustSetupAndSeed struct{}
+
+func TestMain(m *testing.M) {
+	testdb.MustSetupAndSeed(MustSetupAndSeed{})
+	os.Exit(m.Run())
+}
+
 func TestKrDict_Search(t *testing.T) {
 	require := require.New(t)
 	testName := "TestKrDict_Search"
-	testdb.SetupAndSeedT(t)
 	dict := New(db.DB())
 
 	// PartOfSpeechOther will convert to PartOfSpeechEmpty
