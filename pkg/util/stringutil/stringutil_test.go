@@ -1,4 +1,4 @@
-package stringclean
+package stringutil
 
 import (
 	"testing"
@@ -19,7 +19,7 @@ func TestSplit(t *testing.T) {
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			require.Equal(tc.expected, Split(tc.s, ","))
+			require.Equal(tc.expected, SplitClean(tc.s, ","))
 		})
 	}
 }

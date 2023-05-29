@@ -10,7 +10,7 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
-	"github.com/s12chung/text2anki/pkg/util/stringclean"
+	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
 // ToDBTerm converts a dictionary.Term to a Term
@@ -34,7 +34,7 @@ func ToDBTerm(term dictionary.Term, popularity int) (Term, error) {
 
 // DictionaryTerm converts the term to a dictionary.Term
 func (t Term) DictionaryTerm() (dictionary.Term, error) {
-	variants := stringclean.Split(t.Variants, arraySeparator)
+	variants := stringutil.SplitClean(t.Variants, arraySeparator)
 	var translations []dictionary.Translation
 	if err := json.Unmarshal([]byte(t.Translations), &translations); err != nil {
 		return dictionary.Term{}, err

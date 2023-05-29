@@ -11,7 +11,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
-	"github.com/s12chung/text2anki/pkg/util/stringclean"
+	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
 // Seed seeds the database from the rscPath XML
@@ -268,7 +268,7 @@ func (l *Lemma) textOrVariants() (string, []string) {
 		case "writtenForm":
 			text = feat.Val
 		case "variant":
-			variants = stringclean.Split(feat.Val, ",")
+			variants = stringutil.SplitClean(feat.Val, ",")
 		}
 	}
 	return text, variants
