@@ -3,6 +3,7 @@ package firm
 
 import (
 	"reflect"
+	"sort"
 	"strings"
 	"text/template"
 )
@@ -57,12 +58,22 @@ type ErrorMap map[ErrorKey]*TemplatedError
 
 func (e ErrorMap) String() string {
 	errors := make([]string, len(e))
-	i := 0
-	for k, err := range e {
-		errors[i] = string(k) + ": " + err.Error()
-		i++
+	keys := e.sortedKeys()
+	for i, k := range keys {
+		errors[i] = k + ": " + e[ErrorKey(k)].Error()
 	}
 	return strings.Join(errors, ", ")
+}
+
+func (e ErrorMap) sortedKeys() []string {
+	keys := make([]string, len(e))
+	i := 0
+	for k := range e {
+		keys[i] = string(k)
+		i++
+	}
+	sort.Strings(keys)
+	return keys
 }
 
 // MergeErrorMap merges src into dest, given appending path to the src keys
