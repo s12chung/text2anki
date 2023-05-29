@@ -3,6 +3,7 @@ package api
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/go-chi/chi/v5"
@@ -11,6 +12,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
 	"github.com/s12chung/text2anki/pkg/dictionary/krdict"
+	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/synthesizers"
 	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
 	"github.com/s12chung/text2anki/pkg/text"
@@ -92,8 +94,20 @@ func (rs Routes) Router() chi.Router {
 		r.Route("/{sourceID}", func(r chi.Router) {
 			r.Use(httputil.RequestWrap(SourceCtx))
 			r.Get("/", httputil.RespondJSONWrap(rs.SourceGet))
+			r.Patch("/", httputil.RespondJSONWrap(rs.SourceUpdate))
 			r.Delete("/", httputil.RespondJSONWrap(rs.SourceDestroy))
 		})
 	})
 	return r
+}
+
+func bindAndValidate(r *http.Request, req any) (int, error) {
+	if code, err := httputil.BindJSON(r, req); err != nil {
+		return code, err
+	}
+	result := firm.Validate(req)
+	if !result.IsValid() {
+		return http.StatusUnprocessableEntity, fmt.Errorf(result.ErrorMap().String())
+	}
+	return 0, nil
 }

@@ -33,7 +33,7 @@ func SeedModels() error {
 		return err
 	}
 	for _, sourceSerialized := range sourceSerializeds {
-		if _, err := queries.SourceSerializedCreate(context.Background(), sourceSerialized.TokenizedTexts); err != nil {
+		if _, err := queries.SourceCreate(context.Background(), sourceSerialized.ToSourceCreateParams()); err != nil {
 			return err
 		}
 	}
@@ -41,10 +41,12 @@ func SeedModels() error {
 	return nil
 }
 
+const termsSeedFilename = "TermsSeed.json"
+
 // Terms seeds the Terms
 func Terms() ([]db.Term, error) {
 	var terms []db.Term
-	if err := unmarshall("TermsSeed", &terms); err != nil {
+	if err := unmarshall(termsSeedFilename, &terms); err != nil {
 		return nil, err
 	}
 	return terms, nil
@@ -58,10 +60,12 @@ func TermsT(t *testing.T) []db.Term {
 	return terms
 }
 
+const sourceSerializedsSeedFilename = "SourceSerializedsSeed.json"
+
 // SourceSerializeds seeds the SourceSerializeds
 func SourceSerializeds() ([]db.SourceSerialized, error) {
 	var sourceSerializeds []db.SourceSerialized
-	if err := unmarshall("SourceSerializedsSeed", &sourceSerializeds); err != nil {
+	if err := unmarshall(sourceSerializedsSeedFilename, &sourceSerializeds); err != nil {
 		return nil, err
 	}
 	return sourceSerializeds, nil
@@ -76,7 +80,7 @@ func SourceSerializedsT(t *testing.T) []db.SourceSerialized {
 }
 
 func unmarshall(filename string, models any) error {
-	bytes, err := os.ReadFile(path.Join(callerPath, fixture.TestDataDir, filename) + ".json")
+	bytes, err := os.ReadFile(path.Join(callerPath, fixture.TestDataDir, filename))
 	if err != nil {
 		return err
 	}

@@ -55,6 +55,16 @@ type RuleMap map[string][]Rule
 // ErrorMap is a map of TemplatedError keys to their respective TemplatedError
 type ErrorMap map[ErrorKey]*TemplatedError
 
+func (e ErrorMap) String() string {
+	errors := make([]string, len(e))
+	i := 0
+	for k, err := range e {
+		errors[i] = string(k) + ": " + err.Error()
+		i++
+	}
+	return strings.Join(errors, ", ")
+}
+
 // MergeErrorMap merges src into dest, given appending path to the src keys
 func MergeErrorMap(path ErrorKey, src, dest ErrorMap) {
 	for k, v := range src {

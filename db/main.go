@@ -15,7 +15,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/cli/search"
 	"github.com/s12chung/text2anki/db/pkg/csv"
 	"github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/db/pkg/db/testdb"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb/testdbgen"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
@@ -78,7 +78,7 @@ func setDB() error {
 const generateFile = "pkg/db/testdb/models.go"
 
 func cmdGenerate() error {
-	code, err := testdb.GenerateModelsCode()
+	code, err := testdbgen.GenerateModelsCode()
 	if err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func cmdDiff() error {
 		return err
 	}
 
-	code, err := testdb.GenerateModelsCode()
+	code, err := testdbgen.GenerateModelsCode()
 	if err != nil {
 		return err
 	}

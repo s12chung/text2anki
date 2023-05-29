@@ -4,10 +4,15 @@ SELECT * FROM sources ORDER BY created_at DESC;
 -- name: SourceGet :one
 SELECT * FROM sources WHERE id = ? LIMIT 1;
 
+-- name: SourceUpdate :one
+UPDATE sources
+SET name = ?
+WHERE id = ? RETURNING *;
+
 -- name: SourceCreate :one
 INSERT INTO sources (
-    tokenized_texts
-) VALUES (?) RETURNING *;
+    name, tokenized_texts
+) VALUES (?, ?) RETURNING *;
 
 -- name: SourceDestroy :exec
 DELETE FROM sources WHERE id = ?;

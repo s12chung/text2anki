@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -11,21 +10,52 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
+	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
 // SourceSerialized is a copy of Source for Serializing
 type SourceSerialized struct {
 	ID             int64           `json:"id,omitempty"`
+	Name           string          `json:"name"`
 	TokenizedTexts []TokenizedText `json:"tokenized_texts,omitempty"`
-	CreatedAt      time.Time       `json:"created_at"`
+	UpdatedAt      time.Time       `json:"updated_at"`
+	CreatedAt      time.Time       `json:"created_at,omitempty"`
+}
+
+// DefaultedName returns the Default name
+func (s SourceSerialized) DefaultedName() string {
+	if s.Name != "" {
+		return s.Name
+	}
+	if len(s.TokenizedTexts) == 0 {
+		return ""
+	}
+	return stringutil.FirstUnbrokenSubstring(s.TokenizedTexts[0].Text.Text, 25)
 }
 
 // StaticCopy returns a copy with fields that variate
 func (s SourceSerialized) StaticCopy() any {
 	c := s
 	c.ID = 0
+	c.UpdatedAt = time.Time{}
 	c.CreatedAt = time.Time{}
 	return c
+}
+
+// ToSourceUpdateParams returns the UpdateParams for the SourceSerialized
+func (s SourceSerialized) ToSourceUpdateParams() SourceUpdateParams {
+	return SourceUpdateParams{
+		Name: s.Name,
+		ID:   s.ID,
+	}
+}
+
+// ToSourceCreateParams returns the SourceCreateParams for the SourceSerialized
+func (s SourceSerialized) ToSourceCreateParams() SourceCreateParams {
+	return SourceCreateParams{
+		Name:           s.DefaultedName(),
+		TokenizedTexts: s.ToSource().TokenizedTexts,
+	}
 }
 
 // ToSource returns the Source of the SourceSerialized
@@ -37,11 +67,10 @@ func (s SourceSerialized) ToSource() Source {
 	}
 	return Source{
 		ID:             s.ID,
+		Name:           s.Name,
 		TokenizedTexts: string(bytes),
-		CreatedAt: sql.NullTime{
-			Time:  s.CreatedAt,
-			Valid: !s.CreatedAt.IsZero(),
-		},
+		UpdatedAt:      s.UpdatedAt,
+		CreatedAt:      s.CreatedAt,
 	}
 }
 
@@ -52,14 +81,12 @@ func (s Source) ToSourceSerialized() SourceSerialized {
 		slog.Error(err.Error())
 		panic(-1)
 	}
-	createdAt := time.Time{}
-	if s.CreatedAt.Valid {
-		createdAt = s.CreatedAt.Time
-	}
 	return SourceSerialized{
 		ID:             s.ID,
+		Name:           s.Name,
 		TokenizedTexts: tokenizedTexts,
-		CreatedAt:      createdAt,
+		UpdatedAt:      s.UpdatedAt,
+		CreatedAt:      s.CreatedAt,
 	}
 }
 
@@ -132,14 +159,4 @@ func (q *Queries) SourceSerializedList(ctx context.Context) ([]SourceSerialized,
 		sourceSerializeds[i] = source.ToSourceSerialized()
 	}
 	return sourceSerializeds, nil
-}
-
-// SourceSerializedCreate creates a source in the DB
-func (q *Queries) SourceSerializedCreate(ctx context.Context, tokenizedTexts []TokenizedText) (SourceSerialized, error) {
-	sourceSerialized := SourceSerialized{TokenizedTexts: tokenizedTexts}
-	source, err := q.SourceCreate(ctx, sourceSerialized.ToSource().TokenizedTexts)
-	if err != nil {
-		return SourceSerialized{}, err
-	}
-	return source.ToSourceSerialized(), nil
 }

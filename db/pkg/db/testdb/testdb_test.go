@@ -15,11 +15,12 @@ import (
 )
 
 func TestGen___TermsSeed(t *testing.T) {
+	testName := "TestGen___TermsSeed"
 	if !fixture.WillUpdate() {
 		t.Skip("TestGen___ test generates fixtures")
 	}
 	require := require.New(t)
-	lexes, err := seedkrdict.UnmarshallRscPath(fixture.JoinTestData("TestGen___TermsSeed"))
+	lexes, err := seedkrdict.UnmarshallRscPath(fixture.JoinTestData(testName))
 	require.NoError(err)
 
 	var terms []db.Term
@@ -39,6 +40,7 @@ func TestGen___TermsSeed(t *testing.T) {
 }
 
 func TestGen___SourceSerializedsSeed(t *testing.T) {
+	testName := "TestGen___SourceSerializedsSeed"
 	if !fixture.WillUpdate() {
 		t.Skip("TestGen___ test generates fixtures")
 	}
@@ -48,16 +50,14 @@ func TestGen___SourceSerializedsSeed(t *testing.T) {
 		require.NoError(api.DefaultRoutes.Cleanup())
 	}()
 
-	fixture.JoinTestData("TestGen___SourceSerializedsSeed")
-
-	filepaths := allFilePaths(t, fixture.JoinTestData("TestGen___SourceSerializedsSeed"))
+	filepaths := allFilePaths(t, fixture.JoinTestData(testName))
 	sources := make([]db.SourceSerialized, len(filepaths))
 	for i, fp := range filepaths {
 		tokenizedTexts, err := api.DefaultRoutes.TextTokenizer.TokenizeTextsFromString(string(test.Read(t, fp)))
 		require.NoError(err)
-		sources[i] = db.SourceSerialized{TokenizedTexts: tokenizedTexts}
+		sources[i] = db.SourceSerialized{Name: path.Base(fp), TokenizedTexts: tokenizedTexts}
 	}
-	fixture.Update(t, "SourceSerializeds.json", fixture.JSON(t, sources))
+	fixture.Update(t, sourceSerializedsSeedFilename, fixture.JSON(t, sources))
 }
 
 func allFilePaths(t *testing.T, p string) []string {
@@ -74,13 +74,4 @@ func allFilePaths(t *testing.T, p string) []string {
 		paths = append(paths, path.Join(p, path.Join(file.Name())))
 	}
 	return paths
-}
-
-func TestGenerateModelsCode(t *testing.T) {
-	require := require.New(t)
-	testName := "TestGenerateModelsCode"
-
-	code, err := GenerateModelsCode()
-	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+".go.txt", code)
 }

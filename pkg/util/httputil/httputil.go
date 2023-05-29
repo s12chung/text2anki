@@ -88,3 +88,12 @@ func BindJSON(r *http.Request, o any) (int, error) {
 	}
 	return 0, nil
 }
+
+// ReturnModelOr500 runs the modelFunc, and returns http.StatusInternalServerError for the error
+func ReturnModelOr500(modelFunc func() (any, error)) (any, int, error) {
+	model, err := modelFunc()
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+	return model, 0, nil
+}

@@ -3,7 +3,7 @@ sql:
   - engine: "sqlite"
     schema:
       - "schema.sql"
-    queries: "query.sql"
+    queries: "queries.sql"
     gen:
       go:
         out: "pkg/db"
