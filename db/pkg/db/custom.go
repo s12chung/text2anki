@@ -38,6 +38,14 @@ func Qs() *Queries {
 //go:embed schema.sql
 var schemaSQL string
 
+//go:embed schema.sql
+var schemaBytes []byte
+
+// SchemaBytes returns the bytes of the schema
+func SchemaBytes() []byte {
+	return schemaBytes
+}
+
 // Create creates the tables from schema.sql
 func (q *Queries) Create(ctx context.Context) error {
 	if _, err := DB().ExecContext(ctx, schemaSQL); err != nil {
