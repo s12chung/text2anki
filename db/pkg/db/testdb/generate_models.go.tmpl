@@ -33,10 +33,12 @@ func SeedModels() error {
 
 {{- range . }}
 
+const {{ .Name | lower | pluralize }}SeedFilename = "{{ .Name | pluralize }}Seed.json"
+
 // {{ .Name | pluralize }} seeds the {{ .Name | pluralize }}
 func {{ .Name | pluralize }}() ([]db.{{ .Name }}, error) {
 	var {{ .Name | lower | pluralize }} []db.{{ .Name }}
-	if err := unmarshall("{{ .Name | pluralize }}Seed", &{{ .Name | lower | pluralize }}); err != nil {
+	if err := unmarshall({{ .Name | lower | pluralize }}SeedFilename, &{{ .Name | lower | pluralize }}); err != nil {
 		return nil, err
 	}
 	return {{ .Name | lower | pluralize }}, nil
@@ -52,7 +54,7 @@ func {{ .Name | pluralize }}T(t *testing.T) []db.{{ .Name }} {
 {{- end }}
 
 func unmarshall(filename string, models any) error {
-	bytes, err := os.ReadFile(path.Join(callerPath, fixture.TestDataDir, filename) + ".json")
+	bytes, err := os.ReadFile(path.Join(callerPath, fixture.TestDataDir, filename))
 	if err != nil {
 		return err
 	}
