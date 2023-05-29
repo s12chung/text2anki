@@ -12,6 +12,7 @@ const rscPath = "../../" + DefaultRscPath
 
 func TestRscXMLPaths(t *testing.T) {
 	require := require.New(t)
+	t.Parallel()
 	paths, err := RscXMLPaths(fixture.JoinTestData("TestRscXMLPaths"))
 
 	require.NoError(err)

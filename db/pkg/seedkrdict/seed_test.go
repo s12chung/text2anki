@@ -48,6 +48,7 @@ func testSeed(t *testing.T, testName string, f func() error) {
 func TestUnmarshallRscPath(t *testing.T) {
 	require := require.New(t)
 	testName := "TestUnmarshallRscPath"
+	t.Parallel()
 
 	lexes, err := UnmarshallRscPath(fixture.JoinTestData(testName))
 	require.NoError(err)
@@ -57,6 +58,7 @@ func TestUnmarshallRscPath(t *testing.T) {
 func TestUnmarshallRscXML(t *testing.T) {
 	require := require.New(t)
 	testName := "TestUnmarshallRscXML"
+	t.Parallel()
 
 	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
 	require.NoError(err)
@@ -65,6 +67,7 @@ func TestUnmarshallRscXML(t *testing.T) {
 
 func TestIsNoTranslationsFoundError(t *testing.T) {
 	require := require.New(t)
+	t.Parallel()
 	require.True(IsNoTranslationsFoundError(&NoTranslationsFoundError{}))
 	require.False(IsNoTranslationsFoundError(fmt.Errorf("test error")))
 }
@@ -72,6 +75,7 @@ func TestIsNoTranslationsFoundError(t *testing.T) {
 func TestLexicalEntry_CreateParams(t *testing.T) {
 	require := require.New(t)
 	testName := "TestLexicalEntry_CreateParams"
+	t.Parallel()
 
 	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
 	require.NoError(err)
@@ -88,6 +92,7 @@ func TestLexicalEntry_CreateParams(t *testing.T) {
 func TestLexicalEntry_Term(t *testing.T) {
 	require := require.New(t)
 	testName := "TestLexicalEntry_Term"
+	t.Parallel()
 
 	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
 	require.NoError(err)
