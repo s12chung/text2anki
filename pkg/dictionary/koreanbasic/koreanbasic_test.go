@@ -2,6 +2,7 @@ package koreanbasic
 
 import (
 	"net/http"
+	"path"
 	"strings"
 	"testing"
 
@@ -16,18 +17,7 @@ import (
 
 func TestKoreanBasic_Search(t *testing.T) {
 	testName := "TestKoreanBasic_Search"
-
-	dict := New(GetAPIKeyFromEnv())
-	clean := vcr.SetupVCR(t, fixture.JoinTestData(testName), dict, func(r *recorder.Recorder) {
-		r.AddHook(func(i *cassette.Interaction) error {
-			i.Request.URL = cleanURL(i.Request.URL)
-			return nil
-		}, recorder.AfterCaptureHook)
-		r.SetMatcher(func(r *http.Request, i cassette.Request) bool {
-			return r.Method == i.Method && cleanURL(r.URL.String()) == i.URL
-		})
-	})
-	defer clean()
+	t.Parallel()
 
 	tcs := []struct {
 		name       string
@@ -45,14 +35,28 @@ func TestKoreanBasic_Search(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+			t.Parallel()
 
-			terms, err := dict.Search(tc.searchTerm, tc.pos)
-			require.NoError(err)
 			filenameName := tc.name
 			if tc.name == "basic_with_other" {
 				filenameName = "basic"
 			}
-			fixture.CompareReadOrUpdate(t, testName+"/"+filenameName+".json", fixture.JSON(t, terms))
+
+			dict := New(GetAPIKeyFromEnv())
+			clean := vcr.SetupVCR(t, fixture.JoinTestData(testName, filenameName), dict, func(r *recorder.Recorder) {
+				r.AddHook(func(i *cassette.Interaction) error {
+					i.Request.URL = cleanURL(i.Request.URL)
+					return nil
+				}, recorder.AfterCaptureHook)
+				r.SetMatcher(func(r *http.Request, i cassette.Request) bool {
+					return r.Method == i.Method && cleanURL(r.URL.String()) == i.URL
+				})
+			})
+			t.Cleanup(clean)
+
+			terms, err := dict.Search(tc.searchTerm, tc.pos)
+			require.NoError(err)
+			fixture.CompareReadOrUpdate(t, path.Join(testName, filenameName)+".json", fixture.JSON(t, terms))
 		})
 	}
 }

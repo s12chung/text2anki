@@ -1,0 +1,44 @@
+---
+version: 2
+interactions:
+    - id: 0
+      request:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        content_length: 0
+        transfer_encoding: []
+        trailer: {}
+        host: krdict.korean.go.kr
+        remote_addr: ""
+        request_uri: ""
+        body: ""
+        form: {}
+        headers: {}
+        url: https://krdict.korean.go.kr/api/search?sort=popular&translated=y&trans_lang=1&advanced=y&method=include&key=REDACTED&q=%EA%B0%80%EB%8B%A4&pos=12
+        method: GET
+      response:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        transfer_encoding: []
+        trailer: {}
+        content_length: 3186
+        uncompressed: false
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n\n<channel>\n\t<title>한국어 기초사전 개발 지원(Open API) - 사전 검색</title>\n\t<link>https://krdict.korean.go.kr</link>\n\t<description>한국어 기초사전 개발 지원(Open API) - 사전 검색 결과</description>\n\t<lastBuildDate>20230508062118</lastBuildDate> \n\t<total>2</total>\n\t<start>1</start>\n\t<num>10</num>\n\t\n\t\n\t\n\t<item>\n\t\t\n\t\t\n\t\t<target_code>28764</target_code>\n\t\t<word>가다</word>\n\t\t<sup_no>2</sup_no>\n\t\t\n\t\t\n\t\t<pronunciation>가다</pronunciation>\n\t\t\n\t\t\n\t\t<pos>보조 동사</pos>\n\t\t<link>https://krdict.korean.go.kr/dicSearch/SearchView?ParaWordNo=28764</link>\n\t\t\n\t\t\n\t\t<sense>\n\t\t\t<sense_order>1</sense_order>\n\t\t\t<definition>앞의 말이 나타내는 동작이나 상태, 상태 변화가 계속되거나 진행되는 것을 나타내는 말.</definition>\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t<translation>\n\t\t\t\t<trans_lang>\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t영어\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t</trans_lang>\n\t\t\t\t<trans_word><![CDATA[become; turn]]></trans_word>\n\t\t\t\t<trans_dfn><![CDATA[An auxiliary verb used to indicate the continuation or progress of a motion, state, or change of state in the preceding statement.]]></trans_dfn>\n\t\t\t</translation>\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t</sense>\n\t\t\n\t\t<sense>\n\t\t\t<sense_order>2</sense_order>\n\t\t\t<definition>앞의 말이 나타내는 동작을 이따금씩 반복하여 계속하는 것을 나타내는 말.</definition>\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t<translation>\n\t\t\t\t<trans_lang>\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t영어\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t</trans_lang>\n\t\t\t\t<trans_word><![CDATA[do something while doing something]]></trans_word>\n\t\t\t\t<trans_dfn><![CDATA[An auxiliary verb used to indicate the occasional repetition of an action to the preceding statement.]]></trans_dfn>\n\t\t\t</translation>\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t</sense>\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t</item>\n\t\n\t<item>\n\t\t\n\t\t\n\t\t<target_code>26813</target_code>\n\t\t<word>나가다</word>\n\t\t<sup_no>2</sup_no>\n\t\t\n\t\t\n\t\t<pronunciation>나가다</pronunciation>\n\t\t\n\t\t\n\t\t<pos>보조 동사</pos>\n\t\t<link>https://krdict.korean.go.kr/dicSearch/SearchView?ParaWordNo=26813</link>\n\t\t\n\t\t\n\t\t<sense>\n\t\t\t<sense_order>1</sense_order>\n\t\t\t<definition>앞의 말이 나타내는 행동이 계속 진행됨을 나타내는 말.</definition>\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t<translation>\n\t\t\t\t<trans_lang>\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t영어\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t</trans_lang>\n\t\t\t\t<trans_word><![CDATA[nagada]]></trans_word>\n\t\t\t\t<trans_dfn><![CDATA[An auxiliary verb used to indicate the continuation of the action of the preceding statement.]]></trans_dfn>\n\t\t\t</translation>\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t\t\n\t\t</sense>\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t</item>\n\t\n\t\n\t\n</channel>\n\n\n\n"
+        headers:
+            Content-Length:
+                - "3186"
+            Content-Type:
+                - text/xml; charset=UTF-8
+            Date:
+                - Sun, 07 May 2023 21:21:18 GMT
+            Server:
+                - Apache
+            Set-Cookie:
+                - BSDID=BSD1&&htj4FyLkwjLDEx9cMCdWZllBqa1_drdAXZ1je7_QUiz-EuksEIk5!-1124089590!1683494478564; path=/; HttpOnly
+                - WMONID=z6zQ0ZHVv7I; Expires=Tue, 07-May-2024 6:21:18 GMT; Path=/
+                - basedic=htj4FyLkwjLDEx9cMCdWZllBqa1_drdAXZ1je7_QUiz-EuksEIk5!-1124089590; path=/; HttpOnly
+        status: 200 OK
+        code: 200
+        duration: 248.947542ms
