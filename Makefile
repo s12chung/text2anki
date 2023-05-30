@@ -43,8 +43,8 @@ test.fixtures:
 	UPDATE_FIXTURES=true make test
 test.slow:
 	go test -v -count=1 -json -tags "$(TAGS)" $(TEST) \
-	| jq -r 'select(.Action == "pass" and .Test != null) | .Test + "," + (.Elapsed | tostring)' \
-	| sort -k2 -n -t, \
+	| jq -r 'select(.Action == "pass" and .Test != null) | (.Package | split("/") | last ) + "," + .Test + "," + (.Elapsed | tostring)' \
+	| sort -k3 -n -t, \
 	| tail -n 25
 
 lint:

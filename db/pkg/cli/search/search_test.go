@@ -15,10 +15,16 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
+type MustSetupAndSeed struct{}
+
+func TestMain(m *testing.M) {
+	testdb.MustSetupAndSeed(MustSetupAndSeed{})
+	os.Exit(m.Run())
+}
+
 func TestTermsSearchToCSVRows(t *testing.T) {
 	require := require.New(t)
 	testName := "TestTermsSearchToCSVRows"
-	testdb.SetupAndSeedT(t)
 
 	terms, err := db.Qs().TermsSearchRaw(context.Background(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
 	require.NoError(err)

@@ -16,6 +16,8 @@ import (
 
 func TestSeed(t *testing.T) {
 	testName := "TestSeed"
+	// Do not Parallelize with TestSeedFile
+	t.Parallel()
 	testSeed(t, testName, func() error {
 		return Seed(context.Background(), fixture.JoinTestData(testName))
 	})
@@ -31,7 +33,7 @@ func TestSeedFile(t *testing.T) {
 func testSeed(t *testing.T, testName string, f func() error) {
 	require := require.New(t)
 	ctx := context.Background()
-	testdb.SetupT(t)
+	testdb.SetupT(t, testName)
 
 	err := f()
 	require.NoError(err)
@@ -48,6 +50,7 @@ func testSeed(t *testing.T, testName string, f func() error) {
 func TestUnmarshallRscPath(t *testing.T) {
 	require := require.New(t)
 	testName := "TestUnmarshallRscPath"
+	t.Parallel()
 
 	lexes, err := UnmarshallRscPath(fixture.JoinTestData(testName))
 	require.NoError(err)
@@ -57,6 +60,7 @@ func TestUnmarshallRscPath(t *testing.T) {
 func TestUnmarshallRscXML(t *testing.T) {
 	require := require.New(t)
 	testName := "TestUnmarshallRscXML"
+	t.Parallel()
 
 	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
 	require.NoError(err)
@@ -65,6 +69,7 @@ func TestUnmarshallRscXML(t *testing.T) {
 
 func TestIsNoTranslationsFoundError(t *testing.T) {
 	require := require.New(t)
+	t.Parallel()
 	require.True(IsNoTranslationsFoundError(&NoTranslationsFoundError{}))
 	require.False(IsNoTranslationsFoundError(fmt.Errorf("test error")))
 }
@@ -72,6 +77,7 @@ func TestIsNoTranslationsFoundError(t *testing.T) {
 func TestLexicalEntry_CreateParams(t *testing.T) {
 	require := require.New(t)
 	testName := "TestLexicalEntry_CreateParams"
+	t.Parallel()
 
 	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
 	require.NoError(err)
@@ -88,6 +94,7 @@ func TestLexicalEntry_CreateParams(t *testing.T) {
 func TestLexicalEntry_Term(t *testing.T) {
 	require := require.New(t)
 	testName := "TestLexicalEntry_Term"
+	t.Parallel()
 
 	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
 	require.NoError(err)
