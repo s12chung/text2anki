@@ -49,6 +49,7 @@ func TestTextTokenizer_TokenizeTextsFromString(t *testing.T) {
 		{name: "speaker_weave"},
 	}
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -85,6 +86,7 @@ func TestQueries_SourceCreate(t *testing.T) {
 
 func TestQueries_SourceUpdate(t *testing.T) {
 	require := require.New(t)
+	t.Parallel()
 
 	newSource, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceSerialized().ToSourceCreateParams())
 	require.NoError(err)

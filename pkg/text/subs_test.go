@@ -20,6 +20,7 @@ func TestParseSubtitles(t *testing.T) {
 	fixtureName := testName + ".json"
 
 	for _, tc := range tcs {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 

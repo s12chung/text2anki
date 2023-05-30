@@ -47,6 +47,7 @@ func TestRequestWrap(t *testing.T) {
 			expectedBody: "{\"error\":\"unprocessible\",\"code\":422,\"status_text\":\"Unprocessable Entity\"}\n"},
 	}
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			testVal, testStatus, testErr = tc.val, tc.status, tc.err
@@ -90,6 +91,7 @@ func TestRespondJSONWrap(t *testing.T) {
 			expectedBody: "{\"error\":\"unprocessible\",\"code\":422,\"status_text\":\"Unprocessable Entity\"}\n"},
 	}
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			testVal, testStatus, testErr = tc.val, tc.status, tc.err
@@ -149,6 +151,7 @@ func TestBindJSON(t *testing.T) {
 			expectedError: "json: Unmarshal(nil)"},
 	}
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			req := httptest.NewRequest("", "/", bytes.NewBuffer(tc.data))

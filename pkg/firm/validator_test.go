@@ -437,6 +437,7 @@ func TestStructValidator_Validate(t *testing.T) {
 	})
 
 	for _, tc := range structValidatorTestCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			rawData := tc.f()
 			errKeys := make([]ErrorKey, len(tc.errorKeys))
@@ -490,6 +491,7 @@ func TestSliceValidator_Validate(t *testing.T) {
 	})
 
 	for _, tc := range sliceValidatorTestCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			rawData := tc.f()
 			errKeys := make([]ErrorKey, len(tc.errorKeys))
@@ -521,6 +523,7 @@ func TestValueValidator_Validate(t *testing.T) {
 		},
 	}
 	for _, tc := range tcs {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			validator := NewValueValidator(testPresence{})
 			testValidates(t, validator, tc.data, tc.err, testPresenceKey)

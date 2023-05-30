@@ -1,0 +1,44 @@
+---
+version: 2
+interactions:
+    - id: 1
+      request:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        content_length: 0
+        transfer_encoding: []
+        trailer: {}
+        host: krdict.korean.go.kr
+        remote_addr: ""
+        request_uri: ""
+        body: ""
+        form: {}
+        headers: {}
+        url: https://krdict.korean.go.kr/api/search?sort=popular&translated=y&trans_lang=1&key=REDACTED&q=%EC%95%88%EB%85%95%ED%95%98%EC%84%B8%EC%9A%94
+        method: GET
+      response:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        transfer_encoding: []
+        trailer: {}
+        content_length: 389
+        uncompressed: false
+        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n\n<channel>\n\t<title>한국어 기초사전 개발 지원(Open API) - 사전 검색</title>\n\t<link>https://krdict.korean.go.kr</link>\n\t<description>한국어 기초사전 개발 지원(Open API) - 사전 검색 결과</description>\n\t<lastBuildDate>20230508062116</lastBuildDate> \n\t<total>0</total>\n\t<start>1</start>\n\t<num>10</num>\n\t\n\t\n\t\n</channel>\n\n\n\n"
+        headers:
+            Content-Length:
+                - "389"
+            Content-Type:
+                - text/xml; charset=UTF-8
+            Date:
+                - Sun, 07 May 2023 21:21:16 GMT
+            Server:
+                - Apache
+            Set-Cookie:
+                - BSDID=BSD2&&WGTXkYWMll0t5VrrjSM5pBhZnC962Y7Gj1JQ2zR9vH12r3bhwy2D!-997582633!1683494476718; path=/; HttpOnly
+                - WMONID=Nc9Hm5u6hDS; Expires=Tue, 07-May-2024 6:21:16 GMT; Path=/
+                - basedic=WGTXkYWMll0t5VrrjSM5pBhZnC962Y7Gj1JQ2zR9vH12r3bhwy2D!-997582633; path=/; HttpOnly
+        status: 200 OK
+        code: 200
+        duration: 1.276667041s
