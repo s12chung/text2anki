@@ -86,6 +86,7 @@ func TestQueries_SourceCreate(t *testing.T) {
 
 func TestQueries_SourceUpdate(t *testing.T) {
 	require := require.New(t)
+	t.Parallel()
 
 	newSource, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceSerialized().ToSourceCreateParams())
 	require.NoError(err)
