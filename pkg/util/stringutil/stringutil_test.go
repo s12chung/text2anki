@@ -17,6 +17,7 @@ func TestSplit(t *testing.T) {
 		{name: "empty", s: "", expected: []string{}},
 	}
 	for _, tc := range tcs {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, SplitClean(tc.s, ","))
@@ -41,6 +42,7 @@ func TestFirstUnbrokenSubstring(t *testing.T) {
 		{name: "spaces", s: "   my name is      mario    . hihi    .", expected: "my name is      mario"},
 	}
 	for _, tc := range tcs {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, FirstUnbrokenSubstring(tc.s, 100))
@@ -69,6 +71,7 @@ func TestFirstUnbrokenIndex(t *testing.T) {
 		{name: "korean", s: "이것은 샘플 파일입니다. tmp/in.txt에 자신의 텍스트를 입력합니다.", expected: 32},
 	}
 	for _, tc := range tcs {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, FirstUnbrokenIndex(tc.s))

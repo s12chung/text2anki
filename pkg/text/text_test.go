@@ -33,6 +33,7 @@ func TestParser_TextsFromString(t *testing.T) {
 
 	parser := NewParser(Korean, English)
 	for _, tc := range tcs {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -76,6 +77,7 @@ func TestCleanSpeakerString(t *testing.T) {
 		{name: "broken", s: ":      You should definitely get one.    ", expected: "You should definitely get one."},
 	}
 	for _, tc := range tcs {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, CleanSpeakerString(tc.s))

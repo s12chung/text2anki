@@ -93,6 +93,7 @@ func TestErrorKey_TypeName(t *testing.T) {
 		{name: "empty", errorKey: "", expected: ""},
 	}
 	for _, tc := range tcs {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, tc.errorKey.TypeName())
@@ -112,6 +113,7 @@ func TestErrorKey_ErrorName(t *testing.T) {
 		{name: "empty", errorKey: "", expected: ""},
 	}
 	for _, tc := range tcs {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, tc.errorKey.ErrorName())

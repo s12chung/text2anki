@@ -49,6 +49,7 @@ func TestTextTokenizer_TokenizeTextsFromString(t *testing.T) {
 		{name: "speaker_weave"},
 	}
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
