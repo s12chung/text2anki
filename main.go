@@ -4,6 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"time"
@@ -62,10 +63,12 @@ func run() error {
 		Handler:           r,
 		ReadHeaderTimeout: time.Second,
 	}
-	if err := server.ListenAndServe(); err != nil {
+	ln, err := net.Listen("tcp", server.Addr)
+	if err != nil {
 		return err
 	}
-	return nil
+	slog.Info("Server running on http://localhost" + server.Addr)
+	return server.Serve(ln)
 }
 
 func mainAgain() {
