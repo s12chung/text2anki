@@ -3,16 +3,26 @@ package testdb
 import (
 	"os"
 	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 	"github.com/s12chung/text2anki/pkg/api"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
+
+const modelsPath = "models/modeldata"
+
+func writeModelFile(t *testing.T, filename string, fileBytes []byte) {
+	require := require.New(t)
+	require.NoError(os.WriteFile(filepath.Join(modelsPath, filename), fileBytes, ioutil.OwnerRWGroupR))
+}
 
 func TestGen___TermsSeed(t *testing.T) {
 	testName := "TestGen___TermsSeed"
@@ -36,7 +46,7 @@ func TestGen___TermsSeed(t *testing.T) {
 		}
 		basePopularity += len(lex.LexicalEntries)
 	}
-	fixture.Update(t, "TermsSeed.json", fixture.JSON(t, terms))
+	writeModelFile(t, models.TermsSeedFilename, fixture.JSON(t, terms))
 }
 
 func TestGen___SourceSerializedsSeed(t *testing.T) {
@@ -57,7 +67,7 @@ func TestGen___SourceSerializedsSeed(t *testing.T) {
 		require.NoError(err)
 		sources[i] = db.SourceSerialized{Name: path.Base(fp), TokenizedTexts: tokenizedTexts}
 	}
-	fixture.Update(t, sourceSerializedsSeedFilename, fixture.JSON(t, sources))
+	writeModelFile(t, models.SourceSerializedsSeedFilename, fixture.JSON(t, sources))
 }
 
 func allFilePaths(t *testing.T, p string) []string {

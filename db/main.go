@@ -15,6 +15,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/cli/search"
 	"github.com/s12chung/text2anki/db/pkg/csv"
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/testdbgen"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 	"github.com/s12chung/text2anki/pkg/firm"
@@ -75,7 +76,7 @@ func setDB() error {
 	return nil
 }
 
-const generateFile = "pkg/db/testdb/models.go"
+const generateFile = "pkg/db/testdb/models/models.go"
 
 func cmdGenerate() error {
 	code, err := testdbgen.GenerateModelsCode()
@@ -125,8 +126,10 @@ func cmdSeed() error {
 	if err := cmdCreate(); err != nil {
 		return err
 	}
-
-	return seedkrdict.Seed(context.Background(), seedkrdict.DefaultRscPath)
+	if err := seedkrdict.Seed(context.Background(), seedkrdict.DefaultRscPath); err != nil {
+		return err
+	}
+	return models.SeedList(map[string]bool{"Terms": false})
 }
 
 func cmdSchema() error {

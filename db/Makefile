@@ -1,5 +1,10 @@
-BIN ?= dist/db
 include ../Makefile_env.mk
+
+mkfile_path := $(realpath $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+
+export KHAIII_BIN_PATH ?= $(mkfile_path)/integrations/tokenizers/dist/khaiii
+BIN ?= dist/db
+
 
 build:
 	go build -tags "$(TAGS)" -v -o $(BIN) .
@@ -25,7 +30,8 @@ test:
 test.fixtures:
 	UPDATE_FIXTURES=true make test
 
-SQLC_URL := https://github.com/kyleconroy/sqlc/releases/download/v1.17.2/sqlc_1.17.2_linux_amd64.tar.gz
+SQLC_VERSION = 1.18.0
+SQLC_URL := https://github.com/kyleconroy/sqlc/releases/download/v$(SQLC_VERSION)/sqlc_$(SQLC_VERSION)_linux_amd64.tar.gz
 ci.setup:
 	curl -sSL $(SQLC_URL) | tar zxvf - -C ../$(CI_BIN)
 

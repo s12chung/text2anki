@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/db/pkg/db/testdb"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
@@ -61,7 +61,7 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 	}
 
-	created, err := db.Qs().SourceCreate(context.Background(), testdb.SourceSerializedsT(t)[1].ToSourceCreateParams())
+	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].ToSourceCreateParams())
 	require.NoError(t, err)
 
 	for _, tc := range testCases {
@@ -136,7 +136,7 @@ func sourcePostReqFromFile(t *testing.T, testName, name string) *SourceCreateReq
 func TestRoutes_SourceDestroy(t *testing.T) {
 	testName := "TestRoutes_SourceDestroy"
 
-	created, err := db.Qs().SourceCreate(context.Background(), testdb.SourceSerializedsT(t)[1].ToSourceCreateParams())
+	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].ToSourceCreateParams())
 	require.NoError(t, err)
 
 	testCases := []struct {
