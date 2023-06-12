@@ -14,11 +14,11 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
-var callerPath string
 var tmpPath string
 
 func init() {
@@ -27,7 +27,7 @@ func init() {
 		fmt.Println("runtime.Caller not ok for Seed()")
 		os.Exit(-1)
 	}
-	callerPath = path.Dir(callerFilePath)
+	callerPath := path.Dir(callerFilePath)
 	tmpPath = path.Join(callerPath, "..", "..", "..", "tmp")
 }
 
@@ -111,7 +111,7 @@ func ensureSafeSchema(dbPath, dbSHAPath string) (string, bool, error) {
 
 // Seed seeds the database with a small amount of data
 func Seed() error {
-	return SeedModels()
+	return models.SeedList(nil)
 }
 
 // SearchTerm is a search term used for tests

@@ -26,6 +26,7 @@ func GenerateModelsCode() ([]byte, error) {
 	temp, err := template.New("top").Funcs(template.FuncMap{
 		"pluralize": pluralize,
 		"lower":     lower,
+		"alignPad":  alignPad,
 	}).Parse(generateModelsCodeTemplate)
 	if err != nil {
 		return nil, err
@@ -51,4 +52,8 @@ func lower(s string) string {
 	}
 	firstChar := strings.ToLower(string(s[0]))
 	return firstChar + s[1:]
+}
+
+func alignPad(s string, pad int) string {
+	return strings.Repeat(" ", pad-len(s))
 }
