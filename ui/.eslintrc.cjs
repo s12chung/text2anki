@@ -22,8 +22,13 @@ module.exports = {
     "@typescript-eslint/no-unsafe-assignment": "off",
     "@typescript-eslint/non-nullable-type-assertion-style": "off",
     "func-style": ["error", "declaration", { allowArrowFunctions: true }],
+    "init-declarations": "off",
+    "lines-between-class-members": ["error", "always", { exceptAfterSingleLine: true }],
+    "no-param-reassign": "off",
     "no-magic-numbers": "off",
     "no-shadow": "off",
+    "no-ternary": "off",
+    "react/function-component-definition": ["error", { namedComponents: "arrow-function", unnamedComponents: [] }],
     "react/jsx-filename-extension": ["error", { extensions: [".tsx"] }],
     "react/jsx-max-depth": ["error", { max: 5 }],
     "react/jsx-no-bind": ["error", { allowArrowFunctions: true }],
@@ -32,6 +37,8 @@ module.exports = {
     "react/jsx-sort-props": [ "error", { callbacksLast: true, shorthandFirst: true, noSortAlphabetically: true, reservedFirst: true, }],
     "react-refresh/only-export-components": "error",
     "sort-imports": "off",
+    "sort-keys": "off",
+    "sort-vars": "off"
   },
   settings: {
     react: {
