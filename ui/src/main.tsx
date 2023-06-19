@@ -20,8 +20,7 @@ const router = createBrowserRouter([
       {
         path: "sources/:id",
         element: <SourceShowPage />,
-        loader: ({ params }) =>
-          defer({ source: sourceService.get(params.id as string) }),
+        loader: ({ params }) => defer({ source: sourceService.get(params.id as string) }),
       },
     ],
   },

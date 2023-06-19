@@ -4,10 +4,7 @@ export function snakeToCamel(str: string): string {
 
 type ConvertKeyFunc = (str: string) => string
 
-export function convertKeys(
-  data: unknown,
-  convertKey: ConvertKeyFunc
-): unknown {
+export function convertKeys(data: unknown, convertKey: ConvertKeyFunc): unknown {
   if (typeof data !== "object" || data === null) {
     return data
   }
