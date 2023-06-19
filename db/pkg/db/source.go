@@ -17,9 +17,9 @@ import (
 type SourceSerialized struct {
 	ID             int64           `json:"id,omitempty"`
 	Name           string          `json:"name"`
-	TokenizedTexts []TokenizedText `json:"tokenized_texts,omitempty"`
+	TokenizedTexts []TokenizedText `json:"tokenized_texts"`
 	UpdatedAt      time.Time       `json:"updated_at"`
-	CreatedAt      time.Time       `json:"created_at,omitempty"`
+	CreatedAt      time.Time       `json:"created_at"`
 }
 
 // DefaultedName returns the Default name
@@ -100,7 +100,7 @@ type TextTokenizer struct {
 // TokenizedText is the text grouped with its tokens
 type TokenizedText struct {
 	text.Text
-	Tokens []tokenizers.Token `json:"tokens,omitempty"`
+	Tokens []tokenizers.Token `json:"tokens"`
 }
 
 // Setup sets up the TextTokenizer
