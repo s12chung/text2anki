@@ -1,5 +1,6 @@
 import "./index.css"
 import HomePage from "./pages/HomePage"
+import SourceShowPage from "./pages/SourceShowPage.tsx"
 import ApplicationLayout from "./pages/layouts/ApplicationLayout"
 import sourceService from "./services/SourceService.ts"
 import React from "react"
@@ -15,6 +16,12 @@ const router = createBrowserRouter([
         path: "",
         element: <HomePage />,
         loader: () => defer({ sources: sourceService.list() }),
+      },
+      {
+        path: "sources/:id",
+        element: <SourceShowPage />,
+        loader: ({ params }) =>
+          defer({ source: sourceService.get(params.id as string) }),
       },
     ],
   },

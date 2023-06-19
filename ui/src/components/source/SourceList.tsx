@@ -1,7 +1,7 @@
 import { Source } from "../../services/SourceService"
 import AwaitError from "../AwaitError.tsx"
 import React from "react"
-import { Await } from "react-router-dom"
+import { Await, Link } from "react-router-dom"
 
 export interface ISourceListData {
   sources: Promise<Source[]>
@@ -20,7 +20,9 @@ const SourceList: React.FC<ISourceListProps> = ({ data }) => {
           ) : (
             <ul>
               {sources.map((source) => (
-                <li key={`source-${source.id}`}>{source.name}</li>
+                <li key={`source-${source.id}`}>
+                  <Link to={`sources/${source.id}`}>{source.name}</Link>
+                </li>
               ))}
             </ul>
           )

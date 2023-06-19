@@ -1,3 +1,5 @@
+import { convertKeys, snakeToCamel } from "../utils/StringUtil.ts"
+
 abstract class ApplicationService {
   protected apiUrl = "http://localhost:3000"
   protected pathPrefix = "/"
@@ -9,7 +11,7 @@ abstract class ApplicationService {
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${path}`)
     }
-    return response.json()
+    return convertKeys(await response.json(), snakeToCamel)
   }
 }
 
