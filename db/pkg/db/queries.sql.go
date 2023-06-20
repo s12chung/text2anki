@@ -59,12 +59,12 @@ func (q *Queries) SourceGet(ctx context.Context, id int64) (Source, error) {
 	return i, err
 }
 
-const sourceList = `-- name: SourceList :many
+const sourceIndex = `-- name: SourceIndex :many
 SELECT id, name, tokenized_texts, updated_at, created_at FROM sources ORDER BY created_at DESC
 `
 
-func (q *Queries) SourceList(ctx context.Context) ([]Source, error) {
-	rows, err := q.db.QueryContext(ctx, sourceList)
+func (q *Queries) SourceIndex(ctx context.Context) ([]Source, error) {
+	rows, err := q.db.QueryContext(ctx, sourceIndex)
 	if err != nil {
 		return nil, err
 	}

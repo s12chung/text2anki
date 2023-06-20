@@ -31,10 +31,10 @@ func SourceCtx(r *http.Request) (*http.Request, int, error) {
 	return r, 0, nil
 }
 
-// SourceList returns a list of sources
-func (rs Routes) SourceList(r *http.Request) (any, int, error) {
+// SourceIndex returns a list of sources
+func (rs Routes) SourceIndex(r *http.Request) (any, int, error) {
 	return httputil.ReturnModelOr500(func() (any, error) {
-		return db.Qs().SourceSerializedList(r.Context())
+		return db.Qs().SourceSerializedIndex(r.Context())
 	})
 }
 

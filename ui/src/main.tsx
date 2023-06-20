@@ -15,7 +15,7 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <HomePage />,
-        loader: () => defer({ sources: sourceService.list() }),
+        loader: () => defer({ sources: sourceService.index() }),
       },
       {
         path: "sources/:id",

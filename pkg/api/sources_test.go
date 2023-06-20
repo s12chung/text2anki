@@ -17,9 +17,9 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestRoutes_SourceList(t *testing.T) {
+func TestRoutes_SourceIndex(t *testing.T) {
 	require := require.New(t)
-	testName := "TestRoutes_SourceList"
+	testName := "TestRoutes_SourceIndex"
 
 	resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "", nil))
 	require.Equal(http.StatusOK, resp.Code)

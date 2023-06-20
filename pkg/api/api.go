@@ -88,7 +88,7 @@ func (rs Routes) Cleanup() error {
 func (rs Routes) Router() chi.Router {
 	r := chi.NewRouter()
 	r.Route("/sources", func(r chi.Router) {
-		r.Get("/", httputil.RespondJSONWrap(rs.SourceList))
+		r.Get("/", httputil.RespondJSONWrap(rs.SourceIndex))
 		r.Post("/", httputil.RespondJSONWrap(rs.SourceCreate))
 
 		r.Route("/{sourceID}", func(r chi.Router) {

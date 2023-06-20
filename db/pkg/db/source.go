@@ -147,9 +147,9 @@ func (t TextTokenizer) TokenizeTexts(texts []text.Text) (tokenizedTexts []Tokeni
 	return tokenizedTexts, nil
 }
 
-// SourceSerializedList returns a SourceSerialized from the DB
-func (q *Queries) SourceSerializedList(ctx context.Context) ([]SourceSerialized, error) {
-	sources, err := q.SourceList(ctx)
+// SourceSerializedIndex returns a SourceSerialized from the DB
+func (q *Queries) SourceSerializedIndex(ctx context.Context) ([]SourceSerialized, error) {
+	sources, err := q.SourceIndex(ctx)
 	if err != nil {
 		return nil, err
 	}

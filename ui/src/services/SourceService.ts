@@ -24,7 +24,7 @@ export interface Source {
 class SourceService extends ApplicationService {
   protected pathPrefix = "/sources"
 
-  async list(): Promise<Source[]> {
+  async index(): Promise<Source[]> {
     return (await this.fetch()) as Source[]
   }
 
