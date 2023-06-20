@@ -28,6 +28,7 @@ module.exports = {
     "no-magic-numbers": "off",
     "no-shadow": "off",
     "no-ternary": "off",
+    "one-var": ["error", "consecutive"],
     "react/function-component-definition": ["error", { namedComponents: "arrow-function", unnamedComponents: [] }],
     "react/jsx-filename-extension": ["error", { extensions: [".tsx"] }],
     "react/jsx-max-depth": ["error", { max: 5 }],
