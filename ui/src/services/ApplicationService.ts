@@ -1,4 +1,4 @@
-import { convertKeys, snakeToCamel } from "../utils/StringUtil.ts"
+import { camelToSnake, convertKeys, snakeToCamel } from "../utils/StringUtil.ts"
 
 abstract class ApplicationService {
   protected apiUrl = "http://localhost:3000"
@@ -12,6 +12,16 @@ abstract class ApplicationService {
       throw new Error(`Failed to fetch: ${path}`)
     }
     return convertKeys(await response.json(), snakeToCamel)
+  }
+
+  protected async post(path: string, data: unknown): Promise<unknown> {
+    return this.fetch(path, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(convertKeys(data, camelToSnake)),
+    })
   }
 }
 

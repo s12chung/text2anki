@@ -21,6 +21,10 @@ export interface Source {
   createdAt: Date
 }
 
+export interface CreateSourceData {
+  text: string
+}
+
 class SourceService extends ApplicationService {
   protected pathPrefix = "/sources"
 
@@ -31,8 +35,10 @@ class SourceService extends ApplicationService {
   async get(id: string): Promise<Source> {
     return (await this.fetch(`/${id}`)) as Source
   }
+
+  async create(data: CreateSourceData): Promise<Source> {
+    return (await this.post("", data)) as Source
+  }
 }
 
-const sourceService = new SourceService()
-
-export default sourceService
+export const sourceService = new SourceService()

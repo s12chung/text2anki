@@ -1,33 +1,11 @@
 import "./index.css"
-import HomePage from "./pages/HomePage"
-import SourceShowPage from "./pages/SourceShowPage.tsx"
-import ApplicationLayout from "./pages/layouts/ApplicationLayout"
-import sourceService from "./services/SourceService.ts"
+import routes from "./routes.ts"
 import React from "react"
 import ReactDOM from "react-dom/client"
-import { createBrowserRouter, defer, RouterProvider } from "react-router-dom"
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <ApplicationLayout />,
-    children: [
-      {
-        path: "",
-        element: <HomePage />,
-        loader: () => defer({ sources: sourceService.index() }),
-      },
-      {
-        path: "sources/:id",
-        element: <SourceShowPage />,
-        loader: ({ params }) => defer({ source: sourceService.get(params.id as string) }),
-      },
-    ],
-  },
-])
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <RouterProvider router={createBrowserRouter([routes])} />
   </React.StrictMode>
 )
