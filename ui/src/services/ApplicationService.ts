@@ -13,16 +13,28 @@ abstract class ApplicationService {
     }
     return convertKeys(await response.json(), snakeToCamel)
   }
+}
 
-  protected async post(path: string, data: unknown): Promise<unknown> {
-    return this.fetch(path, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(convertKeys(data, camelToSnake)),
-    })
+export function requestInit(method: Http, data: unknown): RequestInit {
+  return {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(convertKeys(data, camelToSnake)),
   }
+}
+
+export enum Http {
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  DELETE = "DELETE",
+  PATCH = "PATCH",
+  HEAD = "HEAD",
+  OPTIONS = "OPTIONS",
+  CONNECT = "CONNECT",
+  TRACE = "TRACE",
 }
 
 export default ApplicationService

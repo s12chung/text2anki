@@ -52,15 +52,17 @@ export interface IController {
   get?: LoaderFunction
 
   create?: ActionFunction
+  update?: ActionFunction
 }
 
 export interface IElementMap {
   index?: ReactNode
   show?: ReactNode
+  edit?: ReactNode
 }
 
-function resourceError(method: string, missingMethod: string): Error {
-  return new Error(`elements.${method} given, but no controller.${missingMethod} exists`)
+function resourceError(element: string, controllerMethod: string): Error {
+  return new Error(`elements.${element} given, but no controller.${controllerMethod} exists`)
 }
 
 // eslint-disable-next-line max-params
@@ -77,14 +79,22 @@ export function resources(
     resRoute.element = elements.index
     resRoute.loader = controller.index
   }
+
   if (elements.show) {
     if (!controller.get) throw resourceError("show", "get")
     resRoute.children?.push(route(":id", elements.show, { loader: controller.get }))
+  }
+  if (elements.edit) {
+    if (!controller.get) throw resourceError("edit", "get")
+    resRoute.children?.push(route(":id/edit", elements.edit, { loader: controller.get }))
   }
 
   const actionMap = {} as IActionMap
   if (controller.create) {
     actionMap.POST = controller.create
+  }
+  if (controller.update) {
+    actionMap.PATCH = controller.update
   }
   if (Object.keys(actionMap).length !== 0) {
     resRoute.action = actionFunc(actionMap)

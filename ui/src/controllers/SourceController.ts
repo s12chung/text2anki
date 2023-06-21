@@ -6,13 +6,13 @@ export function index() {
   return defer({ sources: sourceService.index() })
 }
 
+export function get({ params }: ActionFunctionArgs) {
+  return defer({ source: sourceService.get(params.id as string) })
+}
+
 export const create: ActionFunction = async ({ request }) => {
   const source = await sourceService.create(
     formData<CreateSourceData>(await request.formData(), "text")
   )
   return redirect(`/sources/${source.id}`)
-}
-
-export function get({ params }: ActionFunctionArgs) {
-  return defer({ source: sourceService.get(params.id as string) })
 }

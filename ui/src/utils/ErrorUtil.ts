@@ -1,5 +1,6 @@
 export function printError(err: unknown): Error {
   let error: Error
+
   if (err instanceof Error) {
     error = err
   } else {
@@ -16,5 +17,11 @@ export function printError(err: unknown): Error {
   }
 
   console.error(error) // eslint-disable-line no-console
+  return error
+}
+
+export function printAndAlertError(err: unknown): Error {
+  const error = printError(err)
+  window.alert(error.message) // eslint-disable-line no-alert
   return error
 }

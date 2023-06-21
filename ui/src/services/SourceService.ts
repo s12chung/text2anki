@@ -1,4 +1,4 @@
-import ApplicationService from "./ApplicationService"
+import ApplicationService, { Http, requestInit } from "./ApplicationService"
 
 export interface Token {
   text: string
@@ -25,6 +25,10 @@ export interface CreateSourceData {
   text: string
 }
 
+export interface UpdateSourceData {
+  name: string
+}
+
 class SourceService extends ApplicationService {
   protected pathPrefix = "/sources"
 
@@ -32,12 +36,16 @@ class SourceService extends ApplicationService {
     return (await this.fetch()) as Source[]
   }
 
-  async get(id: string): Promise<Source> {
+  async get(id: string | number): Promise<Source> {
     return (await this.fetch(`/${id}`)) as Source
   }
 
   async create(data: CreateSourceData): Promise<Source> {
-    return (await this.post("", data)) as Source
+    return (await this.fetch("", requestInit(Http.POST, data))) as Source
+  }
+
+  async update(id: string | number, data: UpdateSourceData): Promise<Source> {
+    return (await this.fetch(`/${id}`, requestInit(Http.PATCH, data))) as Source
   }
 }
 
