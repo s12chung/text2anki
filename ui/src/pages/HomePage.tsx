@@ -1,5 +1,5 @@
-import SourceForm from "../components/source/SourceForm.tsx"
-import SourceList, { ISourceListData } from "../components/source/SourceList"
+import SourceForm from "./components/source/SourceForm.tsx"
+import SourceList, { ISourceListData } from "./components/source/SourceList"
 import { useLoaderData } from "react-router-dom"
 
 const HomePage: React.FC = () => {

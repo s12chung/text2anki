@@ -1,4 +1,4 @@
-import { Source } from "../../services/SourceService"
+import { Source } from "../../../services/SourceService.ts"
 import AwaitError from "../AwaitError.tsx"
 import React from "react"
 import { Await } from "react-router-dom"

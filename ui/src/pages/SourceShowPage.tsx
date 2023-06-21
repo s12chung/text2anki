@@ -1,4 +1,4 @@
-import SourceShow, { ISourceShowData } from "../components/source/SourceShow.tsx"
+import SourceShow, { ISourceShowData } from "./components/source/SourceShow.tsx"
 import { useLoaderData } from "react-router-dom"
 
 const SourceShowPage: React.FC = () => {
