@@ -101,8 +101,8 @@ func (rs Routes) Router() chi.Router {
 	return r
 }
 
-func bindAndValidate(r *http.Request, req any) (int, error) {
-	if code, err := httputil.BindJSON(r, req); err != nil {
+func extractAndValidate(r *http.Request, req any) (int, error) {
+	if code, err := httputil.ExtractJSON(r, req); err != nil {
 		return code, err
 	}
 	result := firm.Validate(req)

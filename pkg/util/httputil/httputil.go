@@ -76,8 +76,8 @@ func RespondJSON(w http.ResponseWriter, resp any) {
 	}
 }
 
-// BindJSON binds the JSON request body to the given struct
-func BindJSON(r *http.Request, o any) (int, error) {
+// ExtractJSON binds the JSON request body to the given struct
+func ExtractJSON(r *http.Request, o any) (int, error) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return http.StatusBadRequest, err

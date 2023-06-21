@@ -135,19 +135,19 @@ func TestBindJSON(t *testing.T) {
 	testCases := []struct {
 		name          string
 		data          []byte
-		bindTo        any
+		extractTo     any
 		expectedValue string
 		expectedCode  int
 		expectedError string
 	}{
-		{name: "normal", data: test.JSON(t, testObj{Val: "testy"}), bindTo: &testObj{}, expectedValue: "testy"},
-		{name: "empty data", data: []byte("{}"), bindTo: &testObj{}, expectedValue: ""},
-		{name: "not applicable data", data: []byte("{ \"ok\": \"me\" }"), bindTo: &testObj{}, expectedValue: ""},
-		{name: "bad data", data: nil, bindTo: &testObj{}, expectedCode: http.StatusBadRequest,
+		{name: "normal", data: test.JSON(t, testObj{Val: "testy"}), extractTo: &testObj{}, expectedValue: "testy"},
+		{name: "empty data", data: []byte("{}"), extractTo: &testObj{}, expectedValue: ""},
+		{name: "not applicable data", data: []byte("{ \"ok\": \"me\" }"), extractTo: &testObj{}, expectedValue: ""},
+		{name: "bad data", data: nil, extractTo: &testObj{}, expectedCode: http.StatusBadRequest,
 			expectedError: "unexpected end of JSON input"},
-		{name: "non-json", data: []byte("abc"), bindTo: &testObj{}, expectedCode: http.StatusBadRequest,
+		{name: "non-json", data: []byte("abc"), extractTo: &testObj{}, expectedCode: http.StatusBadRequest,
 			expectedError: "invalid character 'a' looking for beginning of value"},
-		{name: "empty bind", data: []byte("{}"), bindTo: nil, expectedCode: http.StatusBadRequest,
+		{name: "empty bind", data: []byte("{}"), extractTo: nil, expectedCode: http.StatusBadRequest,
 			expectedError: "json: Unmarshal(nil)"},
 	}
 	for _, tc := range testCases {
@@ -156,11 +156,11 @@ func TestBindJSON(t *testing.T) {
 			require := require.New(t)
 			req := httptest.NewRequest("", "/", bytes.NewBuffer(tc.data))
 
-			status, err := BindJSON(req, tc.bindTo)
+			status, err := ExtractJSON(req, tc.extractTo)
 			require.Equal(tc.expectedCode, status)
 			if tc.expectedError == "" {
 				require.NoError(err)
-				bindTo, ok := tc.bindTo.(*testObj)
+				bindTo, ok := tc.extractTo.(*testObj)
 				require.True(ok)
 				require.Equal(tc.expectedValue, bindTo.Val)
 			} else {

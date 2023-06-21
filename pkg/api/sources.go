@@ -62,7 +62,7 @@ func (rs Routes) SourceUpdate(r *http.Request) (any, int, error) {
 	}
 
 	req := SourceUpdateRequest{}
-	if code, err = bindAndValidate(r, &req); err != nil {
+	if code, err = extractAndValidate(r, &req); err != nil {
 		return nil, code, err
 	}
 	sourceSerialized.Name = req.Name
@@ -96,7 +96,7 @@ func (s *SourceCreateRequest) TextsString() string {
 // SourceCreate creates a new source
 func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
 	req := SourceCreateRequest{}
-	if code, err := bindAndValidate(r, &req); err != nil {
+	if code, err := extractAndValidate(r, &req); err != nil {
 		return nil, code, err
 	}
 
