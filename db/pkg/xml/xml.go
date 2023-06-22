@@ -10,20 +10,18 @@ import (
 )
 
 // SchemaNode represents a type node in the XML file in the schema
-//
-// nolint:tagliatelle // this is prettier output for tests only
 type SchemaNode struct {
-	Many         bool                   `json:","`
-	Attrs        Attrs                  `json:",omitempty"`
-	NodeAttrs    Attrs                  `json:",omitempty"`
-	Children     map[string]*SchemaNode `json:",omitempty"`
+	Many         bool                   `json:"many,"`
+	Attrs        Attrs                  `json:"attrs,omitempty"`
+	NodeAttrs    Attrs                  `json:"node_attrs,omitempty"`
+	Children     map[string]*SchemaNode `json:"children,omitempty"`
 	childrenMany map[string]uint
 }
 
 // Attrs is a map of XML attributes marshaled into an array, map values should always be true
 type Attrs map[string]bool
 
-// MarshalJSON marshalls the Attr map into an array
+// MarshalJSON marshals the Attr map into an array
 func (attrs *Attrs) MarshalJSON() ([]byte, error) {
 	keys := make([]string, len(*attrs))
 	i := 0

@@ -1,22 +1,22 @@
 {
-  "Many": false,
-  "Children": {
+  "many": false,
+  "children": {
     "LexicalResource": {
-      "Many": false,
-      "Attrs": [
+      "many": false,
+      "attrs": [
         "dtdVersion"
       ],
-      "Children": {
+      "children": {
         "GlobalInformation": {
-          "Many": false,
-          "Children": {
+          "many": false,
+          "children": {
             "feat": {
-              "Many": true,
-              "Attrs": [
+              "many": true,
+              "attrs": [
                 "att",
                 "val"
               ],
-              "NodeAttrs": [
+              "node_attrs": [
                 "creationDate",
                 "label",
                 "languageCoding"
@@ -25,28 +25,28 @@
           }
         },
         "Lexicon": {
-          "Many": false,
-          "Children": {
+          "many": false,
+          "children": {
             "LexicalEntry": {
-              "Many": true,
-              "Attrs": [
+              "many": true,
+              "attrs": [
                 "att",
                 "val"
               ],
-              "NodeAttrs": [
+              "node_attrs": [
                 "id"
               ],
-              "Children": {
+              "children": {
                 "Lemma": {
-                  "Many": true,
-                  "Children": {
+                  "many": true,
+                  "children": {
                     "feat": {
-                      "Many": false,
-                      "Attrs": [
+                      "many": false,
+                      "attrs": [
                         "att",
                         "val"
                       ],
-                      "NodeAttrs": [
+                      "node_attrs": [
                         "variant",
                         "writtenForm"
                       ]
@@ -54,15 +54,15 @@
                   }
                 },
                 "RelatedForm": {
-                  "Many": true,
-                  "Children": {
+                  "many": true,
+                  "children": {
                     "feat": {
-                      "Many": true,
-                      "Attrs": [
+                      "many": true,
+                      "attrs": [
                         "att",
                         "val"
                       ],
-                      "NodeAttrs": [
+                      "node_attrs": [
                         "id",
                         "type",
                         "writtenForm"
@@ -71,25 +71,25 @@
                   }
                 },
                 "Sense": {
-                  "Many": true,
-                  "Attrs": [
+                  "many": true,
+                  "attrs": [
                     "att",
                     "val"
                   ],
-                  "NodeAttrs": [
+                  "node_attrs": [
                     "id"
                   ],
-                  "Children": {
+                  "children": {
                     "Equivalent": {
-                      "Many": true,
-                      "Children": {
+                      "many": true,
+                      "children": {
                         "feat": {
-                          "Many": true,
-                          "Attrs": [
+                          "many": true,
+                          "attrs": [
                             "att",
                             "val"
                           ],
-                          "NodeAttrs": [
+                          "node_attrs": [
                             "definition",
                             "language",
                             "lemma"
@@ -98,15 +98,15 @@
                       }
                     },
                     "Multimedia": {
-                      "Many": true,
-                      "Children": {
+                      "many": true,
+                      "children": {
                         "feat": {
-                          "Many": true,
-                          "Attrs": [
+                          "many": true,
+                          "attrs": [
                             "att",
                             "val"
                           ],
-                          "NodeAttrs": [
+                          "node_attrs": [
                             "label",
                             "type",
                             "url"
@@ -115,15 +115,15 @@
                       }
                     },
                     "SenseExample": {
-                      "Many": true,
-                      "Children": {
+                      "many": true,
+                      "children": {
                         "feat": {
-                          "Many": true,
-                          "Attrs": [
+                          "many": true,
+                          "attrs": [
                             "att",
                             "val"
                           ],
-                          "NodeAttrs": [
+                          "node_attrs": [
                             "example",
                             "type"
                           ]
@@ -131,15 +131,15 @@
                       }
                     },
                     "SenseRelation": {
-                      "Many": true,
-                      "Children": {
+                      "many": true,
+                      "children": {
                         "feat": {
-                          "Many": true,
-                          "Attrs": [
+                          "many": true,
+                          "attrs": [
                             "att",
                             "val"
                           ],
-                          "NodeAttrs": [
+                          "node_attrs": [
                             "homonymNumber",
                             "id",
                             "lemma",
@@ -149,12 +149,12 @@
                       }
                     },
                     "feat": {
-                      "Many": true,
-                      "Attrs": [
+                      "many": true,
+                      "attrs": [
                         "att",
                         "val"
                       ],
-                      "NodeAttrs": [
+                      "node_attrs": [
                         "annotation",
                         "definition",
                         "syntacticAnnotation",
@@ -164,18 +164,18 @@
                   }
                 },
                 "WordForm": {
-                  "Many": true,
-                  "Children": {
+                  "many": true,
+                  "children": {
                     "FormRepresentation": {
-                      "Many": false,
-                      "Children": {
+                      "many": false,
+                      "children": {
                         "feat": {
-                          "Many": true,
-                          "Attrs": [
+                          "many": true,
+                          "attrs": [
                             "att",
                             "val"
                           ],
-                          "NodeAttrs": [
+                          "node_attrs": [
                             "pronunciation",
                             "sound",
                             "type",
@@ -185,12 +185,12 @@
                       }
                     },
                     "feat": {
-                      "Many": true,
-                      "Attrs": [
+                      "many": true,
+                      "attrs": [
                         "att",
                         "val"
                       ],
-                      "NodeAttrs": [
+                      "node_attrs": [
                         "pronunciation",
                         "sound",
                         "type",
@@ -200,12 +200,12 @@
                   }
                 },
                 "feat": {
-                  "Many": true,
-                  "Attrs": [
+                  "many": true,
+                  "attrs": [
                     "att",
                     "val"
                   ],
-                  "NodeAttrs": [
+                  "node_attrs": [
                     "annotation",
                     "homonym_number",
                     "lexicalUnit",
@@ -219,12 +219,12 @@
               }
             },
             "feat": {
-              "Many": false,
-              "Attrs": [
+              "many": false,
+              "attrs": [
                 "att",
                 "val"
               ],
-              "NodeAttrs": [
+              "node_attrs": [
                 "language"
               ]
             }
