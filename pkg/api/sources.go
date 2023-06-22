@@ -31,10 +31,10 @@ func SourceCtx(r *http.Request) (*http.Request, int, error) {
 	return r, 0, nil
 }
 
-// SourceList returns a list of sources
-func (rs Routes) SourceList(r *http.Request) (any, int, error) {
+// SourceIndex returns a list of sources
+func (rs Routes) SourceIndex(r *http.Request) (any, int, error) {
 	return httputil.ReturnModelOr500(func() (any, error) {
-		return db.Qs().SourceSerializedList(r.Context())
+		return db.Qs().SourceSerializedIndex(r.Context())
 	})
 }
 
@@ -62,7 +62,7 @@ func (rs Routes) SourceUpdate(r *http.Request) (any, int, error) {
 	}
 
 	req := SourceUpdateRequest{}
-	if code, err = bindAndValidate(r, &req); err != nil {
+	if code, err = extractAndValidate(r, &req); err != nil {
 		return nil, code, err
 	}
 	sourceSerialized.Name = req.Name
@@ -96,7 +96,7 @@ func (s *SourceCreateRequest) TextsString() string {
 // SourceCreate creates a new source
 func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
 	req := SourceCreateRequest{}
-	if code, err := bindAndValidate(r, &req); err != nil {
+	if code, err := extractAndValidate(r, &req); err != nil {
 		return nil, code, err
 	}
 

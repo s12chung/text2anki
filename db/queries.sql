@@ -1,4 +1,4 @@
--- name: SourceList :many
+-- name: SourceIndex :many
 SELECT * FROM sources ORDER BY created_at DESC;
 
 -- name: SourceGet :one

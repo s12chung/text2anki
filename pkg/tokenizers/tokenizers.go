@@ -19,10 +19,10 @@ type Tokenizer interface {
 
 // Token is a part of speech token
 type Token struct {
-	Text         string            `json:"text,omitempty"`
-	PartOfSpeech lang.PartOfSpeech `json:"part_of_speech,omitempty"`
-	StartIndex   uint              `json:"start_index,omitempty"`
-	Length       uint              `json:"length,omitempty"`
+	Text         string            `json:"text"`
+	PartOfSpeech lang.PartOfSpeech `json:"part_of_speech"`
+	StartIndex   uint              `json:"start_index"`
+	Length       uint              `json:"length"`
 }
 
 // NotSetupError is returned when a tokenizer function runs when it is not setup

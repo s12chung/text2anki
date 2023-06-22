@@ -8,6 +8,7 @@
         {
           "text": "내",
           "part_of_speech": "Pronoun",
+          "start_index": 0,
           "length": 1
         },
         {
@@ -49,6 +50,7 @@
         {
           "text": "어디",
           "part_of_speech": "Pronoun",
+          "start_index": 0,
           "length": 2
         },
         {
@@ -78,6 +80,7 @@
         {
           "text": "어디",
           "part_of_speech": "Pronoun",
+          "start_index": 0,
           "length": 2
         },
         {
@@ -155,6 +158,7 @@
         {
           "text": "알",
           "part_of_speech": "Verb",
+          "start_index": 0,
           "length": 1
         },
         {
@@ -250,6 +254,7 @@
         {
           "text": "오늘",
           "part_of_speech": "Noun",
+          "start_index": 0,
           "length": 2
         },
         {
