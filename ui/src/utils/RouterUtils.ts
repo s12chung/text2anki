@@ -39,12 +39,19 @@ export function route(
   options?: RouteOptions,
   children?: RouteObject[]
 ): RouteObject {
-  return {
-    path,
+  const route = {
     element,
     children,
     ...options,
+  } as RouteObject
+
+  if (path === "") {
+    route.index = true
+  } else {
+    route.path = path
   }
+
+  return route
 }
 
 export interface IController {
@@ -53,11 +60,14 @@ export interface IController {
 
   create?: ActionFunction
   update?: ActionFunction
+  delete?: ActionFunction
 }
 
 export interface IElementMap {
   index?: ReactNode
   show?: ReactNode
+
+  new?: ReactNode
   edit?: ReactNode
 }
 
@@ -72,35 +82,71 @@ export function resources(
   elements: IElementMap,
   children?: RouteObject[]
 ): RouteObject {
-  const resRoute = { path: name, children: [] } as RouteObject
+  const route = resourcesRoute(name, controller, elements)
+  if (!route.children) route.children = []
+
+  const idRoute = resourceRoute(controller, elements)
+  if (idRoute) route.children.push(idRoute)
+
+  const newRoute = newResourceRoute(elements)
+  if (newRoute) route.children.push(newRoute)
+
+  const editRoute = editResourceRoute(controller, elements)
+  if (editRoute) route.children.push(editRoute)
+
+  if (children) route.children.push(...children)
+
+  return route
+}
+
+function resourcesRoute(name: string, controller: IController, elements: IElementMap): RouteObject {
+  const route = { path: name } as RouteObject
 
   if (elements.index) {
     if (!controller.index) throw resourceError("index", "index")
-    resRoute.element = elements.index
-    resRoute.loader = controller.index
+    route.element = elements.index
+    route.loader = controller.index
   }
 
+  if (controller.create) {
+    route.action = actionFunc({ POST: controller.create })
+  }
+
+  return route
+}
+
+function resourceRoute(controller: IController, elements: IElementMap): RouteObject | null {
+  const route = { path: ":id" } as RouteObject
   if (elements.show) {
     if (!controller.get) throw resourceError("show", "get")
-    resRoute.children?.push(route(":id", elements.show, { loader: controller.get }))
-  }
-  if (elements.edit) {
-    if (!controller.get) throw resourceError("edit", "get")
-    resRoute.children?.push(route(":id/edit", elements.edit, { loader: controller.get }))
+    route.element = elements.show
+    route.loader = controller.get
   }
 
   const actionMap = {} as IActionMap
-  if (controller.create) {
-    actionMap.POST = controller.create
-  }
-  if (controller.update) {
-    actionMap.PATCH = controller.update
-  }
+  if (controller.update) actionMap.PATCH = controller.update
+  if (controller.delete) actionMap.DELETE = controller.delete
+
   if (Object.keys(actionMap).length !== 0) {
-    resRoute.action = actionFunc(actionMap)
+    route.action = actionFunc(actionMap)
   }
 
-  if (children) resRoute.children?.push(...children)
+  return Object.keys(route).length === 1 ? null : route
+}
 
-  return resRoute
+function newResourceRoute(elements: IElementMap): RouteObject | null {
+  if (!elements.new) {
+    return null
+  }
+  return { path: "new", element: elements.new }
+}
+
+function editResourceRoute(controller: IController, elements: IElementMap): RouteObject | null {
+  if (!elements.edit) {
+    return null
+  }
+  if (!controller.get) {
+    throw resourceError("edit", "get")
+  }
+  return { path: ":id/edit", element: elements.edit, loader: controller.get }
 }

@@ -1,6 +1,6 @@
 import { Form } from "react-router-dom"
 
-const SourceForm: React.FC = () => {
+const SourceCreate: React.FC = () => {
   return (
     <Form action="/sources" method="post">
       <textarea name="text" placeholder="You may also drag and drop here." />
@@ -9,4 +9,4 @@ const SourceForm: React.FC = () => {
   )
 }
 
-export default SourceForm
+export default SourceCreate

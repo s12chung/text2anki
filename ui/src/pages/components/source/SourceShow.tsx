@@ -1,9 +1,7 @@
-import { Source, sourceService } from "../../../services/SourceService.ts"
-import { printAndAlertError } from "../../../utils/ErrorUtil.ts"
+import { Source } from "../../../services/SourceService.ts"
 import AwaitError from "../AwaitError.tsx"
-import { Ring } from "@uiball/loaders"
-import React, { ChangeEventHandler, FormEventHandler, MouseEventHandler, useState } from "react"
-import { Await } from "react-router-dom"
+import React from "react"
+import { Await, Link } from "react-router-dom"
 
 export interface ISourceShowData {
   source: Promise<Source>
@@ -25,7 +23,10 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   return (
     <div>
-      <SourceNameComponent source={source} />
+      <div className="flex">
+        <div className="flex-grow">{source.name}</div>
+        <Link to={`/sources/${source.id}/edit`}>Edit</Link>
+      </div>
 
       {source.tokenizedTexts.map((tokenizedText) => (
         <div key={`text-${tokenizedText.text}`}>
@@ -33,57 +34,6 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
           <div>{tokenizedText.translation}</div>
         </div>
       ))}
-    </div>
-  )
-}
-
-const SourceNameComponent: React.FC<{ source: Source }> = ({ source }) => {
-  const [isEditing, setIsEditing] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [editName, setEditName] = useState(source.name)
-
-  const handleEdit: MouseEventHandler = () => setIsEditing(true)
-  const handleInput: ChangeEventHandler<HTMLInputElement> = (e) => setEditName(e.target.value)
-
-  const handleSubmit: FormEventHandler = (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-
-    sourceService
-      .update(source.id, { name: editName })
-      .then((s) => {
-        source.name = s.name
-      })
-      .catch((error) => printAndAlertError(error))
-      .finally(() => {
-        setIsEditing(false)
-        setIsLoading(false)
-      })
-  }
-
-  const handleCancel: MouseEventHandler = () => {
-    setIsEditing(false)
-    setEditName(source.name)
-  }
-
-  return isEditing ? (
-    <form className="flex" onSubmit={handleSubmit}>
-      <input className="flex-grow" type="text" value={editName} onChange={handleInput} />
-
-      {Boolean(isLoading) && <Ring />}
-      <button type="button" disabled={isLoading} onClick={handleCancel}>
-        Cancel
-      </button>
-      <button type="submit" disabled={isLoading}>
-        Submit
-      </button>
-    </form>
-  ) : (
-    <div className="flex">
-      <div className="flex-grow">{source.name}</div>
-      <button type="button" onClick={handleEdit}>
-        Edit
-      </button>
     </div>
   )
 }
