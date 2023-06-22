@@ -12,6 +12,9 @@ run: build
 	mkdir -p tmp
 	$(BIN)
 
+open:
+	(make run & (cd ui; sleep 1; npm run open)) | tee tmp/text2anki.log
+
 setup:
 	cd integrations/tokenizers; make build
 

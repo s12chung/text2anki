@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "open": "vite --open",
     "build": "tsc && vite build",
     "lint": "eslint src --max-warnings 0 --ext ts,tsx && stylelint --max-warnings 0 **/*.css",
     "lint.fix": "eslint src --fix --ext ts,tsx && stylelint --fix **/*.css",
