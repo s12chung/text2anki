@@ -17,8 +17,6 @@ import (
 )
 
 // Note is an Anki Note, which contains data to create cards from
-//
-//nolint:musttag // just used for debugging
 type Note struct {
 	Text string
 	lang.PartOfSpeech

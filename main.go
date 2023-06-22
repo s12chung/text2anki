@@ -18,7 +18,6 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/api"
-	"github.com/s12chung/text2anki/pkg/cmd/prompt"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
@@ -108,15 +107,11 @@ func runAgain(textStringFilename, exportDir string) error {
 	if err := anki.SetupDefaultConfig(); err != nil {
 		return err
 	}
-	tokenizedTexts, err := tokenizeFile(textStringFilename)
+	_, err := tokenizeFile(textStringFilename)
 	if err != nil {
 		return err
 	}
-	notes, err := runUI(tokenizedTexts)
-	if err != nil {
-		return err
-	}
-	return exportFiles(notes, exportDir)
+	return exportFiles([]anki.Note{}, exportDir)
 }
 
 func tokenizeFile(filename string) ([]db.TokenizedText, error) {
@@ -141,14 +136,6 @@ func tokenizeFile(filename string) ([]db.TokenizedText, error) {
 		return nil, err
 	}
 	return tokenizedTexts, err
-}
-
-func runUI(tokenizedTexts []db.TokenizedText) ([]anki.Note, error) {
-	notes, err := prompt.CreateCards(tokenizedTexts, api.DefaultRoutes.Dictionary)
-	if err != nil {
-		return nil, err
-	}
-	return notes, nil
 }
 
 func exportFiles(notes []anki.Note, exportDir string) error {

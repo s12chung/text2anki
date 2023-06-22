@@ -10,8 +10,6 @@ type Dictionary interface {
 }
 
 // Term is a word or phrase
-//
-//nolint:musttag // Used for Temp UI only for YAML
 type Term struct {
 	Text         string            `json:"text,omitempty"`
 	Variants     []string          `json:"variants,omitempty"`
