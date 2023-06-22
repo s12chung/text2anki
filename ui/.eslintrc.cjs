@@ -16,6 +16,7 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
     project: ["./tsconfig.json"],
+    ignorePatterns: ["postcss.config.js", "tailwind.config.js"],
   },
   plugins: ["react", "react-refresh"],
   rules: {
