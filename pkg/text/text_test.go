@@ -29,6 +29,7 @@ func TestParser_Texts(t *testing.T) {
 		{name: "weave_skip"},
 		{name: "split"},
 		{name: "split_1_line"},
+		{name: "split_diff_empty_line"},
 		{name: "split_extra_text", err: errExtraTextLine},
 		{name: "split_extra_translation", err: errExtraTranslationLine},
 		{name: "split_1_line_extra_translation", err: errExtraTranslationLine},
