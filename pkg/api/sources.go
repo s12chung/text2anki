@@ -8,7 +8,6 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
-	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/util/chiutil"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 )
@@ -85,14 +84,6 @@ func init() {
 	}))
 }
 
-// TextsString returns the string for TokenizeTextsFromString
-func (s *SourceCreateRequest) TextsString() string {
-	if s.Translation == "" {
-		return s.Text
-	}
-	return s.Text + "\n\n" + text.SplitDelimiter + "\n\n" + s.Translation
-}
-
 // SourceCreate creates a new source
 func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
 	req := SourceCreateRequest{}
@@ -100,7 +91,7 @@ func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
 		return nil, code, err
 	}
 
-	tokenizedTexts, err := rs.TextTokenizer.TokenizeTextsFromString(req.TextsString())
+	tokenizedTexts, err := rs.TextTokenizer.TokenizedTexts(req.Text, req.Translation)
 	if err != nil {
 		return nil, http.StatusUnprocessableEntity, err
 	}

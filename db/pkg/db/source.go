@@ -113,9 +113,9 @@ func (t TextTokenizer) Cleanup() error {
 	return t.Tokenizer.Cleanup()
 }
 
-// TokenizeTextsFromString converts a string to TokenizedText
-func (t TextTokenizer) TokenizeTextsFromString(s string) ([]TokenizedText, error) {
-	texts, err := t.Parser.TextsFromString(s)
+// TokenizedTexts converts a string to TokenizedText
+func (t TextTokenizer) TokenizedTexts(s, translation string) ([]TokenizedText, error) {
+	texts, err := t.Parser.Texts(s, translation)
 	if err != nil {
 		return nil, err
 	}

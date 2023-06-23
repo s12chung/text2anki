@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -121,7 +122,11 @@ func tokenizeFile(filename string) ([]db.TokenizedText, error) {
 		return nil, err
 	}
 
-	texts, err := api.DefaultRoutes.TextTokenizer.Parser.TextsFromString(string(fileBytes))
+	split := strings.Split(string(fileBytes), "===")
+	if len(split) == 1 {
+		split = append(split, "")
+	}
+	texts, err := api.DefaultRoutes.TextTokenizer.Parser.Texts(split[0], split[1])
 	if err != nil {
 		bytes, _ := yaml.Marshal(texts)
 		fmt.Println(string(bytes))
