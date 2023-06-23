@@ -1,12 +1,12 @@
 import { CreateSourceData, sourceService, UpdateSourceData } from "../services/SourceService.ts"
 import { formData } from "../utils/RouterUtils.ts"
-import { ActionFunction, ActionFunctionArgs, defer, redirect } from "react-router-dom"
+import { ActionFunction, defer, LoaderFunction, redirect } from "react-router-dom"
 
-export function index() {
+export const index: LoaderFunction = () => {
   return defer({ sources: sourceService.index() })
 }
 
-export function get({ params }: ActionFunctionArgs) {
+export const get: LoaderFunction = ({ params }) => {
   return defer({ source: sourceService.get(params.id as string) })
 }
 
