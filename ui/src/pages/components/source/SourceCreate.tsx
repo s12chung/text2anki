@@ -1,12 +1,132 @@
+import { Text } from "../../../services/SourceService.ts"
+import React, { ChangeEventHandler, useMemo, useState } from "react"
 import { Form } from "react-router-dom"
 
 const SourceCreate: React.FC = () => {
+  const [text, setText] = useState<string>("")
+  const handleText: ChangeEventHandler<HTMLTextAreaElement> = (e) => setText(e.target.value)
+  const [translation, setTranslation] = useState<string>("")
+  const handleTranslation: ChangeEventHandler<HTMLTextAreaElement> = (e) =>
+    setTranslation(e.target.value)
+
+  const [previewTexts, valid] = useMemo<[Text[], boolean]>((): [Text[], boolean] => {
+    return textsFromTranslation(text, translation)
+  }, [text, translation])
+
   return (
     <Form action="/sources" method="post">
-      <textarea name="text" placeholder="You may also drag and drop here." />
-      <button type="submit">Submit</button>
+      <textarea
+        name="text"
+        placeholder="You may also drag and drop here."
+        value={text}
+        onChange={handleText}
+      />
+      <textarea name="translation" value={translation} onChange={handleTranslation} />
+      <PreviewTexts texts={previewTexts} />
+      <button type="submit" disabled={!valid}>
+        Submit
+      </button>
     </Form>
   )
+}
+
+const PreviewTexts: React.FC<{ texts: Text[] }> = ({ texts }) => {
+  return (
+    <div>
+      {texts.map((text, index) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <div key={`${text.text}-${text.translation}-${text.lastEmptyLine.toString()}-${index}`}>
+          {Boolean(text.lastEmptyLine) && <br />}
+          {text.text ? (
+            <>
+              {text.text}
+              <br />
+            </>
+          ) : (
+            <>
+              <b>Missing Text</b>
+              <br />
+            </>
+          )}
+          {text.translation ? (
+            <>
+              {text.translation}
+              <br />
+            </>
+          ) : (
+            <>
+              <b>Missing Translation</b>
+              <br />
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function textsFromTranslation(s: string, translation: string): [Text[], boolean] {
+  const lines = split(s)
+  const translations = splitClean(translation)
+  const longestLength = lines.length > translations.length ? lines.length : translations.length
+
+  const texts: Text[] = new Array(longestLength)
+  let i = 0
+  let lastEmptyLine = false
+  let valid = true
+
+  for (let a = 0; a < longestLength; a++) {
+    const line = a < lines.length ? lines[a] : ""
+    if (a < lines.length && line === "") {
+      lastEmptyLine = true
+      continue
+    }
+    const translation = i < translations.length ? translations[i] : ""
+
+    texts[i] = {
+      text: line,
+      translation,
+      lastEmptyLine,
+    }
+    i++
+    lastEmptyLine = false
+    if (valid) valid = line !== "" && translation !== ""
+  }
+  return [texts.slice(0, i), valid]
+}
+
+function split(s: string): string[] {
+  const lines = s.replace(/\r\n/gu, "\n").split("\n")
+  const clean = new Array(lines.length) as string[]
+
+  let i = 0
+  let lastEmptyLine = false
+  for (let line of lines) {
+    line = line.trim()
+    if (line === "") {
+      if (lastEmptyLine || i === 0) continue
+    }
+    clean[i] = line
+    i++
+    lastEmptyLine = line === ""
+  }
+
+  if (lastEmptyLine) i--
+  return clean.slice(0, i)
+}
+
+function splitClean(s: string): string[] {
+  const lines = s.replace(/\r\n/gu, "\n").split("\n")
+  const clean = new Array(lines.length) as string[]
+
+  let i = 0
+  for (let line of lines) {
+    line = line.trim()
+    if (line === "") continue
+    clean[i] = line
+    i++
+  }
+  return clean.slice(0, i)
 }
 
 export default SourceCreate

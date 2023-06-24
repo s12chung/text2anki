@@ -12,7 +12,7 @@ export const get: LoaderFunction = ({ params }) => {
 
 export const create: ActionFunction = async ({ request }) => {
   const source = await sourceService.create(
-    formData<CreateSourceData>(await request.formData(), "text")
+    formData<CreateSourceData>(await request.formData(), "text", "translation")
   )
   return redirect(`/sources/${source.id}`)
 }

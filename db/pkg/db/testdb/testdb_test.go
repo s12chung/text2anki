@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -63,7 +64,11 @@ func TestGen___SourceSerializedsSeed(t *testing.T) {
 	filepaths := allFilePaths(t, fixture.JoinTestData(testName))
 	sources := make([]db.SourceSerialized, len(filepaths))
 	for i, fp := range filepaths {
-		tokenizedTexts, err := api.DefaultRoutes.TextTokenizer.TokenizeTextsFromString(string(test.Read(t, fp)))
+		split := strings.Split(string(test.Read(t, fp)), "===")
+		if len(split) == 1 {
+			split = append(split, "")
+		}
+		tokenizedTexts, err := api.DefaultRoutes.TextTokenizer.TokenizedTexts(split[0], split[1])
 		require.NoError(err)
 		sources[i] = db.SourceSerialized{Name: path.Base(fp), TokenizedTexts: tokenizedTexts}
 	}

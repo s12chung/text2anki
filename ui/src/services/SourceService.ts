@@ -7,9 +7,13 @@ export interface Token {
   length: number
 }
 
-export interface TokenizedText {
+export interface Text {
   text: string
   translation: string
+  lastEmptyLine: boolean
+}
+
+export interface TokenizedText extends Text {
   tokens: Token[]
 }
 
@@ -23,6 +27,7 @@ export interface Source {
 
 export interface CreateSourceData {
   text: string
+  translation: string
 }
 
 export interface UpdateSourceData {

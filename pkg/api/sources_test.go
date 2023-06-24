@@ -12,7 +12,6 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
-	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -126,7 +125,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 
 func sourcePostReqFromFile(t *testing.T, testName, name string) *SourceCreateRequest {
 	s := string(test.Read(t, fixture.JoinTestData(testName, name)))
-	split := strings.Split(s, text.SplitDelimiter)
+	split := strings.Split(s, "===")
 	if len(split) == 1 {
 		return &SourceCreateRequest{Text: s}
 	}

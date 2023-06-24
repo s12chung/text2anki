@@ -37,8 +37,8 @@ var textTokenizer = db.TextTokenizer{
 	CleanSpeaker: true,
 }
 
-func TestTextTokenizer_TokenizeTextsFromString(t *testing.T) {
-	testNamePath := "TestTextTokenizer_TokenizeTextsFromString/"
+func TestTextTokenizer_TokenizedTexts(t *testing.T) {
+	testNamePath := "TestTextTokenizer_TokenizedTexts/"
 
 	testCases := []struct {
 		name string
@@ -54,7 +54,11 @@ func TestTextTokenizer_TokenizeTextsFromString(t *testing.T) {
 			require := require.New(t)
 
 			s := string(fixture.Read(t, testNamePath+tc.name+".txt"))
-			tokenizedTexts, err := textTokenizer.TokenizeTextsFromString(s)
+			split := strings.Split(s, "===")
+			if len(split) == 1 {
+				split = append(split, "")
+			}
+			tokenizedTexts, err := textTokenizer.TokenizedTexts(split[0], split[1])
 			require.NoError(err)
 
 			nonSpeaker := strings.TrimPrefix(tc.name, "speaker_")

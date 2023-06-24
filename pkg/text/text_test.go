@@ -1,6 +1,8 @@
 package text
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/pemistahl/lingua-go"
@@ -15,8 +17,8 @@ func TestLanguagesMatch(t *testing.T) {
 	require.Equal(int(Unknown), int(lingua.Unknown))
 }
 
-func TestParser_TextsFromString(t *testing.T) {
-	testNamePath := "TestParser_TextsFromString/"
+func TestParser_Texts(t *testing.T) {
+	testNamePath := "TestParser_Texts/"
 	tcs := []struct {
 		name string
 		err  error
@@ -24,11 +26,14 @@ func TestParser_TextsFromString(t *testing.T) {
 		{name: "none"},
 		{name: "simple_weave"},
 		{name: "weave"},
+		{name: "weave_skip"},
 		{name: "split"},
 		{name: "split_1_line"},
+		{name: "split_diff_empty_line"},
 		{name: "split_extra_text", err: errExtraTextLine},
 		{name: "split_extra_translation", err: errExtraTranslationLine},
 		{name: "split_1_line_extra_translation", err: errExtraTranslationLine},
+		{name: "weave_extra_translation", err: fmt.Errorf("translation exists for two consecutive non-empty lines: my extra line")},
 	}
 
 	parser := NewParser(Korean, English)
@@ -38,7 +43,12 @@ func TestParser_TextsFromString(t *testing.T) {
 			require := require.New(t)
 
 			s := string(fixture.Read(t, testNamePath+tc.name+".txt"))
-			texts, err := parser.TextsFromString(s)
+			split := strings.Split(s, "===")
+			if len(split) == 1 {
+				split = append(split, "")
+			}
+
+			texts, err := parser.Texts(split[0], split[1])
 			if tc.err != nil {
 				require.Equal(tc.err, err)
 				return
