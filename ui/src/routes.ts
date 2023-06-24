@@ -1,4 +1,4 @@
-import * as SourceController from "./controllers/SourceController.ts"
+import * as SourceController from "./controllers/SourcesController.ts"
 import HomePage from "./pages/HomePage.tsx"
 import SourceEditPage from "./pages/SourceEditPage.tsx"
 import SourceShowPage from "./pages/SourceShowPage.tsx"
