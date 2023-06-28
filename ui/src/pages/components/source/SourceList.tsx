@@ -1,5 +1,6 @@
 import { Source } from "../../../services/SourceService.ts"
 import AwaitError from "../AwaitError.tsx"
+import { DocumentTextIcon } from "@heroicons/react/24/outline"
 import React from "react"
 import { Await, Link } from "react-router-dom"
 
@@ -20,8 +21,11 @@ const SourceList: React.FC<ISourceListProps> = ({ data }) => {
           ) : (
             <ul>
               {sources.map((source) => (
-                <li key={`source-${source.id}`}>
-                  <Link to={`sources/${source.id}`}>{source.name}</Link>
+                <li key={`source-${source.id}`} className="my-half">
+                  <Link to={`sources/${source.id}`} className="flex-std">
+                    <DocumentTextIcon className="h-6 w-6" />
+                    <div>{source.name}</div>
+                  </Link>
                 </li>
               ))}
             </ul>

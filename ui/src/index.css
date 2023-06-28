@@ -6,4 +6,74 @@
   html {
     @apply text-ink;
   }
+
+  h2 {
+    @apply heading;
+  }
+
+  textarea {
+    @apply textarea;
+  }
+
+  input[type="text"] {
+    @apply input-text;
+  }
+
+  button:not([type="submit"]) {
+    @apply btn;
+  }
+  button[type="submit"] {
+    @apply btn-primary;
+  }
+}
+
+@layer components {
+  .heading {
+    @apply text-2xl font-bold;
+  }
+
+  .btn {
+    @apply rounded-md bg-white px-3 py-2 text-sm text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50;
+  }
+  .btn-primary {
+    @apply disabled:bg-indigo-200 rounded-md bg-indigo-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600;
+  }
+
+  .input-text {
+    @apply block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200;
+  }
+
+  .textarea {
+    @apply block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600;
+  }
+
+  .my-std {
+    @apply my-4;
+  }
+  .mt-std {
+    @apply mt-4;
+  }
+  .mb-std {
+    @apply mb-4;
+  }
+  .my-half {
+    @apply my-2;
+  }
+  .mt-half {
+    @apply mt-2;
+  }
+  .mb-half {
+    @apply mb-2;
+  }
+
+  .flex-std {
+    @apply flex space-x-1;
+  }
+  .flex-col-std {
+    @apply flex flex-col items-center;
+  }
+
+  .h-third {
+    @apply h-[33vh];
+  }
 }

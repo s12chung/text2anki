@@ -15,17 +15,30 @@ const SourceCreate: React.FC = () => {
 
   return (
     <Form action="/sources" method="post">
-      <textarea
-        name="text"
-        placeholder="You may also drag and drop here."
-        value={text}
-        onChange={handleText}
-      />
-      <textarea name="translation" value={translation} onChange={handleTranslation} />
+      <div className="flex-std">
+        <div className="flex-col-std grow">
+          <div>Source Language</div>
+          <textarea name="text" value={text} className="h-third" onChange={handleText} />
+        </div>
+        <div className="flex-col-std grow">
+          <div>Translation</div>
+          <textarea
+            name="translation"
+            value={translation}
+            className="h-third"
+            onChange={handleTranslation}
+          />
+        </div>
+      </div>
+      <div className="flex-std mt-half mb-std">
+        <div className="flex-grow" />
+        <div className="flex-shrink-0">
+          <button type="submit" disabled={!valid}>
+            Submit
+          </button>
+        </div>
+      </div>
       <PreviewTexts texts={previewTexts} />
-      <button type="submit" disabled={!valid}>
-        Submit
-      </button>
     </Form>
   )
 }
