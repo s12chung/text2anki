@@ -10,7 +10,7 @@
   {
     "text": "어디로 날 데려가는지 그 곳은 어딘지",
     "translation": "Or where the final destination is",
-    "last_empty_line": true
+    "previous_break": true
   },
   {
     "text": "알 수 없지만 알 수 없지만 알 수 없지만",
@@ -23,6 +23,6 @@
   {
     "text": "이렇게 또 걸어가고 있네",
     "translation": "Yet I’m still taking another step towards the road",
-    "last_empty_line": true
+    "previous_break": true
   }
 ]

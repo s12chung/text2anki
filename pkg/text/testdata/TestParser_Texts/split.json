@@ -22,7 +22,7 @@
   {
     "text": "사람들은 길이 다 정해져 있는지",
     "translation": "Has destiny already been determined for everyone",
-    "last_empty_line": true
+    "previous_break": true
   },
   {
     "text": "아니면 자기가 자신의 길을",
@@ -43,7 +43,7 @@
   {
     "text": "나는 왜 이 길에 서있나",
     "translation": "Why am I standing on this road",
-    "last_empty_line": true
+    "previous_break": true
   },
   {
     "text": "이게 정말 나의 길인가",

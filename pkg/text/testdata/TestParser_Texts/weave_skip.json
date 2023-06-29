@@ -6,12 +6,12 @@
   {
     "text": "혹시 여러분은 소풍을 가거나, 야외에 나갈 때 어떤 음식을 먹어요?",
     "translation": "",
-    "last_empty_line": true
+    "previous_break": true
   },
   {
     "text": "한국에서는 소풍을 가거나, 야외에 나갈 때 꼭 이 음식을 먹어요.",
     "translation": "",
-    "last_empty_line": true
+    "previous_break": true
   },
   {
     "text": "짜잔!",
@@ -20,6 +20,6 @@
   {
     "text": "김밥입니다.",
     "translation": "It’s gimbap (rice rolled in seaweed).",
-    "last_empty_line": true
+    "previous_break": true
   }
 ]
