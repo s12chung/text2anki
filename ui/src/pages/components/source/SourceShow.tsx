@@ -22,10 +22,16 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
 
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   return (
-    <div>
-      <div className="flex">
-        <div className="flex-grow">{source.name}</div>
-        <Link to={`/sources/${source.id}/edit`}>Edit</Link>
+    <>
+      <div className="flex-std my-std">
+        <div className="flex-grow">
+          <h2>{source.name}</h2>
+        </div>
+        <div className="flex">
+          <Link to={`/sources/${source.id}/edit`} className="btn">
+            Edit
+          </Link>
+        </div>
       </div>
 
       {source.tokenizedTexts.map((tokenizedText) => (
@@ -34,7 +40,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
           <div>{tokenizedText.translation}</div>
         </div>
       ))}
-    </div>
+    </>
   )
 }
 
