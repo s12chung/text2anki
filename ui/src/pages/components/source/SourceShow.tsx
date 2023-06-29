@@ -35,8 +35,9 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
       </div>
 
       <div className="text-center">
-        {source.tokenizedTexts.map((tokenizedText) => (
-          <div key={`text-${tokenizedText.text}`} className="my-8">
+        {source.tokenizedTexts.map((tokenizedText, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <div key={`text-${tokenizedText.text}-${index}`} className="my-8">
             <div className="text-4xl ko-sans mb-2">{tokenizedText.text}</div>
             <div className="text-2xl">{tokenizedText.translation}</div>
           </div>

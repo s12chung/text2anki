@@ -48,7 +48,7 @@ const PreviewTexts: React.FC<{ texts: Text[] }> = ({ texts }) => {
     <div className="grid-std">
       {texts.map((text, index) => (
         // eslint-disable-next-line react/no-array-index-key
-        <div key={`${text.text}-${text.translation}-${text.lastEmptyLine.toString()}-${index}`}>
+        <div key={`${text.text}-${text.translation}-${index}`}>
           {Boolean(text.lastEmptyLine) && <br />}
           {text.text ? (
             <>
