@@ -54,6 +54,10 @@ export function route(
   return route
 }
 
+export function withLayout(element: ReactNode, children: RouteObject[]): RouteObject {
+  return { element, children }
+}
+
 export interface IController {
   index?: LoaderFunction
   get?: LoaderFunction

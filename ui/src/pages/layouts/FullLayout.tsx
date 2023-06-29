@@ -1,8 +1,8 @@
 import { Link, Outlet } from "react-router-dom"
 
-const ApplicationLayout: React.FC = () => {
+const FullLayout: React.FC = () => {
   return (
-    <div className="grid-std">
+    <div className="m-std">
       <div className="my-std">
         <Link to="/">text2anki</Link>
       </div>
@@ -13,4 +13,4 @@ const ApplicationLayout: React.FC = () => {
   )
 }
 
-export default ApplicationLayout
+export default FullLayout
