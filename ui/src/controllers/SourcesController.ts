@@ -1,5 +1,5 @@
 import { CreateSourceData, sourceService, UpdateSourceData } from "../services/SourceService.ts"
-import { formData } from "../utils/RouterUtils.ts"
+import { formData } from "../utils/RouterUtil.ts"
 import { ActionFunction, defer, LoaderFunction, redirect } from "react-router-dom"
 
 export const index: LoaderFunction = () => {
