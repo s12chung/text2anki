@@ -1,0 +1,46 @@
+@layer utilities {
+  .ko-sans {
+    font-family: gowun-batang, "Open Sans", "Gill Sans MT", "Gill Sans", Corbel, Arial, sans-serif;
+  }
+
+  .grid-std {
+    @apply max-w-2xl mx-auto px-4 sm:px-6 md:px-8;
+  }
+
+  .h-third {
+    @apply h-[33vh];
+  }
+
+  .flex-std {
+    @apply flex space-x-1;
+  }
+  .flex-col-std {
+    @apply flex flex-col items-center;
+  }
+
+  .m-std {
+    @apply m-4;
+  }
+  .my-std {
+    @apply my-4;
+  }
+  .mt-std {
+    @apply mt-4;
+  }
+  .mb-std {
+    @apply mb-4;
+  }
+
+  .m-half {
+    @apply m-2;
+  }
+  .my-half {
+    @apply my-2;
+  }
+  .mt-half {
+    @apply mt-2;
+  }
+  .mb-half {
+    @apply mb-2;
+  }
+}

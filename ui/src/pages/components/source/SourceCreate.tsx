@@ -45,7 +45,7 @@ const SourceCreate: React.FC = () => {
 
 const PreviewTexts: React.FC<{ texts: Text[] }> = ({ texts }) => {
   return (
-    <div>
+    <div className="grid-std">
       {texts.map((text, index) => (
         // eslint-disable-next-line react/no-array-index-key
         <div key={`${text.text}-${text.translation}-${text.lastEmptyLine.toString()}-${index}`}>

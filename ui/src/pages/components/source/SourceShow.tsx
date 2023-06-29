@@ -23,7 +23,7 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   return (
     <>
-      <div className="flex-std my-std">
+      <div className="grid-std flex-std my-std">
         <div className="flex-grow">
           <h2>{source.name}</h2>
         </div>
@@ -34,12 +34,14 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
         </div>
       </div>
 
-      {source.tokenizedTexts.map((tokenizedText) => (
-        <div key={`text-${tokenizedText.text}`}>
-          <div>{tokenizedText.text}</div>
-          <div>{tokenizedText.translation}</div>
-        </div>
-      ))}
+      <div className="text-center">
+        {source.tokenizedTexts.map((tokenizedText) => (
+          <div key={`text-${tokenizedText.text}`} className="my-8">
+            <div className="text-4xl ko-sans mb-2">{tokenizedText.text}</div>
+            <div className="text-2xl">{tokenizedText.translation}</div>
+          </div>
+        ))}
+      </div>
     </>
   )
 }
