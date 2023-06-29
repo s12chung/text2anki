@@ -49,7 +49,7 @@ const PreviewTexts: React.FC<{ texts: Text[] }> = ({ texts }) => {
       {texts.map((text, index) => (
         // eslint-disable-next-line react/no-array-index-key
         <div key={`${text.text}-${text.translation}-${index}`}>
-          {Boolean(text.lastEmptyLine) && <br />}
+          {Boolean(text.previousBreak) && <br />}
           {text.text ? (
             <>
               {text.text}
@@ -85,13 +85,13 @@ function textsFromTranslation(s: string, translation: string): [Text[], boolean]
 
   const texts: Text[] = new Array(longestLength)
   let i = 0
-  let lastEmptyLine = false
+  let previousBreak = false
   let valid = true
 
   for (let a = 0; a < longestLength; a++) {
     const line = a < lines.length ? lines[a] : ""
     if (a < lines.length && line === "") {
-      lastEmptyLine = true
+      previousBreak = true
       continue
     }
     const translation = i < translations.length ? translations[i] : ""
@@ -99,10 +99,10 @@ function textsFromTranslation(s: string, translation: string): [Text[], boolean]
     texts[i] = {
       text: line,
       translation,
-      lastEmptyLine,
+      previousBreak,
     }
     i++
-    lastEmptyLine = false
+    previousBreak = false
     if (valid) valid = line !== "" && translation !== ""
   }
   return [texts.slice(0, i), valid]
@@ -113,18 +113,18 @@ function split(s: string): string[] {
   const clean = new Array(lines.length) as string[]
 
   let i = 0
-  let lastEmptyLine = false
+  let previousBreak = false
   for (let line of lines) {
     line = line.trim()
     if (line === "") {
-      if (lastEmptyLine || i === 0) continue
+      if (previousBreak || i === 0) continue
     }
     clean[i] = line
     i++
-    lastEmptyLine = line === ""
+    previousBreak = line === ""
   }
 
-  if (lastEmptyLine) i--
+  if (previousBreak) i--
   return clean.slice(0, i)
 }
 

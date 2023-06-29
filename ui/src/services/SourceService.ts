@@ -10,7 +10,7 @@ export interface Token {
 export interface Text {
   text: string
   translation: string
-  lastEmptyLine: boolean
+  previousBreak: boolean
 }
 
 export interface TokenizedText extends Text {

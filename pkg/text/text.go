@@ -13,7 +13,7 @@ import (
 type Text struct {
 	Text          string `json:"text"`
 	Translation   string `json:"translation"`
-	LastEmptyLine bool   `json:"last_empty_line,omitempty"`
+	PreviousBreak bool   `json:"previous_break,omitempty"`
 }
 
 // Parser parses text into Text arrays (text and translation)
@@ -130,10 +130,10 @@ func (p Parser) TextsFromString(s string) ([]Text, error) {
 
 	texts := make([]Text, 0, len(lines))
 	var text Text
-	lastEmptyLine := false
+	previousBreak := false
 	for _, line := range lines {
 		if line == "" {
-			lastEmptyLine = true
+			previousBreak = true
 			continue
 		}
 
@@ -143,8 +143,8 @@ func (p Parser) TextsFromString(s string) ([]Text, error) {
 				texts = append(texts, text)
 				text = Text{}
 			}
-			text = Text{Text: line, LastEmptyLine: lastEmptyLine}
-			lastEmptyLine = false
+			text = Text{Text: line, PreviousBreak: previousBreak}
+			previousBreak = false
 		} else {
 			if text.Text == "" {
 				return nil, fmt.Errorf("translation exists for two consecutive non-empty lines: %v", line)
@@ -152,7 +152,7 @@ func (p Parser) TextsFromString(s string) ([]Text, error) {
 			text.Translation = line
 			texts = append(texts, text)
 			text = Text{}
-			lastEmptyLine = false
+			previousBreak = false
 		}
 	}
 	if text.Text != "" {
@@ -174,19 +174,19 @@ func (p Parser) TextsFromTranslation(s, translation string) ([]Text, error) {
 
 	texts := make([]Text, len(lines))
 	i := 0
-	lastEmptyLine := false
+	previousBreak := false
 	for _, line := range lines {
 		if line == "" {
-			lastEmptyLine = true
+			previousBreak = true
 			continue
 		}
 		texts[i] = Text{
 			Text:          line,
 			Translation:   translations[i],
-			LastEmptyLine: lastEmptyLine,
+			PreviousBreak: previousBreak,
 		}
 		i++
-		lastEmptyLine = false
+		previousBreak = false
 	}
 	return texts[:i], nil
 }
@@ -197,11 +197,11 @@ func split(s string) ([]string, int) {
 
 	i := 0
 	nonEmptyLines := 0
-	lastEmptyLine := false
+	previousBreak := false
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" {
-			if lastEmptyLine || i == 0 {
+			if previousBreak || i == 0 {
 				continue
 			}
 		} else {
@@ -209,10 +209,10 @@ func split(s string) ([]string, int) {
 		}
 		clean[i] = line
 		i++
-		lastEmptyLine = line == ""
+		previousBreak = line == ""
 	}
 
-	if lastEmptyLine {
+	if previousBreak {
 		i--
 	}
 	return clean[:i], nonEmptyLines
