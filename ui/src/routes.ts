@@ -1,8 +1,9 @@
 import * as SourceController from "./controllers/SourcesController.ts"
 import HomePage from "./pages/HomePage.tsx"
-import SourceEditPage from "./pages/SourceEditPage.tsx"
-import SourceNewPage from "./pages/SourceNewPage.tsx"
-import SourceShowPage from "./pages/SourceShowPage.tsx"
+import LoaderPage from "./pages/LoaderPage.tsx"
+import SourceCreate from "./pages/components/source/SourceCreate.tsx"
+import SourceEdit, { ISourceEditData } from "./pages/components/source/SourceEdit.tsx"
+import SourceShow, { ISourceShowData } from "./pages/components/source/SourceShow.tsx"
 import ApplicationLayout from "./pages/layouts/ApplicationLayout.tsx"
 import FullLayout from "./pages/layouts/FullLayout.tsx"
 import { IController, resources, route, withLayout } from "./utils/RouterUtils.ts"
@@ -17,14 +18,14 @@ const routes = route("/", null, {}, [
     route("", el(HomePage), { loader: SourceController.index }),
 
     resources("sources", appLayoutSourceController, {
-      edit: el(SourceEditPage),
+      edit: el(LoaderPage<ISourceEditData>, { Component: SourceEdit }),
     }),
   ]),
 
   withLayout(el(FullLayout), [
     resources("sources", SourceController, {
-      show: el(SourceShowPage),
-      new: el(SourceNewPage),
+      show: el(LoaderPage<ISourceShowData>, { Component: SourceShow }),
+      new: el(SourceCreate),
     }),
   ]),
 ])
