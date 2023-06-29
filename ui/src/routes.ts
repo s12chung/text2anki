@@ -6,12 +6,13 @@ import SourceEdit, { ISourceEditData } from "./pages/components/source/SourceEdi
 import SourceShow, { ISourceShowData } from "./pages/components/source/SourceShow.tsx"
 import ApplicationLayout from "./pages/layouts/ApplicationLayout.tsx"
 import FullLayout from "./pages/layouts/FullLayout.tsx"
-import { IController, resources, route, withLayout } from "./utils/RouterUtils.ts"
+import { pick } from "./utils/ObjectUtil.ts"
+import { IController, resources, route, withLayout } from "./utils/RouterUtil.ts"
 import { createElement } from "react"
 
 const el = createElement
 
-const appLayoutSourceController = { get: SourceController.get } as IController
+const appLayoutSourceController = pick(SourceController, "index", "create", "get") as IController
 
 const routes = route("/", null, {}, [
   withLayout(el(ApplicationLayout), [
