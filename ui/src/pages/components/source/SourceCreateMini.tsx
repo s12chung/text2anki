@@ -10,7 +10,7 @@ const SourceCreateMini: React.FC = () => {
         name="text"
         value={text}
         placeholder="You may also drag and drop here."
-        className="h-20 focus:h-third"
+        className={text ? "h-third" : "h-20"}
         onChange={handleText}
       />
       <div className="flex-std mt-half mb-std">
@@ -20,7 +20,7 @@ const SourceCreateMini: React.FC = () => {
           </Link>
         </div>
         <div className="flex-shrink-0">
-          <button type="submit" disabled={Boolean(text)}>
+          <button type="submit" disabled={!text}>
             Submit
           </button>
         </div>
