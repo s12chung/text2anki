@@ -3,6 +3,10 @@
     font-family: gowun-batang, "Open Sans", "Gill Sans MT", "Gill Sans", Corbel, Arial, sans-serif;
   }
 
+  .focus-ring {
+    @apply ring-2 ring-inset ring-indigo-600;
+  }
+
   .grid-std {
     @apply max-w-2xl mx-auto px-4 sm:px-6 md:px-8;
   }
