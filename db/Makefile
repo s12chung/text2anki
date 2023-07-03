@@ -28,7 +28,10 @@ test:
 	go test -tags "$(TAGS)" $(TEST)
 
 test.fixtures:
-	UPDATE_FIXTURES=true make test
+	# generate top level fixtures first
+	UPDATE_FIXTURES=true go test $(TEST) -run TestGen___ | $(FIXTURE_CLEAN_OUTPUT) || true
+	@echo; echo
+	UPDATE_FIXTURES=true make test | $(FIXTURE_CLEAN_OUTPUT)
 
 SQLC_VERSION = 1.18.0
 SQLC_URL := https://github.com/kyleconroy/sqlc/releases/download/v$(SQLC_VERSION)/sqlc_$(SQLC_VERSION)_linux_amd64.tar.gz
