@@ -12,6 +12,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
+	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
@@ -22,9 +23,11 @@ func TestToDBTerm(t *testing.T) {
 	term := dictionary.Term{}
 	err := json.Unmarshal(fixture.Read(t, testName+"Src.json"), &term)
 	require.NoError(err)
+	require.Empty(test.EmptyFields(t, term))
 
 	dbTerm, err := db.ToDBTerm(term, 1)
 	require.NoError(err)
+	require.Empty(test.EmptyFields(t, dbTerm))
 
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, dbTerm))
 }
@@ -32,10 +35,11 @@ func TestToDBTerm(t *testing.T) {
 func TestTerm_DictionaryTerm(t *testing.T) {
 	testName := "TestTerm_DictionaryTerm"
 	tcs := []struct {
-		name string
+		name        string
+		emptyFields []string
 	}{
 		{name: "Base"},
-		{name: "EmptyVariants"},
+		{name: "EmptyVariants", emptyFields: []string{"Variants"}},
 	}
 	for _, tc := range tcs {
 		tc := tc
@@ -45,9 +49,11 @@ func TestTerm_DictionaryTerm(t *testing.T) {
 			term := db.Term{}
 			err := json.Unmarshal(fixture.Read(t, path.Join(testName, tc.name+"Src.json")), &term)
 			require.NoError(err)
+			require.Equal(tc.emptyFields, test.EmptyFields(t, term))
 
 			dictTerm, err := term.DictionaryTerm()
 			require.NoError(err)
+			require.Equal(tc.emptyFields, test.EmptyFields(t, dictTerm))
 
 			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, dictTerm))
 		})
@@ -61,8 +67,10 @@ func TestTerm_CreateParams(t *testing.T) {
 	term := db.Term{}
 	err := json.Unmarshal(fixture.Read(t, "TestToDBTerm.json"), &term)
 	require.NoError(err)
+	require.Empty(test.EmptyFields(t, term))
 
 	createParams := term.CreateParams()
+	require.Empty(test.EmptyFields(t, createParams))
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }
 

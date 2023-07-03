@@ -1,5 +1,6 @@
 [
   {
+    "id": 28764,
     "text": "가다",
     "part_of_speech": "AuxiliaryVerb",
     "translations": [
@@ -15,6 +16,7 @@
     "dictionary_source": "Korean Basic Dictionary"
   },
   {
+    "id": 26813,
     "text": "나가다",
     "part_of_speech": "AuxiliaryVerb",
     "translations": [

@@ -1,5 +1,6 @@
 [
   {
+    "id": 1,
     "text": "펄럭이다",
     "variants": "",
     "part_of_speech": "Verb",
@@ -8,6 +9,7 @@
     "popularity": 1
   },
   {
+    "id": 2,
     "text": "마음 같아서는",
     "variants": "",
     "part_of_speech": "Unknown",
@@ -16,6 +18,7 @@
     "popularity": 2
   },
   {
+    "id": 3,
     "text": "마음에 걸리다",
     "variants": "",
     "part_of_speech": "Unknown",

@@ -1,4 +1,5 @@
 CREATE TABLE terms (
+    id INTEGER PRIMARY KEY,
     text TEXT NOT NULL,
     variants TEXT NOT NULL,
     part_of_speech TEXT NOT NULL,

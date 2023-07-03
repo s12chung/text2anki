@@ -23,6 +23,7 @@ func ToDBTerm(term dictionary.Term, popularity int) (Term, error) {
 	}
 
 	return Term{
+		ID:           term.ID,
 		Text:         term.Text,
 		Variants:     variants,
 		PartOfSpeech: string(term.PartOfSpeech),
@@ -41,6 +42,7 @@ func (t Term) DictionaryTerm() (dictionary.Term, error) {
 	}
 
 	return dictionary.Term{
+		ID:               t.ID,
 		Text:             t.Text,
 		Variants:         variants,
 		PartOfSpeech:     lang.PartOfSpeech(t.PartOfSpeech),
@@ -52,7 +54,14 @@ func (t Term) DictionaryTerm() (dictionary.Term, error) {
 
 // CreateParams converts the term to a TermCreateParams
 func (t Term) CreateParams() TermCreateParams {
-	return TermCreateParams(t)
+	return TermCreateParams{
+		Text:         t.Text,
+		Variants:     t.Variants,
+		PartOfSpeech: t.PartOfSpeech,
+		CommonLevel:  t.CommonLevel,
+		Translations: t.Translations,
+		Popularity:   t.Popularity,
+	}
 }
 
 // TermsSearchRow is the row returned by TermsSearch
@@ -110,6 +119,7 @@ func (q *Queries) TermsSearchRaw(ctx context.Context, query string, pos lang.Par
 	for rows.Next() {
 		var i TermsSearchRow
 		if err := rows.Scan(
+			&i.ID,
 			&i.Text,
 			&i.Variants,
 			&i.PartOfSpeech,
