@@ -18,14 +18,15 @@ import (
 
 func TestTerm_StaticCopy(t *testing.T) {
 	require := require.New(t)
-	testName := "TestTerm_StaticCopy"
 
 	term := db.Term{}
 	err := json.Unmarshal(fixture.Read(t, "TestToDBTerm.json"), &term)
 	require.NoError(err)
 	test.EmptyFieldsMatch(t, term)
 
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, term.StaticCopy()))
+	termCopy := term
+	termCopy.ID = 0
+	require.Equal(termCopy, term.StaticCopy())
 }
 
 func TestToDBTerm(t *testing.T) {

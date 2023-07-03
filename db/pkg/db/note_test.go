@@ -12,14 +12,15 @@ import (
 
 func TestNote_StaticCopy(t *testing.T) {
 	require := require.New(t)
-	testName := "TestNote_StaticCopy"
 
 	note := Note{}
 	err := json.Unmarshal(fixture.Read(t, "NoteSrc.json"), &note)
 	require.NoError(err)
 	test.EmptyFieldsMatch(t, note, "Downloaded")
 
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, note.StaticCopy()))
+	noteCopy := note
+	noteCopy.ID = 0
+	require.Equal(noteCopy, note.StaticCopy())
 }
 
 func TestNote_CreateParams(t *testing.T) {

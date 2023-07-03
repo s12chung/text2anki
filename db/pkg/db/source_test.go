@@ -24,12 +24,14 @@ func firstSource(t *testing.T) db.Source {
 }
 
 func TestSourceSerialized_StaticCopy(t *testing.T) {
-	testName := "TestSourceSerialized_StaticCopy"
+	require := require.New(t)
 	test.EmptyFieldsMatch(t, firstSource(t))
 
-	staticCopy := firstSource(t).ToSourceSerialized().StaticCopy()
-	test.EmptyFieldsMatch(t, staticCopy, "ID", "UpdatedAt", "CreatedAt")
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, staticCopy))
+	sourceCopy := firstSource(t).ToSourceSerialized()
+	sourceCopy.ID = 0
+	sourceCopy.UpdatedAt = time.Time{}
+	sourceCopy.CreatedAt = time.Time{}
+	require.Equal(sourceCopy, firstSource(t).ToSourceSerialized().StaticCopy())
 }
 
 func TestSourceSerialized_UpdateParams(t *testing.T) {
