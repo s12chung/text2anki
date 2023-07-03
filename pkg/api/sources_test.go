@@ -16,6 +16,12 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
+var sourcesServer test.Server
+
+func init() {
+	sourcesServer = server.WithPathPrefix("/sources")
+}
+
 func TestRoutes_SourceIndex(t *testing.T) {
 	testName := "TestRoutes_SourceIndex"
 	resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "", nil))

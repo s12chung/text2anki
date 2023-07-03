@@ -18,19 +18,12 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-var server test.Server
-var sourcesServer test.Server
-var termsServer test.Server
+var server = test.Server{Server: httptest.NewServer(DefaultRoutes.Router())}
 
 type MustSetupAndSeed struct{}
 
 func TestMain(m *testing.M) {
 	testdb.MustSetupAndSeed(MustSetupAndSeed{})
-
-	server = test.Server{Server: httptest.NewServer(DefaultRoutes.Router())}
-	sourcesServer = server.WithPathPrefix("/sources")
-	termsServer = server.WithPathPrefix("/terms")
-
 	code := m.Run()
 	server.Close()
 	os.Exit(code)

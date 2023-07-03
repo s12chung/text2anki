@@ -11,6 +11,12 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
 
+var termsServer test.Server
+
+func init() {
+	termsServer = server.WithPathPrefix("/terms")
+}
+
 func TestRoutes_TermsSearch(t *testing.T) {
 	testName := "TestRoutes_TermsSearch"
 	testCases := []struct {
