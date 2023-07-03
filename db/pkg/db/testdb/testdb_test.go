@@ -44,6 +44,12 @@ func TestGen___TermsSeed(t *testing.T) {
 			dbTerm, err := db.ToDBTerm(term, basePopularity+i)
 			require.NoError(err)
 			terms = append(terms, dbTerm)
+
+			emptyFields := []string{"Variants"}
+			if dbTerm.CommonLevel == 0 {
+				emptyFields = append(emptyFields, "CommonLevel")
+			}
+			require.Equal(emptyFields, test.EmptyFields(t, dbTerm))
 		}
 		basePopularity += len(lex.LexicalEntries)
 	}
@@ -71,6 +77,7 @@ func TestGen___SourceSerializedsSeed(t *testing.T) {
 		tokenizedTexts, err := api.DefaultRoutes.TextTokenizer.TokenizedTexts(split[0], split[1])
 		require.NoError(err)
 		sources[i] = db.SourceSerialized{Name: path.Base(fp), TokenizedTexts: tokenizedTexts}
+		require.Equal([]string{"ID", "UpdatedAt", "CreatedAt"}, test.EmptyFields(t, sources[i]))
 	}
 	writeModelFile(t, models.SourceSerializedsSeedFilename, fixture.JSON(t, sources))
 }
