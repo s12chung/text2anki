@@ -42,16 +42,16 @@ func (s SourceSerialized) StaticCopy() any {
 	return c
 }
 
-// ToSourceUpdateParams returns the UpdateParams for the SourceSerialized
-func (s SourceSerialized) ToSourceUpdateParams() SourceUpdateParams {
+// UpdateParams returns the SourceUpdateParams for the SourceSerialized
+func (s SourceSerialized) UpdateParams() SourceUpdateParams {
 	return SourceUpdateParams{
 		Name: s.Name,
 		ID:   s.ID,
 	}
 }
 
-// ToSourceCreateParams returns the SourceCreateParams for the SourceSerialized
-func (s SourceSerialized) ToSourceCreateParams() SourceCreateParams {
+// CreateParams returns the SourceCreateParams for the SourceSerialized
+func (s SourceSerialized) CreateParams() SourceCreateParams {
 	return SourceCreateParams{
 		Name:           s.DefaultedName(),
 		TokenizedTexts: s.ToSource().TokenizedTexts,

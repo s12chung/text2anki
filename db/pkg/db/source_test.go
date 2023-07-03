@@ -25,7 +25,27 @@ func firstSource(t *testing.T) db.Source {
 
 func TestSourceSerialized_StaticCopy(t *testing.T) {
 	testName := "TestSourceSerialized_StaticCopy"
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, firstSource(t).ToSourceSerialized().StaticCopy()))
+	test.EmptyFieldsMatch(t, firstSource(t))
+
+	staticCopy := firstSource(t).ToSourceSerialized().StaticCopy()
+	test.EmptyFieldsMatch(t, staticCopy, "ID", "UpdatedAt", "CreatedAt")
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, staticCopy))
+}
+
+func TestSourceSerialized_UpdateParams(t *testing.T) {
+	testName := "TestSourceSerialized_UpdateParams"
+	test.EmptyFieldsMatch(t, firstSource(t))
+	createParams := firstSource(t).ToSourceSerialized().UpdateParams()
+	test.EmptyFieldsMatch(t, createParams)
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
+}
+
+func TestSourceSerialized_CreateParams(t *testing.T) {
+	testName := "TestSourceSerialized_CreateParams"
+	test.EmptyFieldsMatch(t, firstSource(t))
+	createParams := firstSource(t).ToSourceSerialized().CreateParams()
+	test.EmptyFieldsMatch(t, createParams)
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }
 
 func TestSource_ToSource_ToSourceSerialized(t *testing.T) {
@@ -86,7 +106,7 @@ func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 
 func TestQueries_SourceCreate(t *testing.T) {
 	require := require.New(t)
-	source, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceSerialized().ToSourceCreateParams())
+	source, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceSerialized().CreateParams())
 	require.NoError(err)
 	testRecentTimestamps(t, source.CreatedAt, source.UpdatedAt)
 }
@@ -95,11 +115,11 @@ func TestQueries_SourceUpdate(t *testing.T) {
 	require := require.New(t)
 	t.Parallel()
 
-	newSource, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceSerialized().ToSourceCreateParams())
+	newSource, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceSerialized().CreateParams())
 	require.NoError(err)
 	time.Sleep(1 * time.Second)
 
-	source, err := db.Qs().SourceUpdate(context.Background(), newSource.ToSourceSerialized().ToSourceUpdateParams())
+	source, err := db.Qs().SourceUpdate(context.Background(), newSource.ToSourceSerialized().UpdateParams())
 	require.NoError(err)
 	testRecentTimestamps(t, source.UpdatedAt)
 	require.NotEqual(newSource.UpdatedAt, source.UpdatedAt)

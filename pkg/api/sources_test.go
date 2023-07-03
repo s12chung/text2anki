@@ -63,7 +63,7 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 	}
 
-	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].ToSourceCreateParams())
+	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].CreateParams())
 	require.NoError(t, err)
 
 	for _, tc := range testCases {
@@ -138,7 +138,7 @@ func sourcePostReqFromFile(t *testing.T, testName, name string) *SourceCreateReq
 func TestRoutes_SourceDestroy(t *testing.T) {
 	testName := "TestRoutes_SourceDestroy"
 
-	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].ToSourceCreateParams())
+	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].CreateParams())
 	require.NoError(t, err)
 
 	testCases := []struct {

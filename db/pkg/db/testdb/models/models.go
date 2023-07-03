@@ -128,7 +128,7 @@ func SeedSourceSerializeds() error {
 	}
 	queries := db.Qs()
 	for _, sourceSerialized := range sourceSerializeds {
-		if _, err := queries.SourceCreate(context.Background(), sourceSerialized.ToSourceCreateParams()); err != nil {
+		if _, err := queries.SourceCreate(context.Background(), sourceSerialized.CreateParams()); err != nil {
 			return err
 		}
 	}

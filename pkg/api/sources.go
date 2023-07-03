@@ -67,7 +67,7 @@ func (rs Routes) SourceUpdate(r *http.Request) (any, int, error) {
 	sourceSerialized.Name = req.Name
 
 	return httputil.ReturnModelOr500(func() (any, error) {
-		source, err := db.Qs().SourceUpdate(r.Context(), sourceSerialized.ToSourceUpdateParams())
+		source, err := db.Qs().SourceUpdate(r.Context(), sourceSerialized.UpdateParams())
 		return source.ToSourceSerialized(), err
 	})
 }
@@ -97,7 +97,7 @@ func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
 	}
 
 	return httputil.ReturnModelOr500(func() (any, error) {
-		source, err := db.Qs().SourceCreate(r.Context(), db.SourceSerialized{TokenizedTexts: tokenizedTexts}.ToSourceCreateParams())
+		source, err := db.Qs().SourceCreate(r.Context(), db.SourceSerialized{TokenizedTexts: tokenizedTexts}.CreateParams())
 		return source.ToSourceSerialized(), err
 	})
 }
