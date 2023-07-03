@@ -11,6 +11,7 @@ type Dictionary interface {
 
 // Term is a word or phrase
 type Term struct {
+	ID           int64             `json:"id"`
 	Text         string            `json:"text,omitempty"`
 	Variants     []string          `json:"variants,omitempty"`
 	PartOfSpeech lang.PartOfSpeech `json:"part_of_speech,omitempty"`

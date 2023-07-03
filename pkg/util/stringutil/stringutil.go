@@ -8,7 +8,7 @@ import (
 
 // SplitClean splits the string with the given separator and trims the space for each element
 func SplitClean(s, sep string) []string {
-	slc := []string{}
+	var slc []string
 	if strings.TrimSpace(s) != "" {
 		slc = strings.Split(s, sep)
 	}

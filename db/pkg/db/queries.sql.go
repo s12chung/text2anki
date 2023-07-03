@@ -119,7 +119,7 @@ func (q *Queries) SourceUpdate(ctx context.Context, arg SourceUpdateParams) (Sou
 const termCreate = `-- name: TermCreate :one
 INSERT INTO terms (
     text, variants, part_of_speech, common_level, translations, popularity
-) VALUES (?, ?, ?, ?, ?, ?) RETURNING text, variants, part_of_speech, common_level, translations, popularity
+) VALUES (?, ?, ?, ?, ?, ?) RETURNING id, text, variants, part_of_speech, common_level, translations, popularity
 `
 
 type TermCreateParams struct {
@@ -142,6 +142,7 @@ func (q *Queries) TermCreate(ctx context.Context, arg TermCreateParams) (Term, e
 	)
 	var i Term
 	err := row.Scan(
+		&i.ID,
 		&i.Text,
 		&i.Variants,
 		&i.PartOfSpeech,
@@ -164,7 +165,7 @@ func (q *Queries) TermsCount(ctx context.Context) (int64, error) {
 }
 
 const termsPopular = `-- name: TermsPopular :many
-SELECT text, variants, part_of_speech, common_level, translations, popularity FROM terms ORDER BY CAST(popularity AS INT) LIMIT 100
+SELECT id, text, variants, part_of_speech, common_level, translations, popularity FROM terms ORDER BY CAST(popularity AS INT) LIMIT 100
 `
 
 func (q *Queries) TermsPopular(ctx context.Context) ([]Term, error) {
@@ -177,6 +178,7 @@ func (q *Queries) TermsPopular(ctx context.Context) ([]Term, error) {
 	for rows.Next() {
 		var i Term
 		if err := rows.Scan(
+			&i.ID,
 			&i.Text,
 			&i.Variants,
 			&i.PartOfSpeech,

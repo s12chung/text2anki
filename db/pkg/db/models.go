@@ -17,6 +17,7 @@ type Source struct {
 }
 
 type Term struct {
+	ID           int64  `json:"id"`
 	Text         string `json:"text"`
 	Variants     string `json:"variants"`
 	PartOfSpeech string `json:"part_of_speech"`

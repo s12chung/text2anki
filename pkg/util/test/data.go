@@ -99,6 +99,30 @@ func StaticCopySlice(t *testing.T, b []byte, datas any) []byte {
 	return JSON(t, staticCopies)
 }
 
+// EmptyFields returns a slice of the empty fields of s
+func EmptyFields(t *testing.T, s interface{}) []string {
+	require := require.New(t)
+
+	v := reflect.ValueOf(s)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	require.Equal(reflect.Struct, v.Kind())
+
+	emptyFields := make([]string, v.NumField())
+	a := 0
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).IsZero() {
+			emptyFields[a] = v.Type().Field(i).Name
+			a++
+		}
+	}
+	if a == 0 {
+		return nil
+	}
+	return emptyFields[:a]
+}
+
 // Server is wrapper around httptest.Server for convenience
 type Server struct {
 	pathPrefix string

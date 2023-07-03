@@ -155,6 +155,7 @@ func (l *LexicalEntry) Term() (dictionary.Term, error) {
 	}
 
 	return dictionary.Term{
+		ID:           int64(l.ID),
 		Text:         text,
 		Variants:     variants,
 		PartOfSpeech: pos,

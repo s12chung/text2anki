@@ -218,6 +218,7 @@ type channel struct {
 }
 
 type item struct {
+	TargetCode   uint    `xml:"target_code"`
 	Word         string  `xml:"word"`
 	WordGrade    string  `xml:"word_grade"`
 	PartOfSpeech string  `xml:"pos"`
@@ -233,6 +234,7 @@ func (i *item) term() (dictionary.Term, error) {
 	}
 
 	term := dictionary.Term{
+		ID:   int64(i.TargetCode),
 		Text: strings.TrimSpace(i.Word),
 		// Not supported by API, try for karaoke, "가라오케", variants: "가라오께, 가라오게, 까라오께, 카라오케, 카라오께"
 		Variants:         []string{},

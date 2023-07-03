@@ -1,5 +1,6 @@
 [
   {
+    "id": 27500,
     "text": "가다",
     "part_of_speech": "Verb",
     "common_level": 3,
@@ -140,6 +141,7 @@
     "dictionary_source": "Korean Basic Dictionary"
   },
   {
+    "id": 28764,
     "text": "가다",
     "part_of_speech": "AuxiliaryVerb",
     "translations": [
@@ -155,6 +157,7 @@
     "dictionary_source": "Korean Basic Dictionary"
   },
   {
+    "id": 28117,
     "text": "가다듬다",
     "part_of_speech": "Verb",
     "common_level": 1,
@@ -179,6 +182,7 @@
     "dictionary_source": "Korean Basic Dictionary"
   },
   {
+    "id": 28116,
     "text": "가다가",
     "part_of_speech": "Adverb",
     "translations": [
@@ -190,6 +194,7 @@
     "dictionary_source": "Korean Basic Dictionary"
   },
   {
+    "id": 71456,
     "text": "나가다",
     "part_of_speech": "Verb",
     "common_level": 3,
@@ -294,6 +299,7 @@
     "dictionary_source": "Korean Basic Dictionary"
   },
   {
+    "id": 60216,
     "text": "지나가다",
     "part_of_speech": "Verb",
     "common_level": 3,
@@ -338,6 +344,7 @@
     "dictionary_source": "Korean Basic Dictionary"
   },
   {
+    "id": 89867,
     "text": "올라가다",
     "part_of_speech": "Verb",
     "common_level": 3,
@@ -410,6 +417,7 @@
     "dictionary_source": "Korean Basic Dictionary"
   },
   {
+    "id": 67877,
     "text": "들어가다",
     "part_of_speech": "Verb",
     "common_level": 3,
@@ -474,6 +482,7 @@
     "dictionary_source": "Korean Basic Dictionary"
   },
   {
+    "id": 74103,
     "text": "돌아가다",
     "part_of_speech": "Verb",
     "common_level": 3,
@@ -545,6 +554,7 @@
     "dictionary_source": "Korean Basic Dictionary"
   },
   {
+    "id": 63723,
     "text": "내려가다",
     "part_of_speech": "Verb",
     "common_level": 3,

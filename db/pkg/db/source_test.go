@@ -12,6 +12,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizers"
+	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
@@ -28,6 +29,10 @@ func TestSourceSerialized_StaticCopy(t *testing.T) {
 }
 
 func TestSource_ToSource_ToSourceSerialized(t *testing.T) {
+	require := require.New(t)
+
+	require.Empty(test.EmptyFields(t, firstSource(t)))
+	require.Empty(test.EmptyFields(t, firstSource(t).ToSourceSerialized()))
 	reflect.DeepEqual(firstSource(t), firstSource(t).ToSourceSerialized().ToSource())
 }
 
