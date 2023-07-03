@@ -24,6 +24,10 @@ var generateModelsCodeTemplate string
 
 // GenerateModelsCode generates code for the testdb models
 func GenerateModelsCode() ([]byte, error) {
+	return generateModelsCodeRaw(modelDatas)
+}
+
+func generateModelsCodeRaw(modelDatas []generateModelsCodeData) ([]byte, error) {
 	temp, err := template.New("top").Funcs(template.FuncMap{
 		"pluralize": pluralize,
 		"lower":     lower,
