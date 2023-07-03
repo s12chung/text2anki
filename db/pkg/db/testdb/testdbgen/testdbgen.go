@@ -10,7 +10,8 @@ import (
 
 var modelDatas = []generateModelsCodeData{
 	{Name: "Term", CreateCode: "queries.TermCreate(context.Background(), term.CreateParams())"},
-	{Name: "SourceSerialized", CreateCode: "queries.SourceCreate(context.Background(), sourceSerialized.ToSourceCreateParams())"},
+	{Name: "SourceSerialized", CreateCode: "queries.SourceCreate(context.Background(), sourceSerialized.CreateParams())"},
+	{Name: "Note", CreateCode: "queries.NoteCreate(context.Background(), note.CreateParams())"},
 }
 
 type generateModelsCodeData struct {
@@ -23,6 +24,10 @@ var generateModelsCodeTemplate string
 
 // GenerateModelsCode generates code for the testdb models
 func GenerateModelsCode() ([]byte, error) {
+	return generateModelsCodeRaw(modelDatas)
+}
+
+func generateModelsCodeRaw(modelDatas []generateModelsCodeData) ([]byte, error) {
 	temp, err := template.New("top").Funcs(template.FuncMap{
 		"pluralize": pluralize,
 		"lower":     lower,

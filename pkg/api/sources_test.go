@@ -16,13 +16,16 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestRoutes_SourceIndex(t *testing.T) {
-	require := require.New(t)
-	testName := "TestRoutes_SourceIndex"
+var sourcesServer test.Server
 
+func init() {
+	sourcesServer = server.WithPathPrefix("/sources")
+}
+
+func TestRoutes_SourceIndex(t *testing.T) {
+	testName := "TestRoutes_SourceIndex"
 	resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "", nil))
-	require.Equal(http.StatusOK, resp.Code)
-	fixture.CompareReadOrUpdate(t, testName+".json", test.StaticCopySlice(t, resp.Body.Bytes(), &[]db.SourceSerialized{}))
+	testModelsResponse(t, resp, testName, "", &[]db.SourceSerialized{})
 }
 
 func TestRoutes_SourceGet(t *testing.T) {
@@ -60,7 +63,7 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 	}
 
-	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].ToSourceCreateParams())
+	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].CreateParams())
 	require.NoError(t, err)
 
 	for _, tc := range testCases {
@@ -135,7 +138,7 @@ func sourcePostReqFromFile(t *testing.T, testName, name string) *SourceCreateReq
 func TestRoutes_SourceDestroy(t *testing.T) {
 	testName := "TestRoutes_SourceDestroy"
 
-	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].ToSourceCreateParams())
+	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].CreateParams())
 	require.NoError(t, err)
 
 	testCases := []struct {

@@ -21,3 +21,21 @@ CREATE TRIGGER sources_updated_at
 BEGIN
     UPDATE sources SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
 END;
+
+CREATE TABLE notes (
+    id INTEGER PRIMARY KEY,
+
+    text TEXT NOT NULL,
+    part_of_speech TEXT NOT NULL,
+    translation TEXT NOT NULL,
+
+    common_level INTEGER NOT NULL,
+    explanation TEXT NOT NULL,
+    usage TEXT NOT NULL,
+    usage_translation TEXT NOT NULL,
+    dictionary_source TEXT NOT NULL,
+
+    notes TEXT NOT NULL,
+
+    downloaded BOOLEAN DEFAULT false NOT NULL
+);

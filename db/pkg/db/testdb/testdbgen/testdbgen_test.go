@@ -8,11 +8,15 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestGenerateModelsCode(t *testing.T) {
+func TestGenerateModelsCodeRaw(t *testing.T) {
 	require := require.New(t)
-	testName := "TestGenerateModelsCode"
+	testName := "TestGenerateModelsCodeRaw"
 
-	code, err := GenerateModelsCode()
+	code, err := generateModelsCodeRaw([]generateModelsCodeData{
+		{Name: "Term", CreateCode: "queries.TermCreate(context.Background(), term.CreateParams())"},
+		{Name: "SourceSerialized", CreateCode: "queries.SourceCreate(context.Background(), sourceSerialized.ToSourceCreateParams())"},
+		{Name: "Note", CreateCode: "queries.NoteCreate(context.Background(), note.CreateParams())"},
+	})
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".go.txt", code)
 }

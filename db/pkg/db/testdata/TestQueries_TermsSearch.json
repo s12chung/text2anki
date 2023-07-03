@@ -1,6 +1,33 @@
 [
   {
     "term": {
+      "id": 3,
+      "text": "마음에 걸리다",
+      "variants": "",
+      "part_of_speech": "Unknown",
+      "common_level": 0,
+      "translations": "[{\"text\":\"be caught in one's mind\",\"explanation\":\"To feel uncomfortable out of worry.\"}]",
+      "popularity": 3
+    },
+    "pos_calc": {
+      "Float64": 10,
+      "Valid": true
+    },
+    "pop_calc": {
+      "Float64": 38.76662735963689,
+      "Valid": true
+    },
+    "common_calc": {
+      "Float64": 0,
+      "Valid": true
+    },
+    "len_calc": {
+      "Float64": 3.5620718710802217,
+      "Valid": true
+    }
+  },
+  {
+    "term": {
       "id": 2,
       "text": "마음 같아서는",
       "variants": "",
@@ -15,33 +42,6 @@
     },
     "pop_calc": {
       "Float64": 39.35897776853416,
-      "Valid": true
-    },
-    "common_calc": {
-      "Float64": 0,
-      "Valid": true
-    },
-    "len_calc": {
-      "Float64": 3.5620718710802217,
-      "Valid": true
-    }
-  },
-  {
-    "term": {
-      "id": 3,
-      "text": "마음에 걸리다",
-      "variants": "",
-      "part_of_speech": "Unknown",
-      "common_level": 0,
-      "translations": "[{\"text\":\"be caught in one's mind\",\"explanation\":\"To feel uncomfortable out of worry.\"}]",
-      "popularity": 3
-    },
-    "pos_calc": {
-      "Float64": 0,
-      "Valid": true
-    },
-    "pop_calc": {
-      "Float64": 38.76662735963689,
       "Valid": true
     },
     "common_calc": {

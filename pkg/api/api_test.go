@@ -18,17 +18,12 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-var server test.Server
-var sourcesServer test.Server
+var server = test.Server{Server: httptest.NewServer(DefaultRoutes.Router())}
 
 type MustSetupAndSeed struct{}
 
 func TestMain(m *testing.M) {
 	testdb.MustSetupAndSeed(MustSetupAndSeed{})
-
-	server = test.Server{Server: httptest.NewServer(DefaultRoutes.Router())}
-	sourcesServer = server.WithPathPrefix("/sources")
-
 	code := m.Run()
 	server.Close()
 	os.Exit(code)
@@ -40,9 +35,21 @@ func idPath(path string, id int64) string {
 
 func testModelResponse(t *testing.T, resp test.Response, testName, name string, model test.StaticCopyable) string {
 	jsonBody := test.StaticCopyOrIndent(t, resp.Code, resp.Body.Bytes(), model)
-	fixtureFile := path.Join(testName, name+"_response.json")
+	fixtureFile := testName + ".json"
+	if name != "" {
+		fixtureFile = path.Join(testName, name+"_response.json")
+	}
 	fixture.CompareReadOrUpdate(t, fixtureFile, jsonBody)
 	return fixtureFile
+}
+
+func testModelsResponse(t *testing.T, resp test.Response, testName, name string, models any) {
+	jsonBody := test.StaticCopyOrIndentSlice(t, resp.Code, resp.Body.Bytes(), models)
+	fixtureFile := testName + ".json"
+	if name != "" {
+		fixtureFile = path.Join(testName, name+"_response.json")
+	}
+	fixture.CompareReadOrUpdate(t, fixtureFile, jsonBody)
 }
 
 func TestRoutes_Router(t *testing.T) {

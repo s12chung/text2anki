@@ -28,10 +28,12 @@ test: test.diff
 test.nocache:
 	go test -count=1 -tags "$(TAGS)" $(TEST)
 test.diff: db.diff
+
 test.fixtures:
 	# generate top level fixtures first
-	UPDATE_FIXTURES=true go test $(TEST) -run TestGen___ || true
-	UPDATE_FIXTURES=true make test
+	UPDATE_FIXTURES=true go test $(TEST) -run TestGen___ | $(FIXTURE_CLEAN_OUTPUT) || true
+	@echo; echo
+	UPDATE_FIXTURES=true make test | $(FIXTURE_CLEAN_OUTPUT)
 test.slow:
 	go test -v -count=1 -json -tags "$(TAGS)" $(TEST) \
 	| jq -r 'select(.Action == "pass" and .Test != null) | (.Package | split("/") | last ) + "," + .Test + "," + (.Elapsed | tostring)' \

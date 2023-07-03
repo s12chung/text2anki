@@ -27,3 +27,11 @@ SELECT * FROM terms ORDER BY CAST(popularity AS INT) LIMIT 100;
 INSERT INTO terms (
     text, variants, part_of_speech, common_level, translations, popularity
 ) VALUES (?, ?, ?, ?, ?, ?) RETURNING *;
+
+-- name: NoteGet :one
+SELECT * FROM notes WHERE id = ? LIMIT 1;
+
+-- name: NoteCreate :one
+INSERT INTO notes (
+    text, part_of_speech, translation, common_level, explanation, usage, usage_translation, dictionary_source, notes
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *;
