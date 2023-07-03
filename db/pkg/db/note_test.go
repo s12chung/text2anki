@@ -17,7 +17,7 @@ func TestNote_StaticCopy(t *testing.T) {
 	note := Note{}
 	err := json.Unmarshal(fixture.Read(t, "NoteSrc.json"), &note)
 	require.NoError(err)
-	require.Equal([]string{"Downloaded"}, test.EmptyFields(t, note))
+	test.EmptyFieldsMatch(t, note, "Downloaded")
 
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, note.StaticCopy()))
 }
@@ -29,9 +29,9 @@ func TestNote_CreateParams(t *testing.T) {
 	note := Note{}
 	err := json.Unmarshal(fixture.Read(t, "NoteSrc.json"), &note)
 	require.NoError(err)
-	require.Equal([]string{"Downloaded"}, test.EmptyFields(t, note))
+	test.EmptyFieldsMatch(t, note, "Downloaded")
 
 	createParams := note.CreateParams()
-	require.Empty(test.EmptyFields(t, createParams))
+	test.EmptyFieldsMatch(t, createParams)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }

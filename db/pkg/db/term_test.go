@@ -23,7 +23,7 @@ func TestTerm_StaticCopy(t *testing.T) {
 	term := db.Term{}
 	err := json.Unmarshal(fixture.Read(t, "TestToDBTerm.json"), &term)
 	require.NoError(err)
-	require.Empty(test.EmptyFields(t, term))
+	test.EmptyFieldsMatch(t, term)
 
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, term.StaticCopy()))
 }
@@ -35,11 +35,11 @@ func TestToDBTerm(t *testing.T) {
 	term := dictionary.Term{}
 	err := json.Unmarshal(fixture.Read(t, testName+"Src.json"), &term)
 	require.NoError(err)
-	require.Empty(test.EmptyFields(t, term))
+	test.EmptyFieldsMatch(t, term)
 
 	dbTerm, err := db.ToDBTerm(term, 1)
 	require.NoError(err)
-	require.Empty(test.EmptyFields(t, dbTerm))
+	test.EmptyFieldsMatch(t, dbTerm)
 
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, dbTerm))
 }
@@ -61,11 +61,11 @@ func TestTerm_DictionaryTerm(t *testing.T) {
 			term := db.Term{}
 			err := json.Unmarshal(fixture.Read(t, path.Join(testName, tc.name+"Src.json")), &term)
 			require.NoError(err)
-			require.Equal(tc.emptyFields, test.EmptyFields(t, term))
+			test.EmptyFieldsMatch(t, term, tc.emptyFields...)
 
 			dictTerm, err := term.DictionaryTerm()
 			require.NoError(err)
-			require.Equal(tc.emptyFields, test.EmptyFields(t, dictTerm))
+			test.EmptyFieldsMatch(t, dictTerm, tc.emptyFields...)
 
 			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, dictTerm))
 		})
@@ -79,10 +79,10 @@ func TestTerm_CreateParams(t *testing.T) {
 	term := db.Term{}
 	err := json.Unmarshal(fixture.Read(t, "TestToDBTerm.json"), &term)
 	require.NoError(err)
-	require.Empty(test.EmptyFields(t, term))
+	test.EmptyFieldsMatch(t, term)
 
 	createParams := term.CreateParams()
-	require.Empty(test.EmptyFields(t, createParams))
+	test.EmptyFieldsMatch(t, createParams)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }
 

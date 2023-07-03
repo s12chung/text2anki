@@ -37,7 +37,7 @@ func TestGen___NotesSeed(t *testing.T) {
 		if note.CommonLevel == 0 {
 			emptyFields = append(emptyFields, "CommonLevel")
 		}
-		require.ElementsMatch(emptyFields, test.EmptyFields(t, note))
+		test.EmptyFieldsMatch(t, note, emptyFields...)
 	}
 }
 
@@ -65,7 +65,7 @@ func TestGen___TermsSeed(t *testing.T) {
 			if dbTerm.CommonLevel == 0 {
 				emptyFields = append(emptyFields, "CommonLevel")
 			}
-			require.Equal(emptyFields, test.EmptyFields(t, dbTerm))
+			test.EmptyFieldsMatch(t, dbTerm, emptyFields...)
 		}
 		basePopularity += len(lex.LexicalEntries)
 	}
@@ -93,7 +93,7 @@ func TestGen___SourceSerializedsSeed(t *testing.T) {
 		tokenizedTexts, err := api.DefaultRoutes.TextTokenizer.TokenizedTexts(split[0], split[1])
 		require.NoError(err)
 		sources[i] = db.SourceSerialized{Name: path.Base(fp), TokenizedTexts: tokenizedTexts}
-		require.Equal([]string{"ID", "UpdatedAt", "CreatedAt"}, test.EmptyFields(t, sources[i]))
+		test.EmptyFieldsMatch(t, sources[i], "ID", "UpdatedAt", "CreatedAt")
 	}
 	writeModelFile(t, models.SourceSerializedsSeedFilename, fixture.JSON(t, sources))
 }

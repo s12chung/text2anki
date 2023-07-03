@@ -29,10 +29,8 @@ func TestSourceSerialized_StaticCopy(t *testing.T) {
 }
 
 func TestSource_ToSource_ToSourceSerialized(t *testing.T) {
-	require := require.New(t)
-
-	require.Empty(test.EmptyFields(t, firstSource(t)))
-	require.Empty(test.EmptyFields(t, firstSource(t).ToSourceSerialized()))
+	test.EmptyFieldsMatch(t, firstSource(t))
+	test.EmptyFieldsMatch(t, firstSource(t).ToSourceSerialized())
 	reflect.DeepEqual(firstSource(t), firstSource(t).ToSourceSerialized().ToSource())
 }
 

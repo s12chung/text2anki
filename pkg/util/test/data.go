@@ -131,6 +131,12 @@ func EmptyFields(t *testing.T, s interface{}) []string {
 	return emptyFields[:a]
 }
 
+// EmptyFieldsMatch checks if s has the given empty fields
+func EmptyFieldsMatch(t *testing.T, s interface{}, emptyFields ...string) {
+	require := require.New(t)
+	require.ElementsMatch(emptyFields, EmptyFields(t, s))
+}
+
 // Server is wrapper around httptest.Server for convenience
 type Server struct {
 	pathPrefix string
