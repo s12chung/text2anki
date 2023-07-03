@@ -1,0 +1,20 @@
+[
+  {
+    "id": 0,
+    "text": "마음 같아서는",
+    "variants": "",
+    "part_of_speech": "Verb",
+    "common_level": 0,
+    "translations": "[{\"text\":\"if it's like my mind\",\"explanation\":\"If one follows as one thinks.\"}]",
+    "popularity": 2
+  },
+  {
+    "id": 0,
+    "text": "마음에 걸리다",
+    "variants": "",
+    "part_of_speech": "Unknown",
+    "common_level": 0,
+    "translations": "[{\"text\":\"be caught in one's mind\",\"explanation\":\"To feel uncomfortable out of worry.\"}]",
+    "popularity": 3
+  }
+]

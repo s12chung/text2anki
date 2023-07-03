@@ -17,12 +17,9 @@ import (
 )
 
 func TestRoutes_SourceIndex(t *testing.T) {
-	require := require.New(t)
 	testName := "TestRoutes_SourceIndex"
-
 	resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "", nil))
-	require.Equal(http.StatusOK, resp.Code)
-	fixture.CompareReadOrUpdate(t, testName+".json", test.StaticCopySlice(t, resp.Body.Bytes(), &[]db.SourceSerialized{}))
+	testModelsResponse(t, resp, testName, "", &[]db.SourceSerialized{})
 }
 
 func TestRoutes_SourceGet(t *testing.T) {

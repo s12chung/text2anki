@@ -16,6 +16,18 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
+func TestTerm_StaticCopy(t *testing.T) {
+	require := require.New(t)
+	testName := "TestTerm_StaticCopy"
+
+	term := db.Term{}
+	err := json.Unmarshal(fixture.Read(t, "TestToDBTerm.json"), &term)
+	require.NoError(err)
+	require.Empty(test.EmptyFields(t, term))
+
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, term.StaticCopy()))
+}
+
 func TestToDBTerm(t *testing.T) {
 	require := require.New(t)
 	testName := "TestToDBTerm"
@@ -79,17 +91,17 @@ func TestQueries_TermsSearchRaw(t *testing.T) {
 	testName := "TestQueries_TermsSearch"
 	ctx := context.Background()
 
-	results, err := db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechEmpty, testdb.SearchConfig)
+	results, err := db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechUnknown, testdb.SearchConfig)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, results))
 
-	_, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechEmpty, db.TermsSearchConfig{
+	_, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechUnknown, db.TermsSearchConfig{
 		PopWeight:    50,
 		CommonWeight: 51,
 	})
 	require.Error(err)
 
-	results, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechVerb, testdb.SearchConfig)
+	results, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+"_Verb_"+".json", fixture.JSON(t, results))
 }

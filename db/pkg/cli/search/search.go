@@ -49,7 +49,7 @@ func TermsSearchToCSVRows(terms []db.TermsSearchRow) ([][]string, error) {
 
 // ConfigToCSVRows returns the CSV rows for the config
 func ConfigToCSVRows() [][]string {
-	c := db.DefaultTermsSearchConfig()
+	c := db.GetTermsSearchConfig()
 	return [][]string{
 		{"PosWeight", "PopLog", "PopWeight", "CommonWeight", "LenLog"},
 		strings.Fields(strings.Trim(fmt.Sprint([]int{c.PosWeight, c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog}), "[]")),

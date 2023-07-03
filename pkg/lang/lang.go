@@ -97,9 +97,11 @@ var partOfSpeechTypes = []PartOfSpeech{
 	PartOfSpeechEmpty,
 }
 
-// PartOfSpeechTypes returns an array of all Part Of Speech Types
-func PartOfSpeechTypes() []PartOfSpeech {
-	c := make([]PartOfSpeech, len(partOfSpeechTypes))
-	copy(c, partOfSpeechTypes)
-	return c
+// PartOfSpeechTypes returns a map of all Part Of Speech Types
+func PartOfSpeechTypes() map[string]PartOfSpeech {
+	m := map[string]PartOfSpeech{}
+	for _, pos := range partOfSpeechTypes {
+		m[string(pos)] = pos
+	}
+	return m
 }

@@ -13,6 +13,13 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
+// StaticCopy returns a copy with fields that variate
+func (t Term) StaticCopy() any {
+	c := t
+	c.ID = 0
+	return c
+}
+
 // ToDBTerm converts a dictionary.Term to a Term
 func ToDBTerm(term dictionary.Term, popularity int) (Term, error) {
 	variants := strings.Join(term.Variants, arraySeparator)
@@ -82,7 +89,7 @@ type TermsSearchConfig struct {
 	LenLog       int `json:"len_log,omitempty"`
 }
 
-var defaultTermsSearchConfig = TermsSearchConfig{
+var termsSearchConfig = TermsSearchConfig{
 	PosWeight:    15,
 	PopLog:       50,
 	PopWeight:    25,
@@ -90,14 +97,22 @@ var defaultTermsSearchConfig = TermsSearchConfig{
 	LenLog:       2,
 }
 
-// DefaultTermsSearchConfig returns the default TermsSearchConfig
-func DefaultTermsSearchConfig() TermsSearchConfig {
-	return defaultTermsSearchConfig
+// WithTermsSearchConfig runs with function with the TermsSearchConfig set
+func WithTermsSearchConfig(c TermsSearchConfig, f func()) {
+	oldConfig := termsSearchConfig
+	termsSearchConfig = c
+	f()
+	termsSearchConfig = oldConfig
+}
+
+// GetTermsSearchConfig returns the TermsSearchConfig
+func GetTermsSearchConfig() TermsSearchConfig {
+	return termsSearchConfig
 }
 
 // TermsSearch searches within Terms for text given the default config
 func (q *Queries) TermsSearch(ctx context.Context, query string, pos lang.PartOfSpeech) ([]TermsSearchRow, error) {
-	return q.TermsSearchRaw(ctx, query, pos, DefaultTermsSearchConfig())
+	return q.TermsSearchRaw(ctx, query, pos, GetTermsSearchConfig())
 }
 
 //go:embed custom/TermsSearch.sql

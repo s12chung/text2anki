@@ -99,6 +99,14 @@ func StaticCopySlice(t *testing.T, b []byte, datas any) []byte {
 	return JSON(t, staticCopies)
 }
 
+// StaticCopyOrIndentSlice returns a static JSON copy when http.StatusOK or indented JSON copy
+func StaticCopyOrIndentSlice(t *testing.T, code int, b []byte, datas any) []byte {
+	if code == http.StatusOK {
+		return StaticCopySlice(t, b, datas)
+	}
+	return IndentJSON(t, b)
+}
+
 // EmptyFields returns a slice of the empty fields of s
 func EmptyFields(t *testing.T, s interface{}) []string {
 	require := require.New(t)
