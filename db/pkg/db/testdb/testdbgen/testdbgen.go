@@ -11,6 +11,7 @@ import (
 var modelDatas = []generateModelsCodeData{
 	{Name: "Term", CreateCode: "queries.TermCreate(context.Background(), term.CreateParams())"},
 	{Name: "SourceSerialized", CreateCode: "queries.SourceCreate(context.Background(), sourceSerialized.ToSourceCreateParams())"},
+	{Name: "Note", CreateCode: "queries.NoteCreate(context.Background(), note.CreateParams())"},
 }
 
 type generateModelsCodeData struct {

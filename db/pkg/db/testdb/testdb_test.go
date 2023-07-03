@@ -25,6 +25,22 @@ func writeModelFile(t *testing.T, filename string, fileBytes []byte) {
 	require.NoError(os.WriteFile(filepath.Join(modelsPath, filename), fileBytes, ioutil.OwnerRWGroupR))
 }
 
+func TestGen___NotesSeed(t *testing.T) {
+	require := require.New(t)
+	if !fixture.WillUpdate() {
+		t.Skip("TestGen___ test generates fixtures")
+	}
+	notes, err := models.Notes()
+	require.NoError(err)
+	for _, note := range notes {
+		emptyFields := []string{"ID", "Downloaded"}
+		if note.CommonLevel == 0 {
+			emptyFields = append(emptyFields, "CommonLevel")
+		}
+		require.ElementsMatch(emptyFields, test.EmptyFields(t, note))
+	}
+}
+
 func TestGen___TermsSeed(t *testing.T) {
 	testName := "TestGen___TermsSeed"
 	if !fixture.WillUpdate() {

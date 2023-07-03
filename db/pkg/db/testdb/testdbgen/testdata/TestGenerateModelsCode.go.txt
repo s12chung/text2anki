@@ -28,6 +28,7 @@ func init() {
 var seedMap = map[string]func() error{
 	"Terms":             SeedTerms,
 	"SourceSerializeds": SeedSourceSerializeds,
+	"Notes":             SeedNotes,
 }
 
 // SeedList seeds the models for the testdb
@@ -128,6 +129,43 @@ func SeedSourceSerializeds() error {
 	queries := db.Qs()
 	for _, sourceSerialized := range sourceSerializeds {
 		if _, err := queries.SourceCreate(context.Background(), sourceSerialized.ToSourceCreateParams()); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// NotesSeedFilename is the filename of the testdb models
+const NotesSeedFilename = "NotesSeed.json"
+
+// Notes are testdb models for Notes
+func Notes() ([]db.Note, error) {
+	var notes []db.Note
+	if err := unmarshall(NotesSeedFilename, &notes); err != nil {
+		return nil, err
+	}
+	return notes, nil
+}
+
+// NotesMust are testdb models for Notes, fails if there is an error
+func NotesMust() []db.Note {
+	notes, err := Notes()
+	if err != nil {
+		fmt.Println("NotesMust failed")
+		os.Exit(-1)
+	}
+	return notes
+}
+
+// SeedNotes seeds the Notes testdb models
+func SeedNotes() error {
+	notes, err := Notes()
+	if err != nil {
+		return err
+	}
+	queries := db.Qs()
+	for _, note := range notes {
+		if _, err := queries.NoteCreate(context.Background(), note.CreateParams()); err != nil {
 			return err
 		}
 	}

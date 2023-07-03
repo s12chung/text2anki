@@ -8,6 +8,20 @@ import (
 	"time"
 )
 
+type Note struct {
+	ID               int64  `json:"id"`
+	Text             string `json:"text"`
+	PartOfSpeech     string `json:"part_of_speech"`
+	Translation      string `json:"translation"`
+	CommonLevel      int64  `json:"common_level"`
+	Explanation      string `json:"explanation"`
+	Usage            string `json:"usage"`
+	UsageTranslation string `json:"usage_translation"`
+	DictionarySource string `json:"dictionary_source"`
+	Notes            string `json:"notes"`
+	Downloaded       bool   `json:"downloaded"`
+}
+
 type Source struct {
 	ID             int64     `json:"id"`
 	Name           string    `json:"name"`

@@ -101,6 +101,9 @@ func (rs Routes) Router() chi.Router {
 	r.Route("/terms", func(r chi.Router) {
 		r.Get("/search", httputil.RespondJSONWrap(rs.TermsSearch))
 	})
+	r.Route("/notes", func(r chi.Router) {
+		r.Post("/", httputil.RespondJSONWrap(rs.NoteCreate))
+	})
 	return r
 }
 

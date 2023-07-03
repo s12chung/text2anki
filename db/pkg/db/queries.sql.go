@@ -9,6 +9,76 @@ import (
 	"context"
 )
 
+const noteCreate = `-- name: NoteCreate :one
+INSERT INTO notes (
+    text, part_of_speech, translation, common_level, explanation, usage, usage_translation, dictionary_source, notes
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, text, part_of_speech, translation, common_level, explanation, usage, usage_translation, dictionary_source, notes, downloaded
+`
+
+type NoteCreateParams struct {
+	Text             string `json:"text"`
+	PartOfSpeech     string `json:"part_of_speech"`
+	Translation      string `json:"translation"`
+	CommonLevel      int64  `json:"common_level"`
+	Explanation      string `json:"explanation"`
+	Usage            string `json:"usage"`
+	UsageTranslation string `json:"usage_translation"`
+	DictionarySource string `json:"dictionary_source"`
+	Notes            string `json:"notes"`
+}
+
+func (q *Queries) NoteCreate(ctx context.Context, arg NoteCreateParams) (Note, error) {
+	row := q.db.QueryRowContext(ctx, noteCreate,
+		arg.Text,
+		arg.PartOfSpeech,
+		arg.Translation,
+		arg.CommonLevel,
+		arg.Explanation,
+		arg.Usage,
+		arg.UsageTranslation,
+		arg.DictionarySource,
+		arg.Notes,
+	)
+	var i Note
+	err := row.Scan(
+		&i.ID,
+		&i.Text,
+		&i.PartOfSpeech,
+		&i.Translation,
+		&i.CommonLevel,
+		&i.Explanation,
+		&i.Usage,
+		&i.UsageTranslation,
+		&i.DictionarySource,
+		&i.Notes,
+		&i.Downloaded,
+	)
+	return i, err
+}
+
+const noteGet = `-- name: NoteGet :one
+SELECT id, text, part_of_speech, translation, common_level, explanation, usage, usage_translation, dictionary_source, notes, downloaded FROM notes WHERE id = ? LIMIT 1
+`
+
+func (q *Queries) NoteGet(ctx context.Context, id int64) (Note, error) {
+	row := q.db.QueryRowContext(ctx, noteGet, id)
+	var i Note
+	err := row.Scan(
+		&i.ID,
+		&i.Text,
+		&i.PartOfSpeech,
+		&i.Translation,
+		&i.CommonLevel,
+		&i.Explanation,
+		&i.Usage,
+		&i.UsageTranslation,
+		&i.DictionarySource,
+		&i.Notes,
+		&i.Downloaded,
+	)
+	return i, err
+}
+
 const sourceCreate = `-- name: SourceCreate :one
 INSERT INTO sources (
     name, tokenized_texts
