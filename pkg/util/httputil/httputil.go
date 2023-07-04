@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+
+	"golang.org/x/exp/slog"
 )
 
 // ContextKey is a type used for Context Keys
@@ -36,6 +38,7 @@ func RespondJSONWrap(f RespondJSONWrapFunc) http.HandlerFunc {
 		resp, code, err := f(r)
 		if err != nil {
 			RespondError(w, code, err)
+			slog.Error(err.Error(), slog.Int("code", code), slog.String("url", r.URL.Path), slog.String("method", r.Method))
 			return
 		}
 		RespondJSON(w, resp)

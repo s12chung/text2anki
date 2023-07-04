@@ -15,11 +15,16 @@ import (
 
 // SourceSerialized is a copy of Source for Serializing
 type SourceSerialized struct {
-	ID             int64           `json:"id,omitempty"`
-	Name           string          `json:"name"`
+	ID        int64        `json:"id,omitempty"`
+	Name      string       `json:"name"`
+	Parts     []SourcePart `json:"parts"`
+	UpdatedAt time.Time    `json:"updated_at"`
+	CreatedAt time.Time    `json:"created_at"`
+}
+
+// SourcePart is a part of the Source that contains text
+type SourcePart struct {
 	TokenizedTexts []TokenizedText `json:"tokenized_texts"`
-	UpdatedAt      time.Time       `json:"updated_at"`
-	CreatedAt      time.Time       `json:"created_at"`
 }
 
 // DefaultedName returns the Default name
@@ -27,10 +32,10 @@ func (s SourceSerialized) DefaultedName() string {
 	if s.Name != "" {
 		return s.Name
 	}
-	if len(s.TokenizedTexts) == 0 {
+	if len(s.Parts) == 0 && len(s.Parts[0].TokenizedTexts) == 0 {
 		return ""
 	}
-	return stringutil.FirstUnbrokenSubstring(s.TokenizedTexts[0].Text.Text, 25)
+	return stringutil.FirstUnbrokenSubstring(s.Parts[0].TokenizedTexts[0].Text.Text, 25)
 }
 
 // StaticCopy returns a copy with fields that variate
@@ -53,40 +58,40 @@ func (s SourceSerialized) UpdateParams() SourceUpdateParams {
 // CreateParams returns the SourceCreateParams for the SourceSerialized
 func (s SourceSerialized) CreateParams() SourceCreateParams {
 	return SourceCreateParams{
-		Name:           s.DefaultedName(),
-		TokenizedTexts: s.ToSource().TokenizedTexts,
+		Name:  s.DefaultedName(),
+		Parts: s.ToSource().Parts,
 	}
 }
 
 // ToSource returns the Source of the SourceSerialized
 func (s SourceSerialized) ToSource() Source {
-	bytes, err := json.Marshal(s.TokenizedTexts)
+	bytes, err := json.Marshal(s.Parts)
 	if err != nil {
 		slog.Error(err.Error())
 		panic(-1)
 	}
 	return Source{
-		ID:             s.ID,
-		Name:           s.Name,
-		TokenizedTexts: string(bytes),
-		UpdatedAt:      s.UpdatedAt,
-		CreatedAt:      s.CreatedAt,
+		ID:        s.ID,
+		Name:      s.Name,
+		Parts:     string(bytes),
+		UpdatedAt: s.UpdatedAt,
+		CreatedAt: s.CreatedAt,
 	}
 }
 
 // ToSourceSerialized returns the SourceSerialized of the Source
 func (s Source) ToSourceSerialized() SourceSerialized {
-	var tokenizedTexts []TokenizedText
-	if err := json.Unmarshal([]byte(s.TokenizedTexts), &tokenizedTexts); err != nil {
+	var parts []SourcePart
+	if err := json.Unmarshal([]byte(s.Parts), &parts); err != nil {
 		slog.Error(err.Error())
 		panic(-1)
 	}
 	return SourceSerialized{
-		ID:             s.ID,
-		Name:           s.Name,
-		TokenizedTexts: tokenizedTexts,
-		UpdatedAt:      s.UpdatedAt,
-		CreatedAt:      s.CreatedAt,
+		ID:        s.ID,
+		Name:      s.Name,
+		Parts:     parts,
+		UpdatedAt: s.UpdatedAt,
+		CreatedAt: s.CreatedAt,
 	}
 }
 

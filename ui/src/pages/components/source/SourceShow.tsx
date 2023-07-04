@@ -46,6 +46,9 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const textRefs = useRef<(HTMLDivElement | null)[]>([])
   const tokenRefs = useRef<(HTMLDivElement | null)[][]>([])
 
+  // eslint-disable-next-line prefer-destructuring
+  const tokenizedTexts = source.parts[0].tokenizedTexts
+
   useEffect(() => {
     textRefs.current[textFocusIndex]?.focus()
     if (tokenFocusIndex === -1) return
@@ -54,8 +57,8 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const textLen = source.tokenizedTexts.length
-      const tokenLen = source.tokenizedTexts[textFocusIndex]?.tokens.length
+      const textLen = tokenizedTexts.length
+      const tokenLen = tokenizedTexts[textFocusIndex]?.tokens.length
 
       let changedTextFocusIndex: number | null = null
       let changedTokenFocusIndex: number | null = null
@@ -93,7 +96,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [source.tokenizedTexts, textFocusIndex, tokenFocusIndex])
+  }, [tokenizedTexts, textFocusIndex, tokenFocusIndex])
 
   const handleTextClick = (index: number) => setTextFocusIndex(index)
   const handleTokenClick = (index: number) => setTokenFocusIndex(index)
@@ -112,7 +115,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
       </div>
 
       <div className="text-center">
-        {source.tokenizedTexts.map((tokenizedText, textIndex) => (
+        {tokenizedTexts.map((tokenizedText, textIndex) => (
           /* eslint-disable-next-line react/no-array-index-key */
           <div key={`${tokenizedText.text}-${textIndex}`}>
             {Boolean(tokenizedText.previousBreak) && <div className="text-4xl">&nbsp;</div>}

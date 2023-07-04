@@ -104,13 +104,18 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		{name: "weave", expectedCode: http.StatusOK},
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty", expectedCode: http.StatusUnprocessableEntity},
+		{name: "empty_parts", expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			reqBody := test.JSON(t, sourcePostReqFromFile(t, testName, tc.name+".txt"))
+			body := sourcePostReqFromFile(t, testName, tc.name+".txt")
+			if tc.name == "empty_parts" {
+				body.Parts = []SourceCreateRequestPart{}
+			}
+			reqBody := test.JSON(t, body)
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPost, "", bytes.NewReader(reqBody)))
 			require.Equal(tc.expectedCode, resp.Code)
 
@@ -129,10 +134,11 @@ func TestRoutes_SourceCreate(t *testing.T) {
 func sourcePostReqFromFile(t *testing.T, testName, name string) *SourceCreateRequest {
 	s := string(test.Read(t, fixture.JoinTestData(testName, name)))
 	split := strings.Split(s, "===")
-	if len(split) == 1 {
-		return &SourceCreateRequest{Text: s}
+	part := SourceCreateRequestPart{Text: s}
+	if len(split) == 2 {
+		part = SourceCreateRequestPart{Text: split[0], Translation: split[1]}
 	}
-	return &SourceCreateRequest{Text: split[0], Translation: split[1]}
+	return &SourceCreateRequest{Parts: []SourceCreateRequestPart{part}}
 }
 
 func TestRoutes_SourceDestroy(t *testing.T) {

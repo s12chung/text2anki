@@ -11,7 +11,7 @@ WHERE id = ? RETURNING *;
 
 -- name: SourceCreate :one
 INSERT INTO sources (
-    name, tokenized_texts
+    name, parts
 ) VALUES (?, ?) RETURNING *;
 
 -- name: SourceDestroy :exec
