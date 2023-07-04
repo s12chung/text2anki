@@ -17,10 +17,14 @@ export interface TokenizedText extends Text {
   tokens: Token[]
 }
 
+export interface SourcePart {
+  tokenizedTexts: TokenizedText[]
+}
+
 export interface Source {
   id: number
   name: string
-  tokenizedTexts: TokenizedText[]
+  parts: SourcePart[]
   updatedAt: Date
   createdAt: Date
 }

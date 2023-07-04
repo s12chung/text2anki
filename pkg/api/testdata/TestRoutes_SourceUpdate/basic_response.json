@@ -1,135 +1,139 @@
 {
   "name": "new_name.txt",
-  "tokenized_texts": [
+  "parts": [
     {
-      "text": "이것은 샘플 파일입니다. tmp/in.txt에 자신의 텍스트를 입력합니다.",
-      "translation": "This is a sample file. Put your own text at: tmp/in.txt.",
-      "tokens": [
+      "tokenized_texts": [
         {
-          "text": "이것",
-          "part_of_speech": "Pronoun",
-          "start_index": 0,
-          "length": 2
-        },
-        {
-          "text": "은",
-          "part_of_speech": "Postposition",
-          "start_index": 2,
-          "length": 1
-        },
-        {
-          "text": "샘플",
-          "part_of_speech": "Noun",
-          "start_index": 4,
-          "length": 2
-        },
-        {
-          "text": "파일",
-          "part_of_speech": "Noun",
-          "start_index": 7,
-          "length": 2
-        },
-        {
-          "text": "이",
-          "part_of_speech": "Copula",
-          "start_index": 9,
-          "length": 1
-        },
-        {
-          "text": "ㅂ니다",
-          "part_of_speech": "Ending",
-          "start_index": 10,
-          "length": 3
-        },
-        {
-          "text": ".",
-          "part_of_speech": "Punctuation",
-          "start_index": 13,
-          "length": 1
-        },
-        {
-          "text": "tmp",
-          "part_of_speech": "OtherLanguage",
-          "start_index": 15,
-          "length": 3
-        },
-        {
-          "text": "/",
-          "part_of_speech": "Punctuation",
-          "start_index": 18,
-          "length": 1
-        },
-        {
-          "text": "in",
-          "part_of_speech": "OtherLanguage",
-          "start_index": 19,
-          "length": 2
-        },
-        {
-          "text": ".",
-          "part_of_speech": "Punctuation",
-          "start_index": 21,
-          "length": 1
-        },
-        {
-          "text": "txt",
-          "part_of_speech": "OtherLanguage",
-          "start_index": 22,
-          "length": 3
-        },
-        {
-          "text": "에",
-          "part_of_speech": "Postposition",
-          "start_index": 25,
-          "length": 1
-        },
-        {
-          "text": "자신",
-          "part_of_speech": "Noun",
-          "start_index": 27,
-          "length": 2
-        },
-        {
-          "text": "의",
-          "part_of_speech": "Postposition",
-          "start_index": 29,
-          "length": 1
-        },
-        {
-          "text": "텍스트",
-          "part_of_speech": "Noun",
-          "start_index": 31,
-          "length": 3
-        },
-        {
-          "text": "를",
-          "part_of_speech": "Postposition",
-          "start_index": 34,
-          "length": 1
-        },
-        {
-          "text": "입력",
-          "part_of_speech": "Noun",
-          "start_index": 36,
-          "length": 2
-        },
-        {
-          "text": "하",
-          "part_of_speech": "Suffix",
-          "start_index": 38,
-          "length": 1
-        },
-        {
-          "text": "ㅂ니다",
-          "part_of_speech": "Ending",
-          "start_index": 39,
-          "length": 3
-        },
-        {
-          "text": ".",
-          "part_of_speech": "Punctuation",
-          "start_index": 42,
-          "length": 1
+          "text": "이것은 샘플 파일입니다. tmp/in.txt에 자신의 텍스트를 입력합니다.",
+          "translation": "This is a sample file. Put your own text at: tmp/in.txt.",
+          "tokens": [
+            {
+              "text": "이것",
+              "part_of_speech": "Pronoun",
+              "start_index": 0,
+              "length": 2
+            },
+            {
+              "text": "은",
+              "part_of_speech": "Postposition",
+              "start_index": 2,
+              "length": 1
+            },
+            {
+              "text": "샘플",
+              "part_of_speech": "Noun",
+              "start_index": 4,
+              "length": 2
+            },
+            {
+              "text": "파일",
+              "part_of_speech": "Noun",
+              "start_index": 7,
+              "length": 2
+            },
+            {
+              "text": "이",
+              "part_of_speech": "Copula",
+              "start_index": 9,
+              "length": 1
+            },
+            {
+              "text": "ㅂ니다",
+              "part_of_speech": "Ending",
+              "start_index": 10,
+              "length": 3
+            },
+            {
+              "text": ".",
+              "part_of_speech": "Punctuation",
+              "start_index": 13,
+              "length": 1
+            },
+            {
+              "text": "tmp",
+              "part_of_speech": "OtherLanguage",
+              "start_index": 15,
+              "length": 3
+            },
+            {
+              "text": "/",
+              "part_of_speech": "Punctuation",
+              "start_index": 18,
+              "length": 1
+            },
+            {
+              "text": "in",
+              "part_of_speech": "OtherLanguage",
+              "start_index": 19,
+              "length": 2
+            },
+            {
+              "text": ".",
+              "part_of_speech": "Punctuation",
+              "start_index": 21,
+              "length": 1
+            },
+            {
+              "text": "txt",
+              "part_of_speech": "OtherLanguage",
+              "start_index": 22,
+              "length": 3
+            },
+            {
+              "text": "에",
+              "part_of_speech": "Postposition",
+              "start_index": 25,
+              "length": 1
+            },
+            {
+              "text": "자신",
+              "part_of_speech": "Noun",
+              "start_index": 27,
+              "length": 2
+            },
+            {
+              "text": "의",
+              "part_of_speech": "Postposition",
+              "start_index": 29,
+              "length": 1
+            },
+            {
+              "text": "텍스트",
+              "part_of_speech": "Noun",
+              "start_index": 31,
+              "length": 3
+            },
+            {
+              "text": "를",
+              "part_of_speech": "Postposition",
+              "start_index": 34,
+              "length": 1
+            },
+            {
+              "text": "입력",
+              "part_of_speech": "Noun",
+              "start_index": 36,
+              "length": 2
+            },
+            {
+              "text": "하",
+              "part_of_speech": "Suffix",
+              "start_index": 38,
+              "length": 1
+            },
+            {
+              "text": "ㅂ니다",
+              "part_of_speech": "Ending",
+              "start_index": 39,
+              "length": 3
+            },
+            {
+              "text": ".",
+              "part_of_speech": "Punctuation",
+              "start_index": 42,
+              "length": 1
+            }
+          ]
         }
       ]
     }

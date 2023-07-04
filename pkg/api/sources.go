@@ -74,12 +74,20 @@ func (rs Routes) SourceUpdate(r *http.Request) (any, int, error) {
 
 // SourceCreateRequest represents the SourceCreate request
 type SourceCreateRequest struct {
+	Parts []SourceCreateRequestPart
+}
+
+// SourceCreateRequestPart represents a part of a Source in a SourceCreate request
+type SourceCreateRequestPart struct {
 	Text        string
 	Translation string
 }
 
 func init() {
 	firm.RegisterType(firm.NewDefinition(SourceCreateRequest{}).Validates(firm.RuleMap{
+		"Parts": {rule.Presence{}},
+	}))
+	firm.RegisterType(firm.NewDefinition(SourceCreateRequestPart{}).Validates(firm.RuleMap{
 		"Text": {rule.Presence{}},
 	}))
 }
@@ -91,13 +99,17 @@ func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
 		return nil, code, err
 	}
 
-	tokenizedTexts, err := rs.TextTokenizer.TokenizedTexts(req.Text, req.Translation)
-	if err != nil {
-		return nil, http.StatusUnprocessableEntity, err
+	parts := make([]db.SourcePart, len(req.Parts))
+	for i, part := range req.Parts {
+		tokenizedTexts, err := rs.TextTokenizer.TokenizedTexts(part.Text, part.Translation)
+		if err != nil {
+			return nil, http.StatusUnprocessableEntity, err
+		}
+		parts[i] = db.SourcePart{TokenizedTexts: tokenizedTexts}
 	}
 
 	return httputil.ReturnModelOr500(func() (any, error) {
-		source, err := db.Qs().SourceCreate(r.Context(), db.SourceSerialized{TokenizedTexts: tokenizedTexts}.CreateParams())
+		source, err := db.Qs().SourceCreate(r.Context(), db.SourceSerialized{Parts: parts}.CreateParams())
 		return source.ToSourceSerialized(), err
 	})
 }

@@ -92,7 +92,7 @@ func TestGen___SourceSerializedsSeed(t *testing.T) {
 		}
 		tokenizedTexts, err := api.DefaultRoutes.TextTokenizer.TokenizedTexts(split[0], split[1])
 		require.NoError(err)
-		sources[i] = db.SourceSerialized{Name: path.Base(fp), TokenizedTexts: tokenizedTexts}
+		sources[i] = db.SourceSerialized{Name: path.Base(fp), Parts: []db.SourcePart{{TokenizedTexts: tokenizedTexts}}}
 		test.EmptyFieldsMatch(t, sources[i], "ID", "UpdatedAt", "CreatedAt")
 	}
 	writeModelFile(t, models.SourceSerializedsSeedFilename, fixture.JSON(t, sources))
