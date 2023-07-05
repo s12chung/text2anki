@@ -1,0 +1,14 @@
+{
+  "httptyped.Child": {
+    "str,omitempty": "string"
+  },
+  "httptyped.Parent": {
+    "NoTag": "int",
+    "any,omitempty": "interface {}",
+    "array,omitempty": "httptyped.Child",
+    "array_pt,omitempty": "httptyped.Child",
+    "basic": "httptyped.Child",
+    "primitive,omitempty": "int",
+    "pt,omitempty": "httptyped.Child"
+  }
+}

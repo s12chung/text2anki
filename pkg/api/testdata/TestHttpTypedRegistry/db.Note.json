@@ -1,0 +1,15 @@
+{
+  "db.Note": {
+    "common_level": "int64",
+    "dictionary_source": "string",
+    "downloaded": "bool",
+    "explanation": "string",
+    "id": "int64",
+    "notes": "string",
+    "part_of_speech": "string",
+    "text": "string",
+    "translation": "string",
+    "usage": "string",
+    "usage_translation": "string"
+  }
+}

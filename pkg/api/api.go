@@ -20,6 +20,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/tokenizers/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizers/komoran"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 )
 
 // DefaultRoutes is the routes used by the API
@@ -88,21 +89,21 @@ func (rs Routes) Cleanup() error {
 func (rs Routes) Router() chi.Router {
 	r := chi.NewRouter()
 	r.Route("/sources", func(r chi.Router) {
-		r.Get("/", httputil.RespondJSONWrap(rs.SourceIndex))
-		r.Post("/", httputil.RespondJSONWrap(rs.SourceCreate))
+		r.Get("/", httptyped.RespondTypedJSONWrap(rs.SourceIndex))
+		r.Post("/", httptyped.RespondTypedJSONWrap(rs.SourceCreate))
 
 		r.Route("/{sourceID}", func(r chi.Router) {
 			r.Use(httputil.RequestWrap(SourceCtx))
-			r.Get("/", httputil.RespondJSONWrap(rs.SourceGet))
-			r.Patch("/", httputil.RespondJSONWrap(rs.SourceUpdate))
-			r.Delete("/", httputil.RespondJSONWrap(rs.SourceDestroy))
+			r.Get("/", httptyped.RespondTypedJSONWrap(rs.SourceGet))
+			r.Patch("/", httptyped.RespondTypedJSONWrap(rs.SourceUpdate))
+			r.Delete("/", httptyped.RespondTypedJSONWrap(rs.SourceDestroy))
 		})
 	})
 	r.Route("/terms", func(r chi.Router) {
-		r.Get("/search", httputil.RespondJSONWrap(rs.TermsSearch))
+		r.Get("/search", httptyped.RespondTypedJSONWrap(rs.TermsSearch))
 	})
 	r.Route("/notes", func(r chi.Router) {
-		r.Post("/", httputil.RespondJSONWrap(rs.NoteCreate))
+		r.Post("/", httptyped.RespondTypedJSONWrap(rs.NoteCreate))
 	})
 	return r
 }

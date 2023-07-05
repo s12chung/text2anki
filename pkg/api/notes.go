@@ -5,7 +5,12 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 )
+
+func init() {
+	httptyped.RegisterType(db.Note{})
+}
 
 // NoteCreate creates a new note
 func (rs Routes) NoteCreate(r *http.Request) (any, int, error) {
