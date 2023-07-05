@@ -7,7 +7,12 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 )
+
+func init() {
+	httptyped.RegisterType(db.Term{})
+}
 
 var posTypes = lang.PartOfSpeechTypes()
 

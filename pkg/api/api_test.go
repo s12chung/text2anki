@@ -14,6 +14,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
+	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -27,6 +28,13 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 	server.Close()
 	os.Exit(code)
+}
+
+func TestHttpTypedRegistry(t *testing.T) {
+	testName := "TestHttpTypedRegistry"
+	for _, typ := range httptyped.Types() {
+		fixture.CompareReadOrUpdate(t, path.Join(testName, typ.String()+".json"), fixture.JSON(t, httptyped.StructureMap(typ)))
+	}
 }
 
 func idPath(path string, id int64) string {

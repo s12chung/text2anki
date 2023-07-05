@@ -10,7 +10,12 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/util/chiutil"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 )
+
+func init() {
+	httptyped.RegisterType(db.SourceSerialized{})
+}
 
 const contextSource httputil.ContextKey = "source"
 

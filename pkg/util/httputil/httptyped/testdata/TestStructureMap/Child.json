@@ -1,0 +1,5 @@
+{
+  "httptyped.Child": {
+    "str,omitempty": "string"
+  }
+}
