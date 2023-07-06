@@ -100,9 +100,9 @@ func structureMap(typ reflect.Type, m map[string]map[string]string, handledTypeM
 		if jsonKey == "-" {
 			continue
 		}
-		fieldType := indirectTypeElement(field.Type)
-		currentTypeMap[jsonKey] = fieldType.String()
+		currentTypeMap[jsonKey] = field.Type.String()
 
+		fieldType := indirectTypeElement(field.Type)
 		if !handledTypeMap[fieldType] && fieldType.Kind() == reflect.Struct {
 			structureMap(fieldType, m, handledTypeMap)
 		}

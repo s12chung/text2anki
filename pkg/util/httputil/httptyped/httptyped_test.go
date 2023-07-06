@@ -31,6 +31,12 @@ type Child struct {
 
 type Recurse struct {
 	Recurse *Recurse `json:"recurse"`
+	Layer   Layer    `json:"layer"`
+}
+
+type Layer struct {
+	Recurse  *Recurse  `json:"recurse"`
+	Recurses []Recurse `json:"recurses"`
 }
 
 func TestRegistry_RegisterType(t *testing.T) {
