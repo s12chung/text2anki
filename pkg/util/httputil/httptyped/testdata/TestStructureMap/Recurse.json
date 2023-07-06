@@ -1,5 +1,10 @@
 {
+  "httptyped.Layer": {
+    "recurse": "*httptyped.Recurse",
+    "recurses": "[]httptyped.Recurse"
+  },
   "httptyped.Recurse": {
-    "recurse": "httptyped.Recurse"
+    "layer": "httptyped.Layer",
+    "recurse": "*httptyped.Recurse"
   }
 }

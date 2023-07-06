@@ -1,17 +1,17 @@
 {
   "db.SourcePart": {
-    "tokenized_texts": "db.TokenizedText"
+    "tokenized_texts": "[]db.TokenizedText"
   },
   "db.SourceSerialized": {
     "created_at": "time.Time",
     "id,omitempty": "int64",
     "name": "string",
-    "parts": "db.SourcePart",
+    "parts": "[]db.SourcePart",
     "updated_at": "time.Time"
   },
   "db.TokenizedText": {
     "Text": "text.Text",
-    "tokens": "tokenizers.Token"
+    "tokens": "[]tokenizers.Token"
   },
   "text.Text": {
     "previous_break,omitempty": "bool",
