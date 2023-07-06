@@ -28,21 +28,23 @@ type Registry struct {
 }
 
 // RegisterType adds the type to the registry
-func (r *Registry) RegisterType(a any) {
+func (r *Registry) RegisterType(values ...any) {
 	if r.registeredTypes == nil {
 		r.registeredTypes = map[reflect.Type]bool{}
 	}
 
-	typ := indirectType(reflect.TypeOf(a))
-	if typ.Kind() != reflect.Struct {
-		panic(fmt.Sprintf("RegisterType() with non-Struct kind %v", typ.Name()))
+	for _, value := range values {
+		typ := indirectType(reflect.TypeOf(value))
+		if typ.Kind() != reflect.Struct {
+			panic(fmt.Sprintf("RegisterType() with non-Struct kind %v", typ.Name()))
+		}
+		r.registeredTypes[typ] = true
 	}
-	r.registeredTypes[typ] = true
 }
 
 // HasType returns true if the type exists in the registry, also gives the name of the type
-func (r *Registry) HasType(a any) (string, bool) {
-	typ := indirectTypeElement(reflect.TypeOf(a))
+func (r *Registry) HasType(value any) (string, bool) {
+	typ := indirectTypeElement(reflect.TypeOf(value))
 	_, exists := r.registeredTypes[typ]
 	return typ.Name(), exists
 }

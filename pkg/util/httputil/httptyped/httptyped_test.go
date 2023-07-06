@@ -39,8 +39,10 @@ func TestRegistry_RegisterType(t *testing.T) {
 	registry := &Registry{}
 
 	require.False(registry.registeredTypes[reflect.TypeOf(Parent{})])
-	registry.RegisterType(Parent{})
+	require.False(registry.registeredTypes[reflect.TypeOf(Recurse{})])
+	registry.RegisterType(Parent{}, Recurse{})
 	require.True(registry.registeredTypes[reflect.TypeOf(Parent{})])
+	require.True(registry.registeredTypes[reflect.TypeOf(Recurse{})])
 
 	require.False(registry.registeredTypes[reflect.TypeOf(Child{})])
 	registry.RegisterType(Child{})
