@@ -17,12 +17,12 @@ func init() {
 var posTypes = lang.PartOfSpeechTypes()
 
 // TermsSearch searches for the terms
-func (rs Routes) TermsSearch(r *http.Request) (any, int, error) {
+func (rs Routes) TermsSearch(r *http.Request) (any, *httputil.HTTPError) {
 	query := r.URL.Query().Get("query")
 	posQuery := r.URL.Query().Get("pos")
 	pos, found := posTypes[posQuery]
 	if !found {
-		return nil, http.StatusUnprocessableEntity, fmt.Errorf("pos is invalid: '%v'", posQuery)
+		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("pos is invalid: '%v'", posQuery))
 	}
 	return httputil.ReturnModelOr500(func() (any, error) {
 		termsSearchRow, err := db.Qs().TermsSearch(r.Context(), query, pos)

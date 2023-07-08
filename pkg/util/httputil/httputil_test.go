@@ -22,9 +22,12 @@ func TestRequestWrap(t *testing.T) {
 	var testStatus int
 	var testErr error
 
-	handler := RequestWrap(func(r *http.Request) (*http.Request, int, error) {
+	handler := RequestWrap(func(r *http.Request) (*http.Request, *HTTPError) {
 		r = r.WithContext(context.WithValue(r.Context(), contextKey, testVal))
-		return r, testStatus, testErr
+		if testStatus != http.StatusOK {
+			return nil, Error(testStatus, testErr)
+		}
+		return r, nil
 	})(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		val, ok := r.Context().Value(contextKey).(string)
 		if !ok {
@@ -69,11 +72,14 @@ func TestRespondJSONWrap(t *testing.T) {
 	var testVal string
 	var testStatus int
 	var testErr error
-	handlerFunc := RespondJSONWrap(func(r *http.Request) (any, int, error) {
+	handlerFunc := RespondJSONWrap(func(r *http.Request) (any, *HTTPError) {
 		if r.Method != http.MethodGet {
-			return nil, http.StatusInternalServerError, fmt.Errorf("not a GET")
+			return nil, Error(http.StatusInternalServerError, fmt.Errorf("not a GET"))
 		}
-		return testObj{Val: testVal}, testStatus, testErr
+		if testStatus != http.StatusOK {
+			return nil, Error(testStatus, testErr)
+		}
+		return testObj{Val: testVal}, nil
 	})
 
 	testCases := []struct {
@@ -109,11 +115,11 @@ func TestRespondError(t *testing.T) {
 	require := require.New(t)
 
 	resp := httptest.NewRecorder()
-	status, err := http.StatusInternalServerError, fmt.Errorf("my error")
+	httpError := Error(http.StatusInternalServerError, fmt.Errorf("my error"))
 
-	RespondError(resp, status, err)
+	RespondError(resp, httpError)
 
-	require.Equal(status, resp.Code)
+	require.Equal(httpError.Code, resp.Code)
 	require.Equal("{\"error\":\"my error\",\"code\":500,\"status_text\":\"Internal Server Error\"}\n", resp.Body.String())
 	require.Equal(resp.Header().Get("Content-Type"), JSONContentType)
 	require.Equal(resp.Header().Get("X-Content-Type-Options"), "nosniff")
@@ -131,7 +137,7 @@ func TestRespondJSON(t *testing.T) {
 	require.Equal(resp.Header().Get("Content-Type"), JSONContentType)
 }
 
-func TestBindJSON(t *testing.T) {
+func TestExtractJSON(t *testing.T) {
 	testCases := []struct {
 		name          string
 		data          []byte
@@ -156,15 +162,15 @@ func TestBindJSON(t *testing.T) {
 			require := require.New(t)
 			req := httptest.NewRequest("", "/", bytes.NewBuffer(tc.data))
 
-			status, err := ExtractJSON(req, tc.extractTo)
-			require.Equal(tc.expectedCode, status)
+			httpError := ExtractJSON(req, tc.extractTo)
 			if tc.expectedError == "" {
-				require.NoError(err)
+				require.Nil(httpError)
 				bindTo, ok := tc.extractTo.(*testObj)
 				require.True(ok)
 				require.Equal(tc.expectedValue, bindTo.Val)
 			} else {
-				require.Equal(tc.expectedError, err.Error())
+				require.Equal(tc.expectedCode, httpError.Code)
+				require.Equal(tc.expectedError, httpError.Cause.Error())
 			}
 		})
 	}

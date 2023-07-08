@@ -152,19 +152,19 @@ func handleHeathzfunc(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "ok\n%s", time.Now().Format(time.RFC3339))
 }
 
-func (s *ServerImpl) handleTokenize(r *http.Request) (any, int, error) {
+func (s *ServerImpl) handleTokenize(r *http.Request) (any, *httputil.HTTPError) {
 	if r.Method != http.MethodPost {
-		return nil, http.StatusMethodNotAllowed, fmt.Errorf("405 Method Not Allowed")
+		return nil, httputil.Error(http.StatusMethodNotAllowed, fmt.Errorf("405 Method Not Allowed"))
 	}
 
 	req := &server.TokenizeRequest{}
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		return nil, http.StatusUnprocessableEntity, err
+		return nil, httputil.Error(http.StatusUnprocessableEntity, err)
 	}
 
 	tokens, err := s.tokenizer.Tokenize(req.String)
 	if err != nil {
-		return nil, http.StatusUnprocessableEntity, err
+		return nil, httputil.Error(http.StatusUnprocessableEntity, err)
 	}
-	return tokens, 0, nil
+	return tokens, nil
 }

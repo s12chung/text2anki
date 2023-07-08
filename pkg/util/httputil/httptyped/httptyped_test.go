@@ -10,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
@@ -114,19 +115,17 @@ func TestRespondTypedJSONWrap(t *testing.T) {
 	DefaultRegistry.RegisterType(testObj{})
 
 	var testVal string
-	var testStatus int
-	var testErr error
-	handlerFunc := RespondTypedJSONWrap(func(r *http.Request) (any, int, error) {
+	handlerFunc := RespondTypedJSONWrap(func(r *http.Request) (any, *httputil.HTTPError) {
 		if r.Method == http.MethodPost {
-			return nil, http.StatusUnprocessableEntity, fmt.Errorf("not a GET")
+			return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("not a GET"))
 		}
 		if r.Method == http.MethodPatch {
-			return invalidTestObj{Val: testVal}, 0, nil
+			return invalidTestObj{Val: testVal}, nil
 		}
 		if r.Method == http.MethodPut {
-			return []invalidTestObj{{Val: testVal}}, 0, nil
+			return []invalidTestObj{{Val: testVal}}, nil
 		}
-		return testObj{Val: testVal}, testStatus, testErr
+		return testObj{Val: testVal}, nil
 	})
 
 	testCases := []struct {
@@ -134,7 +133,6 @@ func TestRespondTypedJSONWrap(t *testing.T) {
 		method       string
 		val          string
 		status       int
-		err          error
 		expectedBody string
 	}{
 		{name: "normal", val: "123", status: http.StatusOK, expectedBody: "{\"val\":\"123\"}\n"},
@@ -149,7 +147,7 @@ func TestRespondTypedJSONWrap(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			testVal, testStatus, testErr = tc.val, tc.status, tc.err
+			testVal = tc.val
 
 			resp := httptest.NewRecorder()
 			handlerFunc(resp, httptest.NewRequest(tc.method, "/", nil))

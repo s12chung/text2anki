@@ -13,10 +13,10 @@ func init() {
 }
 
 // NoteCreate creates a new note
-func (rs Routes) NoteCreate(r *http.Request) (any, int, error) {
+func (rs Routes) NoteCreate(r *http.Request) (any, *httputil.HTTPError) {
 	req := db.NoteCreateParams{}
-	if code, err := extractAndValidate(r, &req); err != nil {
-		return nil, code, err
+	if httpError := extractAndValidate(r, &req); httpError != nil {
+		return nil, httpError
 	}
 	return httputil.ReturnModelOr500(func() (any, error) {
 		return db.Qs().NoteCreate(r.Context(), req)
