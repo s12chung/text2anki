@@ -108,13 +108,13 @@ func (rs Routes) Router() chi.Router {
 	return r
 }
 
-func extractAndValidate(r *http.Request, req any) (int, error) {
-	if code, err := httputil.ExtractJSON(r, req); err != nil {
-		return code, err
+func extractAndValidate(r *http.Request, req any) *httputil.HTTPError {
+	if httpError := httputil.ExtractJSON(r, req); httpError != nil {
+		return httpError
 	}
 	result := firm.Validate(req)
 	if !result.IsValid() {
-		return http.StatusUnprocessableEntity, fmt.Errorf(result.ErrorMap().String())
+		return httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf(result.ErrorMap().String()))
 	}
-	return 0, nil
+	return nil
 }

@@ -111,15 +111,15 @@ func structureMap(typ reflect.Type, m map[string]map[string]string, handledTypeM
 
 // RespondTypedJSONWrap wraps around httputil.RespondJSONWrap, but also checks the type of the response beforehand
 func RespondTypedJSONWrap(f httputil.RespondJSONWrapFunc) http.HandlerFunc {
-	return httputil.RespondJSONWrap(func(r *http.Request) (any, int, error) {
-		resp, code, err := f(r)
-		if err != nil {
-			return resp, code, err
+	return httputil.RespondJSONWrap(func(r *http.Request) (any, *httputil.HTTPError) {
+		resp, httpError := f(r)
+		if httpError != nil {
+			return resp, httpError
 		}
 		typeName, exists := HasType(resp)
 		if !exists {
-			return nil, http.StatusInternalServerError, fmt.Errorf("%v is not registered to httptyped", typeName)
+			return nil, httputil.Error(http.StatusInternalServerError, fmt.Errorf("%v is not registered to httptyped", typeName))
 		}
-		return resp, code, err
+		return resp, httpError
 	})
 }

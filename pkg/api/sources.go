@@ -20,30 +20,30 @@ func init() {
 const contextSource httputil.ContextKey = "source"
 
 // SourceCtx sets the source context from the sourceID
-func SourceCtx(r *http.Request) (*http.Request, int, error) {
+func SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError) {
 	sourceID, err := chiutil.ParamID(r, "sourceID")
 	if err != nil {
-		return nil, http.StatusNotFound, err
+		return nil, httputil.Error(http.StatusNotFound, err)
 	}
 
 	source, err := db.Qs().SourceGet(r.Context(), sourceID)
 	if err != nil {
-		return nil, http.StatusNotFound, err
+		return nil, httputil.Error(http.StatusNotFound, err)
 	}
 
 	r = r.WithContext(context.WithValue(r.Context(), contextSource, source.ToSourceSerialized()))
-	return r, 0, nil
+	return r, nil
 }
 
 // SourceIndex returns a list of sources
-func (rs Routes) SourceIndex(r *http.Request) (any, int, error) {
+func (rs Routes) SourceIndex(r *http.Request) (any, *httputil.HTTPError) {
 	return httputil.ReturnModelOr500(func() (any, error) {
 		return db.Qs().SourceSerializedIndex(r.Context())
 	})
 }
 
 // SourceGet gets the source
-func (rs Routes) SourceGet(r *http.Request) (any, int, error) {
+func (rs Routes) SourceGet(r *http.Request) (any, *httputil.HTTPError) {
 	return ctxSourceSerialized(r)
 }
 
@@ -59,15 +59,15 @@ func init() {
 }
 
 // SourceUpdate updates the source
-func (rs Routes) SourceUpdate(r *http.Request) (any, int, error) {
-	sourceSerialized, code, err := ctxSourceSerialized(r)
-	if err != nil {
-		return nil, code, err
+func (rs Routes) SourceUpdate(r *http.Request) (any, *httputil.HTTPError) {
+	sourceSerialized, httpError := ctxSourceSerialized(r)
+	if httpError != nil {
+		return nil, httpError
 	}
 
 	req := SourceUpdateRequest{}
-	if code, err = extractAndValidate(r, &req); err != nil {
-		return nil, code, err
+	if httpError = extractAndValidate(r, &req); httpError != nil {
+		return nil, httpError
 	}
 	sourceSerialized.Name = req.Name
 
@@ -98,17 +98,17 @@ func init() {
 }
 
 // SourceCreate creates a new source
-func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
+func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 	req := SourceCreateRequest{}
-	if code, err := extractAndValidate(r, &req); err != nil {
-		return nil, code, err
+	if httpError := extractAndValidate(r, &req); httpError != nil {
+		return nil, httpError
 	}
 
 	parts := make([]db.SourcePart, len(req.Parts))
 	for i, part := range req.Parts {
 		tokenizedTexts, err := rs.TextTokenizer.TokenizedTexts(part.Text, part.Translation)
 		if err != nil {
-			return nil, http.StatusUnprocessableEntity, err
+			return nil, httputil.Error(http.StatusUnprocessableEntity, err)
 		}
 		parts[i] = db.SourcePart{TokenizedTexts: tokenizedTexts}
 	}
@@ -120,20 +120,20 @@ func (rs Routes) SourceCreate(r *http.Request) (any, int, error) {
 }
 
 // SourceDestroy destroys the source
-func (rs Routes) SourceDestroy(r *http.Request) (any, int, error) {
-	sourceSerialized, code, err := ctxSourceSerialized(r)
-	if err != nil {
-		return nil, code, err
+func (rs Routes) SourceDestroy(r *http.Request) (any, *httputil.HTTPError) {
+	sourceSerialized, httpError := ctxSourceSerialized(r)
+	if httpError != nil {
+		return nil, httpError
 	}
 	return httputil.ReturnModelOr500(func() (any, error) {
 		return sourceSerialized, db.Qs().SourceDestroy(r.Context(), sourceSerialized.ID)
 	})
 }
 
-func ctxSourceSerialized(r *http.Request) (db.SourceSerialized, int, error) {
+func ctxSourceSerialized(r *http.Request) (db.SourceSerialized, *httputil.HTTPError) {
 	sourceSerialized, ok := r.Context().Value(contextSource).(db.SourceSerialized)
 	if !ok {
-		return db.SourceSerialized{}, http.StatusInternalServerError, fmt.Errorf("cast to db.SourceSerialized fail")
+		return db.SourceSerialized{}, httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.SourceSerialized fail"))
 	}
-	return sourceSerialized, 0, nil
+	return sourceSerialized, nil
 }
