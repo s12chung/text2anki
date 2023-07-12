@@ -91,9 +91,9 @@ func TestRoutes_SourceCreate(t *testing.T) {
 	testName := "TestRoutes_SourceCreate"
 	test.CISkip(t, "can't run C environment in CI")
 
-	require.NoError(t, DefaultRoutes.Setup())
+	require.NoError(t, routes.Setup())
 	defer func() {
-		require.NoError(t, DefaultRoutes.Cleanup())
+		require.NoError(t, routes.Cleanup())
 	}()
 
 	testCases := []struct {

@@ -19,7 +19,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-var server = test.Server{Server: httptest.NewServer(DefaultRoutes.Router())}
+var routes = NewRoutes(Config{})
+var server = test.Server{Server: httptest.NewServer(routes.Router())}
 
 type MustSetupAndSeed struct{}
 
@@ -66,7 +67,7 @@ func TestRoutes_Router(t *testing.T) {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Heartbeat("/healthz"))
-	r.Mount("/", DefaultRoutes.Router())
+	r.Mount("/", routes.Router())
 
 	server := httptest.NewServer(r)
 	defer server.Close()

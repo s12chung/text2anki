@@ -23,42 +23,74 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 )
 
-// DefaultRoutes is the routes used by the API
-var DefaultRoutes = Routes{
-	Dictionary:  DefaultDictionary(),
-	Synthesizer: DefaultSynthesizer(),
-	TextTokenizer: db.TextTokenizer{
-		Parser:       DefaultParser(),
-		Tokenizer:    DefaultTokenizer(),
-		CleanSpeaker: true,
-	},
+// Config contains config settings for the API
+type Config struct {
+	TokenizerType
+	DictionaryType
 }
 
-// DefaultParser returns the default Parser
-func DefaultParser() text.Parser {
+// TokenizerType is an enum of tokenizer types
+type TokenizerType int
+
+const (
+	// TokenizerKhaiii picks the Khaiii tokenizer
+	TokenizerKhaiii TokenizerType = iota
+	// TokenizerKomoran picks the Komoran tokenizer
+	TokenizerKomoran
+)
+
+// DictionaryType is an enum of dictionary types
+type DictionaryType int
+
+const (
+	// DictionaryKrDict picks the KrDict dictionary
+	DictionaryKrDict DictionaryType = iota
+	// DictionaryKoreanBasic picks the KoreanBasic dictionary
+	DictionaryKoreanBasic
+)
+
+// NewRoutes is the routes used by the API
+func NewRoutes(config Config) Routes {
+	return Routes{
+		Dictionary:  Dictionary(config.DictionaryType),
+		Synthesizer: Synthesizer(),
+		TextTokenizer: db.TextTokenizer{
+			Parser:       Parser(),
+			Tokenizer:    Tokenizer(config.TokenizerType),
+			CleanSpeaker: true,
+		},
+	}
+}
+
+// Parser returns the default Parser
+func Parser() text.Parser {
 	return text.NewParser(text.Korean, text.English)
 }
 
-// DefaultSynthesizer returns the default Synthesizer
-func DefaultSynthesizer() synthesizers.Synthesizer {
+// Synthesizer returns the default Synthesizer
+func Synthesizer() synthesizers.Synthesizer {
 	return azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
 }
 
-// DefaultTokenizer returns the default Tokenizer
-func DefaultTokenizer() tokenizers.Tokenizer {
-	switch os.Getenv("TOKENIZER") {
-	case "komoran":
+// Tokenizer returns the default Tokenizer
+func Tokenizer(tokenizerType TokenizerType) tokenizers.Tokenizer {
+	switch tokenizerType {
+	case TokenizerKomoran:
 		return komoran.New()
+	case TokenizerKhaiii:
+		fallthrough
 	default:
 		return khaiii.New()
 	}
 }
 
-// DefaultDictionary returns the default Dictionary
-func DefaultDictionary() dictionary.Dictionary {
-	switch os.Getenv("DICTIONARY") {
-	case "koreanbasic":
+// Dictionary returns the default Dictionary
+func Dictionary(dictionaryType DictionaryType) dictionary.Dictionary {
+	switch dictionaryType {
+	case DictionaryKoreanBasic:
 		return koreanbasic.New(koreanbasic.GetAPIKeyFromEnv())
+	case DictionaryKrDict:
+		fallthrough
 	default:
 		if err := db.SetDB("db/data.sqlite3"); err != nil {
 			fmt.Println("failure to SetDB()\n", err)
