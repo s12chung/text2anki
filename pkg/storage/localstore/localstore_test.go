@@ -46,7 +46,7 @@ func TestAPI_Sign(t *testing.T) {
 	require.Equal(testKey, key)
 
 	u.RawQuery = ""
-	require.Equal(path.Join(apiOrigin, testKey), u.String())
+	require.Equal(apiOrigin+"/"+testKey, u.String())
 }
 
 func TestAPI_Store(t *testing.T) {

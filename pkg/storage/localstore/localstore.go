@@ -13,6 +13,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
@@ -27,6 +28,9 @@ type API struct {
 
 // NewAPI returns a new API
 func NewAPI(origin, basePath string, encryptor Encryptor) API {
+	if !strings.HasSuffix(origin, "/") {
+		origin += "/"
+	}
 	return API{origin: origin, basePath: basePath, encryptor: encryptor}
 }
 
@@ -40,7 +44,7 @@ func (a API) Sign(key string) (storage.PresignedHTTPRequest, error) {
 		return storage.PresignedHTTPRequest{}, err
 	}
 	return storage.PresignedHTTPRequest{
-		URL:          path.Join(a.origin, key) + "?" + url.Values{CipherQueryParam: []string{ciphertext}}.Encode(),
+		URL:          a.origin + key + "?" + url.Values{CipherQueryParam: []string{ciphertext}}.Encode(),
 		Method:       "PUT",
 		SignedHeader: nil,
 	}, nil
