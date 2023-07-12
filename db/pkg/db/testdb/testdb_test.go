@@ -79,10 +79,10 @@ func TestGen___SourceSerializedsSeed(t *testing.T) {
 	}
 	require := require.New(t)
 
-	routes := api.NewRoutes(api.Config{})
-	require.NoError(routes.Setup())
+	tokenizer := db.TextTokenizer{Parser: api.Parser(), Tokenizer: api.Tokenizer(api.TokenizerKhaiii)}
+	require.NoError(tokenizer.Setup())
 	defer func() {
-		require.NoError(routes.Cleanup())
+		require.NoError(tokenizer.Cleanup())
 	}()
 
 	filepaths := allFilePaths(t, fixture.JoinTestData(testName))
@@ -92,7 +92,7 @@ func TestGen___SourceSerializedsSeed(t *testing.T) {
 		if len(split) == 1 {
 			split = append(split, "")
 		}
-		tokenizedTexts, err := routes.TextTokenizer.TokenizedTexts(split[0], split[1])
+		tokenizedTexts, err := tokenizer.TokenizedTexts(split[0], split[1])
 		require.NoError(err)
 		sources[i] = db.SourceSerialized{Name: path.Base(fp), Parts: []db.SourcePart{{TokenizedTexts: tokenizedTexts}}}
 		test.EmptyFieldsMatch(t, sources[i], "ID", "UpdatedAt", "CreatedAt")

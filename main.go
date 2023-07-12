@@ -25,6 +25,9 @@ import (
 
 var routes = api.NewRoutes(configFromEnv())
 
+const host = "http://localhost"
+const port = "3000"
+
 func configFromEnv() api.Config {
 	config := api.Config{}
 	if os.Getenv("TOKENIZER") == "komoran" {
@@ -32,6 +35,14 @@ func configFromEnv() api.Config {
 	}
 	if os.Getenv("DICTIONARY") == "koreanbasic" {
 		config.DictionaryType = api.DictionaryKoreanBasic
+	}
+	config.SignerConfig = api.SignerConfig{
+		SignerType: api.SignerFileStore,
+		FileStoreConfig: api.FileStoreConfig{
+			Origin:   host + ":" + port,
+			BaseBath: "db/tmp/filestore",
+			KeyPath:  "db/tmp",
+		},
 	}
 	return config
 }
@@ -81,7 +92,7 @@ func run() error {
 	r.Mount("/", routes.Router())
 
 	server := http.Server{
-		Addr:              ":3000",
+		Addr:              ":" + port,
 		Handler:           r,
 		ReadHeaderTimeout: time.Second,
 	}
@@ -89,7 +100,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	slog.Info("Server running on http://localhost" + server.Addr)
+	slog.Info("Server running on " + host + server.Addr)
 	return server.Serve(ln)
 }
 
