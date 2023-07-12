@@ -66,13 +66,8 @@ func TestRegistry_HasType(t *testing.T) {
 	registry := &Registry{}
 
 	registry.RegisterType(Parent{})
-	name, exists := registry.HasType(Parent{})
-	require.Equal("Parent", name)
-	require.True(exists)
-
-	name, exists = registry.HasType(Child{})
-	require.Equal("Child", name)
-	require.False(exists)
+	require.True(registry.HasType(Parent{}))
+	require.False(registry.HasType(Child{}))
 }
 
 func TestRegistry_Types(t *testing.T) {
@@ -139,9 +134,9 @@ func TestRespondTypedJSONWrap(t *testing.T) {
 		{name: "err", method: http.MethodPost, status: http.StatusUnprocessableEntity,
 			expectedBody: "{\"error\":\"not a GET\",\"code\":422,\"status_text\":\"Unprocessable Entity\"}\n"},
 		{name: "not_registered", method: http.MethodPatch, status: http.StatusInternalServerError,
-			expectedBody: "{\"error\":\"invalidTestObj is not registered to httptyped\",\"code\":500,\"status_text\":\"Internal Server Error\"}\n"},
+			expectedBody: "{\"error\":\"httptyped.invalidTestObj is not registered to httptyped\",\"code\":500,\"status_text\":\"Internal Server Error\"}\n"},
 		{name: "slice_not_registered", method: http.MethodPut, status: http.StatusInternalServerError,
-			expectedBody: "{\"error\":\"invalidTestObj is not registered to httptyped\",\"code\":500,\"status_text\":\"Internal Server Error\"}\n"},
+			expectedBody: "{\"error\":\"httptyped.invalidTestObj is not registered to httptyped\",\"code\":500,\"status_text\":\"Internal Server Error\"}\n"},
 	}
 	for _, tc := range testCases {
 		tc := tc

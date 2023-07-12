@@ -21,7 +21,7 @@ func (r *Registry) RegisterType(definition *Definition) {
 
 	typ := definition.typ
 	if _, exists := r.typeToValidator[typ]; exists {
-		panic(fmt.Sprintf("RegisterType() with type %v already exists", typ.Name()))
+		panic(fmt.Sprintf("RegisterType() with type %v already exists", typ.String()))
 	}
 
 	structValidator := NewStructValidator(definition.RuleMap())

@@ -36,17 +36,15 @@ func (r *Registry) RegisterType(values ...any) {
 	for _, value := range values {
 		typ := indirectType(reflect.TypeOf(value))
 		if typ.Kind() != reflect.Struct {
-			panic(fmt.Sprintf("RegisterType() with non-Struct kind %v", typ.Name()))
+			panic(fmt.Sprintf("RegisterType() with non-Struct kind %v", typ.String()))
 		}
 		r.registeredTypes[typ] = true
 	}
 }
 
 // HasType returns true if the type exists in the registry, also gives the name of the type
-func (r *Registry) HasType(value any) (string, bool) {
-	typ := indirectTypeElement(reflect.TypeOf(value))
-	_, exists := r.registeredTypes[typ]
-	return typ.Name(), exists
+func (r *Registry) HasType(value any) bool {
+	return r.registeredTypes[indirectTypeElement(reflect.TypeOf(value))]
 }
 
 // Types returns the types in the registry
@@ -116,9 +114,9 @@ func RespondTypedJSONWrap(f httputil.RespondJSONWrapFunc) http.HandlerFunc {
 		if httpError != nil {
 			return resp, httpError
 		}
-		typeName, exists := HasType(resp)
-		if !exists {
-			return nil, httputil.Error(http.StatusInternalServerError, fmt.Errorf("%v is not registered to httptyped", typeName))
+		if !HasType(resp) {
+			return nil, httputil.Error(http.StatusInternalServerError,
+				fmt.Errorf("%v is not registered to httptyped", indirectTypeElement(reflect.TypeOf(resp))))
 		}
 		return resp, httpError
 	})
