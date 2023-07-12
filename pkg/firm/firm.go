@@ -109,7 +109,7 @@ func typeName(value reflect.Value) string {
 	if !value.IsValid() {
 		return nilName
 	}
-	return indirect(value).Type().Name()
+	return indirect(value).Type().String()
 }
 
 func typeNameKey(value reflect.Value) ErrorKey {

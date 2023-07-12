@@ -26,7 +26,7 @@ type Definition struct {
 // ValidatesTopLevel defines rules at top level object
 func (s *Definition) ValidatesTopLevel(rules ...Rule) *Definition {
 	if len(s.topLevelRules) != 0 {
-		panic(fmt.Sprintf("ValidatesTopLevel() called twice in type: %v", s.typ.Name()))
+		panic(fmt.Sprintf("ValidatesTopLevel() called twice in type: %v", s.typ.String()))
 	}
 	s.topLevelRules = rules
 	return s
@@ -35,12 +35,12 @@ func (s *Definition) ValidatesTopLevel(rules ...Rule) *Definition {
 // Validates defines rules for fields
 func (s *Definition) Validates(ruleMap RuleMap) *Definition {
 	if len(s.ruleMap) != 0 {
-		panic(fmt.Sprintf("Validates() called twice in type: %v", s.typ.Name()))
+		panic(fmt.Sprintf("Validates() called twice in type: %v", s.typ.String()))
 	}
 	for fieldName := range ruleMap {
 		_, exists := s.typ.FieldByName(fieldName)
 		if !exists {
-			panic(fmt.Sprintf("Validates() called with fieldName, %v, not in type: %v", fieldName, s.typ.Name()))
+			panic(fmt.Sprintf("Validates() called with fieldName, %v, not in type: %v", fieldName, s.typ.String()))
 		}
 	}
 	s.ruleMap = ruleMap
