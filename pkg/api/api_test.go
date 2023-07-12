@@ -20,7 +20,7 @@ import (
 )
 
 var routes = NewRoutes(Config{SignerConfig: SignerConfig{
-	FileStoreConfig: FileStoreConfig{
+	LocalStoreConfig: LocalStoreConfig{
 		Origin:   "https://test.com/storage",
 		BaseBath: path.Join(os.TempDir(), test.GenerateName("filestore-router")),
 		KeyPath:  fixture.TestDataDir,

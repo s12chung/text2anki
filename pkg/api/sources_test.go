@@ -16,7 +16,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/pkg/storage"
-	"github.com/s12chung/text2anki/pkg/storage/filestore"
+	"github.com/s12chung/text2anki/pkg/storage/localstore"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -192,7 +192,7 @@ func (s filestorePresignedHTTPRequest) StaticCopy() any {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
-	u.RawQuery = url.Values{filestore.CipherQueryParam: []string{"testy"}}.Encode()
+	u.RawQuery = url.Values{localstore.CipherQueryParam: []string{"testy"}}.Encode()
 	a.URL = uuidRegexp.ReplaceAllString(u.String(), testUUID)
 	return a
 }

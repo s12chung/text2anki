@@ -16,7 +16,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/storage"
-	"github.com/s12chung/text2anki/pkg/storage/filestore"
+	"github.com/s12chung/text2anki/pkg/storage/localstore"
 	"github.com/s12chung/text2anki/pkg/synthesizers"
 	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
 	"github.com/s12chung/text2anki/pkg/text"
@@ -110,14 +110,14 @@ func Dictionary(dictionaryType DictionaryType) dictionary.Dictionary {
 type SignerType int
 
 const (
-	// SignerFileStore picks the local file store
-	SignerFileStore SignerType = iota
+	// SignerLocalStore picks the local file store
+	SignerLocalStore SignerType = iota
 )
 
 // SignerConfig configures the storage signer
 type SignerConfig struct {
 	SignerType
-	FileStoreConfig FileStoreConfig
+	LocalStoreConfig LocalStoreConfig
 }
 
 // Signer returns a storage signer
@@ -125,10 +125,10 @@ func Signer(config SignerConfig) storage.Signer {
 	var api storage.API
 	var err error
 	switch config.SignerType {
-	case SignerFileStore:
+	case SignerLocalStore:
 		fallthrough
 	default:
-		api, err = FileStoreAPI(config.FileStoreConfig)
+		api, err = LocalStoreAPI(config.LocalStoreConfig)
 	}
 	if err != nil {
 		fmt.Println(err)
@@ -137,33 +137,33 @@ func Signer(config SignerConfig) storage.Signer {
 	return storage.NewSigner(api)
 }
 
-// FileStoreConfig defines the config for filestore
-type FileStoreConfig struct {
+// LocalStoreConfig defines the config for localstore
+type LocalStoreConfig struct {
 	Origin   string
 	BaseBath string
 	KeyPath  string
 }
 
-var fileStoreConfigRuleMap = firm.RuleMap{
+var localStoreConfigRuleMap = firm.RuleMap{
 	"Origin":   {rule.Presence{}},
 	"BaseBath": {rule.Presence{}},
 	"KeyPath":  {rule.Presence{}},
 }
 
-const filestoreKey = "filestore.key"
+const localstoreKey = "localstore.key"
 
-// FileStoreAPI returns a FileStoreAPI
-func FileStoreAPI(config FileStoreConfig) (filestore.API, error) {
-	// FileStoreAPI is called when declaring package level vars (before init()), this ensures the definition works
-	result := firm.NewStructValidator(fileStoreConfigRuleMap).Validate(config)
+// LocalStoreAPI returns a localstore.API
+func LocalStoreAPI(config LocalStoreConfig) (localstore.API, error) {
+	// LocalStoreAPI is called when declaring package level vars (before init()), this ensures the definition works
+	result := firm.NewStructValidator(localStoreConfigRuleMap).Validate(config)
 	if !result.IsValid() {
-		return filestore.API{}, fmt.Errorf(result.ErrorMap().String())
+		return localstore.API{}, fmt.Errorf(result.ErrorMap().String())
 	}
-	encryptor, err := filestore.NewAESEncryptorFromFile(path.Join(config.KeyPath, filestoreKey))
+	encryptor, err := localstore.NewAESEncryptorFromFile(path.Join(config.KeyPath, localstoreKey))
 	if err != nil {
-		return filestore.API{}, err
+		return localstore.API{}, err
 	}
-	return filestore.NewAPI(config.Origin, config.BaseBath, encryptor), nil
+	return localstore.NewAPI(config.Origin, config.BaseBath, encryptor), nil
 }
 
 // Routes contains the routes used for the api

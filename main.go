@@ -37,8 +37,8 @@ func configFromEnv() api.Config {
 		config.DictionaryType = api.DictionaryKoreanBasic
 	}
 	config.SignerConfig = api.SignerConfig{
-		SignerType: api.SignerFileStore,
-		FileStoreConfig: api.FileStoreConfig{
+		SignerType: api.SignerLocalStore,
+		LocalStoreConfig: api.LocalStoreConfig{
 			Origin:   host + ":" + port,
 			BaseBath: "db/tmp/filestore",
 			KeyPath:  "db/tmp",

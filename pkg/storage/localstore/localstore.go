@@ -1,5 +1,5 @@
-// Package filestore stores file locally, tries to mimic s3
-package filestore
+// Package localstore stores file locally, tries to mimic s3
+package localstore
 
 import (
 	"crypto/aes"
