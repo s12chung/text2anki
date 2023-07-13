@@ -38,7 +38,7 @@ func (s SourceSerialized) DefaultedName() string {
 	return stringutil.FirstUnbrokenSubstring(s.Parts[0].TokenizedTexts[0].Text.Text, 25)
 }
 
-// StaticCopy returns a copy with fields that variate
+// StaticCopy returns a copy without fields that variate
 func (s SourceSerialized) StaticCopy() any {
 	c := s
 	c.ID = 0

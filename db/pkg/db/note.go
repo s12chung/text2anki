@@ -17,7 +17,7 @@ func init() {
 	}))
 }
 
-// StaticCopy returns a copy with fields that variate
+// StaticCopy returns a copy without fields that variate
 func (n Note) StaticCopy() any {
 	c := n
 	c.ID = 0
