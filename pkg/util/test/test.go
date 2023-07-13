@@ -27,5 +27,10 @@ func GenerateFilename(name, ext string) string {
 	if ext[0] != '.' {
 		ext = "." + ext
 	}
-	return fmt.Sprintf("text2anki-%v-%v%v", name, timeNow().Format(time.StampMilli), ext)
+	return GenerateName(name) + ext
+}
+
+// GenerateName returns a non-colliding name
+func GenerateName(name string) string {
+	return fmt.Sprintf("text2anki-%v-%v", name, timeNow().Format(time.StampMilli))
 }

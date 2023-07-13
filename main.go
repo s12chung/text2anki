@@ -23,6 +23,30 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
+var routes = api.NewRoutes(configFromEnv())
+
+const host = "http://localhost"
+const port = "3000"
+
+func configFromEnv() api.Config {
+	config := api.Config{}
+	if os.Getenv("TOKENIZER") == "komoran" {
+		config.TokenizerType = api.TokenizerKomoran
+	}
+	if os.Getenv("DICTIONARY") == "koreanbasic" {
+		config.DictionaryType = api.DictionaryKoreanBasic
+	}
+	config.StorageConfig = api.StorageConfig{
+		StorageType: api.StorageLocalStore,
+		LocalStoreConfig: api.LocalStoreConfig{
+			Origin:   host + ":" + port,
+			BaseBath: "db/tmp/filestore",
+			KeyPath:  "db/tmp",
+		},
+	}
+	return config
+}
+
 var cleanSpeaker bool
 var cli bool
 
@@ -45,11 +69,11 @@ func main() {
 }
 
 func run() error {
-	if err := api.DefaultRoutes.Setup(); err != nil {
+	if err := routes.Setup(); err != nil {
 		return err
 	}
 	defer func() {
-		if err := api.DefaultRoutes.Cleanup(); err != nil {
+		if err := routes.Cleanup(); err != nil {
 			fmt.Println(err)
 		}
 	}()
@@ -65,10 +89,10 @@ func run() error {
 	}))
 	r.Use(middleware.Logger)
 	r.Use(middleware.Heartbeat("/healthz"))
-	r.Mount("/", api.DefaultRoutes.Router())
+	r.Mount("/", routes.Router())
 
 	server := http.Server{
-		Addr:              ":3000",
+		Addr:              ":" + port,
 		Handler:           r,
 		ReadHeaderTimeout: time.Second,
 	}
@@ -76,7 +100,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	slog.Info("Server running on http://localhost" + server.Addr)
+	slog.Info("Server running on " + host + server.Addr)
 	return server.Serve(ln)
 }
 
@@ -96,11 +120,11 @@ func mainAgain() {
 }
 
 func runAgain(textStringFilename, exportDir string) error {
-	if err := api.DefaultRoutes.Setup(); err != nil {
+	if err := routes.Setup(); err != nil {
 		return err
 	}
 	defer func() {
-		if err := api.DefaultRoutes.Cleanup(); err != nil {
+		if err := routes.Cleanup(); err != nil {
 			fmt.Println(err)
 		}
 	}()
@@ -126,7 +150,7 @@ func tokenizeFile(filename string) ([]db.TokenizedText, error) {
 	if len(split) == 1 {
 		split = append(split, "")
 	}
-	texts, err := api.DefaultRoutes.TextTokenizer.Parser.Texts(split[0], split[1])
+	texts, err := routes.TextTokenizer.Parser.Texts(split[0], split[1])
 	if err != nil {
 		bytes, _ := yaml.Marshal(texts)
 		fmt.Println(string(bytes))
@@ -136,7 +160,7 @@ func tokenizeFile(filename string) ([]db.TokenizedText, error) {
 		texts = text.CleanSpeaker(texts)
 	}
 
-	tokenizedTexts, err := api.DefaultRoutes.TextTokenizer.TokenizeTexts(texts)
+	tokenizedTexts, err := routes.TextTokenizer.TokenizeTexts(texts)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +181,7 @@ func exportFiles(notes []anki.Note, exportDir string) error {
 }
 
 func createAudio(notes []anki.Note) error {
-	synth := api.DefaultRoutes.Synthesizer
+	synth := routes.Synthesizer
 	for i := range notes {
 		note := &notes[i]
 		speech, err := synth.TextToSpeech(note.Usage)

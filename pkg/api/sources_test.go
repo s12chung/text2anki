@@ -5,6 +5,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
+	"os"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -12,6 +15,8 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
+	"github.com/s12chung/text2anki/pkg/storage"
+	"github.com/s12chung/text2anki/pkg/storage/localstore"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -91,9 +96,9 @@ func TestRoutes_SourceCreate(t *testing.T) {
 	testName := "TestRoutes_SourceCreate"
 	test.CISkip(t, "can't run C environment in CI")
 
-	require.NoError(t, DefaultRoutes.Setup())
+	require.NoError(t, routes.Setup())
 	defer func() {
-		require.NoError(t, DefaultRoutes.Cleanup())
+		require.NoError(t, routes.Cleanup())
 	}()
 
 	testCases := []struct {
@@ -169,6 +174,52 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 				_, err := db.Qs().SourceGet(context.Background(), created.ID)
 				require.Equal(fmt.Errorf("sql: no rows in result set"), err)
 			}
+		})
+	}
+}
+
+type filestorePresignedHTTPRequest struct {
+	storage.PresignedHTTPRequest
+}
+
+var testUUID = "123e4567-e89b-12d3-a456-426614174000"
+var uuidRegexp = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`)
+
+func (s filestorePresignedHTTPRequest) StaticCopy() any {
+	a := s
+	u, err := url.Parse(a.URL)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+	u.RawQuery = url.Values{localstore.CipherQueryParam: []string{"testy"}}.Encode()
+	a.URL = uuidRegexp.ReplaceAllString(u.String(), testUUID)
+	return a
+}
+
+func TestRoutes_SignParts(t *testing.T) {
+	testName := "TestRoutes_SignParts"
+
+	testCases := []struct {
+		name         string
+		queryParams  string
+		expectedCode int
+	}{
+		{name: "one", queryParams: "exts=.png", expectedCode: http.StatusOK},
+		{name: "many", queryParams: "exts=.jpg&exts=.png&exts=.jpeg", expectedCode: http.StatusOK},
+		{name: "array", queryParams: "exts[0]=.jpg&exts[1]=.png&exts[2]=.jpeg", expectedCode: http.StatusUnprocessableEntity},
+		{name: "comma", queryParams: "exts=.jpeg,.png", expectedCode: http.StatusUnprocessableEntity},
+		{name: "none", queryParams: "", expectedCode: http.StatusUnprocessableEntity},
+		{name: "invalid", queryParams: "exts=.jpg&exts=.png&exts=.waka", expectedCode: http.StatusUnprocessableEntity},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+
+			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "/sign_parts?"+tc.queryParams, nil))
+			require.Equal(tc.expectedCode, resp.Code)
+			testModelsResponse(t, resp, testName, tc.name, &[]filestorePresignedHTTPRequest{})
 		})
 	}
 }

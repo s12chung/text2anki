@@ -4,75 +4,30 @@ package api
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi/v5"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
-	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
-	"github.com/s12chung/text2anki/pkg/dictionary/krdict"
 	"github.com/s12chung/text2anki/pkg/firm"
+	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/synthesizers"
-	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
-	"github.com/s12chung/text2anki/pkg/text"
-	"github.com/s12chung/text2anki/pkg/tokenizers"
-	"github.com/s12chung/text2anki/pkg/tokenizers/khaiii"
-	"github.com/s12chung/text2anki/pkg/tokenizers/komoran"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 )
-
-// DefaultRoutes is the routes used by the API
-var DefaultRoutes = Routes{
-	Dictionary:  DefaultDictionary(),
-	Synthesizer: DefaultSynthesizer(),
-	TextTokenizer: db.TextTokenizer{
-		Parser:       DefaultParser(),
-		Tokenizer:    DefaultTokenizer(),
-		CleanSpeaker: true,
-	},
-}
-
-// DefaultParser returns the default Parser
-func DefaultParser() text.Parser {
-	return text.NewParser(text.Korean, text.English)
-}
-
-// DefaultSynthesizer returns the default Synthesizer
-func DefaultSynthesizer() synthesizers.Synthesizer {
-	return azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
-}
-
-// DefaultTokenizer returns the default Tokenizer
-func DefaultTokenizer() tokenizers.Tokenizer {
-	switch os.Getenv("TOKENIZER") {
-	case "komoran":
-		return komoran.New()
-	default:
-		return khaiii.New()
-	}
-}
-
-// DefaultDictionary returns the default Dictionary
-func DefaultDictionary() dictionary.Dictionary {
-	switch os.Getenv("DICTIONARY") {
-	case "koreanbasic":
-		return koreanbasic.New(koreanbasic.GetAPIKeyFromEnv())
-	default:
-		if err := db.SetDB("db/data.sqlite3"); err != nil {
-			fmt.Println("failure to SetDB()\n", err)
-			os.Exit(-1)
-		}
-		return krdict.New(db.DB())
-	}
-}
 
 // Routes contains the routes used for the api
 type Routes struct {
 	Dictionary    dictionary.Dictionary
 	Synthesizer   synthesizers.Synthesizer
 	TextTokenizer db.TextTokenizer
+	Storage       Storage
+}
+
+// Storage contains the Route's storage setup
+type Storage struct {
+	Signer storage.Signer
+	Storer storage.Storer
 }
 
 // Setup sets up the routes
@@ -91,6 +46,7 @@ func (rs Routes) Router() chi.Router {
 	r.Route("/sources", func(r chi.Router) {
 		r.Get("/", httptyped.RespondTypedJSONWrap(rs.SourceIndex))
 		r.Post("/", httptyped.RespondTypedJSONWrap(rs.SourceCreate))
+		r.Get("/sign_parts", httptyped.RespondTypedJSONWrap(rs.SignParts))
 
 		r.Route("/{sourceID}", func(r chi.Router) {
 			r.Use(httputil.RequestWrap(SourceCtx))
@@ -105,6 +61,7 @@ func (rs Routes) Router() chi.Router {
 	r.Route("/notes", func(r chi.Router) {
 		r.Post("/", httptyped.RespondTypedJSONWrap(rs.NoteCreate))
 	})
+	r.Put(storageURLPath+"/*", httptyped.RespondTypedJSONWrap(rs.StoragePut))
 	return r
 }
 

@@ -79,9 +79,9 @@ func StaticCopySlice(t *testing.T, b []byte, datas any) []byte {
 	value := reflect.ValueOf(datas)
 	typ := value.Type()
 
-	require.True(typ.Kind() == reflect.Ptr)
-	require.True(typ.Elem().Kind() == reflect.Slice)
-	require.True(typ.Elem().Elem().Implements(reflect.TypeOf((*StaticCopyable)(nil)).Elem()))
+	require.True(typ.Kind() == reflect.Ptr, "Type should be a pointer")
+	require.True(typ.Elem().Kind() == reflect.Slice, "Elem Type should be slice")
+	require.True(typ.Elem().Elem().Implements(reflect.TypeOf((*StaticCopyable)(nil)).Elem()), "Element should be StaticCopyable")
 
 	Unmarshall(t, b, datas)
 

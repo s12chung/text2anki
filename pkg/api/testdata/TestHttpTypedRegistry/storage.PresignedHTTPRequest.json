@@ -1,0 +1,7 @@
+{
+  "storage.PresignedHTTPRequest": {
+    "Method": "string",
+    "SignedHeader": "http.Header",
+    "URL": "string"
+  }
+}
