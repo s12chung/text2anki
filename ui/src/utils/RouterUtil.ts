@@ -15,15 +15,13 @@ export function actionFunc(actionMap: IActionMap): ActionFunction {
   }
 }
 
-export function formData<T extends Record<keyof T, string>>(
+export function formData<T extends Record<keyof T, FormDataEntryValue>>(
   formData: FormData,
   ...keys: (keyof T)[]
 ): T {
   const obj = {} as T
-
   for (const key of keys) {
-    const dataForKey = formData.get(key as string)
-    if (typeof dataForKey === "string") obj[key] = dataForKey as T[keyof T]
+    obj[key] = formData.get(key as string) as T[keyof T]
   }
   return obj
 }
