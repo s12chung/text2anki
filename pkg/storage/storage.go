@@ -27,6 +27,7 @@ type API interface {
 type Storer interface {
 	Validate(key string, values url.Values) error
 	Store(key string, file io.Reader) error
+	FileHandler() http.Handler
 }
 
 // Signer signs requests

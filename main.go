@@ -39,9 +39,9 @@ func configFromEnv() api.Config {
 	config.StorageConfig = api.StorageConfig{
 		StorageType: api.StorageLocalStore,
 		LocalStoreConfig: api.LocalStoreConfig{
-			Origin:   host + ":" + port,
-			BaseBath: "db/tmp/filestore",
-			KeyPath:  "db/tmp",
+			Origin:        host + ":" + port,
+			KeyBasePath:   "db/tmp/filestore",
+			EncryptorPath: "db/tmp",
 		},
 	}
 	return config

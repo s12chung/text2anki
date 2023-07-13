@@ -22,9 +22,9 @@ import (
 var routesConfig = Config{
 	StorageConfig: StorageConfig{
 		LocalStoreConfig: LocalStoreConfig{
-			Origin:   "https://test.com",
-			BaseBath: path.Join(os.TempDir(), test.GenerateName("filestore-router")),
-			KeyPath:  fixture.TestDataDir,
+			Origin:        "https://test.com",
+			KeyBasePath:   path.Join(os.TempDir(), test.GenerateName("filestore-router")),
+			EncryptorPath: fixture.TestDataDir,
 		},
 	}}
 var routes = NewRoutes(routesConfig)

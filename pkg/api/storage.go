@@ -40,3 +40,8 @@ func (rs Routes) StoragePut(r *http.Request) (any, *httputil.HTTPError) {
 		return StoragePutOk{Message: "success"}, nil
 	})
 }
+
+// StorageGet gets the file with the route's Storer
+func (rs Routes) StorageGet() http.Handler {
+	return rs.Storage.Storer.FileHandler()
+}

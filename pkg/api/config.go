@@ -138,15 +138,15 @@ func StorageFromConfig(config StorageConfig) Storage {
 
 // LocalStoreConfig defines the config for localstore
 type LocalStoreConfig struct {
-	Origin   string
-	BaseBath string
-	KeyPath  string
+	Origin        string
+	KeyBasePath   string
+	EncryptorPath string
 }
 
 var localStoreConfigValidator = firm.NewStructValidator(firm.RuleMap{
-	"Origin":   {rule.Presence{}},
-	"BaseBath": {rule.Presence{}},
-	"KeyPath":  {rule.Presence{}},
+	"Origin":        {rule.Presence{}},
+	"KeyBasePath":   {rule.Presence{}},
+	"EncryptorPath": {rule.Presence{}},
 })
 
 const localstoreKey = "localstore.key"
@@ -164,9 +164,9 @@ func LocalStoreAPI(config LocalStoreConfig) (localstore.API, error) {
 	if !result.IsValid() {
 		return localstore.API{}, fmt.Errorf(result.ErrorMap().String())
 	}
-	encryptor, err := localstore.NewAESEncryptorFromFile(path.Join(config.KeyPath, localstoreKey))
+	encryptor, err := localstore.NewAESEncryptorFromFile(path.Join(config.EncryptorPath, localstoreKey))
 	if err != nil {
 		return localstore.API{}, err
 	}
-	return localstore.NewAPI(config.Origin, config.BaseBath, encryptor), nil
+	return localstore.NewAPI(config.Origin, config.KeyBasePath, encryptor), nil
 }
