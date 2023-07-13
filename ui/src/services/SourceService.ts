@@ -30,6 +30,10 @@ export interface Source {
 }
 
 export interface CreateSourceData {
+  parts: CreateSourcePartData[]
+}
+
+export interface CreateSourcePartData {
   text: string
   translation: string
 }
