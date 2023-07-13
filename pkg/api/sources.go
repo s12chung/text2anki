@@ -157,7 +157,7 @@ func (rs Routes) SignParts(r *http.Request) (any, *httputil.HTTPError) {
 		}
 	}
 
-	reqs, err := rs.Signer.Sign("sources", "parts", exts)
+	reqs, err := rs.Storage.Signer.Sign("sources", "parts", exts)
 	if err != nil {
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}

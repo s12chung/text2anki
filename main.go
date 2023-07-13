@@ -36,8 +36,8 @@ func configFromEnv() api.Config {
 	if os.Getenv("DICTIONARY") == "koreanbasic" {
 		config.DictionaryType = api.DictionaryKoreanBasic
 	}
-	config.SignerConfig = api.SignerConfig{
-		SignerType: api.SignerLocalStore,
+	config.StorageConfig = api.StorageConfig{
+		StorageType: api.StorageLocalStore,
 		LocalStoreConfig: api.LocalStoreConfig{
 			Origin:   host + ":" + port,
 			BaseBath: "db/tmp/filestore",

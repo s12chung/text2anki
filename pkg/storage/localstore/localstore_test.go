@@ -49,6 +49,16 @@ func TestAPI_Sign(t *testing.T) {
 	require.Equal(apiOrigin+"/"+testKey, u.String())
 }
 
+func TestAPI_Validate(t *testing.T) {
+	require := require.New(t)
+	api := testAPI(t)
+	ciphertext, err := api.encryptor.Encrypt(testKey)
+	require.NoError(err)
+	require.NoError(api.Validate(testKey, url.Values{CipherQueryParam: []string{ciphertext}}))
+	require.Error(api.Validate(testKey, url.Values{}))
+	require.Error(api.Validate(testKey, url.Values{CipherQueryParam: []string{"bad_cipher"}}))
+}
+
 func TestAPI_Store(t *testing.T) {
 	testStore(t)
 	testStore(t)
@@ -58,10 +68,8 @@ func testStore(t *testing.T) {
 	require := require.New(t)
 
 	api := testAPI(t)
-	ciphertext, err := api.encryptor.Encrypt(testKey)
-	require.NoError(err)
 	fileData := []byte("abc")
-	require.NoError(api.Store(testKey, url.Values{CipherQueryParam: []string{ciphertext}}, bytes.NewReader(fileData)))
+	require.NoError(api.Store(testKey, bytes.NewReader(fileData)))
 
 	fileBytes, err := os.ReadFile(path.Join(api.basePath, testKey))
 	require.NoError(err)

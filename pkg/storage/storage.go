@@ -2,7 +2,9 @@
 package storage
 
 import (
+	"io"
 	"net/http"
+	"net/url"
 	"path"
 	"strconv"
 
@@ -19,6 +21,12 @@ type PresignedHTTPRequest struct {
 // API is a wrapper around the API for file storage
 type API interface {
 	Sign(key string) (PresignedHTTPRequest, error)
+}
+
+// Storer is a wrapper around the storage API
+type Storer interface {
+	Validate(key string, values url.Values) error
+	Store(key string, file io.Reader) error
 }
 
 // Signer signs requests

@@ -19,13 +19,15 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-var routes = NewRoutes(Config{SignerConfig: SignerConfig{
-	LocalStoreConfig: LocalStoreConfig{
-		Origin:   "https://test.com/storage",
-		BaseBath: path.Join(os.TempDir(), test.GenerateName("filestore-router")),
-		KeyPath:  fixture.TestDataDir,
-	},
-}})
+var routesConfig = Config{
+	StorageConfig: StorageConfig{
+		LocalStoreConfig: LocalStoreConfig{
+			Origin:   "https://test.com",
+			BaseBath: path.Join(os.TempDir(), test.GenerateName("filestore-router")),
+			KeyPath:  fixture.TestDataDir,
+		},
+	}}
+var routes = NewRoutes(routesConfig)
 var server = test.Server{Server: httptest.NewServer(routes.Router())}
 
 type MustSetupAndSeed struct{}

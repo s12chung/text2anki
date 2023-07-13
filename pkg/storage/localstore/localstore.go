@@ -50,8 +50,8 @@ func (a API) Sign(key string) (storage.PresignedHTTPRequest, error) {
 	}, nil
 }
 
-// Store stores the file at key, checking if it was signed from the values
-func (a API) Store(key string, values url.Values, file io.Reader) error {
+// Validate validates whether the given key and values match for signing
+func (a API) Validate(key string, values url.Values) error {
 	ciphertext := values.Get(CipherQueryParam)
 	cipherKey, err := a.encryptor.Decrypt(ciphertext)
 	if err != nil {
@@ -60,7 +60,11 @@ func (a API) Store(key string, values url.Values, file io.Reader) error {
 	if cipherKey != key {
 		return fmt.Errorf("ciphertext (%v) does not match key (%v)", ciphertext, key)
 	}
+	return nil
+}
 
+// Store stores the file at key, checking if it was signed from the values
+func (a API) Store(key string, file io.Reader) error {
 	p := path.Join(a.basePath, key)
 	if err := os.MkdirAll(filepath.Dir(p), ioutil.OwnerRWXGroupRX); err != nil {
 		return err
