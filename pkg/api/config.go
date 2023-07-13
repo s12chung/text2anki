@@ -143,11 +143,11 @@ type LocalStoreConfig struct {
 	KeyPath  string
 }
 
-var localStoreConfigRuleMap = firm.RuleMap{
+var localStoreConfigValidator = firm.NewStructValidator(firm.RuleMap{
 	"Origin":   {rule.Presence{}},
 	"BaseBath": {rule.Presence{}},
 	"KeyPath":  {rule.Presence{}},
-}
+})
 
 const localstoreKey = "localstore.key"
 const storageURLPath = "/storage"
@@ -160,7 +160,7 @@ func LocalStoreAPI(config LocalStoreConfig) (localstore.API, error) {
 	config.Origin += storageURLPath[1:]
 
 	// LocalStoreAPI is called when declaring package level vars (before init()), this ensures the definition works
-	result := firm.NewStructValidator(localStoreConfigRuleMap).Validate(config)
+	result := localStoreConfigValidator.Validate(config)
 	if !result.IsValid() {
 		return localstore.API{}, fmt.Errorf(result.ErrorMap().String())
 	}
