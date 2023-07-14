@@ -29,7 +29,11 @@ func TestSigner_Sign(t *testing.T) {
 	require := require.New(t)
 	testName := "TestSigner_Sign"
 
-	req, err := NewSigner(testAPI{}).Sign("sources", "parts", []string{".jpg", ".png", ".jpeg"})
+	reqs, id, err := NewSigner(testAPI{}).Sign("sources", "parts", []string{".jpg", ".png", ".jpeg"})
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, req))
+	require.NotEqual(testUUID, id)
+	for _, req := range reqs {
+		require.Contains(req.URL, testUUID)
+	}
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, reqs))
 }

@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"os"
 	"path"
@@ -21,17 +22,17 @@ import (
 
 // API has the API to do file storage
 type API struct {
-	origin    string
-	basePath  string
-	encryptor Encryptor
+	origin      string
+	keyBasePath string
+	encryptor   Encryptor
 }
 
 // NewAPI returns a new API
-func NewAPI(origin, basePath string, encryptor Encryptor) API {
+func NewAPI(origin, keyBasePath string, encryptor Encryptor) API {
 	if !strings.HasSuffix(origin, "/") {
 		origin += "/"
 	}
-	return API{origin: origin, basePath: basePath, encryptor: encryptor}
+	return API{origin: origin, keyBasePath: keyBasePath, encryptor: encryptor}
 }
 
 // CipherQueryParam is the query parameter that contains the ciphertext for signing
@@ -63,9 +64,14 @@ func (a API) Validate(key string, values url.Values) error {
 	return nil
 }
 
+// FileHandler returns the http.Handler to serve the files
+func (a API) FileHandler() http.Handler {
+	return http.FileServer(http.Dir(a.keyBasePath))
+}
+
 // Store stores the file at key, checking if it was signed from the values
 func (a API) Store(key string, file io.Reader) error {
-	p := path.Join(a.basePath, key)
+	p := path.Join(a.keyBasePath, key)
 	if err := os.MkdirAll(filepath.Dir(p), ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}

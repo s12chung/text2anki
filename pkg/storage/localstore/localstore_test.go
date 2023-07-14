@@ -71,7 +71,7 @@ func testStore(t *testing.T) {
 	fileData := []byte("abc")
 	require.NoError(api.Store(testKey, bytes.NewReader(fileData)))
 
-	fileBytes, err := os.ReadFile(path.Join(api.basePath, testKey))
+	fileBytes, err := os.ReadFile(path.Join(api.keyBasePath, testKey))
 	require.NoError(err)
 	require.Equal(fileData, fileBytes)
 }

@@ -61,7 +61,10 @@ func (rs Routes) Router() chi.Router {
 	r.Route("/notes", func(r chi.Router) {
 		r.Post("/", httptyped.RespondTypedJSONWrap(rs.NoteCreate))
 	})
-	r.Put(storageURLPath+"/*", httptyped.RespondTypedJSONWrap(rs.StoragePut))
+	r.Route(storageURLPath, func(r chi.Router) {
+		r.Method(http.MethodGet, "/*", http.StripPrefix(storageURLPath, rs.StorageGet()))
+		r.Put("/*", httptyped.RespondTypedJSONWrap(rs.StoragePut))
+	})
 	return r
 }
 

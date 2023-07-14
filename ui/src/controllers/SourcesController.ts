@@ -1,4 +1,4 @@
-import { CreateSourceData, sourceService, UpdateSourceData } from "../services/SourceService.ts"
+import { CreateSourcePartData, sourceService, UpdateSourceData } from "../services/SourceService.ts"
 import { formData } from "../utils/RouterUtil.ts"
 import { ActionFunction, defer, LoaderFunction, redirect } from "react-router-dom"
 
@@ -11,9 +11,9 @@ export const get: LoaderFunction = ({ params }) => {
 }
 
 export const create: ActionFunction = async ({ request }) => {
-  const source = await sourceService.create(
-    formData<CreateSourceData>(await request.formData(), "text", "translation")
-  )
+  const source = await sourceService.create({
+    parts: [formData<CreateSourcePartData>(await request.formData(), "text", "translation")],
+  })
   return redirect(`/sources/${source.id}`)
 }
 

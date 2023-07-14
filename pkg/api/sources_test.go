@@ -15,7 +15,6 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
-	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/storage/localstore"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
@@ -178,22 +177,26 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 	}
 }
 
-type filestorePresignedHTTPRequest struct {
-	storage.PresignedHTTPRequest
+type signPartsResponse struct {
+	SignPartsResponse
 }
 
 var testUUID = "123e4567-e89b-12d3-a456-426614174000"
 var uuidRegexp = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`)
 
-func (s filestorePresignedHTTPRequest) StaticCopy() any {
+func (s signPartsResponse) StaticCopy() any {
 	a := s
-	u, err := url.Parse(a.URL)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
+	a.ID = testUUID
+	for i, req := range s.Requests {
+		u, err := url.Parse(req.URL)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+		u.RawQuery = url.Values{localstore.CipherQueryParam: []string{"testy"}}.Encode()
+		req.URL = uuidRegexp.ReplaceAllString(u.String(), testUUID)
+		a.Requests[i] = req
 	}
-	u.RawQuery = url.Values{localstore.CipherQueryParam: []string{"testy"}}.Encode()
-	a.URL = uuidRegexp.ReplaceAllString(u.String(), testUUID)
 	return a
 }
 
@@ -219,7 +222,7 @@ func TestRoutes_SignParts(t *testing.T) {
 
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "/sign_parts?"+tc.queryParams, nil))
 			require.Equal(tc.expectedCode, resp.Code)
-			testModelsResponse(t, resp, testName, tc.name, &[]filestorePresignedHTTPRequest{})
+			testModelResponse(t, resp, testName, tc.name, &signPartsResponse{})
 		})
 	}
 }
