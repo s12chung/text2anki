@@ -40,10 +40,23 @@ func TestMain(m *testing.M) {
 }
 
 func TestHttpTypedRegistry(t *testing.T) {
+	require := require.New(t)
 	testName := "TestHttpTypedRegistry"
-	for _, typ := range httptyped.Types() {
-		fixture.CompareReadOrUpdate(t, path.Join(testName, typ.String()+".json"), fixture.JSON(t, httptyped.StructureMap(typ)))
+
+	fileNames := make([]string, len(httptyped.Types()))
+	for i, typ := range httptyped.Types() {
+		fileName := typ.String() + ".json"
+		fixture.CompareReadOrUpdate(t, path.Join(testName, fileName), fixture.JSON(t, httptyped.StructureMap(typ)))
+		fileNames[i] = fileName
 	}
+
+	files, err := os.ReadDir(fixture.JoinTestData(testName))
+	require.NoError(err)
+	expectedFileNames := make([]string, len(files))
+	for i, file := range files {
+		expectedFileNames[i] = file.Name()
+	}
+	require.ElementsMatch(expectedFileNames, fileNames)
 }
 
 func idPath(path string, id int64) string {

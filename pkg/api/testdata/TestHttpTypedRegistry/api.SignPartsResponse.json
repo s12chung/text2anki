@@ -1,4 +1,8 @@
 {
+  "api.SignPartsResponse": {
+    "id": "string",
+    "requests": "[]storage.PresignedHTTPRequest"
+  },
   "storage.PresignedHTTPRequest": {
     "Method": "string",
     "SignedHeader": "http.Header",

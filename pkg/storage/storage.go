@@ -41,18 +41,19 @@ func NewSigner(api API) Signer {
 }
 
 // Sign signs the files for a table's field
-func (s Signer) Sign(table, field string, exts []string) ([]PresignedHTTPRequest, error) {
+func (s Signer) Sign(table, field string, exts []string) ([]PresignedHTTPRequest, string, error) {
 	reqs := make([]PresignedHTTPRequest, len(exts))
+	id, err := uuid.NewV7()
+	if err != nil {
+		return nil, "", err
+	}
+	stringID := id.String()
 	for i, ext := range exts {
-		id, err := uuid.NewV7()
+		req, err := s.api.Sign(path.Join(table, field, stringID, strconv.Itoa(i)+ext))
 		if err != nil {
-			return nil, err
-		}
-		req, err := s.api.Sign(path.Join(table, field, id.String(), strconv.Itoa(i)+ext))
-		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
 		reqs[i] = req
 	}
-	return reqs, nil
+	return reqs, stringID, nil
 }

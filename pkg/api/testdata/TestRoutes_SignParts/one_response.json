@@ -1,7 +1,10 @@
-[
-  {
-    "URL": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/0.png?ciphertext=testy",
-    "Method": "PUT",
-    "SignedHeader": null
-  }
-]
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "requests": [
+    {
+      "URL": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/0.png?ciphertext=testy",
+      "Method": "PUT",
+      "SignedHeader": null
+    }
+  ]
+}
