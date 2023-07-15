@@ -38,8 +38,8 @@ func NewAPI(origin, keyBasePath string, encryptor Encryptor) API {
 // CipherQueryParam is the query parameter that contains the ciphertext for signing
 const CipherQueryParam = "ciphertext"
 
-// Sign returns a storage.PresignedHTTPRequest
-func (a API) Sign(key string) (storage.PresignedHTTPRequest, error) {
+// SignPut returns a storage.PresignedHTTPRequest
+func (a API) SignPut(key string) (storage.PresignedHTTPRequest, error) {
 	ciphertext, err := a.encryptor.Encrypt(key)
 	if err != nil {
 		return storage.PresignedHTTPRequest{}, err

@@ -163,7 +163,7 @@ func (rs Routes) SignPreParts(r *http.Request) (any, *httputil.HTTPError) {
 		}
 	}
 
-	reqs, id, err := rs.Storage.Signer.Sign("sources", "parts", exts)
+	reqs, id, err := rs.Storage.Signer.SignPut("sources", "parts", exts)
 	if err != nil {
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}

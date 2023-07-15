@@ -16,7 +16,7 @@ var uuidRegexp = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9
 type testAPI struct {
 }
 
-func (t testAPI) Sign(key string) (PresignedHTTPRequest, error) {
+func (t testAPI) SignPut(key string) (PresignedHTTPRequest, error) {
 	key = uuidRegexp.ReplaceAllString(key, testUUID)
 	return PresignedHTTPRequest{
 		URL:          path.Join("http://localhost:3000", key) + "?cipher=blah",
@@ -25,11 +25,11 @@ func (t testAPI) Sign(key string) (PresignedHTTPRequest, error) {
 	}, nil
 }
 
-func TestSigner_Sign(t *testing.T) {
+func TestSigner_SignPut(t *testing.T) {
 	require := require.New(t)
-	testName := "TestSigner_Sign"
+	testName := "TestSigner_SignPut"
 
-	reqs, id, err := NewSigner(testAPI{}).Sign("sources", "parts", []string{".jpg", ".png", ".jpeg"})
+	reqs, id, err := NewSigner(testAPI{}).SignPut("sources", "parts", []string{".jpg", ".png", ".jpeg"})
 	require.NoError(err)
 	require.NotEqual(testUUID, id)
 	for _, req := range reqs {

@@ -28,11 +28,11 @@ func testEncryptor(t *testing.T) AESEncryptor {
 
 var testKey = "some_table_name/my_columns_me_now/123e4567-e89b-12d3-a456-426614174000/0.txt"
 
-func TestAPI_Sign(t *testing.T) {
+func TestAPI_SignPut(t *testing.T) {
 	require := require.New(t)
 
 	api := testAPI(t)
-	req, err := api.Sign(testKey)
+	req, err := api.SignPut(testKey)
 	require.NoError(err)
 
 	require.Equal("PUT", req.Method)
