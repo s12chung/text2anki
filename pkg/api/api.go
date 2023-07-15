@@ -46,7 +46,7 @@ func (rs Routes) Router() chi.Router {
 	r.Route("/sources", func(r chi.Router) {
 		r.Get("/", httptyped.RespondTypedJSONWrap(rs.SourceIndex))
 		r.Post("/", httptyped.RespondTypedJSONWrap(rs.SourceCreate))
-		r.Get("/sign_parts", httptyped.RespondTypedJSONWrap(rs.SignParts))
+		r.Get("/sign_pre_parts", httptyped.RespondTypedJSONWrap(rs.SignPreParts))
 
 		r.Route("/{sourceID}", func(r chi.Router) {
 			r.Use(httputil.RequestWrap(SourceCtx))

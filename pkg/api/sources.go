@@ -15,7 +15,7 @@ import (
 )
 
 func init() {
-	httptyped.RegisterType(db.SourceSerialized{}, SignPartsResponse{})
+	httptyped.RegisterType(db.SourceSerialized{}, SignPrePartsResponse{})
 }
 
 const contextSource httputil.ContextKey = "source"
@@ -145,14 +145,14 @@ var validSignPartsExts = map[string]bool{
 	".png":  true,
 }
 
-// SignPartsResponse is the response returned by SignParts
-type SignPartsResponse struct {
+// SignPrePartsResponse is the response returned by SignPreParts
+type SignPrePartsResponse struct {
 	ID       string                         `json:"id"`
 	Requests []storage.PresignedHTTPRequest `json:"requests"`
 }
 
-// SignParts returns signed requests to generate Source Parts
-func (rs Routes) SignParts(r *http.Request) (any, *httputil.HTTPError) {
+// SignPreParts returns signed requests to generate Source Parts
+func (rs Routes) SignPreParts(r *http.Request) (any, *httputil.HTTPError) {
 	exts := r.URL.Query()["exts"]
 	if len(exts) == 0 {
 		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("no file extension given"))
@@ -167,5 +167,5 @@ func (rs Routes) SignParts(r *http.Request) (any, *httputil.HTTPError) {
 	if err != nil {
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}
-	return SignPartsResponse{ID: id, Requests: reqs}, nil
+	return SignPrePartsResponse{ID: id, Requests: reqs}, nil
 }

@@ -177,14 +177,14 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 	}
 }
 
-type signPartsResponse struct {
-	SignPartsResponse
+type signPrePartsResponse struct {
+	SignPrePartsResponse
 }
 
 var testUUID = "123e4567-e89b-12d3-a456-426614174000"
 var uuidRegexp = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`)
 
-func (s signPartsResponse) StaticCopy() any {
+func (s signPrePartsResponse) StaticCopy() any {
 	a := s
 	a.ID = testUUID
 	for i, req := range s.Requests {
@@ -200,8 +200,8 @@ func (s signPartsResponse) StaticCopy() any {
 	return a
 }
 
-func TestRoutes_SignParts(t *testing.T) {
-	testName := "TestRoutes_SignParts"
+func TestRoutes_SignPreParts(t *testing.T) {
+	testName := "TestRoutes_SignPreParts"
 
 	testCases := []struct {
 		name         string
@@ -220,9 +220,9 @@ func TestRoutes_SignParts(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "/sign_parts?"+tc.queryParams, nil))
+			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "/sign_pre_parts?"+tc.queryParams, nil))
 			require.Equal(tc.expectedCode, resp.Code)
-			testModelResponse(t, resp, testName, tc.name, &signPartsResponse{})
+			testModelResponse(t, resp, testName, tc.name, &signPrePartsResponse{})
 		})
 	}
 }
