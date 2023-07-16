@@ -24,7 +24,7 @@ func init() {
 
 func TestRoutes_StoragePut(t *testing.T) {
 	testName := "TestRoutes_StoragePut"
-	reqs, _, err := routes.Storage.Signer.Sign("test_table", "my_field", []string{".txt"})
+	reqs, _, err := routes.Storage.Signer.SignPut("test_table", "my_column", []string{".txt"})
 	require.NoError(t, err)
 	u, err := url.Parse(reqs[0].URL)
 	require.NoError(t, err)
@@ -67,13 +67,14 @@ func TestRoutes_StorageGet(t *testing.T) {
 		expectedCode int
 	}{
 		{name: "normal", key: "/my_table/here/go.txt", body: []byte("test me"), expectedCode: http.StatusOK},
+		{name: "not_exist", key: "/another/dir/hi.txt", body: nil, expectedCode: http.StatusNotFound},
 	}
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			if tc.key != "" {
+			if tc.body != nil {
 				require.NoError(routes.Storage.Storer.Store(tc.key, bytes.NewReader(tc.body)))
 			}
 			resp := test.HTTPDo(t, storageServer.NewRequest(t, http.MethodGet, tc.key, bytes.NewReader(tc.body)))

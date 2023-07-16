@@ -46,13 +46,19 @@ func (rs Routes) Router() chi.Router {
 	r.Route("/sources", func(r chi.Router) {
 		r.Get("/", httptyped.RespondTypedJSONWrap(rs.SourceIndex))
 		r.Post("/", httptyped.RespondTypedJSONWrap(rs.SourceCreate))
-		r.Get("/sign_parts", httptyped.RespondTypedJSONWrap(rs.SignParts))
 
 		r.Route("/{sourceID}", func(r chi.Router) {
 			r.Use(httputil.RequestWrap(SourceCtx))
 			r.Get("/", httptyped.RespondTypedJSONWrap(rs.SourceGet))
 			r.Patch("/", httptyped.RespondTypedJSONWrap(rs.SourceUpdate))
 			r.Delete("/", httptyped.RespondTypedJSONWrap(rs.SourceDestroy))
+		})
+
+		r.Route("/pre_parts", func(r chi.Router) {
+			r.Get("/sign", httptyped.RespondTypedJSONWrap(rs.PrePartsSign))
+			r.Route("/{prePartsID}", func(r chi.Router) {
+				r.Get("/", httptyped.RespondTypedJSONWrap(rs.PrePartsIndex))
+			})
 		})
 	})
 	r.Route("/terms", func(r chi.Router) {

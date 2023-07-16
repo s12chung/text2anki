@@ -26,13 +26,15 @@ func testEncryptor(t *testing.T) AESEncryptor {
 	return encryptor
 }
 
-var testKey = "some_table_name/my_columns_me_now/123e4567-e89b-12d3-a456-426614174000/0.txt"
+const testKeyPrefix = "some_table_name/my_columns_me_now/123e4567-e89b-12d3-a456-426614174000"
+const testKeyFile = "0.txt"
+const testKey = testKeyPrefix + "/" + testKeyFile
 
-func TestAPI_Sign(t *testing.T) {
+func TestAPI_SignPut(t *testing.T) {
 	require := require.New(t)
 
 	api := testAPI(t)
-	req, err := api.Sign(testKey)
+	req, err := api.SignPut(testKey)
 	require.NoError(err)
 
 	require.Equal("PUT", req.Method)
@@ -47,6 +49,45 @@ func TestAPI_Sign(t *testing.T) {
 
 	u.RawQuery = ""
 	require.Equal(apiOrigin+"/"+testKey, u.String())
+}
+
+func TestAPI_SignGet(t *testing.T) {
+	prefix := "TestAPI_SignGet/test/me"
+	require := require.New(t)
+
+	api := testAPI(t)
+	u, err := api.SignGet(prefix + "/" + testKeyFile)
+	require.Equal(errSignGetNotFound, err)
+	require.Empty(u)
+
+	require.NoError(api.Store(prefix+"/"+testKeyFile, bytes.NewReader([]byte("test_me"))))
+	u, err = api.SignGet(prefix + "/" + testKeyFile)
+	require.NoError(err)
+	require.Equal(api.keyURL(prefix+"/"+testKeyFile), u)
+}
+
+func TestAPI_ListKeys(t *testing.T) {
+	prefix := "TestAPI_ListKeys/test/me"
+	require := require.New(t)
+
+	api := testAPI(t)
+	keys, err := api.ListKeys(prefix)
+	require.NoError(err)
+	require.Len(keys, 0)
+
+	key1 := path.Join(prefix, testKeyFile)
+	key2 := path.Join(prefix, "again_me.txt")
+	require.NoError(api.Store(key1, bytes.NewReader([]byte("test_me"))))
+	require.NoError(api.Store(key2, bytes.NewReader([]byte("again"))))
+
+	expectedKeys := []string{key1, key2}
+	keys, err = api.ListKeys(prefix)
+	require.NoError(err)
+	require.Equal(expectedKeys, keys)
+
+	keys, err = api.ListKeys(prefix + "/")
+	require.NoError(err)
+	require.Equal(expectedKeys, keys)
 }
 
 func TestAPI_Validate(t *testing.T) {

@@ -7,6 +7,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -38,17 +39,45 @@ func NewAPI(origin, keyBasePath string, encryptor Encryptor) API {
 // CipherQueryParam is the query parameter that contains the ciphertext for signing
 const CipherQueryParam = "ciphertext"
 
-// Sign returns a storage.PresignedHTTPRequest
-func (a API) Sign(key string) (storage.PresignedHTTPRequest, error) {
+// SignPut returns a storage.PresignedHTTPRequest
+func (a API) SignPut(key string) (storage.PresignedHTTPRequest, error) {
 	ciphertext, err := a.encryptor.Encrypt(key)
 	if err != nil {
 		return storage.PresignedHTTPRequest{}, err
 	}
 	return storage.PresignedHTTPRequest{
-		URL:          a.origin + key + "?" + url.Values{CipherQueryParam: []string{ciphertext}}.Encode(),
+		URL:          a.keyURL(key) + "?" + url.Values{CipherQueryParam: []string{ciphertext}}.Encode(),
 		Method:       "PUT",
 		SignedHeader: nil,
 	}, nil
+}
+
+var errSignGetNotFound = fmt.Errorf("file does not exist")
+
+// SignGet gets the signed URL for the key
+func (a API) SignGet(key string) (string, error) {
+	p := a.keyPath(key)
+	if _, err := os.Stat(p); errors.Is(err, os.ErrNotExist) {
+		return "", errSignGetNotFound
+	}
+	return a.keyURL(key), nil
+}
+
+// ListKeys lists the keys for the given path prefix
+func (a API) ListKeys(prefix string) ([]string, error) {
+	files, err := os.ReadDir(a.keyPath(prefix)) // Replace with your directory
+	if err != nil {
+		if os.IsNotExist(err) {
+			return []string{}, nil
+		}
+		return nil, err
+	}
+
+	keys := make([]string, len(files))
+	for i, file := range files {
+		keys[i] = path.Join(prefix, file.Name())
+	}
+	return keys, nil
 }
 
 // Validate validates whether the given key and values match for signing
@@ -71,7 +100,7 @@ func (a API) FileHandler() http.Handler {
 
 // Store stores the file at key, checking if it was signed from the values
 func (a API) Store(key string, file io.Reader) error {
-	p := path.Join(a.keyBasePath, key)
+	p := a.keyPath(key)
 	if err := os.MkdirAll(filepath.Dir(p), ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
@@ -84,6 +113,14 @@ func (a API) Store(key string, file io.Reader) error {
 	}
 
 	return outFile.Close()
+}
+
+func (a API) keyPath(key string) string {
+	return path.Join(a.keyBasePath, key)
+}
+
+func (a API) keyURL(key string) string {
+	return a.origin + key
 }
 
 // Encryptor defines the interface to encrypt and sign keys, ciphers are base64.URLEncoded

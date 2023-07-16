@@ -3,6 +3,7 @@ package test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -146,6 +147,7 @@ type Server struct {
 // NewRequest returns a new request for the server
 func (s Server) NewRequest(t *testing.T, method, path string, body io.Reader) *http.Request {
 	require := require.New(t)
+	require.NotNil(s.Server, "Server is not set (due to init timing?)")
 	req, err := http.NewRequest(method, s.URL+s.pathPrefix+path, body)
 	require.NoError(err)
 	return req
@@ -153,6 +155,11 @@ func (s Server) NewRequest(t *testing.T, method, path string, body io.Reader) *h
 
 // WithPathPrefix returns a new server with the pathPrefix set for NewRequest
 func (s Server) WithPathPrefix(prefix string) Server {
+	if s.Server == nil {
+		fmt.Println("Server is not set (due to init timing?)")
+		os.Exit(-1)
+	}
+
 	dup := s
 	dup.pathPrefix += prefix
 	return dup
