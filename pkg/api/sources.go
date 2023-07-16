@@ -8,14 +8,13 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
-	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/chiutil"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 )
 
 func init() {
-	httptyped.RegisterType(db.SourceSerialized{}, SignPrePartsResponse{})
+	httptyped.RegisterType(db.SourceSerialized{})
 }
 
 const contextSource httputil.ContextKey = "source"
@@ -137,35 +136,4 @@ func ctxSourceSerialized(r *http.Request) (db.SourceSerialized, *httputil.HTTPEr
 		return db.SourceSerialized{}, httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.SourceSerialized fail"))
 	}
 	return sourceSerialized, nil
-}
-
-var validSignPartsExts = map[string]bool{
-	".jpg":  true,
-	".jpeg": true,
-	".png":  true,
-}
-
-// SignPrePartsResponse is the response returned by SignPreParts
-type SignPrePartsResponse struct {
-	ID       string                         `json:"id"`
-	Requests []storage.PresignedHTTPRequest `json:"requests"`
-}
-
-// SignPreParts returns signed requests to generate Source Parts
-func (rs Routes) SignPreParts(r *http.Request) (any, *httputil.HTTPError) {
-	exts := r.URL.Query()["exts"]
-	if len(exts) == 0 {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("no file extension given"))
-	}
-	for _, ext := range exts {
-		if !validSignPartsExts[ext] {
-			return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("%v is not a valid file extension", ext))
-		}
-	}
-
-	reqs, id, err := rs.Storage.Signer.SignPut("sources", "parts", exts)
-	if err != nil {
-		return nil, httputil.Error(http.StatusInternalServerError, err)
-	}
-	return SignPrePartsResponse{ID: id, Requests: reqs}, nil
 }

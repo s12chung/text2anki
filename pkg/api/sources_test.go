@@ -5,9 +5,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
-	"os"
-	"regexp"
 	"strings"
 	"testing"
 
@@ -15,7 +12,6 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
-	"github.com/s12chung/text2anki/pkg/storage/localstore"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -173,56 +169,6 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 				_, err := db.Qs().SourceGet(context.Background(), created.ID)
 				require.Equal(fmt.Errorf("sql: no rows in result set"), err)
 			}
-		})
-	}
-}
-
-type signPrePartsResponse struct {
-	SignPrePartsResponse
-}
-
-var testUUID = "123e4567-e89b-12d3-a456-426614174000"
-var uuidRegexp = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`)
-
-func (s signPrePartsResponse) StaticCopy() any {
-	a := s
-	a.ID = testUUID
-	for i, req := range s.Requests {
-		u, err := url.Parse(req.URL)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(-1)
-		}
-		u.RawQuery = url.Values{localstore.CipherQueryParam: []string{"testy"}}.Encode()
-		req.URL = uuidRegexp.ReplaceAllString(u.String(), testUUID)
-		a.Requests[i] = req
-	}
-	return a
-}
-
-func TestRoutes_SignPreParts(t *testing.T) {
-	testName := "TestRoutes_SignPreParts"
-
-	testCases := []struct {
-		name         string
-		queryParams  string
-		expectedCode int
-	}{
-		{name: "one", queryParams: "exts=.png", expectedCode: http.StatusOK},
-		{name: "many", queryParams: "exts=.jpg&exts=.png&exts=.jpeg", expectedCode: http.StatusOK},
-		{name: "array", queryParams: "exts[0]=.jpg&exts[1]=.png&exts[2]=.jpeg", expectedCode: http.StatusUnprocessableEntity},
-		{name: "comma", queryParams: "exts=.jpeg,.png", expectedCode: http.StatusUnprocessableEntity},
-		{name: "none", queryParams: "", expectedCode: http.StatusUnprocessableEntity},
-		{name: "invalid", queryParams: "exts=.jpg&exts=.png&exts=.waka", expectedCode: http.StatusUnprocessableEntity},
-	}
-	for _, tc := range testCases {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
-			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "/sign_pre_parts?"+tc.queryParams, nil))
-			require.Equal(tc.expectedCode, resp.Code)
-			testModelResponse(t, resp, testName, tc.name, &signPrePartsResponse{})
 		})
 	}
 }
