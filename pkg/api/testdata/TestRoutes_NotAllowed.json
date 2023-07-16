@@ -1,0 +1,5 @@
+{
+  "error": "the method, POST (at /terms/search), is not allowed with at this URL",
+  "code": 405,
+  "status_text": "Method Not Allowed"
+}

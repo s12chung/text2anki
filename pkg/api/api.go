@@ -71,7 +71,20 @@ func (rs Routes) Router() chi.Router {
 		r.Method(http.MethodGet, "/*", http.StripPrefix(storageURLPath, rs.StorageGet()))
 		r.Put("/*", httptyped.RespondTypedJSONWrap(rs.StoragePut))
 	})
+	r.NotFound(httputil.RespondJSONWrap(rs.NotFound))
+	r.MethodNotAllowed(httputil.RespondJSONWrap(rs.NotAllowed))
 	return r
+}
+
+// NotFound is the route handler for not matching pattern routes
+func (rs Routes) NotFound(r *http.Request) (any, *httputil.HTTPError) {
+	return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("request URL, %v, does not match any route", r.URL.String()))
+}
+
+// NotAllowed is the router handler for method not handled for the pattern
+func (rs Routes) NotAllowed(r *http.Request) (any, *httputil.HTTPError) {
+	return nil, httputil.Error(http.StatusMethodNotAllowed,
+		fmt.Errorf("the method, %v (at %v), is not allowed with at this URL", r.Method, r.URL.String()))
 }
 
 func extractAndValidate(r *http.Request, req any) *httputil.HTTPError {

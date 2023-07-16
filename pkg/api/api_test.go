@@ -63,23 +63,29 @@ func idPath(path string, id int64) string {
 	return fmt.Sprintf(path+"/%v", id)
 }
 
+func testIndent(t *testing.T, resp test.Response, testName, name string) {
+	jsonBody := test.IndentJSON(t, resp.Body.Bytes())
+	fixture.CompareReadOrUpdate(t, fixtureFileName(testName, name), jsonBody)
+}
+
 func testModelResponse(t *testing.T, resp test.Response, testName, name string, model test.StaticCopyable) string {
 	jsonBody := test.StaticCopyOrIndent(t, resp.Code, resp.Body.Bytes(), model)
-	fixtureFile := testName + ".json"
-	if name != "" {
-		fixtureFile = path.Join(testName, name+"_response.json")
-	}
+	fixtureFile := fixtureFileName(testName, name)
 	fixture.CompareReadOrUpdate(t, fixtureFile, jsonBody)
 	return fixtureFile
 }
 
 func testModelsResponse(t *testing.T, resp test.Response, testName, name string, models any) {
 	jsonBody := test.StaticCopyOrIndentSlice(t, resp.Code, resp.Body.Bytes(), models)
+	fixture.CompareReadOrUpdate(t, fixtureFileName(testName, name), jsonBody)
+}
+
+func fixtureFileName(testName, name string) string {
 	fixtureFile := testName + ".json"
 	if name != "" {
 		fixtureFile = path.Join(testName, name+"_response.json")
 	}
-	fixture.CompareReadOrUpdate(t, fixtureFile, jsonBody)
+	return fixtureFile
 }
 
 func TestRoutes_Router(t *testing.T) {
@@ -107,4 +113,20 @@ func TestRoutes_Router(t *testing.T) {
 	resp = test.HTTPDo(t, req)
 	require.Equal(http.StatusOK, resp.Code)
 	require.Equal(".", resp.Body.String())
+}
+
+func TestRoutes_NotFound(t *testing.T) {
+	testName := "TestRoutes_NotFound"
+	require := require.New(t)
+	resp := test.HTTPDo(t, server.NewRequest(t, http.MethodGet, "/not_found_me", nil))
+	require.Equal(http.StatusNotFound, resp.Code)
+	testIndent(t, resp, testName, "")
+}
+
+func TestRoutes_NotAllowed(t *testing.T) {
+	testName := "TestRoutes_NotAllowed"
+	require := require.New(t)
+	resp := test.HTTPDo(t, server.NewRequest(t, http.MethodPost, "/terms/search", nil))
+	require.Equal(http.StatusMethodNotAllowed, resp.Code)
+	testIndent(t, resp, testName, "")
 }
