@@ -126,25 +126,26 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
               onClick={() => handleTextClick(textIndex)}
             >
               <div className="ko-sans text-2xl focgrin:text-light">{tokenizedText.text}</div>
-              <div className="ko-sans hidden text-4xl mb-4 justify-center focgrin:flex">
+              <div className="ko-sans hidden text-4xl justify-center mb-2 child:py-2 focgrin:flex">
                 {tokenizedText.tokens.map((token, index) => {
                   const previousSpace = tokenPreviousSpace(tokenizedText.tokens, index)
                   return (
                     /* eslint-disable-next-line react/no-array-index-key */
-                    <div key={`${token.text}-${token.partOfSpeech}-${index}`} className="flex">
-                      {!previousSpace && index !== 0 && <span>&middot;</span>}
-                      {Boolean(previousSpace) && index !== 0 && <span>&nbsp;&nbsp;</span>}
+                    <React.Fragment key={`${token.text}-${token.partOfSpeech}-${index}`}>
+                      {!previousSpace && index !== 0 && <div>&middot;</div>}
+                      {Boolean(previousSpace) && index !== 0 && <div>&nbsp;&nbsp;</div>}
                       <div
                         ref={(ref) => {
                           if (!tokenRefs.current[textIndex]) tokenRefs.current[textIndex] = []
                           tokenRefs.current[textIndex][index] = ref
                         }}
+                        className="focus:text-white focus:bg-ink"
                         tabIndex={-1}
                         onClick={() => handleTokenClick(index)}
                       >
                         <div>{token.text}</div>
                       </div>
-                    </div>
+                    </React.Fragment>
                   )
                 })}
               </div>
