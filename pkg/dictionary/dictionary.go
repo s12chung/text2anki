@@ -21,6 +21,13 @@ type Term struct {
 	DictionarySource string `json:"dictionary_source,omitempty"`
 }
 
+// StaticCopy returns a copy without fields that variate
+func (t Term) StaticCopy() any {
+	c := t
+	c.ID = 0
+	return c
+}
+
 // Translation is a translation of a word or phrase
 type Translation struct {
 	Text        string `json:"text,omitempty"`

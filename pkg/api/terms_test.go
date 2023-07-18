@@ -7,6 +7,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
+	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
@@ -34,7 +35,7 @@ func TestRoutes_TermsSearch(t *testing.T) {
 			db.WithTermsSearchConfig(testdb.SearchConfig, func() {
 				resp = test.HTTPDo(t, termsServer.NewRequest(t, http.MethodGet, "/search?"+tc.values.Encode(), nil))
 			})
-			testModelsResponse(t, resp, testName, tc.name, &[]db.Term{})
+			testModelsResponse(t, resp, testName, tc.name, &[]dictionary.Term{})
 		})
 	}
 }

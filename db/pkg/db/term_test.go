@@ -16,19 +16,6 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestTerm_StaticCopy(t *testing.T) {
-	require := require.New(t)
-
-	term := db.Term{}
-	err := json.Unmarshal(fixture.Read(t, "TestToDBTerm.json"), &term)
-	require.NoError(err)
-	test.EmptyFieldsMatch(t, term)
-
-	termCopy := term
-	termCopy.ID = 0
-	require.Equal(termCopy, term.StaticCopy())
-}
-
 func TestToDBTerm(t *testing.T) {
 	require := require.New(t)
 	testName := "TestToDBTerm"

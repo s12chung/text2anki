@@ -14,13 +14,6 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
-// StaticCopy returns a copy without fields that variate
-func (t Term) StaticCopy() any {
-	c := t
-	c.ID = 0
-	return c
-}
-
 // ToDBTerm converts a dictionary.Term to a Term
 func ToDBTerm(term dictionary.Term, popularity int) (Term, error) {
 	variants := strings.Join(term.Variants, arraySeparator)

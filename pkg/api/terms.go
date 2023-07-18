@@ -5,13 +5,14 @@ import (
 	"net/http"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 )
 
 func init() {
-	httptyped.RegisterType(db.Term{})
+	httptyped.RegisterType(dictionary.Term{})
 }
 
 var posTypes = lang.PartOfSpeechTypes()
@@ -26,9 +27,16 @@ func (rs Routes) TermsSearch(r *http.Request) (any, *httputil.HTTPError) {
 	}
 	return httputil.ReturnModelOr500(func() (any, error) {
 		termsSearchRow, err := db.Qs().TermsSearch(r.Context(), query, pos)
-		terms := make([]db.Term, len(termsSearchRow))
+		if err != nil {
+			return nil, err
+		}
+		terms := make([]dictionary.Term, len(termsSearchRow))
 		for i, row := range termsSearchRow {
-			terms[i] = row.Term
+			term, err := row.Term.DictionaryTerm()
+			if err != nil {
+				return nil, err
+			}
+			terms[i] = term
 		}
 		return terms, err
 	})
