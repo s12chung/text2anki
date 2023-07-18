@@ -1,0 +1,15 @@
+{
+  "dictionary.Term": {
+    "common_level,omitempty": "lang.CommonLevel",
+    "dictionary_source,omitempty": "string",
+    "id": "int64",
+    "part_of_speech,omitempty": "lang.PartOfSpeech",
+    "text,omitempty": "string",
+    "translations,omitempty": "[]dictionary.Translation",
+    "variants,omitempty": "[]string"
+  },
+  "dictionary.Translation": {
+    "explanation,omitempty": "string",
+    "text,omitempty": "string"
+  }
+}

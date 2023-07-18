@@ -6,19 +6,13 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
-
-// StaticCopy returns a copy without fields that variate
-func (t Term) StaticCopy() any {
-	c := t
-	c.ID = 0
-	return c
-}
 
 // ToDBTerm converts a dictionary.Term to a Term
 func ToDBTerm(term dictionary.Term, popularity int) (Term, error) {
@@ -87,6 +81,7 @@ type TermsSearchConfig struct {
 	PopWeight    int `json:"pop_weight,omitempty"`
 	CommonWeight int `json:"common_weight,omitempty"`
 	LenLog       int `json:"len_log,omitempty"`
+	Limit        int `json:"limit,omitempty"`
 }
 
 var termsSearchConfig = TermsSearchConfig{
@@ -95,6 +90,7 @@ var termsSearchConfig = TermsSearchConfig{
 	PopWeight:    25,
 	CommonWeight: 10,
 	LenLog:       2,
+	Limit:        25,
 }
 
 // WithTermsSearchConfig runs with function with the TermsSearchConfig set
@@ -123,8 +119,11 @@ func (q *Queries) TermsSearchRaw(ctx context.Context, query string, pos lang.Par
 	if c.PosWeight+c.PopWeight+c.CommonWeight > 100 {
 		return nil, fmt.Errorf("c.PosWeight + config.PopWeight + config.CommonWeight > 100: %v, %v, %v", c.PosWeight, c.PopWeight, c.CommonWeight)
 	}
+	if c.Limit == 0 {
+		c.Limit = math.MaxUint32
+	}
 
-	rows, err := q.db.QueryContext(ctx, termsSearchSQL, query, pos, c.PosWeight, c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog)
+	rows, err := q.db.QueryContext(ctx, termsSearchSQL, query, pos, c.PosWeight, c.PopLog, c.PopWeight, c.CommonWeight, c.LenLog, c.Limit)
 	if err != nil {
 		return nil, err
 	}

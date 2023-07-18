@@ -17,6 +17,7 @@ export default {
   },
   plugins: [
     plugin(function ({ addVariant }) {
+      addVariant("child", "& > *")
       addVariant("focin", ["&:focus", "&:focus-within"])
       addVariant("focgrin", ":merge(.group):focus-within &")
     }),

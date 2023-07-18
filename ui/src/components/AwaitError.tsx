@@ -1,4 +1,4 @@
-import { printError } from "../../utils/ErrorUtil.ts"
+import { printError } from "../utils/ErrorUtil.ts"
 import React from "react"
 import { useAsyncError } from "react-router-dom"
 

@@ -1,5 +1,5 @@
-import SourceCreateMini from "./components/source/SourceCreateMini.tsx"
-import SourceList, { ISourceListData } from "./components/source/SourceList"
+import SourceCreateMini from "../components/source/SourceCreateMini.tsx"
+import SourceList, { ISourceListData } from "../components/source/SourceList"
 import { useLoaderData } from "react-router-dom"
 
 const HomePage: React.FC = () => {

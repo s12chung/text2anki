@@ -1,0 +1,29 @@
+[
+  {
+    "term": {
+      "id": 2,
+      "text": "마음 같아서는",
+      "variants": "",
+      "part_of_speech": "Verb",
+      "common_level": 0,
+      "translations": "[{\"text\":\"if it's like my mind\",\"explanation\":\"If one follows as one thinks.\"}]",
+      "popularity": 2
+    },
+    "pos_calc": {
+      "Float64": 10,
+      "Valid": true
+    },
+    "pop_calc": {
+      "Float64": 39.35897776853416,
+      "Valid": true
+    },
+    "common_calc": {
+      "Float64": 0,
+      "Valid": true
+    },
+    "len_calc": {
+      "Float64": 3.5620718710802217,
+      "Valid": true
+    }
+  }
+]

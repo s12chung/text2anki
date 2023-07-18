@@ -6,4 +6,5 @@ SELECT terms.*,
     CAST(common_level AS REAL) / 3 * common_weight AS common_calc,
     1 / LOG(len_log, ABS(LENGTH(TRIM(text, '-')) - LENGTH(query)) + len_log) * (100 - pos_weight - pop_weight - common_weight) AS len_calc
 FROM terms, const WHERE text LIKE '%' || const.query ||'%' OR variants LIKE '%' || const.query ||'%'
-ORDER BY pos_calc + pop_calc + common_calc + len_calc DESC;
+ORDER BY pos_calc + pop_calc + common_calc + len_calc DESC
+LIMIT ?;
