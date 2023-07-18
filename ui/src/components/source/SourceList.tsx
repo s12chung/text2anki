@@ -1,4 +1,4 @@
-import { Source } from "../../services/SourceService.ts"
+import { Source } from "../../services/SourcesService.ts"
 import AwaitError from "../AwaitError.tsx"
 import { DocumentTextIcon } from "@heroicons/react/24/outline"
 import React from "react"
