@@ -89,12 +89,12 @@ func TestTerm_CreateParams(t *testing.T) {
 
 func TestQueries_TermsSearchRaw(t *testing.T) {
 	require := require.New(t)
-	testName := "TestQueries_TermsSearch"
+	testName := "TestQueries_TermsSearchRaw"
 	ctx := context.Background()
 
 	results, err := db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechUnknown, testdb.SearchConfig)
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, results))
+	fixture.CompareReadOrUpdate(t, path.Join(testName, "unknown.json"), fixture.JSON(t, results))
 
 	_, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechUnknown, db.TermsSearchConfig{
 		PopWeight:    50,
@@ -104,5 +104,11 @@ func TestQueries_TermsSearchRaw(t *testing.T) {
 
 	results, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+"_Verb_"+".json", fixture.JSON(t, results))
+	fixture.CompareReadOrUpdate(t, path.Join(testName, "verb.json"), fixture.JSON(t, results))
+
+	configCopy := testdb.SearchConfig
+	configCopy.Limit = 1
+	results, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, testdb.SearchPOS, configCopy)
+	require.NoError(err)
+	fixture.CompareReadOrUpdate(t, path.Join(testName, "limit.json"), fixture.JSON(t, results))
 }
