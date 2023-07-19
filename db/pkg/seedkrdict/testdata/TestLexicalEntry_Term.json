@@ -2,6 +2,7 @@
   {
     "id": 27500,
     "text": "가다",
+    "variants": [],
     "part_of_speech": "Verb",
     "common_level": 3,
     "translations": [
@@ -137,6 +138,7 @@
         "text": "die; pass away",
         "explanation": "For a person to die."
       }
-    ]
+    ],
+    "dictionary_source": ""
   }
 ]

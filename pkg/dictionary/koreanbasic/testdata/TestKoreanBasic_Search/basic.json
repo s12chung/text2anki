@@ -2,6 +2,7 @@
   {
     "id": 27500,
     "text": "가다",
+    "variants": [],
     "part_of_speech": "Verb",
     "common_level": 3,
     "translations": [
@@ -143,7 +144,9 @@
   {
     "id": 28764,
     "text": "가다",
+    "variants": [],
     "part_of_speech": "AuxiliaryVerb",
+    "common_level": 0,
     "translations": [
       {
         "text": "become; turn",
@@ -159,6 +162,7 @@
   {
     "id": 28117,
     "text": "가다듬다",
+    "variants": [],
     "part_of_speech": "Verb",
     "common_level": 1,
     "translations": [
@@ -184,7 +188,9 @@
   {
     "id": 28116,
     "text": "가다가",
+    "variants": [],
     "part_of_speech": "Adverb",
+    "common_level": 0,
     "translations": [
       {
         "text": "sometimes; occasionally",
@@ -196,6 +202,7 @@
   {
     "id": 71456,
     "text": "나가다",
+    "variants": [],
     "part_of_speech": "Verb",
     "common_level": 3,
     "translations": [
@@ -301,6 +308,7 @@
   {
     "id": 60216,
     "text": "지나가다",
+    "variants": [],
     "part_of_speech": "Verb",
     "common_level": 3,
     "translations": [
@@ -346,6 +354,7 @@
   {
     "id": 89867,
     "text": "올라가다",
+    "variants": [],
     "part_of_speech": "Verb",
     "common_level": 3,
     "translations": [
@@ -419,6 +428,7 @@
   {
     "id": 67877,
     "text": "들어가다",
+    "variants": [],
     "part_of_speech": "Verb",
     "common_level": 3,
     "translations": [
@@ -484,6 +494,7 @@
   {
     "id": 74103,
     "text": "돌아가다",
+    "variants": [],
     "part_of_speech": "Verb",
     "common_level": 3,
     "translations": [
@@ -536,6 +547,7 @@
         "explanation": "To finish in a certain state."
       },
       {
+        "text": "",
         "explanation": "For the direction to be changed or tilted to one side."
       },
       {
@@ -556,6 +568,7 @@
   {
     "id": 63723,
     "text": "내려가다",
+    "variants": [],
     "part_of_speech": "Verb",
     "common_level": 3,
     "translations": [

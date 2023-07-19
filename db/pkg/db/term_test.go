@@ -53,7 +53,7 @@ func TestTerm_DictionaryTerm(t *testing.T) {
 
 			dictTerm, err := term.DictionaryTerm()
 			require.NoError(err)
-			test.EmptyFieldsMatch(t, dictTerm, tc.emptyFields...)
+			test.EmptyFieldsMatch(t, dictTerm)
 
 			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, dictTerm))
 		})
