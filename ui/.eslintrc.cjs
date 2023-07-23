@@ -41,7 +41,8 @@ module.exports = {
     "one-var": "off",
     "react/forbid-component-props": ["error", { "forbid": ['style', {
         "propName": "className",
-        "allowedFor": ["Link", "DocumentTextIcon"],
+        "allowedFor": ["DocumentTextIcon", "LinkIcon", "PlusIcon", "QuestionMarkCircleIcon", "XMarkIcon",
+          "Dialog", "Dialog.Panel", "Dialog.Title", "Link"],
       }] }],
     "react/function-component-definition": ["error", { namedComponents: "arrow-function", unnamedComponents: [] }],
     "react/jsx-filename-extension": ["error", { extensions: [".tsx"] }],

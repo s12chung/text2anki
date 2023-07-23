@@ -3,9 +3,11 @@ import { Source, Token } from "../../services/SourcesService.ts"
 import { Term, termsService } from "../../services/TermsService.ts"
 import { unique } from "../../utils/ArrayUntil.ts"
 import { printAndAlertError } from "../../utils/ErrorUtil.ts"
-import { paginate } from "../../utils/HtmlUtil.ts"
+import { paginate, totalPages } from "../../utils/HtmlUtil.ts"
 import AwaitError from "../AwaitError.tsx"
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import SlideOver from "../SlideOver.tsx"
+import NoteForm from "../note/NoteForm.tsx"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Await, Link } from "react-router-dom"
 
 export interface ISourceShowData {
@@ -202,10 +204,22 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   )
 }
 
+const pageSize = 5
+
+// eslint-disable-next-line max-lines-per-function
 const TermsComponent: React.FC<{ termsPromise: Promise<Term[]> }> = ({ termsPromise }) => {
   const [loading, setLoading] = useState<boolean>(true)
   const [hasError, setHasError] = useState<boolean>(false)
   const [terms, setTerms] = useState<Term[]>([])
+
+  const [termFocusIndex, setTermFocusIndex] = useState<number>(0)
+  const termRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  const [page, setPage] = useState<number>(0)
+  const pagesLen = useMemo<number>(() => totalPages(terms, pageSize), [terms])
+
+  const [showCreateNote, setShowCreateNote] = useState<boolean>(false)
+  const onCloseCreateNote = () => setShowCreateNote(false)
 
   useEffect(() => {
     termsPromise
@@ -213,6 +227,50 @@ const TermsComponent: React.FC<{ termsPromise: Promise<Term[]> }> = ({ termsProm
       .catch((err) => setHasError(Boolean(printAndAlertError(err))))
       .finally(() => setLoading(false))
   }, [termsPromise])
+
+  useEffect(() => {
+    const termElement = termRefs.current[termFocusIndex]
+    if (!termElement) return
+    termElement.focus()
+  }, [terms, page, termFocusIndex]) // trigger from terms/page to do initial focus
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      switch (event.code) {
+        case "ArrowUp":
+        case "KeyW":
+          setTermFocusIndex(decrement(termFocusIndex, pageSize))
+          break
+        case "ArrowDown":
+        case "KeyS":
+          setTermFocusIndex(increment(termFocusIndex, pageSize))
+          break
+        case "ArrowLeft":
+        case "KeyA":
+          setPage(decrement(page, pagesLen))
+          setTermFocusIndex(0)
+          break
+        case "ArrowRight":
+        case "KeyD":
+          setPage(increment(page, pagesLen))
+          setTermFocusIndex(0)
+          break
+        case "Enter":
+        case "Space":
+          setShowCreateNote(true)
+          break
+        default:
+          return
+      }
+      event.preventDefault()
+    },
+    [termFocusIndex, page, pagesLen]
+  )
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [handleKeyDown])
 
   const className = "grid-std text-left text-lg py-2 space-y-2"
   if (loading) {
@@ -228,24 +286,44 @@ const TermsComponent: React.FC<{ termsPromise: Promise<Term[]> }> = ({ termsProm
       {terms.length === 0 ? (
         <div>No terms found</div>
       ) : (
-        paginate(terms, 5, 1).map((term) => (
-          <div key={term.id}>
-            <div className="text-xl">
-              {term.text}&nbsp;
-              <span className="text-light text-base">{term.partOfSpeech}</span>
-              {term.commonLevel !== 0 && (
-                <span className="relative top-2">&nbsp;{"*".repeat(term.commonLevel)}</span>
-              )}
-              : {term.translations[0].text} &mdash; {term.translations[0].explanation}
+        <div>
+          {paginate(terms, pageSize, page).map((term, index) => (
+            <div
+              key={term.id}
+              ref={(ref) => (termRefs.current[index] = ref)}
+              tabIndex={-1}
+              className="focus:underline"
+            >
+              <div className="text-xl">
+                {term.text}&nbsp;
+                <span className="text-light text-base">{term.partOfSpeech}</span>
+                {term.commonLevel !== 0 && (
+                  <span className="relative top-2">&nbsp;{"*".repeat(term.commonLevel)}</span>
+                )}
+                : {term.translations[0].text} &mdash; {term.translations[0].explanation}
+              </div>
+              <div className="ml-8">
+                {unique(term.translations.map((translation) => translation.text))
+                  .slice(1, 6)
+                  .join("; ")}
+              </div>
             </div>
-            <div className="ml-8">
-              {unique(term.translations.map((translation) => translation.text))
-                .slice(1, 6)
-                .join("; ")}
-            </div>
+          ))}
+          <div className="text-center space-x-2">
+            {new Array(pagesLen).fill(null).map((_, index) => (
+              /* eslint-disable-next-line react/no-array-index-key */
+              <span key={index} className={index === page ? "" : "text-light"}>
+                {index === page ? <>&#x2716;</> : <>&bull;</>}
+              </span>
+            ))}
           </div>
-        ))
+        </div>
       )}
+
+      <SlideOver.Dialog show={showCreateNote} onClose={onCloseCreateNote}>
+        <SlideOver.Header title="Create Note" onClose={onCloseCreateNote} />
+        <NoteForm onClose={onCloseCreateNote} />
+      </SlideOver.Dialog>
     </div>
   )
 }
