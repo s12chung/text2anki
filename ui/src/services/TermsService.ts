@@ -15,11 +15,16 @@ export interface Translation {
   explanation: string
 }
 
+export interface TermsSearchData {
+  query: string
+  pos: string | string[]
+}
+
 class TermsService extends ApplicationService {
   protected pathPrefix = "/terms"
 
-  async search(query: string, pos: string): Promise<Term[]> {
-    return (await this.fetch(`/search?${queryString({ query: [query], pos: [pos] })}`)) as Term[]
+  async search(data: TermsSearchData): Promise<Term[]> {
+    return (await this.fetch(`/search?${queryString(data)}`)) as Term[]
   }
 }
 

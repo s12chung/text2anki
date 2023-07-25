@@ -1,14 +1,14 @@
 /* eslint-disable max-lines */
 import { Source, Token } from "../../services/SourcesService.ts"
-import { Term, termsService } from "../../services/TermsService.ts"
+import { Term } from "../../services/TermsService.ts"
 import { unique } from "../../utils/ArrayUntil.ts"
-import { printAndAlertError } from "../../utils/ErrorUtil.ts"
 import { paginate, totalPages } from "../../utils/HtmlUtil.ts"
+import { queryString } from "../../utils/UrlUtil.ts"
 import AwaitError from "../AwaitError.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteForm from "../note/NoteForm.tsx"
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Await, Link } from "react-router-dom"
+import { Await, Link, useFetcher } from "react-router-dom"
 
 export interface ISourceShowData {
   source: Promise<Source>
@@ -50,7 +50,7 @@ function decrement(index: number, length: number): number {
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const [textFocusIndex, setTextFocusIndex] = useState<number>(-1)
   const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(-1)
-  const [termsPromise, setTermsPromise] = useState<Promise<Term[]> | null>(null)
+  const [selectedToken, setSelectedToken] = useState<Token | null>(null)
 
   const textRefs = useRef<(HTMLDivElement | null)[]>([])
   const tokenRefs = useRef<(HTMLDivElement | null)[][]>([])
@@ -59,7 +59,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const tokenizedTexts = source.parts[0].tokenizedTexts
 
   useEffect(() => {
-    setTermsPromise(null)
+    setSelectedToken(null)
     const textElement = textRefs.current[textFocusIndex]
     if (!textElement) return
     textElement.focus()
@@ -78,14 +78,14 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
 
       switch (event.code) {
         case "Escape":
-          if (termsPromise === null) return
-          setTermsPromise(null)
+          if (selectedToken === null) return
+          setSelectedToken(null)
           tokenRefs.current[textFocusIndex][tokenFocusIndex]?.focus()
           break
         default:
       }
 
-      if (termsPromise !== null) return
+      if (selectedToken !== null) return
 
       switch (event.code) {
         case "ArrowUp":
@@ -111,10 +111,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
         case "Enter":
         case "Space":
           if (tokenFocusIndex === -1) return
-          ;(() => {
-            const token = tokenizedTexts[textFocusIndex].tokens[tokenFocusIndex]
-            setTermsPromise(termsService.search(token.text, token.partOfSpeech))
-          })()
+          setSelectedToken(tokenizedTexts[textFocusIndex].tokens[tokenFocusIndex])
           break
         default:
           return
@@ -122,7 +119,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
 
       event.preventDefault()
     },
-    [tokenizedTexts, textFocusIndex, tokenFocusIndex, termsPromise]
+    [tokenizedTexts, textFocusIndex, tokenFocusIndex, selectedToken]
   )
 
   useEffect(() => {
@@ -133,7 +130,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const handleTextClick = (index: number) => setTextFocusIndex(index)
   const handleTokenClick = (index: number) => setTokenFocusIndex(index)
 
-  const termsFocus = termsPromise !== null
+  const termsFocus = selectedToken !== null
   const tokenizedTextClass = (b: boolean) =>
     `group py-2 focin:py-4 focin:bg-gray-std ${b ? "py-4 bg-gray-std" : ""}`
 
@@ -194,7 +191,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
                   </div>
                 )}
                 <div className={translationClass(textFocus)}>{tokenizedText.translation}</div>
-                {textFocus && termsFocus ? <TermsComponent termsPromise={termsPromise} /> : null}
+                {textFocus && termsFocus ? <TermsComponent token={selectedToken} /> : null}
               </div>
             </div>
           )
@@ -204,13 +201,16 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   )
 }
 
+interface ITermsShowData {
+  terms: Term[]
+}
+
 const pageSize = 5
 
 // eslint-disable-next-line max-lines-per-function
-const TermsComponent: React.FC<{ termsPromise: Promise<Term[]> }> = ({ termsPromise }) => {
-  const [loading, setLoading] = useState<boolean>(true)
-  const [hasError, setHasError] = useState<boolean>(false)
-  const [terms, setTerms] = useState<Term[]>([])
+const TermsComponent: React.FC<{ token: Token }> = ({ token }) => {
+  const fetcher = useFetcher<ITermsShowData>()
+  const terms = useMemo<Term[]>(() => (fetcher.data ? fetcher.data.terms : []), [fetcher.data])
 
   const [termFocusIndex, setTermFocusIndex] = useState<number>(0)
   const termRefs = useRef<(HTMLDivElement | null)[]>([])
@@ -222,11 +222,9 @@ const TermsComponent: React.FC<{ termsPromise: Promise<Term[]> }> = ({ termsProm
   const onCloseCreateNote = () => setShowCreateNote(false)
 
   useEffect(() => {
-    termsPromise
-      .then((ts) => setTerms(ts))
-      .catch((err) => setHasError(Boolean(printAndAlertError(err))))
-      .finally(() => setLoading(false))
-  }, [termsPromise])
+    if (fetcher.state !== "idle" || fetcher.data) return
+    fetcher.load(`/terms/search?${queryString({ query: token.text, pos: token.partOfSpeech })}`)
+  }, [fetcher, token])
 
   useEffect(() => {
     const termElement = termRefs.current[termFocusIndex]
@@ -272,17 +270,13 @@ const TermsComponent: React.FC<{ termsPromise: Promise<Term[]> }> = ({ termsProm
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [handleKeyDown])
 
-  const className = "grid-std text-left text-lg py-2 space-y-2"
-  if (loading) {
-    return <div className={className}>Loading...</div>
-  }
-
-  if (hasError) {
-    return <div className={className}>Error searching for Terms</div>
+  const topLevelClass = "grid-std text-left text-lg py-2 space-y-2"
+  if (!fetcher.data) {
+    return <div className={topLevelClass}>Loading...</div>
   }
 
   return (
-    <div className={className}>
+    <div className={topLevelClass}>
       {terms.length === 0 ? (
         <div>No terms found</div>
       ) : (

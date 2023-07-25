@@ -2,6 +2,7 @@ import SourceCreate from "./components/source/SourceCreate.tsx"
 import SourceEdit, { ISourceEditData } from "./components/source/SourceEdit.tsx"
 import SourceShow, { ISourceShowData } from "./components/source/SourceShow.tsx"
 import * as SourceController from "./controllers/SourcesController.ts"
+import * as TermsController from "./controllers/TermsController.ts"
 import HomePage from "./pages/HomePage.tsx"
 import LoaderPage from "./pages/LoaderPage.tsx"
 import ApplicationLayout from "./pages/layouts/ApplicationLayout.tsx"
@@ -21,6 +22,7 @@ const routes = route("/", null, {}, [
     resources("sources", appLayoutSourceController, {
       edit: el(LoaderPage<ISourceEditData>, { Component: SourceEdit }),
     }),
+    route("terms/search", null, { loader: TermsController.search }),
   ]),
 
   withLayout(el(FullLayout), [
