@@ -1,19 +1,23 @@
-import { queryString } from "../utils/UrlUtil.ts"
+import { queryString } from "../utils/RequestUtil.ts"
 import ApplicationService from "./ApplicationService.ts"
+import { CommonLevel } from "./LangService.ts"
 
 export interface Term {
   id: number
   text: string
   variants: string[]
   partOfSpeech: string
-  commonLevel: number
+  commonLevel: CommonLevel
   translations: Translation[]
+  dictionarySource: string
 }
 
 export interface Translation {
   text: string
   explanation: string
 }
+
+export const TermsSearchDataKeys: (keyof TermsSearchData)[] = ["query", "pos"]
 
 export interface TermsSearchData {
   query: string

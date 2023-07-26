@@ -83,7 +83,7 @@ function textsFromTranslation(s: string, translation: string): [Text[], boolean]
   const translations = splitClean(translation)
   const longestLength = lines.length > translations.length ? lines.length : translations.length
 
-  const texts: Text[] = new Array(longestLength)
+  const texts: Text[] = Array(longestLength)
   let i = 0
   let previousBreak = false
   let valid = true
@@ -110,7 +110,7 @@ function textsFromTranslation(s: string, translation: string): [Text[], boolean]
 
 function split(s: string): string[] {
   const lines = s.replace(/\r\n/gu, "\n").split("\n")
-  const clean = new Array(lines.length) as string[]
+  const clean: string[] = Array(lines.length)
 
   let i = 0
   let previousBreak = false
@@ -130,7 +130,7 @@ function split(s: string): string[] {
 
 function splitClean(s: string): string[] {
   const lines = s.replace(/\r\n/gu, "\n").split("\n")
-  const clean = new Array(lines.length) as string[]
+  const clean: string[] = Array(lines.length)
 
   let i = 0
   for (let line of lines) {

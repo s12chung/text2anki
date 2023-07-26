@@ -33,10 +33,14 @@ export interface CreateSourceData {
   parts: CreateSourcePartData[]
 }
 
+export const CreateSourcePartDataKeys: (keyof CreateSourcePartData)[] = ["text", "translation"]
+
 export interface CreateSourcePartData {
   text: string
   translation: string
 }
+
+export const UpdateSourceDataKeys: (keyof UpdateSourceData)[] = ["name"]
 
 export interface UpdateSourceData {
   name: string

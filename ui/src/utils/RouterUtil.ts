@@ -1,4 +1,4 @@
-import { Status404, Status405 } from "./StatusUtil.ts"
+import { Status405 } from "./StatusUtil.ts"
 import { ReactNode } from "react"
 import { ActionFunction, ActionFunctionArgs, LoaderFunction, RouteObject } from "react-router-dom"
 
@@ -13,17 +13,6 @@ export function actionFunc(actionMap: IActionMap): ActionFunction {
     }
     return fn(args)
   }
-}
-
-export function formData<T extends Record<keyof T, FormDataEntryValue>>(
-  formData: FormData,
-  ...keys: (keyof T)[]
-): T {
-  const obj = {} as T
-  for (const key of keys) {
-    obj[key] = formData.get(key as string) as T[keyof T]
-  }
-  return obj
 }
 
 export interface RouteOptions {
@@ -60,6 +49,7 @@ export function withLayout(element: ReactNode, children: RouteObject[]): RouteOb
 export interface IController {
   index?: LoaderFunction
   get?: LoaderFunction
+  edit?: LoaderFunction
 
   create?: ActionFunction
   update?: ActionFunction
@@ -102,25 +92,15 @@ export function resources(
   return route
 }
 
-function path(url: string): string {
-  return new URL(url).pathname.replace(/\/$/u, "")
-}
-
 function resourcesRoute(name: string, controller: IController, elements: IElementMap): RouteObject {
   const route = { path: name } as RouteObject
 
   if (elements.index) {
     if (!controller.index) throw resourceError("index", "index")
     route.element = elements.index
+  }
+  if (controller.index) {
     route.loader = controller.index
-  } else {
-    route.loader = ({ request }) => {
-      if (request.method === "GET" && path(request.url) === `/${name}`) {
-        // eslint-disable-next-line @typescript-eslint/no-throw-literal
-        throw new Response("path does not exist", Status404)
-      }
-      return null
-    }
   }
 
   if (controller.create) {
@@ -135,6 +115,8 @@ function resourceRoute(controller: IController, elements: IElementMap): RouteObj
   if (elements.show) {
     if (!controller.get) throw resourceError("show", "get")
     route.element = elements.show
+  }
+  if (controller.get) {
     route.loader = controller.get
   }
 
@@ -160,8 +142,8 @@ function editResourceRoute(controller: IController, elements: IElementMap): Rout
   if (!elements.edit) {
     return null
   }
-  if (!controller.get) {
-    throw resourceError("edit", "get")
+  if (!controller.edit) {
+    throw resourceError("edit", "edit")
   }
-  return { path: ":id/edit", element: elements.edit, loader: controller.get }
+  return { path: ":id/edit", element: elements.edit, loader: controller.edit }
 }

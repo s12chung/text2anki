@@ -1,9 +1,11 @@
 /* eslint-disable max-lines */
-import { Source, Token } from "../../services/SourcesService.ts"
+import { CommonLevel } from "../../services/LangService.ts"
+import { CreateNoteData, createNoteDataFromTerm, NoteUsage } from "../../services/NotesService.ts"
+import { Source, Token, TokenizedText } from "../../services/SourcesService.ts"
 import { Term } from "../../services/TermsService.ts"
 import { unique } from "../../utils/ArrayUntil.ts"
 import { paginate, totalPages } from "../../utils/HtmlUtil.ts"
-import { queryString } from "../../utils/UrlUtil.ts"
+import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitError from "../AwaitError.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteForm from "../note/NoteForm.tsx"
@@ -46,11 +48,26 @@ function decrement(index: number, length: number): number {
   return index > 0 ? index - 1 : length - 1
 }
 
+function getTermsComponentProps(
+  tokenizedText: TokenizedText,
+  tokenFocusIndex: number
+): ITermsComponentProps {
+  return {
+    token: tokenizedText.tokens[tokenFocusIndex],
+    usage: {
+      usage: tokenizedText.text,
+      usageTranslation: tokenizedText.translation,
+    },
+  }
+}
+
+let openModal = false
+
 // eslint-disable-next-line max-lines-per-function
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const [textFocusIndex, setTextFocusIndex] = useState<number>(-1)
   const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(-1)
-  const [selectedToken, setSelectedToken] = useState<Token | null>(null)
+  const [termsComponentProps, setTermsComponentProps] = useState<ITermsComponentProps | null>(null)
 
   const textRefs = useRef<(HTMLDivElement | null)[]>([])
   const tokenRefs = useRef<(HTMLDivElement | null)[][]>([])
@@ -59,7 +76,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const tokenizedTexts = source.parts[0].tokenizedTexts
 
   useEffect(() => {
-    setSelectedToken(null)
+    setTermsComponentProps(null)
     const textElement = textRefs.current[textFocusIndex]
     if (!textElement) return
     textElement.focus()
@@ -73,19 +90,21 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      if (openModal) return
+
       const textLen = tokenizedTexts.length
       const tokenLen = tokenizedTexts[textFocusIndex]?.tokens.length
 
       switch (event.code) {
         case "Escape":
-          if (selectedToken === null) return
-          setSelectedToken(null)
+          if (termsComponentProps === null) return
+          setTermsComponentProps(null)
           tokenRefs.current[textFocusIndex][tokenFocusIndex]?.focus()
           break
         default:
       }
 
-      if (selectedToken !== null) return
+      if (termsComponentProps !== null) return
 
       switch (event.code) {
         case "ArrowUp":
@@ -111,7 +130,9 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
         case "Enter":
         case "Space":
           if (tokenFocusIndex === -1) return
-          setSelectedToken(tokenizedTexts[textFocusIndex].tokens[tokenFocusIndex])
+          setTermsComponentProps(
+            getTermsComponentProps(tokenizedTexts[textFocusIndex], tokenFocusIndex)
+          )
           break
         default:
           return
@@ -119,7 +140,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
 
       event.preventDefault()
     },
-    [tokenizedTexts, textFocusIndex, tokenFocusIndex, selectedToken]
+    [tokenizedTexts, textFocusIndex, tokenFocusIndex, termsComponentProps]
   )
 
   useEffect(() => {
@@ -130,7 +151,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const handleTextClick = (index: number) => setTextFocusIndex(index)
   const handleTokenClick = (index: number) => setTokenFocusIndex(index)
 
-  const termsFocus = selectedToken !== null
+  const termsFocus = termsComponentProps !== null
   const tokenizedTextClass = (b: boolean) =>
     `group py-2 focin:py-4 focin:bg-gray-std ${b ? "py-4 bg-gray-std" : ""}`
 
@@ -191,7 +212,12 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
                   </div>
                 )}
                 <div className={translationClass(textFocus)}>{tokenizedText.translation}</div>
-                {textFocus && termsFocus ? <TermsComponent token={selectedToken} /> : null}
+                {textFocus && termsFocus ? (
+                  <TermsComponent
+                    token={termsComponentProps.token}
+                    usage={termsComponentProps.usage}
+                  />
+                ) : null}
               </div>
             </div>
           )
@@ -201,6 +227,11 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   )
 }
 
+interface ITermsComponentProps {
+  token: Token
+  usage: NoteUsage
+}
+
 interface ITermsShowData {
   terms: Term[]
 }
@@ -208,7 +239,7 @@ interface ITermsShowData {
 const pageSize = 5
 
 // eslint-disable-next-line max-lines-per-function
-const TermsComponent: React.FC<{ token: Token }> = ({ token }) => {
+const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
   const fetcher = useFetcher<ITermsShowData>()
   const terms = useMemo<Term[]>(() => (fetcher.data ? fetcher.data.terms : []), [fetcher.data])
 
@@ -218,8 +249,8 @@ const TermsComponent: React.FC<{ token: Token }> = ({ token }) => {
   const [page, setPage] = useState<number>(0)
   const pagesLen = useMemo<number>(() => totalPages(terms, pageSize), [terms])
 
-  const [showCreateNote, setShowCreateNote] = useState<boolean>(false)
-  const onCloseCreateNote = () => setShowCreateNote(false)
+  const [createNoteData, setCreateNoteData] = useState<CreateNoteData | null>(null)
+  const onCloseCreateNote = () => setCreateNoteData(null)
 
   useEffect(() => {
     if (fetcher.state !== "idle" || fetcher.data) return
@@ -232,8 +263,14 @@ const TermsComponent: React.FC<{ token: Token }> = ({ token }) => {
     termElement.focus()
   }, [terms, page, termFocusIndex]) // trigger from terms/page to do initial focus
 
+  useEffect(() => {
+    openModal = createNoteData !== null
+  }, [createNoteData])
+
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      if (openModal) return
+
       switch (event.code) {
         case "ArrowUp":
         case "KeyW":
@@ -255,14 +292,14 @@ const TermsComponent: React.FC<{ token: Token }> = ({ token }) => {
           break
         case "Enter":
         case "Space":
-          setShowCreateNote(true)
+          setCreateNoteData(createNoteDataFromTerm(terms[termFocusIndex], usage))
           break
         default:
           return
       }
       event.preventDefault()
     },
-    [termFocusIndex, page, pagesLen]
+    [termFocusIndex, page, pagesLen, terms, usage]
   )
 
   useEffect(() => {
@@ -291,7 +328,7 @@ const TermsComponent: React.FC<{ token: Token }> = ({ token }) => {
               <div className="text-xl">
                 {term.text}&nbsp;
                 <span className="text-light text-base">{term.partOfSpeech}</span>
-                {term.commonLevel !== 0 && (
+                {term.commonLevel !== CommonLevel.Unique && (
                   <span className="relative top-2">&nbsp;{"*".repeat(term.commonLevel)}</span>
                 )}
                 : {term.translations[0].text} &mdash; {term.translations[0].explanation}
@@ -304,20 +341,24 @@ const TermsComponent: React.FC<{ token: Token }> = ({ token }) => {
             </div>
           ))}
           <div className="text-center space-x-2">
-            {new Array(pagesLen).fill(null).map((_, index) => (
-              /* eslint-disable-next-line react/no-array-index-key */
-              <span key={index} className={index === page ? "" : "text-light"}>
-                {index === page ? <>&#x2716;</> : <>&bull;</>}
-              </span>
-            ))}
+            {Array(pagesLen)
+              .fill(null)
+              .map((_, index) => (
+                /* eslint-disable-next-line react/no-array-index-key */
+                <span key={index} className={index === page ? "" : "text-light"}>
+                  {index === page ? <>&#x2716;</> : <>&bull;</>}
+                </span>
+              ))}
           </div>
         </div>
       )}
 
-      <SlideOver.Dialog show={showCreateNote} onClose={onCloseCreateNote}>
-        <SlideOver.Header title="Create Note" onClose={onCloseCreateNote} />
-        <NoteForm onClose={onCloseCreateNote} />
-      </SlideOver.Dialog>
+      {createNoteData !== null && (
+        <SlideOver.Dialog show onClose={onCloseCreateNote}>
+          <SlideOver.Header title="Create Note" onClose={onCloseCreateNote} />
+          <NoteForm data={createNoteData} onClose={onCloseCreateNote} />
+        </SlideOver.Dialog>
+      )}
     </div>
   )
 }
