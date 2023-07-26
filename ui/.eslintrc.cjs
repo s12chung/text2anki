@@ -41,7 +41,7 @@ module.exports = {
     "one-var": "off",
     "react/forbid-component-props": ["error", { "forbid": ['style', {
         "propName": "className",
-        "allowedFor": ["DocumentTextIcon", "LinkIcon", "PlusIcon", "QuestionMarkCircleIcon", "XMarkIcon",
+        "allowedFor": ["CheckCircleIcon", "DocumentTextIcon", "InformationCircleIcon", "LinkIcon", "PlusIcon", "QuestionMarkCircleIcon", "XCircleIcon", "XMarkIcon",
           "Dialog", "Dialog.Panel", "Dialog.Title", "Link"],
       }] }],
     "react/function-component-definition": ["error", { namedComponents: "arrow-function", unnamedComponents: [] }],

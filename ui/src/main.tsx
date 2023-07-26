@@ -1,3 +1,5 @@
+import Notifications from "./components/Notifications.tsx"
+import ContextLayout from "./contexts/ContextLayout.tsx"
 import "./index.css"
 import routes from "./routes.ts"
 import React from "react"
@@ -6,6 +8,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={createBrowserRouter([routes])} />
+    <ContextLayout>
+      <RouterProvider router={createBrowserRouter([routes])} />
+      <Notifications />
+    </ContextLayout>
   </React.StrictMode>
 )
