@@ -3,10 +3,10 @@
     "term": {
       "id": 3,
       "text": "마음에 걸리다",
-      "variants": "",
       "part_of_speech": "Unknown",
-      "common_level": 0,
+      "variants": "",
       "translations": "[{\"text\":\"be caught in one's mind\",\"explanation\":\"To feel uncomfortable out of worry.\"}]",
+      "common_level": 0,
       "popularity": 3
     },
     "pos_calc": {
@@ -30,10 +30,10 @@
     "term": {
       "id": 2,
       "text": "마음 같아서는",
-      "variants": "",
       "part_of_speech": "Verb",
-      "common_level": 0,
+      "variants": "",
       "translations": "[{\"text\":\"if it's like my mind\",\"explanation\":\"If one follows as one thinks.\"}]",
+      "common_level": 0,
       "popularity": 2
     },
     "pos_calc": {

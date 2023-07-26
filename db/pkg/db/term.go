@@ -135,10 +135,10 @@ func (q *Queries) TermsSearchRaw(ctx context.Context, query string, pos lang.Par
 		if err := rows.Scan(
 			&i.ID,
 			&i.Text,
-			&i.Variants,
 			&i.PartOfSpeech,
-			&i.CommonLevel,
+			&i.Variants,
 			&i.Translations,
+			&i.CommonLevel,
 			&i.Popularity,
 			&i.PosCalc,
 			&i.PopCalc,

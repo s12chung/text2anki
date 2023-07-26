@@ -21,9 +21,9 @@ type Note struct {
 	Text string
 	lang.PartOfSpeech
 	Translation string
+	Explanation string
 
 	lang.CommonLevel
-	Explanation      string
 	Usage            string
 	UsageTranslation string
 	DictionarySource string

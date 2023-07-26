@@ -3,10 +3,10 @@
     "term": {
       "id": 2,
       "text": "마음 같아서는",
-      "variants": "",
       "part_of_speech": "Verb",
-      "common_level": 0,
+      "variants": "",
       "translations": "[{\"text\":\"if it's like my mind\",\"explanation\":\"If one follows as one thinks.\"}]",
+      "common_level": 0,
       "popularity": 2
     },
     "pos_calc": {

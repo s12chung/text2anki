@@ -13,8 +13,8 @@ type Note struct {
 	Text             string `json:"text"`
 	PartOfSpeech     string `json:"part_of_speech"`
 	Translation      string `json:"translation"`
-	CommonLevel      int64  `json:"common_level"`
 	Explanation      string `json:"explanation"`
+	CommonLevel      int64  `json:"common_level"`
 	Usage            string `json:"usage"`
 	UsageTranslation string `json:"usage_translation"`
 	DictionarySource string `json:"dictionary_source"`
@@ -33,9 +33,9 @@ type Source struct {
 type Term struct {
 	ID           int64  `json:"id"`
 	Text         string `json:"text"`
-	Variants     string `json:"variants"`
 	PartOfSpeech string `json:"part_of_speech"`
-	CommonLevel  int64  `json:"common_level"`
+	Variants     string `json:"variants"`
 	Translations string `json:"translations"`
+	CommonLevel  int64  `json:"common_level"`
 	Popularity   int64  `json:"popularity"`
 }
