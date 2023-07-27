@@ -27,19 +27,21 @@ export function route(
   options?: RouteOptions,
   children?: RouteObject[]
 ): RouteObject {
-  const route = {
+  if (path === "") {
+    if (children) throw new Error('route with path "" can not have children')
+
+    return {
+      element,
+      ...options,
+      index: true,
+    }
+  }
+  return {
     element,
     children,
     ...options,
-  } as RouteObject
-
-  if (path === "") {
-    route.index = true
-  } else {
-    route.path = path
+    path,
   }
-
-  return route
 }
 
 export function withLayout(element: ReactNode, children: RouteObject[]): RouteObject {
@@ -93,7 +95,7 @@ export function resources(
 }
 
 function resourcesRoute(name: string, controller: IController, elements: IElementMap): RouteObject {
-  const route = { path: name } as RouteObject
+  const route: RouteObject = { path: name }
 
   if (elements.index) {
     if (!controller.index) throw resourceError("index", "index")
@@ -111,7 +113,7 @@ function resourcesRoute(name: string, controller: IController, elements: IElemen
 }
 
 function resourceRoute(controller: IController, elements: IElementMap): RouteObject | null {
-  const route = { path: ":id" } as RouteObject
+  const route: RouteObject = { path: ":id" }
   if (elements.show) {
     if (!controller.get) throw resourceError("show", "get")
     route.element = elements.show
@@ -120,7 +122,7 @@ function resourceRoute(controller: IController, elements: IElementMap): RouteObj
     route.loader = controller.get
   }
 
-  const actionMap = {} as IActionMap
+  const actionMap: IActionMap = {}
   if (controller.update) actionMap.PATCH = controller.update
   if (controller.delete) actionMap.DELETE = controller.delete
 
