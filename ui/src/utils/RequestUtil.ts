@@ -36,7 +36,11 @@ export function queryObject<T extends Record<keyof T, string | string[]>>(
   const params = new URL(url).searchParams
   const obj = {} as T
   for (const key of keys) {
-    obj[key] = params.get(key as string) as T[keyof T]
+    const values = params.getAll(key as string)
+    if (values.length === 1) {
+      obj[key] = values[0] as T[keyof T]
+    }
+    obj[key] = values as T[keyof T]
   }
   return obj
 }
