@@ -28,7 +28,7 @@ module.exports = {
     "init-declarations": "off",
     "lines-between-class-members": ["error", "always", { exceptAfterSingleLine: true }],
     "line-comment-position": "off",
-    "max-lines-per-function": ["error", { skipBlankLines: true, skipComments: true }],
+    "max-lines-per-function": ["error", { max: 70, skipBlankLines: true, skipComments: true }],
     "max-statements": ["error", 20],
     "no-continue": "off",
     "no-inline-comments": "off",

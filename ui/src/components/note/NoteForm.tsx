@@ -2,7 +2,7 @@ import NotificationsContext from "../../contexts/NotificationsContext.ts"
 import { CommonLevel } from "../../services/LangService.ts"
 import { CreateNoteData, CreateNoteDataKeys, Note } from "../../services/NotesService.ts"
 import { camelToTitle } from "../../utils/StringUtil.ts"
-import React, { useContext, useEffect, useRef } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import { useFetcher } from "react-router-dom"
 
 interface INoteFormData {
@@ -15,6 +15,8 @@ const NoteForm: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ dat
   const commonLevelKey = CreateNoteDataKeys[commonLevelIndex]
   const { error, success } = useContext(NotificationsContext)
 
+  const [submitted, setSubmitted] = useState<boolean>(false)
+
   const submitButtonRef = useRef<HTMLButtonElement>(null)
   useEffect(() => {
     submitButtonRef.current?.focus()
@@ -26,10 +28,15 @@ const NoteForm: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ dat
       .then((note) => success(`Created new Note: ${note.text}`))
       .catch(() => error("Failed to create Note"))
       .finally(() => onClose())
-  }, [error, fetcher, onClose, success])
+  }, [fetcher, onClose, success, error])
 
   return (
-    <fetcher.Form action="/notes" method="post" className="m-std space-y-std">
+    <fetcher.Form
+      action="/notes"
+      method="post"
+      className="m-std space-y-std"
+      onSubmit={() => setSubmitted(true)}
+    >
       {CreateNoteDataKeys.slice(0, commonLevelIndex).map((key) => (
         <TextFormField key={key} data={data} dataKey={key} />
       ))}
@@ -56,7 +63,7 @@ const NoteForm: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ dat
         <button type="button" onClick={onClose}>
           Cancel
         </button>
-        <button ref={submitButtonRef} type="submit">
+        <button ref={submitButtonRef} type="submit" disabled={submitted}>
           Create
         </button>
       </div>
