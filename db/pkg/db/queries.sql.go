@@ -12,7 +12,7 @@ import (
 const noteCreate = `-- name: NoteCreate :one
 INSERT INTO notes (
     text, part_of_speech, translation, common_level, explanation, usage, usage_translation, dictionary_source, notes
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, text, part_of_speech, translation, common_level, explanation, usage, usage_translation, dictionary_source, notes, downloaded
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, text, part_of_speech, translation, explanation, common_level, usage, usage_translation, dictionary_source, notes, downloaded
 `
 
 type NoteCreateParams struct {
@@ -45,8 +45,8 @@ func (q *Queries) NoteCreate(ctx context.Context, arg NoteCreateParams) (Note, e
 		&i.Text,
 		&i.PartOfSpeech,
 		&i.Translation,
-		&i.CommonLevel,
 		&i.Explanation,
+		&i.CommonLevel,
 		&i.Usage,
 		&i.UsageTranslation,
 		&i.DictionarySource,
@@ -57,7 +57,7 @@ func (q *Queries) NoteCreate(ctx context.Context, arg NoteCreateParams) (Note, e
 }
 
 const noteGet = `-- name: NoteGet :one
-SELECT id, text, part_of_speech, translation, common_level, explanation, usage, usage_translation, dictionary_source, notes, downloaded FROM notes WHERE id = ? LIMIT 1
+SELECT id, text, part_of_speech, translation, explanation, common_level, usage, usage_translation, dictionary_source, notes, downloaded FROM notes WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) NoteGet(ctx context.Context, id int64) (Note, error) {
@@ -68,8 +68,8 @@ func (q *Queries) NoteGet(ctx context.Context, id int64) (Note, error) {
 		&i.Text,
 		&i.PartOfSpeech,
 		&i.Translation,
-		&i.CommonLevel,
 		&i.Explanation,
+		&i.CommonLevel,
 		&i.Usage,
 		&i.UsageTranslation,
 		&i.DictionarySource,
@@ -189,7 +189,7 @@ func (q *Queries) SourceUpdate(ctx context.Context, arg SourceUpdateParams) (Sou
 const termCreate = `-- name: TermCreate :one
 INSERT INTO terms (
     text, variants, part_of_speech, common_level, translations, popularity
-) VALUES (?, ?, ?, ?, ?, ?) RETURNING id, text, variants, part_of_speech, common_level, translations, popularity
+) VALUES (?, ?, ?, ?, ?, ?) RETURNING id, text, part_of_speech, variants, translations, common_level, popularity
 `
 
 type TermCreateParams struct {
@@ -214,10 +214,10 @@ func (q *Queries) TermCreate(ctx context.Context, arg TermCreateParams) (Term, e
 	err := row.Scan(
 		&i.ID,
 		&i.Text,
-		&i.Variants,
 		&i.PartOfSpeech,
-		&i.CommonLevel,
+		&i.Variants,
 		&i.Translations,
+		&i.CommonLevel,
 		&i.Popularity,
 	)
 	return i, err
@@ -235,7 +235,7 @@ func (q *Queries) TermsCount(ctx context.Context) (int64, error) {
 }
 
 const termsPopular = `-- name: TermsPopular :many
-SELECT id, text, variants, part_of_speech, common_level, translations, popularity FROM terms ORDER BY CAST(popularity AS INT) LIMIT 100
+SELECT id, text, part_of_speech, variants, translations, common_level, popularity FROM terms ORDER BY CAST(popularity AS INT) LIMIT 100
 `
 
 func (q *Queries) TermsPopular(ctx context.Context) ([]Term, error) {
@@ -250,10 +250,10 @@ func (q *Queries) TermsPopular(ctx context.Context) ([]Term, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Text,
-			&i.Variants,
 			&i.PartOfSpeech,
-			&i.CommonLevel,
+			&i.Variants,
 			&i.Translations,
+			&i.CommonLevel,
 			&i.Popularity,
 		); err != nil {
 			return nil, err

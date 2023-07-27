@@ -6,6 +6,11 @@ export function camelToSnake(str: string): string {
   return str.replace(/[A-Z]/gu, (group) => `_${group.toLowerCase()}`)
 }
 
+export function camelToTitle(str: string): string {
+  str = str.replace(/[A-Z]/gu, (word) => ` ${word}`)
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 type ConvertKeyFunc = (str: string) => string
 
 export function convertKeys(data: unknown, convertKey: ConvertKeyFunc): unknown {

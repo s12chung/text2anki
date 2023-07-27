@@ -2,7 +2,9 @@
   {
     "id": 2,
     "text": "마음 같아서는",
+    "variants": [],
     "part_of_speech": "Verb",
+    "common_level": 0,
     "translations": [
       {
         "text": "if it's like my mind",
@@ -14,7 +16,9 @@
   {
     "id": 3,
     "text": "마음에 걸리다",
+    "variants": [],
     "part_of_speech": "Unknown",
+    "common_level": 0,
     "translations": [
       {
         "text": "be caught in one's mind",

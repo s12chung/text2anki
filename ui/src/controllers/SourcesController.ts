@@ -1,26 +1,35 @@
-import { CreateSourcePartData, sourceService, UpdateSourceData } from "../services/SourceService.ts"
-import { formData } from "../utils/RouterUtil.ts"
+import {
+  CreateSourcePartDataEmpty,
+  sourcesService,
+  UpdateSourceDataEmpty,
+} from "../services/SourcesService.ts"
+import { formData } from "../utils/RequestUtil.ts"
+import { Status405 } from "../utils/StatusUtil.ts"
 import { ActionFunction, defer, LoaderFunction, redirect } from "react-router-dom"
 
 export const index: LoaderFunction = () => {
-  return defer({ sources: sourceService.index() })
+  return defer({ sources: sourcesService.index() })
 }
 
 export const get: LoaderFunction = ({ params }) => {
-  return defer({ source: sourceService.get(params.id as string) })
+  if (!params.id) throw new Response("id not found", Status405) // eslint-disable-line @typescript-eslint/no-throw-literal
+  return defer({ source: sourcesService.get(params.id) })
 }
 
+export const edit = get
+
 export const create: ActionFunction = async ({ request }) => {
-  const source = await sourceService.create({
-    parts: [formData<CreateSourcePartData>(await request.formData(), "text", "translation")],
+  const source = await sourcesService.create({
+    parts: [formData(await request.formData(), CreateSourcePartDataEmpty)],
   })
   return redirect(`/sources/${source.id}`)
 }
 
 export const update: ActionFunction = async ({ request, params }) => {
-  const source = await sourceService.update(
-    params.id as string,
-    formData<UpdateSourceData>(await request.formData(), "name")
+  if (!params.id) throw new Response("id not found", Status405) // eslint-disable-line @typescript-eslint/no-throw-literal
+  const source = await sourcesService.update(
+    params.id,
+    formData(await request.formData(), UpdateSourceDataEmpty)
   )
   return redirect(`/sources/${source.id}`)
 }

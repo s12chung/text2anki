@@ -33,16 +33,25 @@ export interface CreateSourceData {
   parts: CreateSourcePartData[]
 }
 
+export const CreateSourcePartDataEmpty = Object.freeze<CreateSourcePartData>({
+  text: "",
+  translation: "",
+})
+
 export interface CreateSourcePartData {
   text: string
   translation: string
 }
 
+export const UpdateSourceDataEmpty = Object.freeze<UpdateSourceData>({
+  name: "",
+})
+
 export interface UpdateSourceData {
   name: string
 }
 
-class SourceService extends ApplicationService {
+class SourcesService extends ApplicationService {
   protected pathPrefix = "/sources"
 
   async index(): Promise<Source[]> {
@@ -62,4 +71,4 @@ class SourceService extends ApplicationService {
   }
 }
 
-export const sourceService = new SourceService()
+export const sourcesService = new SourcesService()

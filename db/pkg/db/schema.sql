@@ -1,10 +1,12 @@
 CREATE TABLE terms (
     id INTEGER PRIMARY KEY,
     text TEXT NOT NULL,
-    variants TEXT NOT NULL,
     part_of_speech TEXT NOT NULL,
-    common_level INTEGER NOT NULL,
+
+    variants TEXT NOT NULL,
     translations TEXT NOT NULL,
+    common_level INTEGER NOT NULL,
+
     popularity INTEGER NOT NULL
 );
 
@@ -28,9 +30,9 @@ CREATE TABLE notes (
     text TEXT NOT NULL,
     part_of_speech TEXT NOT NULL,
     translation TEXT NOT NULL,
+    explanation TEXT NOT NULL,
 
     common_level INTEGER NOT NULL,
-    explanation TEXT NOT NULL,
     usage TEXT NOT NULL,
     usage_translation TEXT NOT NULL,
     dictionary_source TEXT NOT NULL,

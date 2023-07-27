@@ -2,28 +2,28 @@
   {
     "id": 93416,
     "text": "펄럭이다",
-    "variants": "",
     "part_of_speech": "Verb",
-    "common_level": 1,
+    "variants": "",
     "translations": "[{\"text\":\"keep waving; keep flapping; keep fluttering\",\"explanation\":\"For a wide and big cloth, etc., to keep swaying fast and strongly in the wind, or to make this happen.\"}]",
+    "common_level": 1,
     "popularity": 1
   },
   {
     "id": 20911,
     "text": "마음 같아서는",
-    "variants": "",
     "part_of_speech": "Verb",
-    "common_level": 0,
+    "variants": "",
     "translations": "[{\"text\":\"if it's like my mind\",\"explanation\":\"If one follows as one thinks.\"}]",
+    "common_level": 0,
     "popularity": 2
   },
   {
     "id": 20911,
     "text": "마음에 걸리다",
-    "variants": "",
     "part_of_speech": "Unknown",
-    "common_level": 0,
+    "variants": "",
     "translations": "[{\"text\":\"be caught in one's mind\",\"explanation\":\"To feel uncomfortable out of worry.\"}]",
+    "common_level": 0,
     "popularity": 3
   }
 ]

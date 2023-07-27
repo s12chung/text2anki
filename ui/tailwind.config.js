@@ -16,6 +16,7 @@ export default {
     },
   },
   plugins: [
+    require("@tailwindcss/forms"),
     plugin(function ({ addVariant }) {
       addVariant("child", "& > *")
       addVariant("focin", ["&:focus", "&:focus-within"])

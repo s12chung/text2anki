@@ -2,7 +2,9 @@
   {
     "id": 28764,
     "text": "가다",
+    "variants": [],
     "part_of_speech": "AuxiliaryVerb",
+    "common_level": 0,
     "translations": [
       {
         "text": "become; turn",
@@ -18,7 +20,9 @@
   {
     "id": 26813,
     "text": "나가다",
+    "variants": [],
     "part_of_speech": "AuxiliaryVerb",
+    "common_level": 0,
     "translations": [
       {
         "text": "nagada",

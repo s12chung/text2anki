@@ -1,15 +1,15 @@
 {
   "dictionary.Term": {
-    "common_level,omitempty": "lang.CommonLevel",
-    "dictionary_source,omitempty": "string",
+    "common_level": "lang.CommonLevel",
+    "dictionary_source": "string",
     "id": "int64",
-    "part_of_speech,omitempty": "lang.PartOfSpeech",
-    "text,omitempty": "string",
-    "translations,omitempty": "[]dictionary.Translation",
-    "variants,omitempty": "[]string"
+    "part_of_speech": "lang.PartOfSpeech",
+    "text": "string",
+    "translations": "[]dictionary.Translation",
+    "variants": "[]string"
   },
   "dictionary.Translation": {
-    "explanation,omitempty": "string",
-    "text,omitempty": "string"
+    "explanation": "string",
+    "text": "string"
   }
 }

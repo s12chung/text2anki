@@ -30,10 +30,11 @@ func TestParser_Texts(t *testing.T) {
 		{name: "split"},
 		{name: "split_1_line"},
 		{name: "split_diff_empty_line"},
+		{name: "double_english"},
 		{name: "split_extra_text", err: errExtraTextLine},
 		{name: "split_extra_translation", err: errExtraTranslationLine},
 		{name: "split_1_line_extra_translation", err: errExtraTranslationLine},
-		{name: "weave_extra_translation", err: fmt.Errorf("translation exists for two consecutive non-empty lines: my extra line")},
+		{name: "weave_extra_translation", err: fmt.Errorf("translation exists for two consecutive non-empty lines at 7: my extra line")},
 	}
 
 	parser := NewParser(Korean, English)
