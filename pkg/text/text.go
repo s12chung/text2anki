@@ -130,30 +130,35 @@ func (p Parser) TextsFromString(s string) ([]Text, error) {
 
 	texts := make([]Text, 0, len(lines))
 	var text Text
+	previousLine := ""
 	previousBreak := false
-	for _, line := range lines {
+	translationLanguageText := false
+	for i, line := range lines {
 		if line == "" {
 			previousBreak = true
 			continue
 		}
 
 		language, _ := detector.DetectLanguageOf(line)
-		if Language(language) == p.SourceLanguage {
-			if text.Text != "" {
+		//nolint:nestif // looping causes this
+		if text.Text == "" {
+			text = Text{Text: line, PreviousBreak: previousBreak}
+			translationLanguageText = Language(language) == p.TranslationLanguage
+		} else {
+			if Language(language) == p.SourceLanguage {
+				if translationLanguageText {
+					return nil, fmt.Errorf("translation exists for two consecutive non-empty lines at %v: %v", i, previousLine)
+				}
+				texts = append(texts, text)
+				text = Text{Text: line, PreviousBreak: previousBreak}
+			} else {
+				text.Translation = line
 				texts = append(texts, text)
 				text = Text{}
 			}
-			text = Text{Text: line, PreviousBreak: previousBreak}
-			previousBreak = false
-		} else {
-			if text.Text == "" {
-				return nil, fmt.Errorf("translation exists for two consecutive non-empty lines: %v", line)
-			}
-			text.Translation = line
-			texts = append(texts, text)
-			text = Text{}
-			previousBreak = false
 		}
+		previousBreak = false
+		previousLine = line
 	}
 	if text.Text != "" {
 		texts = append(texts, text)
