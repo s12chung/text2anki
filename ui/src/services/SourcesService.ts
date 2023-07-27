@@ -33,14 +33,19 @@ export interface CreateSourceData {
   parts: CreateSourcePartData[]
 }
 
-export const CreateSourcePartDataKeys: (keyof CreateSourcePartData)[] = ["text", "translation"]
+export const CreateSourcePartDataEmpty = Object.freeze<CreateSourcePartData>({
+  text: "",
+  translation: "",
+})
 
 export interface CreateSourcePartData {
   text: string
   translation: string
 }
 
-export const UpdateSourceDataKeys: (keyof UpdateSourceData)[] = ["name"]
+export const UpdateSourceDataEmpty = Object.freeze<UpdateSourceData>({
+  name: "",
+})
 
 export interface UpdateSourceData {
   name: string

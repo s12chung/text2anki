@@ -17,7 +17,10 @@ export interface Translation {
   explanation: string
 }
 
-export const TermsSearchDataKeys: (keyof TermsSearchData)[] = ["query", "pos"]
+export const TermsSearchDataEmpty = Object.freeze<TermsSearchData>({
+  query: "",
+  pos: [],
+})
 
 export interface TermsSearchData {
   query: string

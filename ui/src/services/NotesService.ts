@@ -7,17 +7,21 @@ export interface Note extends CreateNoteData {
   downloaded: boolean
 }
 
-export const NoteUsageKeys: (keyof NoteUsage)[] = ["usage", "usageTranslation"]
-export const CreateNoteDataKeys: (keyof CreateNoteData)[] = [
-  "text",
-  "partOfSpeech",
-  "translation",
-  "commonLevel",
-  "explanation",
-  ...NoteUsageKeys,
-  "dictionarySource",
-  "notes",
-]
+export const NotUsageEmpty = Object.freeze<NoteUsage>({
+  usage: "",
+  usageTranslation: "",
+})
+
+export const CreateNoteDataEmpty = Object.freeze<CreateNoteData>({
+  text: "",
+  partOfSpeech: "",
+  translation: "",
+  commonLevel: CommonLevel.Unique,
+  explanation: "",
+  ...NotUsageEmpty,
+  dictionarySource: "",
+  notes: "",
+})
 
 export interface CreateNoteData extends NoteUsage {
   text: string

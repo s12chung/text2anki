@@ -1,9 +1,7 @@
 import {
-  CreateSourcePartData,
-  CreateSourcePartDataKeys,
+  CreateSourcePartDataEmpty,
   sourcesService,
-  UpdateSourceData,
-  UpdateSourceDataKeys,
+  UpdateSourceDataEmpty,
 } from "../services/SourcesService.ts"
 import { formData } from "../utils/RequestUtil.ts"
 import { Status405 } from "../utils/StatusUtil.ts"
@@ -22,7 +20,7 @@ export const edit = get
 
 export const create: ActionFunction = async ({ request }) => {
   const source = await sourcesService.create({
-    parts: [formData<CreateSourcePartData>(await request.formData(), ...CreateSourcePartDataKeys)],
+    parts: [formData(await request.formData(), CreateSourcePartDataEmpty)],
   })
   return redirect(`/sources/${source.id}`)
 }
@@ -31,7 +29,7 @@ export const update: ActionFunction = async ({ request, params }) => {
   if (!params.id) throw new Response("id not found", Status405) // eslint-disable-line @typescript-eslint/no-throw-literal
   const source = await sourcesService.update(
     params.id,
-    formData<UpdateSourceData>(await request.formData(), ...UpdateSourceDataKeys)
+    formData(await request.formData(), UpdateSourceDataEmpty)
   )
   return redirect(`/sources/${source.id}`)
 }

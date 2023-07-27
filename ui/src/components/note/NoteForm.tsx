@@ -1,6 +1,6 @@
 import NotificationsContext from "../../contexts/NotificationsContext.ts"
 import { CommonLevel } from "../../services/LangService.ts"
-import { CreateNoteData, CreateNoteDataKeys, Note } from "../../services/NotesService.ts"
+import { CreateNoteData, CreateNoteDataEmpty, Note } from "../../services/NotesService.ts"
 import { camelToTitle } from "../../utils/StringUtil.ts"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import { useFetcher } from "react-router-dom"
@@ -12,7 +12,8 @@ interface INoteFormData {
 const NoteForm: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ data, onClose }) => {
   const fetcher = useFetcher<INoteFormData>()
   const commonLevelIndex = 3
-  const commonLevelKey = CreateNoteDataKeys[commonLevelIndex]
+  const createNoteDataKeys = Object.keys(CreateNoteDataEmpty) as (keyof CreateNoteData)[]
+  const commonLevelKey = createNoteDataKeys[commonLevelIndex]
   const { error, success } = useContext(NotificationsContext)
 
   const [submitted, setSubmitted] = useState<boolean>(false)
@@ -37,7 +38,7 @@ const NoteForm: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ dat
       className="m-std space-y-std"
       onSubmit={() => setSubmitted(true)}
     >
-      {CreateNoteDataKeys.slice(0, commonLevelIndex).map((key) => (
+      {createNoteDataKeys.slice(0, commonLevelIndex).map((key) => (
         <TextFormField key={key} data={data} dataKey={key} />
       ))}
 
@@ -55,7 +56,7 @@ const NoteForm: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ dat
         </select>
       </div>
 
-      {CreateNoteDataKeys.slice(commonLevelIndex + 1).map((key) => (
+      {createNoteDataKeys.slice(commonLevelIndex + 1).map((key) => (
         <TextFormField key={key} data={data} dataKey={key} />
       ))}
 
