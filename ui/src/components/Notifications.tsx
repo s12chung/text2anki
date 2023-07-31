@@ -6,7 +6,7 @@ import NotificationsContext, {
 import { Transition } from "@headlessui/react"
 import { InformationCircleIcon, XCircleIcon, XMarkIcon } from "@heroicons/react/20/solid"
 import { CheckCircleIcon } from "@heroicons/react/24/outline"
-import React, { Fragment, useContext, useEffect, useState } from "react"
+import React, { Fragment, MouseEventHandler, useContext, useEffect, useState } from "react"
 
 const Notifications: React.FC = () => {
   const { notifications, setNotifications } = useContext<Notifier>(NotificationsContext)
@@ -25,7 +25,10 @@ const Notifications: React.FC = () => {
     setNotifications(notifications.slice(1))
   }, [notifications, setNotifications])
 
-  const onClose = () => setNotification(null)
+  const onClose: MouseEventHandler<HTMLAnchorElement> = (e) => {
+    e.preventDefault()
+    setNotification(null)
+  }
   return notification ? (
     <NotificationWrapper
       key={notification.createdAt}
@@ -37,7 +40,7 @@ const Notifications: React.FC = () => {
 
 const NotificationWrapper: React.FC<{
   notification: Notification
-  onClose: () => void
+  onClose: MouseEventHandler<HTMLAnchorElement>
 }> = ({ notification, onClose }) => {
   return (
     <div
@@ -66,7 +69,7 @@ const NotificationWrapper: React.FC<{
 
 const NotificationContents: React.FC<{
   notification: Notification
-  onClose: () => void
+  onClose: MouseEventHandler<HTMLAnchorElement>
 }> = ({ notification, onClose }) => {
   return (
     <div className="p-4 flex items-start">
@@ -85,12 +88,7 @@ const NotificationContents: React.FC<{
         <p className="text-sm font-medium text-gray-900">{notification.message}</p>
       </div>
       <div className="ml-4 flex flex-shrink-0">
-        <a
-          href="#"
-          className="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          onClick={onClose}
-        >
-          <span className="sr-only">Close</span>
+        <a href="#" className="inline-flex a-close-x" onClick={onClose}>
           <XMarkIcon className="h-5 w-5" aria-hidden="true" />
         </a>
       </div>

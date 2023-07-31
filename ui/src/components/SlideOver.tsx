@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { Dialog, Transition } from "@headlessui/react"
 import { XMarkIcon } from "@heroicons/react/24/outline"
-import React, { Fragment } from "react"
+import React, { Fragment, MouseEventHandler } from "react"
 
 export const SlideOverDialog: React.FC<{
   show: boolean
@@ -45,6 +45,11 @@ export const SlideOverHeader: React.FC<{
   subtitle?: string
   onClose: () => void
 }> = ({ title, subtitle, onClose }) => {
+  const onCloseMouse: MouseEventHandler<HTMLAnchorElement> = (e) => {
+    e.preventDefault()
+    onClose()
+  }
+
   return (
     <div className="bg-gray-50 px-4 py-6 sm:px-6">
       <div className="flex items-start justify-between space-x-3">
@@ -55,7 +60,7 @@ export const SlideOverHeader: React.FC<{
           {Boolean(subtitle) && <p className="text-sm text-gray-500">{subtitle}</p>}
         </div>
         <div className="flex h-7 items-center">
-          <a href="#" className="text-gray-400 hover:text-gray-500" onClick={onClose}>
+          <a href="#" className="a-close-x" onClick={onCloseMouse}>
             <span className="sr-only">Close panel</span>
             <XMarkIcon className="h-6 w-6" aria-hidden="true" />
           </a>
