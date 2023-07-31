@@ -24,7 +24,7 @@ var validSignPartsExts = map[string]bool{
 // PrePartsSignResponse is the response returned by PrePartsSign
 type PrePartsSignResponse struct {
 	ID       string                         `json:"id"`
-	Requests []storage.PresignedHTTPRequest `json:"requests"`
+	Requests []storage.PreSignedHTTPRequest `json:"requests"`
 }
 
 const sourcesTable = "sources"

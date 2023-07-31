@@ -20,9 +20,9 @@ func keyURL(key string) string {
 	return "http://localhost:3000/" + key
 }
 
-func (t testAPI) SignPut(key string) (PresignedHTTPRequest, error) {
+func (t testAPI) SignPut(key string) (PreSignedHTTPRequest, error) {
 	key = uuidRegexp.ReplaceAllString(key, testUUID)
-	return PresignedHTTPRequest{
+	return PreSignedHTTPRequest{
 		URL:          keyURL(key) + "?cipher=blah",
 		Method:       "PUT",
 		SignedHeader: nil,

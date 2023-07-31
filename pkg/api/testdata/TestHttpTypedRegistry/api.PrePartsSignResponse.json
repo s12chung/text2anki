@@ -1,9 +1,9 @@
 {
   "api.PrePartsSignResponse": {
     "id": "string",
-    "requests": "[]storage.PresignedHTTPRequest"
+    "requests": "[]storage.PreSignedHTTPRequest"
   },
-  "storage.PresignedHTTPRequest": {
+  "storage.PreSignedHTTPRequest": {
     "Method": "string",
     "SignedHeader": "http.Header",
     "URL": "string"
