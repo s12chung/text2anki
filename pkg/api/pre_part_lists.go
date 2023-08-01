@@ -12,17 +12,17 @@ import (
 )
 
 func init() {
-	httptyped.RegisterType(PrePartsSignResponse{}, PreParts{})
+	httptyped.RegisterType(PrePartListSignResponse{}, PrePartList{})
 }
 
-var validSignPartsExts = map[string]bool{
+var validSignPartExts = map[string]bool{
 	".jpg":  true,
 	".jpeg": true,
 	".png":  true,
 }
 
-// PrePartsSignResponse is the response returned by PrePartsSign
-type PrePartsSignResponse struct {
+// PrePartListSignResponse is the response returned by PrePartListSign
+type PrePartListSignResponse struct {
 	ID       string                         `json:"id"`
 	Requests []storage.PreSignedHTTPRequest `json:"requests"`
 }
@@ -30,14 +30,14 @@ type PrePartsSignResponse struct {
 const sourcesTable = "sources"
 const partsColumn = "parts"
 
-// PrePartsSign returns signed requests to generate Source Parts
-func (rs Routes) PrePartsSign(r *http.Request) (any, *httputil.HTTPError) {
+// PrePartListSign returns signed requests to generate Source Parts
+func (rs Routes) PrePartListSign(r *http.Request) (any, *httputil.HTTPError) {
 	exts := r.URL.Query()["exts"]
 	if len(exts) == 0 {
 		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("no file extension given"))
 	}
 	for _, ext := range exts {
-		if !validSignPartsExts[ext] {
+		if !validSignPartExts[ext] {
 			return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("%v is not a valid file extension", ext))
 		}
 	}
@@ -46,17 +46,17 @@ func (rs Routes) PrePartsSign(r *http.Request) (any, *httputil.HTTPError) {
 	if err != nil {
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}
-	return PrePartsSignResponse{ID: id, Requests: reqs}, nil
+	return PrePartListSignResponse{ID: id, Requests: reqs}, nil
 }
 
-// PreParts represents all the Source parts together for a given id
-type PreParts struct {
+// PrePartList represents all the Source parts together for a given id
+type PrePartList struct {
 	ID       string    `json:"id"`
 	PreParts []PrePart `json:"pre_parts"`
 }
 
 // StaticCopy returns a copy without fields that variate
-func (p PreParts) StaticCopy() any {
+func (p PrePartList) StaticCopy() any {
 	return p
 }
 
@@ -65,13 +65,13 @@ type PrePart struct {
 	URL string `json:"url"`
 }
 
-// PrePartsGet returns the PreParts for a given ID
-func (rs Routes) PrePartsGet(r *http.Request) (any, *httputil.HTTPError) {
-	prePartsID := chi.URLParam(r, "prePartsID")
-	if prePartsID == "" {
-		return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("prePartsID not found"))
+// PrePartListGet returns the PrePartList for a given ID
+func (rs Routes) PrePartListGet(r *http.Request) (any, *httputil.HTTPError) {
+	prePartListID := chi.URLParam(r, "prePartListID")
+	if prePartListID == "" {
+		return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("prePartListID not found"))
 	}
-	urls, err := rs.Storage.Signer.SignGetByID(sourcesTable, partsColumn, prePartsID)
+	urls, err := rs.Storage.Signer.SignGetByID(sourcesTable, partsColumn, prePartListID)
 	if err != nil {
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}
@@ -83,5 +83,5 @@ func (rs Routes) PrePartsGet(r *http.Request) (any, *httputil.HTTPError) {
 	for i, u := range urls {
 		preParts[i] = PrePart{URL: u}
 	}
-	return PreParts{ID: prePartsID, PreParts: preParts}, nil
+	return PrePartList{ID: prePartListID, PreParts: preParts}, nil
 }

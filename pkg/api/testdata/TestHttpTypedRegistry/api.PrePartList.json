@@ -2,7 +2,7 @@
   "api.PrePart": {
     "url": "string"
   },
-  "api.PreParts": {
+  "api.PrePartList": {
     "id": "string",
     "pre_parts": "[]api.PrePart"
   }

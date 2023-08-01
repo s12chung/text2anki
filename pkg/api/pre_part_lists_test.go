@@ -16,20 +16,20 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
 
-var prePartsServer test.Server
+var prePartListServer test.Server
 
 func init() {
-	prePartsServer = server.WithPathPrefix("/sources/pre_parts")
+	prePartListServer = server.WithPathPrefix("/sources/pre_part_lists")
 }
 
-type signPrePartsResponse struct {
-	PrePartsSignResponse
+type signPrePartListResponse struct {
+	PrePartListSignResponse
 }
 
 var testUUID = "123e4567-e89b-12d3-a456-426614174000"
 var uuidRegexp = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`)
 
-func (s signPrePartsResponse) StaticCopy() any {
+func (s signPrePartListResponse) StaticCopy() any {
 	a := s
 	a.ID = testUUID
 	for i, req := range s.Requests {
@@ -45,8 +45,8 @@ func (s signPrePartsResponse) StaticCopy() any {
 	return a
 }
 
-func TestRoutes_PrePartsSign(t *testing.T) {
-	testName := "TestRoutes_PrePartsSign"
+func TestRoutes_PrePartListSign(t *testing.T) {
+	testName := "TestRoutes_PrePartListSign"
 
 	testCases := []struct {
 		name         string
@@ -65,15 +65,15 @@ func TestRoutes_PrePartsSign(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			resp := test.HTTPDo(t, prePartsServer.NewRequest(t, http.MethodGet, "/sign?"+tc.queryParams, nil))
+			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodGet, "/sign?"+tc.queryParams, nil))
 			require.Equal(tc.expectedCode, resp.Code)
-			testModelResponse(t, resp, testName, tc.name, &signPrePartsResponse{})
+			testModelResponse(t, resp, testName, tc.name, &signPrePartListResponse{})
 		})
 	}
 }
 
-func TestRoutes_PrePartsGet(t *testing.T) {
-	testName := "TestRoutes_PrePartsGet"
+func TestRoutes_PrePartListGet(t *testing.T) {
+	testName := "TestRoutes_PrePartListGet"
 
 	id := "my_id"
 	idPath := path.Join(sourcesTable, partsColumn, id)
@@ -95,9 +95,9 @@ func TestRoutes_PrePartsGet(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			resp := test.HTTPDo(t, prePartsServer.NewRequest(t, http.MethodGet, "/"+tc.id, nil))
+			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodGet, "/"+tc.id, nil))
 			require.Equal(tc.expectedCode, resp.Code)
-			testModelResponse(t, resp, testName, tc.name, &PreParts{})
+			testModelResponse(t, resp, testName, tc.name, &PrePartList{})
 		})
 	}
 }

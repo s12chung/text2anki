@@ -54,10 +54,10 @@ func (rs Routes) Router() chi.Router {
 			r.Delete("/", httptyped.RespondTypedJSONWrap(rs.SourceDestroy))
 		})
 
-		r.Route("/pre_parts", func(r chi.Router) {
-			r.Get("/sign", httptyped.RespondTypedJSONWrap(rs.PrePartsSign))
-			r.Route("/{prePartsID}", func(r chi.Router) {
-				r.Get("/", httptyped.RespondTypedJSONWrap(rs.PrePartsGet))
+		r.Route("/pre_part_lists", func(r chi.Router) {
+			r.Get("/sign", httptyped.RespondTypedJSONWrap(rs.PrePartListSign))
+			r.Route("/{prePartListID}", func(r chi.Router) {
+				r.Get("/", httptyped.RespondTypedJSONWrap(rs.PrePartListGet))
 			})
 		})
 	})

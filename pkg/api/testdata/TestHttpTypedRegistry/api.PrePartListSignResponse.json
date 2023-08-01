@@ -1,5 +1,5 @@
 {
-  "api.PrePartsSignResponse": {
+  "api.PrePartListSignResponse": {
     "id": "string",
     "requests": "[]storage.PreSignedHTTPRequest"
   },
