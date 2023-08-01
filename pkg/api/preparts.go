@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	httptyped.RegisterType(PrePartsSignResponse{}, PrePart{})
+	httptyped.RegisterType(PrePartsSignResponse{}, PreParts{})
 }
 
 var validSignPartsExts = map[string]bool{
@@ -49,18 +49,24 @@ func (rs Routes) PrePartsSign(r *http.Request) (any, *httputil.HTTPError) {
 	return PrePartsSignResponse{ID: id, Requests: reqs}, nil
 }
 
-// PrePart represents a source part before it is created, only stored via. Routes.Storage.Storer
+// PreParts represents all the Source parts together for a given id
+type PreParts struct {
+	ID       string    `json:"id"`
+	PreParts []PrePart `json:"pre_parts"`
+}
+
+// StaticCopy returns a copy without fields that variate
+func (p PreParts) StaticCopy() any {
+	return p
+}
+
+// PrePart represents a Source part before it is created, only stored via. Routes.Storage.Storer
 type PrePart struct {
 	URL string `json:"url"`
 }
 
-// StaticCopy returns a copy without fields that variate
-func (p PrePart) StaticCopy() any {
-	return p
-}
-
-// PrePartsIndex returns the PreParts for a given ID
-func (rs Routes) PrePartsIndex(r *http.Request) (any, *httputil.HTTPError) {
+// PrePartsGet returns the PreParts for a given ID
+func (rs Routes) PrePartsGet(r *http.Request) (any, *httputil.HTTPError) {
 	prePartsID := chi.URLParam(r, "prePartsID")
 	if prePartsID == "" {
 		return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("prePartsID not found"))
@@ -77,5 +83,5 @@ func (rs Routes) PrePartsIndex(r *http.Request) (any, *httputil.HTTPError) {
 	for i, u := range urls {
 		preParts[i] = PrePart{URL: u}
 	}
-	return preParts, nil
+	return PreParts{ID: prePartsID, PreParts: preParts}, nil
 }

@@ -72,8 +72,8 @@ func TestRoutes_PrePartsSign(t *testing.T) {
 	}
 }
 
-func TestRoutes_PrePartsIndex(t *testing.T) {
-	testName := "TestRoutes_PrePartsIndex"
+func TestRoutes_PrePartsGet(t *testing.T) {
+	testName := "TestRoutes_PrePartsGet"
 
 	id := "my_id"
 	idPath := path.Join(sourcesTable, partsColumn, id)
@@ -97,7 +97,7 @@ func TestRoutes_PrePartsIndex(t *testing.T) {
 
 			resp := test.HTTPDo(t, prePartsServer.NewRequest(t, http.MethodGet, "/"+tc.id, nil))
 			require.Equal(tc.expectedCode, resp.Code)
-			testModelsResponse(t, resp, testName, tc.name, &[]PrePart{})
+			testModelResponse(t, resp, testName, tc.name, &PreParts{})
 		})
 	}
 }

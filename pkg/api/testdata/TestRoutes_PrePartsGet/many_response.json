@@ -1,0 +1,11 @@
+{
+  "id": "my_id",
+  "pre_parts": [
+    {
+      "url": "https://test.com/storage/sources/parts/my_id/again_me.txt"
+    },
+    {
+      "url": "https://test.com/storage/sources/parts/my_id/blah.txt"
+    }
+  ]
+}

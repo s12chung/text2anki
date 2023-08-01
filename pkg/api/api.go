@@ -57,7 +57,7 @@ func (rs Routes) Router() chi.Router {
 		r.Route("/pre_parts", func(r chi.Router) {
 			r.Get("/sign", httptyped.RespondTypedJSONWrap(rs.PrePartsSign))
 			r.Route("/{prePartsID}", func(r chi.Router) {
-				r.Get("/", httptyped.RespondTypedJSONWrap(rs.PrePartsIndex))
+				r.Get("/", httptyped.RespondTypedJSONWrap(rs.PrePartsGet))
 			})
 		})
 	})

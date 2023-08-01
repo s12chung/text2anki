@@ -1,0 +1,9 @@
+{
+  "api.PrePart": {
+    "url": "string"
+  },
+  "api.PreParts": {
+    "id": "string",
+    "pre_parts": "[]api.PrePart"
+  }
+}
