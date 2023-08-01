@@ -4,8 +4,8 @@
     "requests": "[]storage.PreSignedHTTPRequest"
   },
   "storage.PreSignedHTTPRequest": {
-    "Method": "string",
-    "SignedHeader": "http.Header",
-    "URL": "string"
+    "method": "string",
+    "signed_header": "http.Header",
+    "url": "string"
   }
 }

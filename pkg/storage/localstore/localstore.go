@@ -48,7 +48,7 @@ func (a API) SignPut(key string) (storage.PreSignedHTTPRequest, error) {
 	return storage.PreSignedHTTPRequest{
 		URL:          a.keyURL(key) + "?" + url.Values{CipherQueryParam: []string{ciphertext}}.Encode(),
 		Method:       "PUT",
-		SignedHeader: nil,
+		SignedHeader: http.Header{},
 	}, nil
 }
 

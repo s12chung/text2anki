@@ -13,9 +13,9 @@ import (
 
 // PreSignedHTTPRequest is the data to do the signed request
 type PreSignedHTTPRequest struct {
-	URL          string
-	Method       string
-	SignedHeader http.Header
+	URL          string      `json:"url"`
+	Method       string      `json:"method"`
+	SignedHeader http.Header `json:"signed_header"`
 }
 
 // API is a wrapper around the API for file storage

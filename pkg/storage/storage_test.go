@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"net/http"
 	"path"
 	"regexp"
 	"testing"
@@ -25,7 +26,7 @@ func (t testAPI) SignPut(key string) (PreSignedHTTPRequest, error) {
 	return PreSignedHTTPRequest{
 		URL:          keyURL(key) + "?cipher=blah",
 		Method:       "PUT",
-		SignedHeader: nil,
+		SignedHeader: http.Header{},
 	}, nil
 }
 
