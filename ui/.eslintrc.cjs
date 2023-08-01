@@ -42,6 +42,7 @@ module.exports = {
     "react/forbid-component-props": ["error", { "forbid": ['style', {
         "propName": "className",
         "allowedFor": ["CheckCircleIcon", "DocumentTextIcon", "InformationCircleIcon", "LinkIcon", "PlusIcon", "QuestionMarkCircleIcon", "XCircleIcon", "XMarkIcon",
+          "DotLoader",
           "Dialog", "Dialog.Panel", "Dialog.Title", "Link", "fetcher.Form"],
       }] }],
     "react/function-component-definition": ["error", { namedComponents: "arrow-function", unnamedComponents: [] }],

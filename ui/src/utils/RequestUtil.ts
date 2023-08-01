@@ -21,22 +21,35 @@ export function formData<T extends Record<keyof T, FormDataEntryValue | number |
   return obj
 }
 
+export function headers<T extends Record<keyof T, string | string[]>>(obj: T): Headers {
+  return setAppendAble(new Headers(), obj)
+}
+
 export function queryString<T extends Record<keyof T, string | string[]>>(queryParams: T): string {
-  const params = new URLSearchParams()
-  for (const key in queryParams) {
-    if (!Object.hasOwn(queryParams, key)) continue
-    const values = queryParams[key]
+  return setAppendAble(new URLSearchParams(), queryParams).toString()
+}
+
+interface Appendable {
+  append(name: string, value: string): void
+}
+
+function setAppendAble<T extends Appendable, S extends Record<keyof S, string | string[]>>(
+  appendable: T,
+  obj: S
+): T {
+  for (const key in obj) {
+    if (!Object.hasOwn(obj, key)) continue
+    const values = obj[key]
 
     if (typeof values === "string") {
-      params.append(key, values)
+      appendable.append(key, values)
       continue
     }
-
     for (const value of values) {
-      params.append(key, value)
+      appendable.append(key, value)
     }
   }
-  return params.toString()
+  return appendable
 }
 
 export function queryObject<T extends Record<keyof T, string | string[] | number | boolean>>(
