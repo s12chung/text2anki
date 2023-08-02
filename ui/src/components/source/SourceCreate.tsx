@@ -18,12 +18,12 @@ const SourceCreate: React.FC = () => {
       <div className="flex-std">
         <div className="flex-col-std grow">
           <div>Source Language</div>
-          <textarea name="text" value={text} className="h-third" onChange={handleText} />
+          <textarea name="parts[0].text" value={text} className="h-third" onChange={handleText} />
         </div>
         <div className="flex-col-std grow">
           <div>Translation</div>
           <textarea
-            name="translation"
+            name="parts[0].translation"
             value={translation}
             className="h-third"
             onChange={handleTranslation}

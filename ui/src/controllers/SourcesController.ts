@@ -1,5 +1,5 @@
 import {
-  CreateSourcePartDataEmpty,
+  CreateSourceDataEmpty,
   sourcesService,
   UpdateSourceDataEmpty,
 } from "../services/SourcesService.ts"
@@ -19,9 +19,9 @@ export const get: LoaderFunction = ({ params }) => {
 export const edit = get
 
 export const create: ActionFunction = async ({ request }) => {
-  const source = await sourcesService.create({
-    parts: [formData(await request.formData(), CreateSourcePartDataEmpty)],
-  })
+  const source = await sourcesService.create(
+    formData(await request.formData(), CreateSourceDataEmpty)
+  )
   return redirect(`/sources/${source.id}`)
 }
 
