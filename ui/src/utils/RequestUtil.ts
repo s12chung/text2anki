@@ -1,3 +1,32 @@
+export function headers<T extends Record<keyof T, string | string[]>>(obj: T): Headers {
+  return setAppendAble(new Headers(), obj)
+}
+
+export function queryString<T extends Record<keyof T, string | string[]>>(queryParams: T): string {
+  return setAppendAble(new URLSearchParams(), queryParams).toString()
+}
+
+export function queryObject<T extends Record<keyof T, string | string[] | number | boolean>>(
+  url: string,
+  empty: T
+) {
+  const params = new URL(url).searchParams
+
+  const obj = { ...empty }
+  for (const key in obj) {
+    if (!Object.hasOwn(obj, key)) continue
+
+    const values = params.getAll(key as string)
+    if (Array.isArray(obj[key])) {
+      obj[key] = values as T[Extract<keyof T, string>]
+      continue
+    }
+    // eslint-disable-next-line prefer-destructuring
+    setStringParsable(obj as Record<keyof T, string | number | boolean>, key, values[0]) // guaranteed string parsable due to above
+  }
+  return obj
+}
+
 export function formData<T extends Record<keyof T, FormDataEntryValue | number | boolean>>(
   formData: FormData,
   empty: T
@@ -21,14 +50,6 @@ export function formData<T extends Record<keyof T, FormDataEntryValue | number |
   return obj
 }
 
-export function headers<T extends Record<keyof T, string | string[]>>(obj: T): Headers {
-  return setAppendAble(new Headers(), obj)
-}
-
-export function queryString<T extends Record<keyof T, string | string[]>>(queryParams: T): string {
-  return setAppendAble(new URLSearchParams(), queryParams).toString()
-}
-
 interface Appendable {
   append(name: string, value: string): void
 }
@@ -50,27 +71,6 @@ function setAppendAble<T extends Appendable, S extends Record<keyof S, string | 
     }
   }
   return appendable
-}
-
-export function queryObject<T extends Record<keyof T, string | string[] | number | boolean>>(
-  url: string,
-  empty: T
-) {
-  const params = new URL(url).searchParams
-
-  const obj = { ...empty }
-  for (const key in obj) {
-    if (!Object.hasOwn(obj, key)) continue
-
-    const values = params.getAll(key as string)
-    if (Array.isArray(obj[key])) {
-      obj[key] = values as T[Extract<keyof T, string>]
-      continue
-    }
-    // eslint-disable-next-line prefer-destructuring
-    setStringParsable(obj as Record<keyof T, string | number | boolean>, key, values[0]) // guaranteed string parsable due to above
-  }
-  return obj
 }
 
 function setStringParsable<T extends Record<keyof T, string | number | boolean>>(
