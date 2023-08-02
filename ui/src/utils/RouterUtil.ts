@@ -1,4 +1,4 @@
-import { Status405 } from "./StatusUtil.ts"
+import { Status404, Status405 } from "./StatusUtil.ts"
 import { ReactNode } from "react"
 import { ActionFunction, ActionFunctionArgs, LoaderFunction, RouteObject } from "react-router-dom"
 
@@ -94,6 +94,10 @@ export function resources(
   return route
 }
 
+function path(url: string): string {
+  return new URL(url).pathname.replace(/\/$/u, "")
+}
+
 function resourcesRoute(name: string, controller: IController, elements: IElementMap): RouteObject {
   const route: RouteObject = { path: name }
 
@@ -103,6 +107,14 @@ function resourcesRoute(name: string, controller: IController, elements: IElemen
   }
   if (controller.index) {
     route.loader = controller.index
+  } else {
+    route.loader = ({ request }) => {
+      if (request.method === "GET" && path(request.url) === `/${name}`) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
+        throw new Response("path does not exist", Status404)
+      }
+      return null
+    }
   }
 
   if (controller.create) {

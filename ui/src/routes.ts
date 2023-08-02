@@ -19,7 +19,7 @@ import { createElement } from "react"
 
 const el = createElement
 
-const appLayoutSourceController: IController = pick(SourceController, "index", "create", "edit")
+const appLayoutSourceController: IController = pick(SourceController, "create", "edit")
 const fullLayoutSourceController: IController = pick(SourceController, "get", "update")
 
 const routes = route("/", null, {}, [
