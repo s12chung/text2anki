@@ -60,7 +60,7 @@ export const SlideOverHeader: React.FC<{
           {Boolean(subtitle) && <p className="text-sm text-gray-500">{subtitle}</p>}
         </div>
         <div className="flex h-7 items-center">
-          <a href="#" className="a-close-x" onClick={onCloseMouse}>
+          <a href="#" className="a-btn" onClick={onCloseMouse}>
             <span className="sr-only">Close panel</span>
             <XMarkIcon className="h-6 w-6" aria-hidden="true" />
           </a>

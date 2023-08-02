@@ -88,7 +88,7 @@ const NotificationContents: React.FC<{
         <p className="text-sm font-medium text-gray-900">{notification.message}</p>
       </div>
       <div className="ml-4 flex flex-shrink-0">
-        <a href="#" className="inline-flex a-close-x" onClick={onClose}>
+        <a href="#" className="inline-flex a-btn" onClick={onClose}>
           <XMarkIcon className="h-5 w-5" aria-hidden="true" />
         </a>
       </div>

@@ -80,7 +80,7 @@ const PrePartListDragAndDrop: React.FC<{ children: React.ReactNode }> = ({ child
         children
       ) : (
         <div className="min-h-screen flex relative">
-          <a href="#" className="absolute top-5 right-5 a-close-x" onClick={onCloseMouse}>
+          <a href="#" className="absolute top-5 right-5 a-btn" onClick={onCloseMouse}>
             <XMarkIcon className="h-10 w-10" />
           </a>
           {dragState === DragState.Dragging ? (
