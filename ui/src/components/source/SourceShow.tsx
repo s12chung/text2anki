@@ -67,18 +67,24 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const partsLength = source.parts.length
   const decrementText = useCallback(() => {
     const result = decrement(textFocusIndex, currentTokenizedTexts.length)
-    if (result === currentTokenizedTexts.length - 1) {
-      setPartFocusIndex(decrement(partFocusIndex, partsLength))
+    if (result !== currentTokenizedTexts.length - 1) {
+      setTextFocusIndex(result)
+      return
     }
-    setTextFocusIndex(result)
-  }, [currentTokenizedTexts.length, partFocusIndex, partsLength, textFocusIndex])
+    const partIndex = decrement(partFocusIndex, partsLength)
+    setPartFocusIndex(partIndex)
+    setTextFocusIndex(source.parts[partIndex].tokenizedTexts.length - 1)
+  }, [textFocusIndex, currentTokenizedTexts.length, partFocusIndex, partsLength, source.parts])
   const incrementText = useCallback(() => {
     const result = increment(textFocusIndex, currentTokenizedTexts.length)
-    if (result === 0) {
-      setPartFocusIndex(increment(partFocusIndex, partsLength))
+    if (result !== 0) {
+      setTextFocusIndex(result)
+      return
     }
-    setTextFocusIndex(result)
-  }, [currentTokenizedTexts.length, partFocusIndex, partsLength, textFocusIndex])
+    const partIndex = increment(partFocusIndex, partsLength)
+    setPartFocusIndex(partIndex)
+    setTextFocusIndex(0)
+  }, [textFocusIndex, currentTokenizedTexts.length, partFocusIndex, partsLength])
 
   useEffect(() => {
     setTermsComponentProps(null)
