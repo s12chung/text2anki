@@ -198,6 +198,16 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   )
 }
 
+function skipPunct(
+  tokens: Token[],
+  index: number,
+  change: (index: number, length: number) => number
+): number {
+  index = change(index, tokens.length)
+  if (tokens[index].partOfSpeech !== PosPunctuation) return index
+  return skipPunct(tokens, index, change)
+}
+
 function tokenPreviousSpace(tokens: Token[], index: number): boolean {
   if (index === 0) return false
   const currentToken = tokens[index]
@@ -208,18 +218,6 @@ function tokenPreviousSpace(tokens: Token[], index: number): boolean {
 function tokenPreviousPunct(tokens: Token[], index: number): boolean {
   if (index === 0) return false
   return tokens[index - 1].partOfSpeech === PosPunctuation
-}
-
-function skipPunctIncrement(tokens: Token[], index: number): number {
-  index = increment(index, tokens.length)
-  if (tokens[index].partOfSpeech !== PosPunctuation) return index
-  return skipPunctIncrement(tokens, index)
-}
-
-function skipPunctDecrement(tokens: Token[], index: number): number {
-  index = decrement(index, tokens.length)
-  if (tokens[index].partOfSpeech !== PosPunctuation) return index
-  return skipPunctDecrement(tokens, index)
 }
 
 const TokensComponent: React.FC<{
@@ -246,11 +244,11 @@ const TokensComponent: React.FC<{
       switch (e.code) {
         case "ArrowLeft":
         case "KeyA":
-          setTokenFocusIndex(skipPunctDecrement(tokens, tokenFocusIndex))
+          setTokenFocusIndex(skipPunct(tokens, tokenFocusIndex, decrement))
           break
         case "ArrowRight":
         case "KeyD":
-          setTokenFocusIndex(skipPunctIncrement(tokens, tokenFocusIndex))
+          setTokenFocusIndex(skipPunct(tokens, tokenFocusIndex, increment))
           break
         case "Enter":
         case "Space":
