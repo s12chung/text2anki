@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { CommonLevel } from "../../services/LangService.ts"
 import { CreateNoteData, createNoteDataFromTerm, NoteUsage } from "../../services/NotesService.ts"
-import { Source, Token, TokenizedText } from "../../services/SourcesService.ts"
+import { PosPunctuation, Source, Token, TokenizedText } from "../../services/SourcesService.ts"
 import { Term } from "../../services/TermsService.ts"
 import { unique } from "../../utils/ArrayUntil.ts"
 import { pageSize, paginate, totalPages } from "../../utils/HtmlUtil.ts"
@@ -28,15 +28,6 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
       </Await>
     </React.Suspense>
   )
-}
-
-function tokenPreviousSpace(tokens: Token[], index: number): boolean {
-  if (index === 0) {
-    return false
-  }
-  const currentToken = tokens[index]
-  const previousToken = tokens[index - 1]
-  return previousToken.startIndex + previousToken.length + 1 === currentToken.startIndex
 }
 
 function getTermsComponentProps(
@@ -201,6 +192,30 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   )
 }
 
+function tokenPreviousSpace(tokens: Token[], index: number): boolean {
+  if (index === 0) return false
+  const currentToken = tokens[index]
+  const previousToken = tokens[index - 1]
+  return previousToken.startIndex + previousToken.length + 1 === currentToken.startIndex
+}
+
+function tokenPreviousPunct(tokens: Token[], index: number): boolean {
+  if (index === 0) return false
+  return tokens[index - 1].partOfSpeech === PosPunctuation
+}
+
+function skipPunctIncrement(tokens: Token[], index: number): number {
+  index = increment(index, tokens.length)
+  if (tokens[index].partOfSpeech !== PosPunctuation) return index
+  return skipPunctIncrement(tokens, index)
+}
+
+function skipPunctDecrement(tokens: Token[], index: number): number {
+  index = decrement(index, tokens.length)
+  if (tokens[index].partOfSpeech !== PosPunctuation) return index
+  return skipPunctDecrement(tokens, index)
+}
+
 const TokensComponent: React.FC<{
   tokens: Token[]
   termsFocus: boolean
@@ -209,23 +224,27 @@ const TokensComponent: React.FC<{
   const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(0)
   const tokenRefs = useRef<(HTMLDivElement | null)[]>([])
 
+  const isAllPunct = useMemo<boolean>(
+    () => tokens.every((token) => token.partOfSpeech === PosPunctuation),
+    [tokens]
+  )
+
   useEffect(() => {
     tokenRefs.current[tokenFocusIndex]?.focus()
   }, [tokenFocusIndex])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (openModal) return
-      if (termsFocus) return
+      if (openModal || termsFocus || isAllPunct) return
 
       switch (e.code) {
         case "ArrowLeft":
         case "KeyA":
-          setTokenFocusIndex(decrement(tokenFocusIndex, tokens.length))
+          setTokenFocusIndex(skipPunctDecrement(tokens, tokenFocusIndex))
           break
         case "ArrowRight":
         case "KeyD":
-          setTokenFocusIndex(increment(tokenFocusIndex, tokens.length))
+          setTokenFocusIndex(skipPunctIncrement(tokens, tokenFocusIndex))
           break
         case "Enter":
         case "Space":
@@ -237,7 +256,7 @@ const TokensComponent: React.FC<{
 
       e.preventDefault()
     },
-    [termsFocus, tokenFocusIndex, tokens.length, setTermsFocus]
+    [termsFocus, isAllPunct, tokens, tokenFocusIndex, setTermsFocus]
   )
 
   useEffect(() => {
@@ -247,22 +266,32 @@ const TokensComponent: React.FC<{
 
   const tokenOnClick = (index: number) => setTokenFocusIndex(index)
 
-  const tokenClass = (b: boolean) => `focus:text-white focus:bg-ink ${b ? "text-white bg-ink" : ""}`
+  const tokenClass = (focused: boolean, isPunct: boolean) =>
+    `focus:text-white focus:bg-ink${focused ? " text-white bg-ink" : ""}${
+      isPunct ? " text-faded" : ""
+    }`
 
   return (
     <div className="ko-sans text-4xl justify-center mb-2 child:py-2 flex">
       {tokens.map((token, index) => {
         const previousSpace = tokenPreviousSpace(tokens, index)
+        const isPunct = token.partOfSpeech === PosPunctuation
         return (
           /* eslint-disable-next-line react/no-array-index-key */
           <React.Fragment key={`${token.text}-${token.partOfSpeech}-${index}`}>
-            {!previousSpace && index !== 0 && <div>&middot;</div>}
+            {!previousSpace && index !== 0 && (
+              <div className={isPunct || tokenPreviousPunct(tokens, index) ? "text-faded" : ""}>
+                &middot;
+              </div>
+            )}
             {Boolean(previousSpace) && index !== 0 && <div>&nbsp;&nbsp;</div>}
             <div
               ref={(ref) => (tokenRefs.current[index] = ref)}
-              className={tokenClass(index === tokenFocusIndex)}
-              tabIndex={-1}
-              onClick={() => tokenOnClick(index)}
+              className={tokenClass(index === tokenFocusIndex, isPunct)}
+              /* eslint-disable-next-line no-undefined */
+              tabIndex={isPunct ? undefined : -1}
+              /* eslint-disable-next-line no-undefined */
+              onClick={isPunct ? undefined : () => tokenOnClick(index)}
             >
               <div>{token.text}</div>
             </div>

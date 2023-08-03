@@ -7,6 +7,8 @@ export interface Token {
   length: number
 }
 
+export const PosPunctuation = "Punctuation"
+
 export interface Text {
   text: string
   translation: string

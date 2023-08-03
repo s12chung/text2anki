@@ -11,6 +11,7 @@ export default {
       colors: {
         ink: "rgba(36, 30, 32, 0.9)",
         light: "rgba(36, 30, 32, 0.7)",
+        faded: "rgba(36, 30, 32, 0.3)",
         "gray-std": "rgb(241 245 249)",
       },
     },
