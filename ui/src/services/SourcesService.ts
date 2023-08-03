@@ -7,6 +7,8 @@ export interface Token {
   length: number
 }
 
+export const PosPunctuation = "Punctuation"
+
 export interface Text {
   text: string
   translation: string
@@ -29,14 +31,18 @@ export interface Source {
   createdAt: Date
 }
 
+export const CreateSourceDataEmpty = Object.freeze<CreateSourceData>({
+  parts: [
+    Object.freeze({
+      text: "",
+      translation: "",
+    }),
+  ],
+})
+
 export interface CreateSourceData {
   parts: CreateSourcePartData[]
 }
-
-export const CreateSourcePartDataEmpty = Object.freeze<CreateSourcePartData>({
-  text: "",
-  translation: "",
-})
 
 export interface CreateSourcePartData {
   text: string

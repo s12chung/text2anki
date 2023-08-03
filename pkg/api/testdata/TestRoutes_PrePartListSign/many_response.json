@@ -1,0 +1,20 @@
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "requests": [
+    {
+      "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/0.jpg?ciphertext=testy",
+      "method": "PUT",
+      "signed_header": {}
+    },
+    {
+      "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/1.png?ciphertext=testy",
+      "method": "PUT",
+      "signed_header": {}
+    },
+    {
+      "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/2.jpeg?ciphertext=testy",
+      "method": "PUT",
+      "signed_header": {}
+    }
+  ]
+}

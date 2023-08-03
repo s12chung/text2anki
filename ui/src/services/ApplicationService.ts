@@ -1,3 +1,4 @@
+import { responseError } from "../utils/ErrorUtil.ts"
 import { camelToSnake, convertKeys, snakeToCamel } from "../utils/StringUtil.ts"
 
 abstract class ApplicationService {
@@ -9,7 +10,8 @@ abstract class ApplicationService {
 
     const response = await fetch(this.apiUrl + this.pathPrefix + path, init)
     if (!response.ok) {
-      throw new Error(`Failed to fetch: ${path}`)
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw await responseError(response)
     }
     return convertKeys(await response.json(), snakeToCamel)
   }

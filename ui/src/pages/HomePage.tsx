@@ -5,10 +5,10 @@ import { useLoaderData } from "react-router-dom"
 const HomePage: React.FC = () => {
   const data = useLoaderData() as ISourceListData
   return (
-    <div>
+    <>
       <SourceCreateMini />
       <SourceList data={data} />
-    </div>
+    </>
   )
 }
 

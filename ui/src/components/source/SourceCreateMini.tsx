@@ -7,7 +7,7 @@ const SourceCreateMini: React.FC = () => {
   return (
     <Form action="/sources" method="post">
       <textarea
-        name="text"
+        name="parts[0].text"
         value={text}
         placeholder="You may also drag and drop here."
         className={text ? "h-third" : "h-20"}

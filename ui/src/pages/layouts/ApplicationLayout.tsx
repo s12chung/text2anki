@@ -1,11 +1,10 @@
-import { Link, Outlet } from "react-router-dom"
+import Header from "../../components/Header.tsx"
+import { Outlet } from "react-router-dom"
 
 const ApplicationLayout: React.FC = () => {
   return (
     <div className="grid-std">
-      <div className="my-std">
-        <Link to="/">text2anki</Link>
-      </div>
+      <Header />
       <div>
         <Outlet />
       </div>

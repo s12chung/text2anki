@@ -11,16 +11,16 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-// PresignedHTTPRequest is the data to do the signed request
-type PresignedHTTPRequest struct {
-	URL          string
-	Method       string
-	SignedHeader http.Header
+// PreSignedHTTPRequest is the data to do the signed request
+type PreSignedHTTPRequest struct {
+	URL          string      `json:"url"`
+	Method       string      `json:"method"`
+	SignedHeader http.Header `json:"signed_header"`
 }
 
 // API is a wrapper around the API for file storage
 type API interface {
-	SignPut(key string) (PresignedHTTPRequest, error)
+	SignPut(key string) (PreSignedHTTPRequest, error)
 	SignGet(key string) (string, error)
 	ListKeys(prefix string) ([]string, error)
 }
@@ -43,8 +43,8 @@ func NewSigner(api API) Signer {
 }
 
 // SignPut signs the files for a table's field
-func (s Signer) SignPut(table, column string, exts []string) ([]PresignedHTTPRequest, string, error) {
-	reqs := make([]PresignedHTTPRequest, len(exts))
+func (s Signer) SignPut(table, column string, exts []string) ([]PreSignedHTTPRequest, string, error) {
+	reqs := make([]PreSignedHTTPRequest, len(exts))
 	id, err := uuid.NewV7()
 	if err != nil {
 		return nil, "", err

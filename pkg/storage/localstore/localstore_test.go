@@ -38,7 +38,7 @@ func TestAPI_SignPut(t *testing.T) {
 	require.NoError(err)
 
 	require.Equal("PUT", req.Method)
-	require.Nil(req.SignedHeader)
+	require.Empty(req.SignedHeader)
 
 	u, err := url.Parse(req.URL)
 	require.NoError(err)

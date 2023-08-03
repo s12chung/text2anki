@@ -1,0 +1,11 @@
+{
+  "api.PrePartListSignResponse": {
+    "id": "string",
+    "requests": "[]storage.PreSignedHTTPRequest"
+  },
+  "storage.PreSignedHTTPRequest": {
+    "method": "string",
+    "signed_header": "http.Header",
+    "url": "string"
+  }
+}
