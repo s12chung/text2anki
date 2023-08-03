@@ -4,7 +4,7 @@ import { CreateNoteData, createNoteDataFromTerm, NoteUsage } from "../../service
 import { Source, Token, TokenizedText } from "../../services/SourcesService.ts"
 import { Term } from "../../services/TermsService.ts"
 import { unique } from "../../utils/ArrayUntil.ts"
-import { paginate, totalPages } from "../../utils/HtmlUtil.ts"
+import { pageSize, paginate, totalPages } from "../../utils/HtmlUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitError from "../AwaitError.tsx"
@@ -260,7 +260,7 @@ interface ITermsShowData {
   terms: Term[]
 }
 
-const pageSize = 5
+const maxPageSize = 5
 
 // eslint-disable-next-line max-lines-per-function
 const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
@@ -270,8 +270,8 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
   const [termFocusIndex, setTermFocusIndex] = useState<number>(0)
   const termRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  const [page, setPage] = useState<number>(0)
-  const pagesLen = useMemo<number>(() => totalPages(terms, pageSize), [terms])
+  const [pageIndex, setPageIndex] = useState<number>(0)
+  const pagesLen = useMemo<number>(() => totalPages(terms, maxPageSize), [terms])
 
   const [createNoteData, setCreateNoteData] = useState<CreateNoteData | null>(null)
   const onCloseCreateNote = () => setCreateNoteData(null)
@@ -285,7 +285,7 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
     const termElement = termRefs.current[termFocusIndex]
     if (!termElement) return
     termElement.focus()
-  }, [terms, page, termFocusIndex]) // trigger from terms/page to do initial focus
+  }, [terms, pageIndex, termFocusIndex]) // trigger from terms/page to do initial focus
 
   useEffect(() => {
     openModal = createNoteData !== null
@@ -298,20 +298,24 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
       switch (e.code) {
         case "ArrowUp":
         case "KeyW":
-          setTermFocusIndex(decrement(termFocusIndex, pageSize))
+          setTermFocusIndex(
+            decrement(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex))
+          )
           break
         case "ArrowDown":
         case "KeyS":
-          setTermFocusIndex(increment(termFocusIndex, pageSize))
+          setTermFocusIndex(
+            increment(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex))
+          )
           break
         case "ArrowLeft":
         case "KeyA":
-          setPage(decrement(page, pagesLen))
+          setPageIndex(decrement(pageIndex, pagesLen))
           setTermFocusIndex(0)
           break
         case "ArrowRight":
         case "KeyD":
-          setPage(increment(page, pagesLen))
+          setPageIndex(increment(pageIndex, pagesLen))
           setTermFocusIndex(0)
           break
         case "Enter":
@@ -323,7 +327,7 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
       }
       e.preventDefault()
     },
-    [termFocusIndex, page, pagesLen, terms, usage]
+    [termFocusIndex, pageIndex, pagesLen, terms, usage]
   )
 
   useEffect(() => {
@@ -342,7 +346,7 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
         <div>No terms found</div>
       ) : (
         <div>
-          {paginate(terms, pageSize, page).map((term, index) => (
+          {paginate(terms, maxPageSize, pageIndex).map((term, index) => (
             <div
               key={term.id}
               ref={(ref) => (termRefs.current[index] = ref)}
@@ -369,8 +373,8 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
               .fill(null)
               .map((_, index) => (
                 /* eslint-disable-next-line react/no-array-index-key */
-                <span key={index} className={index === page ? "" : "text-light"}>
-                  {index === page ? <>&#x2716;</> : <>&bull;</>}
+                <span key={index} className={index === pageIndex ? "" : "text-light"}>
+                  {index === pageIndex ? <>&#x2716;</> : <>&bull;</>}
                 </span>
               ))}
           </div>
