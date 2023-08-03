@@ -54,21 +54,24 @@ function getTermsComponentProps(
 
 let openModal = false
 
-// eslint-disable-next-line max-lines-per-function,max-statements
+// eslint-disable-next-line max-lines-per-function
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const [partFocusIndex, setPartFocusIndex] = useState<number>(0)
-  const [textFocusIndex, setTextFocusIndex] = useState<number>(-1)
-  const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(-1)
+  const [textFocusIndex, setTextFocusIndex] = useState<number>(0)
   const [termsComponentProps, setTermsComponentProps] = useState<ITermsComponentProps | null>(null)
 
   const textRefs = useRef<(HTMLDivElement | null)[][]>([])
-  const tokenRefs = useRef<(HTMLDivElement | null)[][][]>([])
 
-  // eslint-disable-next-line prefer-destructuring
   const currentTokenizedTexts = useMemo<TokenizedText[]>(
     () => source.parts[partFocusIndex].tokenizedTexts,
     [partFocusIndex, source.parts]
   )
+  const termsFocus = termsComponentProps !== null
+  const setTermsFocus = (tokenFocusIndex: number) => {
+    setTermsComponentProps(
+      getTermsComponentProps(currentTokenizedTexts[textFocusIndex], tokenFocusIndex)
+    )
+  }
 
   const partsLength = source.parts.length
   const decrementText = useCallback(() => {
@@ -77,7 +80,6 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
       setPartFocusIndex(decrement(partFocusIndex, partsLength))
     }
     setTextFocusIndex(result)
-    setTokenFocusIndex(-1)
   }, [currentTokenizedTexts.length, partFocusIndex, partsLength, textFocusIndex])
   const incrementText = useCallback(() => {
     const result = increment(textFocusIndex, currentTokenizedTexts.length)
@@ -85,7 +87,6 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
       setPartFocusIndex(increment(partFocusIndex, partsLength))
     }
     setTextFocusIndex(result)
-    setTokenFocusIndex(-1)
   }, [currentTokenizedTexts.length, partFocusIndex, partsLength, textFocusIndex])
 
   useEffect(() => {
@@ -97,9 +98,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
       top: textElement.getBoundingClientRect().top + window.scrollY - 150,
       behavior: "smooth",
     })
-    if (tokenFocusIndex === -1) return
-    tokenRefs.current[partFocusIndex][textFocusIndex][tokenFocusIndex]?.focus()
-  }, [partFocusIndex, textFocusIndex, tokenFocusIndex])
+  }, [partFocusIndex, textFocusIndex])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -107,16 +106,14 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
 
       switch (e.code) {
         case "Escape":
-          if (termsComponentProps === null) return
+          if (!termsFocus) return
           setTermsComponentProps(null)
-          tokenRefs.current[partFocusIndex][textFocusIndex][tokenFocusIndex]?.focus()
           break
         default:
       }
 
-      if (termsComponentProps !== null) return
+      if (termsFocus) return
 
-      const tokenLen = currentTokenizedTexts[textFocusIndex]?.tokens.length
       switch (e.code) {
         case "ArrowUp":
         case "KeyW":
@@ -126,38 +123,14 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
         case "KeyS":
           incrementText()
           break
-        case "ArrowLeft":
-        case "KeyA":
-          setTokenFocusIndex(decrement(tokenFocusIndex, tokenLen))
-          if (textFocusIndex === -1) setTextFocusIndex(0)
-          break
-        case "ArrowRight":
-        case "KeyD":
-          setTokenFocusIndex(increment(tokenFocusIndex, tokenLen))
-          if (textFocusIndex === -1) setTextFocusIndex(0)
-          break
-        case "Enter":
-        case "Space":
-          if (tokenFocusIndex === -1) return
-          setTermsComponentProps(
-            getTermsComponentProps(currentTokenizedTexts[textFocusIndex], tokenFocusIndex)
-          )
-          break
+
         default:
           return
       }
 
       e.preventDefault()
     },
-    [
-      termsComponentProps,
-      currentTokenizedTexts,
-      partFocusIndex,
-      textFocusIndex,
-      tokenFocusIndex,
-      decrementText,
-      incrementText,
-    ]
+    [termsFocus, decrementText, incrementText]
   )
 
   useEffect(() => {
@@ -166,15 +139,12 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   }, [handleKeyDown])
 
   const textOnClick = (index: number) => setTextFocusIndex(index)
-  const tokenOnClick = (index: number) => setTokenFocusIndex(index)
 
-  const termsFocus = termsComponentProps !== null
   const tokenizedTextClass = (b: boolean) =>
     `group py-2 focin:py-4 focin:bg-gray-std ${b ? "py-4 bg-gray-std" : ""}`
 
   const textClass = (b: boolean) => `ko-sans text-2xl focgrin:text-light ${b ? "text-light" : ""}`
   const translationClass = (b: boolean) => `text-lg focgrin:text-2xl ${b ? "text-2xl" : "text-lg"}`
-  const tokenClass = (b: boolean) => `focus:text-white focus:bg-ink ${b ? "text-white bg-ink" : ""}`
 
   return (
     <>
@@ -208,31 +178,11 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
                 >
                   <div className={textClass(textFocus)}>{tokenizedText.text}</div>
                   {textFocus ? (
-                    <div className="ko-sans text-4xl justify-center mb-2 child:py-2 flex">
-                      {tokenizedText.tokens.map((token, index) => {
-                        const previousSpace = tokenPreviousSpace(tokenizedText.tokens, index)
-                        return (
-                          /* eslint-disable-next-line react/no-array-index-key */
-                          <React.Fragment key={`${token.text}-${token.partOfSpeech}-${index}`}>
-                            {!previousSpace && index !== 0 && <div>&middot;</div>}
-                            {Boolean(previousSpace) && index !== 0 && <div>&nbsp;&nbsp;</div>}
-                            <div
-                              ref={(ref) => {
-                                if (!tokenRefs.current[partIndex]) tokenRefs.current[partIndex] = []
-                                if (!tokenRefs.current[partIndex][textIndex])
-                                  tokenRefs.current[partIndex][textIndex] = []
-                                tokenRefs.current[partIndex][textIndex][index] = ref
-                              }}
-                              className={tokenClass(index === tokenFocusIndex && textFocus)}
-                              tabIndex={-1}
-                              onClick={() => tokenOnClick(index)}
-                            >
-                              <div>{token.text}</div>
-                            </div>
-                          </React.Fragment>
-                        )
-                      })}
-                    </div>
+                    <TokensComponent
+                      tokens={tokenizedText.tokens}
+                      termsFocus={termsFocus}
+                      setTermsFocus={setTermsFocus}
+                    />
                   ) : null}
                   <div className={translationClass(textFocus)}>{tokenizedText.translation}</div>
                   {textFocus && termsFocus ? (
@@ -248,6 +198,78 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
         )}
       </div>
     </>
+  )
+}
+
+const TokensComponent: React.FC<{
+  tokens: Token[]
+  termsFocus: boolean
+  setTermsFocus: (tokenFocusIndex: number) => void
+}> = ({ tokens, termsFocus, setTermsFocus }) => {
+  const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(0)
+  const tokenRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  useEffect(() => {
+    tokenRefs.current[tokenFocusIndex]?.focus()
+  }, [tokenFocusIndex])
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (openModal) return
+      if (termsFocus) return
+
+      switch (e.code) {
+        case "ArrowLeft":
+        case "KeyA":
+          setTokenFocusIndex(decrement(tokenFocusIndex, tokens.length))
+          break
+        case "ArrowRight":
+        case "KeyD":
+          setTokenFocusIndex(increment(tokenFocusIndex, tokens.length))
+          break
+        case "Enter":
+        case "Space":
+          setTermsFocus(tokenFocusIndex)
+          break
+        default:
+          return
+      }
+
+      e.preventDefault()
+    },
+    [termsFocus, tokenFocusIndex, tokens.length, setTermsFocus]
+  )
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [handleKeyDown])
+
+  const tokenOnClick = (index: number) => setTokenFocusIndex(index)
+
+  const tokenClass = (b: boolean) => `focus:text-white focus:bg-ink ${b ? "text-white bg-ink" : ""}`
+
+  return (
+    <div className="ko-sans text-4xl justify-center mb-2 child:py-2 flex">
+      {tokens.map((token, index) => {
+        const previousSpace = tokenPreviousSpace(tokens, index)
+        return (
+          /* eslint-disable-next-line react/no-array-index-key */
+          <React.Fragment key={`${token.text}-${token.partOfSpeech}-${index}`}>
+            {!previousSpace && index !== 0 && <div>&middot;</div>}
+            {Boolean(previousSpace) && index !== 0 && <div>&nbsp;&nbsp;</div>}
+            <div
+              ref={(ref) => (tokenRefs.current[index] = ref)}
+              className={tokenClass(index === tokenFocusIndex)}
+              tabIndex={-1}
+              onClick={() => tokenOnClick(index)}
+            >
+              <div>{token.text}</div>
+            </div>
+          </React.Fragment>
+        )
+      })}
+    </div>
   )
 }
 
