@@ -11,6 +11,7 @@ import * as TermsController from "./controllers/TermsController.ts"
 import HomePage from "./pages/HomePage.tsx"
 import LoaderPage from "./pages/LoaderPage.tsx"
 import ApplicationLayout from "./pages/layouts/ApplicationLayout.tsx"
+import EmptyLayout from "./pages/layouts/EmptyLayout.tsx"
 import FullLayout from "./pages/layouts/FullLayout.tsx"
 import PrePartListDragAndDropLayout from "./pages/layouts/PrePartListDragAndDropLayout.tsx"
 import { pick } from "./utils/ObjectUtil.ts"
@@ -42,7 +43,7 @@ const routes = route("/", null, {}, [
     }),
   ]),
 
-  withLayout(el(FullLayout), [
+  withLayout(el(EmptyLayout), [
     resources("sources", {}, {}, [
       resources("pre_part_lists", PrePartListsController, {
         show: el(LoaderPage<IPrePartListSourceCreateData>, { Component: PrePartListSourceCreate }),

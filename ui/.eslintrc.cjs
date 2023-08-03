@@ -41,7 +41,8 @@ module.exports = {
     "one-var": "off",
     "react/forbid-component-props": ["error", { "forbid": ['style', {
         "propName": "className",
-        "allowedFor": ["CheckCircleIcon", "DocumentTextIcon", "InformationCircleIcon", "LinkIcon", "PlusIcon", "QuestionMarkCircleIcon", "XCircleIcon", "XMarkIcon",
+        "allowedFor": ["Form",
+          "CheckCircleIcon", "DocumentTextIcon", "InformationCircleIcon", "LinkIcon", "PlusIcon", "QuestionMarkCircleIcon", "XCircleIcon", "XMarkIcon",
           "DotLoader",
           "Dialog", "Dialog.Panel", "Dialog.Title", "Link", "fetcher.Form"],
       }] }],
