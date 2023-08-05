@@ -21,7 +21,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestGenerateFilename(t *testing.T) {
-	expected := fmt.Sprintf("text2anki-waka-%v.blah", timeNow().Format(time.StampMilli))
+	expected := fmt.Sprintf("text2anki-waka-%v.blah", timeNow().Format(time.StampNano))
 
 	tcs := []struct {
 		name     string
@@ -43,6 +43,6 @@ func TestGenerateFilename(t *testing.T) {
 
 func TestGenerateName(t *testing.T) {
 	require := require.New(t)
-	expected := fmt.Sprintf("text2anki-waka-%v", timeNow().Format(time.StampMilli))
+	expected := fmt.Sprintf("text2anki-waka-%v", timeNow().Format(time.StampNano))
 	require.Equal(expected, GenerateName("waka"))
 }
