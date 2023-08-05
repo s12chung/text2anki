@@ -109,7 +109,7 @@ func testStore(t *testing.T) {
 	require := require.New(t)
 
 	api := testAPI(t)
-	fileData := []byte("abc")
+	fileData := []byte("Store")
 	require.NoError(api.Store(testKey, bytes.NewReader(fileData)))
 
 	fileBytes, err := os.ReadFile(path.Join(api.keyBasePath, testKey))

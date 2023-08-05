@@ -93,11 +93,6 @@ func (a API) Validate(key string, values url.Values) error {
 	return nil
 }
 
-// FileHandler returns the http.Handler to serve the files
-func (a API) FileHandler() http.Handler {
-	return http.FileServer(http.Dir(a.keyBasePath))
-}
-
 // Store stores the file at key, checking if it was signed from the values
 func (a API) Store(key string, file io.Reader) error {
 	p := a.keyPath(key)
@@ -113,6 +108,11 @@ func (a API) Store(key string, file io.Reader) error {
 	}
 
 	return outFile.Close()
+}
+
+// FileHandler returns the http.Handler to serve the files
+func (a API) FileHandler() http.Handler {
+	return http.FileServer(http.Dir(a.keyBasePath))
 }
 
 func (a API) keyPath(key string) string {
