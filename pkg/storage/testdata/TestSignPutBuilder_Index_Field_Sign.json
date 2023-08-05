@@ -1,0 +1,5 @@
+{
+  "url": "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts[1].field1.field2[2].txt?cipher=blah",
+  "method": "PUT",
+  "signed_header": {}
+}

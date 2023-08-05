@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"path"
 	"strconv"
+	"strings"
 
 	"github.com/gofrs/uuid"
 )
@@ -42,22 +43,13 @@ func NewSigner(api API) Signer {
 	return Signer{api: api}
 }
 
-// SignPut signs the files for a table's field
-func (s Signer) SignPut(table, column string, exts []string) ([]PreSignedHTTPRequest, string, error) {
-	reqs := make([]PreSignedHTTPRequest, len(exts))
+// SignPutBuilder returns a new SignPutBuilder
+func (s Signer) SignPutBuilder(table, column string) (SignPutBuilder, error) {
 	id, err := uuid.NewV7()
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
-	stringID := id.String()
-	for i, ext := range exts {
-		req, err := s.api.SignPut(path.Join(table, column, stringID, strconv.Itoa(i)+ext))
-		if err != nil {
-			return nil, "", err
-		}
-		reqs[i] = req
-	}
-	return reqs, stringID, nil
+	return newSignPutBuilder(table, column, id.String(), s.api), nil
 }
 
 // SignGet returns the signed URL for the key
@@ -81,4 +73,49 @@ func (s Signer) SignGetByID(table, column, id string) ([]string, error) {
 		urls[i] = u
 	}
 	return urls, nil
+}
+
+// SignPutBuilder builds paths to sign Put requests to the storage
+type SignPutBuilder interface {
+	ID() string
+	Index(index int) SignPutBuilder
+	Field(field string) SignPutBuilder
+	Sign(ext string) (PreSignedHTTPRequest, error)
+}
+
+type signPutBuilder struct {
+	id     string
+	prefix string
+	api    API
+}
+
+func newSignPutBuilder(table, column, id string, api API) signPutBuilder {
+	prefix := path.Join(table, column, id)
+	if !strings.HasSuffix(prefix, "/") {
+		prefix += "/"
+	}
+	prefix += column
+	return signPutBuilder{id: id, prefix: prefix, api: api}
+}
+
+// ID returns the ID for the files signed by the builder
+func (s signPutBuilder) ID() string {
+	return s.id
+}
+
+// Index sets the index for the new builder
+func (s signPutBuilder) Index(index int) SignPutBuilder {
+	s.prefix += "[" + strconv.Itoa(index) + "]"
+	return s
+}
+
+// Field sets the field name for the new builder
+func (s signPutBuilder) Field(field string) SignPutBuilder {
+	s.prefix += "." + field
+	return s
+}
+
+// Sign signs a new Put request for the builder and the extension
+func (s signPutBuilder) Sign(ext string) (PreSignedHTTPRequest, error) {
+	return s.api.SignPut(s.prefix + ext)
 }

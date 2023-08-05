@@ -24,9 +24,12 @@ func init() {
 
 func TestRoutes_StoragePut(t *testing.T) {
 	testName := "TestRoutes_StoragePut"
-	reqs, _, err := routes.Storage.Signer.SignPut("test_table", "my_column", []string{".txt"})
+	builder, err := routes.Storage.Signer.SignPutBuilder("test_table", "my_column")
 	require.NoError(t, err)
-	u, err := url.Parse(reqs[0].URL)
+	req, err := builder.Sign(".txt")
+	require.NoError(t, err)
+
+	u, err := url.Parse(req.URL)
 	require.NoError(t, err)
 	key := strings.TrimPrefix(u.Path, storageURLPath)
 

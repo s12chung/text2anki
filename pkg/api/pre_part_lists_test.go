@@ -29,18 +29,31 @@ type signPrePartListResponse struct {
 var testUUID = "123e4567-e89b-12d3-a456-426614174000"
 var uuidRegexp = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`)
 
+func replaceCipherQueryParam(urlString string) string {
+	if urlString == "" {
+		return ""
+	}
+
+	u, err := url.Parse(urlString)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+	u.RawQuery = url.Values{localstore.CipherQueryParam: []string{"testy"}}.Encode()
+	return uuidRegexp.ReplaceAllString(u.String(), testUUID)
+}
+
 func (s signPrePartListResponse) StaticCopy() any {
 	a := s
 	a.ID = testUUID
-	for i, req := range s.Requests {
-		u, err := url.Parse(req.URL)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(-1)
+	for i, prePart := range s.PreParts {
+		if prePart.ImageRequest != nil {
+			prePart.ImageRequest.URL = replaceCipherQueryParam(prePart.ImageRequest.URL)
 		}
-		u.RawQuery = url.Values{localstore.CipherQueryParam: []string{"testy"}}.Encode()
-		req.URL = uuidRegexp.ReplaceAllString(u.String(), testUUID)
-		a.Requests[i] = req
+		if prePart.AudioRequest != nil {
+			prePart.AudioRequest.URL = replaceCipherQueryParam(prePart.AudioRequest.URL)
+		}
+		a.PreParts[i] = prePart
 	}
 	return a
 }
@@ -50,22 +63,29 @@ func TestRoutes_PrePartListSign(t *testing.T) {
 
 	testCases := []struct {
 		name         string
-		queryParams  string
+		req          PrePartListSignRequest
 		expectedCode int
 	}{
-		{name: "one", queryParams: "exts=.png", expectedCode: http.StatusOK},
-		{name: "many", queryParams: "exts=.jpg&exts=.png&exts=.jpeg", expectedCode: http.StatusOK},
-		{name: "array", queryParams: "exts[0]=.jpg&exts[1]=.png&exts[2]=.jpeg", expectedCode: http.StatusUnprocessableEntity},
-		{name: "comma", queryParams: "exts=.jpeg,.png", expectedCode: http.StatusUnprocessableEntity},
-		{name: "none", queryParams: "", expectedCode: http.StatusUnprocessableEntity},
-		{name: "invalid", queryParams: "exts=.jpg&exts=.png&exts=.waka", expectedCode: http.StatusUnprocessableEntity},
+		{name: "one", req: PrePartListSignRequest{
+			PreParts: []PrePartSignRequest{{ImageExt: ".jpg"}}},
+			expectedCode: http.StatusOK},
+		{name: "many", req: PrePartListSignRequest{
+			PreParts: []PrePartSignRequest{{ImageExt: ".jpg"}, {ImageExt: ".png"}, {ImageExt: ".jpeg"}}},
+			expectedCode: http.StatusOK},
+		{name: "mixed", req: PrePartListSignRequest{
+			PreParts: []PrePartSignRequest{{ImageExt: ".jpg", AudioExt: ".mp3"}, {AudioExt: ".mp3"}, {ImageExt: ".jpeg"}}},
+			expectedCode: http.StatusOK},
+		{name: "none", req: PrePartListSignRequest{}, expectedCode: http.StatusUnprocessableEntity},
+		{name: "invalid", req: PrePartListSignRequest{
+			PreParts: []PrePartSignRequest{{ImageExt: ".jpg", AudioExt: ".mp3"}, {ImageExt: ".waka"}}},
+			expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodGet, "/sign?"+tc.queryParams, nil))
+			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodPost, "/sign", bytes.NewReader(test.JSON(t, tc.req))))
 			require.Equal(tc.expectedCode, resp.Code)
 			testModelResponse(t, resp, testName, tc.name, &signPrePartListResponse{})
 		})

@@ -38,19 +38,6 @@ func (t testAPI) ListKeys(prefix string) ([]string, error) {
 	return []string{path.Join(prefix, "a.txt"), path.Join(prefix, "b.txt")}, nil
 }
 
-func TestSigner_SignPut(t *testing.T) {
-	require := require.New(t)
-	testName := "TestSigner_SignPut"
-
-	reqs, id, err := NewSigner(testAPI{}).SignPut("sources", "parts", []string{".jpg", ".png", ".jpeg"})
-	require.NoError(err)
-	require.NotEqual(testUUID, id)
-	for _, req := range reqs {
-		require.Contains(req.URL, testUUID)
-	}
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, reqs))
-}
-
 func TestSigner_SignGetByID(t *testing.T) {
 	require := require.New(t)
 	urls, err := NewSigner(testAPI{}).SignGetByID("sources", "parts", testUUID)
@@ -58,4 +45,22 @@ func TestSigner_SignGetByID(t *testing.T) {
 
 	prefix := "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/"
 	require.Equal([]string{prefix + "a.txt", prefix + "b.txt"}, urls)
+}
+
+func testSignPutBuilder() signPutBuilder {
+	return newSignPutBuilder("sources", "parts", testUUID, testAPI{})
+}
+
+func TestSignPutBuilder_ID(t *testing.T) {
+	require := require.New(t)
+	require.Equal(testUUID, testSignPutBuilder().ID())
+}
+
+func TestSignPutBuilder_Index_Field_Sign(t *testing.T) {
+	require := require.New(t)
+	testName := "TestSignPutBuilder_Index_Field_Sign"
+
+	req, err := testSignPutBuilder().Index(1).Field("field1").Field("field2").Index(2).Sign(".txt")
+	require.NoError(err)
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, req))
 }

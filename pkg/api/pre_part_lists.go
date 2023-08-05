@@ -6,6 +6,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/s12chung/text2anki/pkg/firm"
+	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
@@ -15,16 +17,49 @@ func init() {
 	httptyped.RegisterType(PrePartListSignResponse{}, PrePartList{})
 }
 
-var validSignPartExts = map[string]bool{
-	".jpg":  true,
-	".jpeg": true,
-	".png":  true,
+var signedImageConfig = signFieldConfig{
+	Name: "image",
+	ValidExts: map[string]bool{
+		".jpg":  true,
+		".jpeg": true,
+		".png":  true,
+	},
+}
+
+var signedAudioConfig = signFieldConfig{
+	Name: "audio",
+	ValidExts: map[string]bool{
+		".mp3": true,
+	},
+}
+
+// PrePartListSignRequest represents the PrePartListSign request
+type PrePartListSignRequest struct {
+	PreParts []PrePartSignRequest `json:"pre_parts"`
+}
+
+func init() {
+	firm.RegisterType(firm.NewDefinition(PrePartListSignRequest{}).Validates(firm.RuleMap{
+		"PreParts": {rule.Presence{}},
+	}))
+}
+
+// PrePartSignRequest represents a pre_part for PrePartListSign request
+type PrePartSignRequest struct {
+	ImageExt string `json:"image_ext,omitempty"`
+	AudioExt string `json:"audio_ext,omitempty"`
 }
 
 // PrePartListSignResponse is the response returned by PrePartListSign
 type PrePartListSignResponse struct {
-	ID       string                         `json:"id"`
-	Requests []storage.PreSignedHTTPRequest `json:"requests"`
+	ID       string                `json:"id"`
+	PreParts []PrePartSignResponse `json:"pre_parts"`
+}
+
+// PrePartSignResponse represents a pre_part for PrePartListSign response
+type PrePartSignResponse struct {
+	ImageRequest *storage.PreSignedHTTPRequest `json:"image_request,omitempty"`
+	AudioRequest *storage.PreSignedHTTPRequest `json:"audio_request,omitempty"`
 }
 
 const sourcesTable = "sources"
@@ -32,21 +67,36 @@ const partsColumn = "parts"
 
 // PrePartListSign returns signed requests to generate Source Parts
 func (rs Routes) PrePartListSign(r *http.Request) (any, *httputil.HTTPError) {
-	exts := r.URL.Query()["exts"]
-	if len(exts) == 0 {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("no file extension given"))
-	}
-	for _, ext := range exts {
-		if !validSignPartExts[ext] {
-			return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("%v is not a valid file extension", ext))
-		}
+	req := PrePartListSignRequest{}
+	if httpError := extractAndValidate(r, &req); httpError != nil {
+		return nil, httpError
 	}
 
-	reqs, id, err := rs.Storage.Signer.SignPut(sourcesTable, partsColumn, exts)
+	builder, err := rs.Storage.Signer.SignPutBuilder(sourcesTable, partsColumn)
 	if err != nil {
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}
-	return PrePartListSignResponse{ID: id, Requests: reqs}, nil
+
+	response := PrePartListSignResponse{ID: builder.ID(), PreParts: make([]PrePartSignResponse, len(req.PreParts))}
+
+	for i, prePart := range req.PreParts {
+		b := builder.Index(i)
+
+		respPrePart := PrePartSignResponse{}
+
+		var httpError *httputil.HTTPError
+		respPrePart.ImageRequest, httpError = signFieldIfExists(b, signedImageConfig, prePart.ImageExt)
+		if httpError != nil {
+			return nil, httpError
+		}
+		respPrePart.AudioRequest, httpError = signFieldIfExists(b, signedAudioConfig, prePart.AudioExt)
+		if httpError != nil {
+			return nil, httpError
+		}
+
+		response.PreParts[i] = respPrePart
+	}
+	return response, nil
 }
 
 // PrePartList represents all the Source parts together for a given id
