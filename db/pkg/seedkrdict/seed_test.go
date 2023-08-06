@@ -70,7 +70,7 @@ func TestUnmarshallRscXML(t *testing.T) {
 func TestIsNoTranslationsFoundError(t *testing.T) {
 	require := require.New(t)
 	t.Parallel()
-	require.True(IsNoTranslationsFoundError(&NoTranslationsFoundError{}))
+	require.True(IsNoTranslationsFoundError(NoTranslationsFoundError{}))
 	require.False(IsNoTranslationsFoundError(fmt.Errorf("test error")))
 }
 
