@@ -19,6 +19,15 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
+const testUUID = "123e4567-e89b-12d3-a456-426614174000"
+
+type UUIDTest struct {
+}
+
+func (u UUIDTest) Generate() (string, error) {
+	return testUUID, nil
+}
+
 var routesConfig = Config{
 	StorageConfig: StorageConfig{
 		LocalStoreConfig: LocalStoreConfig{
@@ -26,6 +35,7 @@ var routesConfig = Config{
 			KeyBasePath:   path.Join(os.TempDir(), test.GenerateName("filestore-router")),
 			EncryptorPath: fixture.TestDataDir,
 		},
+		UUIDGenerator: UUIDTest{},
 	}}
 var routes = NewRoutes(routesConfig)
 var server = test.Server{Server: httptest.NewServer(routes.Router())}

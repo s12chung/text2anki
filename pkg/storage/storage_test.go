@@ -1,9 +1,9 @@
 package storage
 
 import (
+	"fmt"
 	"net/http"
 	"path"
-	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -11,8 +11,14 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-var testUUID = "123e4567-e89b-12d3-a456-426614174000"
-var uuidRegexp = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`)
+const testUUID = "123e4567-e89b-12d3-a456-426614174000"
+
+type UUIDTest struct {
+}
+
+func (u UUIDTest) Generate() (string, error) {
+	return testUUID, nil
+}
 
 type testAPI struct {
 }
@@ -22,7 +28,6 @@ func keyURL(key string) string {
 }
 
 func (t testAPI) SignPut(key string) (PreSignedHTTPRequest, error) {
-	key = uuidRegexp.ReplaceAllString(key, testUUID)
 	return PreSignedHTTPRequest{
 		URL:          keyURL(key) + "?cipher=blah",
 		Method:       "PUT",
@@ -38,29 +43,107 @@ func (t testAPI) ListKeys(prefix string) ([]string, error) {
 	return []string{path.Join(prefix, "a.txt"), path.Join(prefix, "b.txt")}, nil
 }
 
+func newTestSigner() Signer {
+	return NewSigner(testAPI{}, UUIDTest{})
+}
+
+type PrePartListSignRequest struct {
+	PreParts []PrePartSignRequest `json:"pre_parts"`
+}
+
+type PrePartSignRequest struct {
+	ImageExt string `json:"image_ext,omitempty"`
+	AudioExt string `json:"audio_ext,omitempty"`
+}
+
+type PrePartListSignResponse struct {
+	ID       string                `json:"id"`
+	PreParts []PrePartSignResponse `json:"pre_parts"`
+}
+
+type PrePartSignResponse struct {
+	ImageRequest *PreSignedHTTPRequest `json:"image_request,omitempty"`
+	AudioRequest *PreSignedHTTPRequest `json:"audio_request,omitempty"`
+}
+
+func TestIsExtTreeError(t *testing.T) {
+	require := require.New(t)
+	require.True(IsInvalidInputError(InvalidInputError{}))
+	require.False(IsInvalidInputError(fmt.Errorf("test error")))
+}
+
+func TestSigner_SignPut(t *testing.T) {
+	require := require.New(t)
+	testName := "TestSigner_SignPut"
+
+	req, err := newTestSigner().SignPut("test_table", "test_column", ".txt")
+	require.NoError(err)
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, req))
+}
+
+func TestSigner_SignPutTree(t *testing.T) {
+	testName := "TestSigner_SignPutTree"
+
+	basicConfig := SignPutConfig{
+		Table:  "sources",
+		Column: "parts",
+		NameToValidExts: map[string]map[string]bool{
+			"Image": {
+				".jpg":  true,
+				".jpeg": true,
+				".png":  true,
+			},
+			"Audio": {
+				".mp3": true,
+			},
+		},
+	}
+
+	testCases := []struct {
+		name string
+		req  PrePartListSignRequest
+		err  error
+	}{
+		{name: "one", req: PrePartListSignRequest{
+			PreParts: []PrePartSignRequest{{ImageExt: ".jpg"}}},
+		},
+		{name: "many", req: PrePartListSignRequest{
+			PreParts: []PrePartSignRequest{{ImageExt: ".jpg"}, {ImageExt: ".png"}, {ImageExt: ".jpeg"}}},
+		},
+		{name: "mixed", req: PrePartListSignRequest{
+			PreParts: []PrePartSignRequest{{ImageExt: ".jpg", AudioExt: ".mp3"}, {AudioExt: ".mp3"}, {ImageExt: ".jpeg"}}},
+		},
+		{name: "empty", req: PrePartListSignRequest{},
+			err: InvalidInputError{Message: "empty struct given for Signer.SignPutTree() at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts"}},
+		{name: "empty_array", req: PrePartListSignRequest{PreParts: []PrePartSignRequest{}},
+			err: InvalidInputError{
+				Message: "empty slice or array given for Signer.SignPutTree() at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts"}},
+		{name: "invalid", req: PrePartListSignRequest{PreParts: []PrePartSignRequest{{ImageExt: ".waka"}}},
+			err: InvalidInputError{Message: "invalid extension, .waka, at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image"}},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			resp := PrePartListSignResponse{}
+
+			err := newTestSigner().SignPutTree(basicConfig, tc.req, &resp)
+			if tc.err != nil {
+				require.Equal(tc.err, err)
+				return
+			}
+			require.NoError(err)
+			require.NotEmpty(resp.ID)
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, resp))
+		})
+	}
+}
+
 func TestSigner_SignGetByID(t *testing.T) {
 	require := require.New(t)
-	urls, err := NewSigner(testAPI{}).SignGetByID("sources", "parts", testUUID)
+	urls, err := newTestSigner().SignGetByID("sources", "parts", testUUID)
 	require.NoError(err)
 
 	prefix := "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/"
 	require.Equal([]string{prefix + "a.txt", prefix + "b.txt"}, urls)
-}
-
-func testSignPutBuilder() signPutBuilder {
-	return newSignPutBuilder("sources", "parts", testUUID, testAPI{})
-}
-
-func TestSignPutBuilder_ID(t *testing.T) {
-	require := require.New(t)
-	require.Equal(testUUID, testSignPutBuilder().ID())
-}
-
-func TestSignPutBuilder_Index_Field_Sign(t *testing.T) {
-	require := require.New(t)
-	testName := "TestSignPutBuilder_Index_Field_Sign"
-
-	req, err := testSignPutBuilder().Index(1).Field("field1").Field("field2").Index(2).Sign(".txt")
-	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, req))
 }

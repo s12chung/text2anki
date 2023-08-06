@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"os"
 	"path"
-	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -26,9 +25,6 @@ type signPrePartListResponse struct {
 	PrePartListSignResponse
 }
 
-var testUUID = "123e4567-e89b-12d3-a456-426614174000"
-var uuidRegexp = regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`)
-
 func replaceCipherQueryParam(urlString string) string {
 	if urlString == "" {
 		return ""
@@ -40,7 +36,7 @@ func replaceCipherQueryParam(urlString string) string {
 		os.Exit(-1)
 	}
 	u.RawQuery = url.Values{localstore.CipherQueryParam: []string{"testy"}}.Encode()
-	return uuidRegexp.ReplaceAllString(u.String(), testUUID)
+	return u.String()
 }
 
 func (s signPrePartListResponse) StaticCopy() any {

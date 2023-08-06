@@ -17,22 +17,6 @@ func init() {
 	httptyped.RegisterType(PrePartListSignResponse{}, PrePartList{})
 }
 
-var signedImageConfig = signFieldConfig{
-	Name: "image",
-	ValidExts: map[string]bool{
-		".jpg":  true,
-		".jpeg": true,
-		".png":  true,
-	},
-}
-
-var signedAudioConfig = signFieldConfig{
-	Name: "audio",
-	ValidExts: map[string]bool{
-		".mp3": true,
-	},
-}
-
 // PrePartListSignRequest represents the PrePartListSign request
 type PrePartListSignRequest struct {
 	PreParts []PrePartSignRequest `json:"pre_parts"`
@@ -65,6 +49,21 @@ type PrePartSignResponse struct {
 const sourcesTable = "sources"
 const partsColumn = "parts"
 
+var prePartListSignPutConfig = storage.SignPutConfig{
+	Table:  sourcesTable,
+	Column: partsColumn,
+	NameToValidExts: map[string]map[string]bool{
+		"Image": {
+			".jpg":  true,
+			".jpeg": true,
+			".png":  true,
+		},
+		"Audio": {
+			".mp3": true,
+		},
+	},
+}
+
 // PrePartListSign returns signed requests to generate Source Parts
 func (rs Routes) PrePartListSign(r *http.Request) (any, *httputil.HTTPError) {
 	req := PrePartListSignRequest{}
@@ -72,31 +71,14 @@ func (rs Routes) PrePartListSign(r *http.Request) (any, *httputil.HTTPError) {
 		return nil, httpError
 	}
 
-	builder, err := rs.Storage.Signer.SignPutBuilder(sourcesTable, partsColumn)
-	if err != nil {
+	resp := PrePartListSignResponse{}
+	if err := rs.Storage.Signer.SignPutTree(prePartListSignPutConfig, req, &resp); err != nil {
+		if storage.IsInvalidInputError(err) {
+			return nil, httputil.Error(http.StatusUnprocessableEntity, err)
+		}
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}
-
-	response := PrePartListSignResponse{ID: builder.ID(), PreParts: make([]PrePartSignResponse, len(req.PreParts))}
-
-	for i, prePart := range req.PreParts {
-		b := builder.Index(i)
-
-		respPrePart := PrePartSignResponse{}
-
-		var httpError *httputil.HTTPError
-		respPrePart.ImageRequest, httpError = signFieldIfExists(b, signedImageConfig, prePart.ImageExt)
-		if httpError != nil {
-			return nil, httpError
-		}
-		respPrePart.AudioRequest, httpError = signFieldIfExists(b, signedAudioConfig, prePart.AudioExt)
-		if httpError != nil {
-			return nil, httpError
-		}
-
-		response.PreParts[i] = respPrePart
-	}
-	return response, nil
+	return resp, nil
 }
 
 // PrePartList represents all the Source parts together for a given id

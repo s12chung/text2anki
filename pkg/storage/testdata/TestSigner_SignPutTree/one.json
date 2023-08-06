@@ -3,7 +3,7 @@
   "pre_parts": [
     {
       "image_request": {
-        "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image.jpg?ciphertext=testy",
+        "url": "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image.jpg?cipher=blah",
         "method": "PUT",
         "signed_header": {}
       }

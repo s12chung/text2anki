@@ -87,25 +87,6 @@ func (rs Routes) NotAllowed(r *http.Request) (any, *httputil.HTTPError) {
 		fmt.Errorf("the method, %v (at %v), is not allowed with at this URL", r.Method, r.URL.String()))
 }
 
-type signFieldConfig struct {
-	Name      string
-	ValidExts map[string]bool
-}
-
-func signFieldIfExists(builder storage.SignPutBuilder, config signFieldConfig, ext string) (*storage.PreSignedHTTPRequest, *httputil.HTTPError) {
-	if ext == "" {
-		return nil, nil
-	}
-	if !config.ValidExts[ext] {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("%v is not a valid file extension", ext))
-	}
-	signedReq, err := builder.Field(config.Name).Sign(ext)
-	if err != nil {
-		return nil, httputil.Error(http.StatusInternalServerError, err)
-	}
-	return &signedReq, nil
-}
-
 func extractAndValidate(r *http.Request, req any) *httputil.HTTPError {
 	if httpError := httputil.ExtractJSON(r, req); httpError != nil {
 		return httpError

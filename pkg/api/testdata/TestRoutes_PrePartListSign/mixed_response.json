@@ -3,26 +3,26 @@
   "pre_parts": [
     {
       "image_request": {
-        "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts[0].image.jpg?ciphertext=testy",
+        "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image.jpg?ciphertext=testy",
         "method": "PUT",
         "signed_header": {}
       },
       "audio_request": {
-        "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts[0].audio.mp3?ciphertext=testy",
+        "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Audio.mp3?ciphertext=testy",
         "method": "PUT",
         "signed_header": {}
       }
     },
     {
       "audio_request": {
-        "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts[1].audio.mp3?ciphertext=testy",
+        "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[1].Audio.mp3?ciphertext=testy",
         "method": "PUT",
         "signed_header": {}
       }
     },
     {
       "image_request": {
-        "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts[2].image.jpeg?ciphertext=testy",
+        "url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[2].Image.jpeg?ciphertext=testy",
         "method": "PUT",
         "signed_header": {}
       }

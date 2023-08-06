@@ -113,6 +113,7 @@ const (
 type StorageConfig struct {
 	StorageType
 	LocalStoreConfig LocalStoreConfig
+	UUIDGenerator    storage.UUIDGenerator
 }
 
 // StorageFromConfig returns a storage from the given config
@@ -133,7 +134,7 @@ func StorageFromConfig(config StorageConfig) Storage {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
-	return Storage{Signer: storage.NewSigner(api), Storer: storer}
+	return Storage{Signer: storage.NewSigner(api, config.UUIDGenerator), Storer: storer}
 }
 
 // LocalStoreConfig defines the config for localstore
