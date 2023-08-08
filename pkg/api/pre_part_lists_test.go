@@ -93,9 +93,11 @@ func TestRoutes_PrePartListGet(t *testing.T) {
 
 	id := "my_id"
 	idPath := path.Join(sourcesTable, partsColumn, id)
-	err := routes.Storage.Storer.Store(path.Join(idPath, "blah.txt"), bytes.NewReader([]byte("my_blah")))
+	err := routes.Storage.Storer.Store(path.Join(idPath, partsColumn+".PreParts[0].Image.txt"), bytes.NewReader([]byte("image0")))
 	require.NoError(t, err)
-	err = routes.Storage.Storer.Store(path.Join(idPath, "again_me.txt"), bytes.NewReader([]byte("again!")))
+	err = routes.Storage.Storer.Store(path.Join(idPath, partsColumn+".PreParts[0].Audio.txt"), bytes.NewReader([]byte("audio0!")))
+	require.NoError(t, err)
+	err = routes.Storage.Storer.Store(path.Join(idPath, partsColumn+".PreParts[1].Image.txt"), bytes.NewReader([]byte("image1!")))
 	require.NoError(t, err)
 
 	testCases := []struct {

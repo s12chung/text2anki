@@ -1,0 +1,15 @@
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "pre_parts": [
+    {
+      "image_url": "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image.jpg",
+      "audio_url": "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Audio.mp3"
+    },
+    {
+      "image_url": "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[1].Image.png"
+    },
+    {
+      "audio_url": "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[2].Audio.mp3"
+    }
+  ]
+}

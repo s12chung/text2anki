@@ -2,13 +2,15 @@
 package storage
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"path"
+	"path/filepath"
 	"reflect"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -20,13 +22,6 @@ type PreSignedHTTPRequest struct {
 	URL          string      `json:"url"`
 	Method       string      `json:"method"`
 	SignedHeader http.Header `json:"signed_header"`
-}
-
-// API is a wrapper around the API for file storage
-type API interface {
-	SignPut(key string) (PreSignedHTTPRequest, error)
-	SignGet(key string) (string, error)
-	ListKeys(prefix string) ([]string, error)
 }
 
 // Storer is a wrapper around the storage API
@@ -68,9 +63,6 @@ func NewSigner(api API, uuidGenerator UUIDGenerator) Signer {
 	return Signer{api: api, uuidGenerator: uuidGenerator}
 }
 
-// SignIDFieldName is the field name for SignPutTree()'s signTree's ID
-const SignIDFieldName = "ID"
-
 // SignPutNameToValidExts is a map of short field names and their valid extensions
 type SignPutNameToValidExts = map[string]map[string]bool
 
@@ -83,22 +75,6 @@ type SignPutConfig struct {
 
 func baseKey(table, column, id string) string {
 	return path.Join(table, column, id, column)
-}
-
-// InvalidInputError is the error returned that is an input (extTree) related error
-type InvalidInputError struct {
-	Message string
-}
-
-func (e InvalidInputError) Error() string {
-	return e.Message
-}
-
-// IsInvalidInputError returns true if the error is a InvalidInputError
-func IsInvalidInputError(err error) bool {
-	var errExtTree InvalidInputError
-	ok := errors.As(err, &errExtTree)
-	return ok
 }
 
 // SignPut signs for the given ext for the able at column
@@ -117,24 +93,10 @@ func (s Signer) SignPutTree(config SignPutConfig, extTree, signedTree any) error
 		return err
 	}
 	current := baseKey(config.Table, config.Column, id)
-
-	signedTreeValue := reflect.ValueOf(signedTree)
-	if signedTreeValue.Kind() != reflect.Pointer {
-		return fmt.Errorf("signedTree is not a pointer")
+	signedTreeValue, err := setID(id, signedTree)
+	if err != nil {
+		return err
 	}
-	signedTreeValue = signedTreeValue.Elem()
-	if signedTreeValue.Kind() != reflect.Struct {
-		return fmt.Errorf("signedTree is not a struct")
-	}
-	idField := signedTreeValue.FieldByName(SignIDFieldName)
-	if !idField.IsValid() {
-		return fmt.Errorf("signedTree does not have matching field name, %v, at %v", SignIDFieldName, current)
-	}
-	if !idField.CanSet() || idField.Kind() != reflect.String {
-		return fmt.Errorf("signedTree field, %v, at %v is not a settable String", SignIDFieldName, current)
-	}
-	idField.SetString(id)
-
 	return s.signPutTree(config.NameToValidExts, reflect.ValueOf(extTree), signedTreeValue, current)
 }
 
@@ -167,8 +129,8 @@ func (s Signer) signPutTreeString(nameToValidExts SignPutNameToValidExts, extTre
 	if extTree.IsZero() {
 		return nil
 	}
-	if !signedTree.CanSet() || signedTree.Type() != preSignedRequestType {
-		return fmt.Errorf("signedTree not settable PreSignedHTTPRequest at %v", current)
+	if !signedTree.IsValid() || !signedTree.CanSet() || signedTree.Type() != preSignedRequestType {
+		return fmt.Errorf("not valid settable for PreSignedHTTPRequest at %v", current)
 	}
 	ext := extTree.String()
 	fieldName := current[strings.LastIndex(current, ".")+1:]
@@ -185,8 +147,8 @@ func (s Signer) signPutTreeString(nameToValidExts SignPutNameToValidExts, extTre
 }
 
 func (s Signer) signPutTreeSlice(nameToValidExts SignPutNameToValidExts, extTree, signedTree reflect.Value, current string) error {
-	if !signedTree.CanSet() || (signedTree.Kind() != reflect.Slice && signedTree.Kind() != reflect.Array) {
-		return fmt.Errorf("signedTree not settable Slice or Array at %v", current)
+	if !signedTree.IsValid() || !signedTree.CanSet() || (signedTree.Kind() != reflect.Slice && signedTree.Kind() != reflect.Array) {
+		return fmt.Errorf("signedTree not valid settable Slice or Array at %v", current)
 	}
 	if extTree.IsZero() || extTree.Len() == 0 {
 		return InvalidInputError{Message: fmt.Sprintf("empty slice or array given for Signer.SignPutTree() at %v", current)}
@@ -202,8 +164,8 @@ func (s Signer) signPutTreeSlice(nameToValidExts SignPutNameToValidExts, extTree
 }
 
 func (s Signer) signPutTreeStruct(nameToValidExts SignPutNameToValidExts, extTree, signedTree reflect.Value, current string) error {
-	if signedTree.Kind() != reflect.Struct {
-		return fmt.Errorf("signedTree not Struct at %v", current)
+	if !signedTree.IsValid() || !signedTree.CanSet() || signedTree.Kind() != reflect.Struct {
+		return fmt.Errorf("signedTree not valid settable Struct at %v", current)
 	}
 	if extTree.IsZero() {
 		return InvalidInputError{Message: fmt.Sprintf("empty struct given for Signer.SignPutTree() at %v", current)}
@@ -226,6 +188,239 @@ func (s Signer) signPutTreeStruct(nameToValidExts SignPutNameToValidExts, extTre
 	return nil
 }
 
+// SignGet returns the signed GET URL for the key
+func (s Signer) SignGet(key string) (string, error) {
+	return s.api.SignGet(key)
+}
+
+// SignGetByID fills in the matching signedTree's string with signed GET URLs from the storage key structure
+func (s Signer) SignGetByID(table, column, id string, signedTree any) error {
+	objValue, err := setID(id, signedTree)
+	if err != nil {
+		return err
+	}
+
+	idPath := path.Join(table, column, id)
+	keys, err := s.api.ListKeys(idPath)
+	if err != nil {
+		return err
+	}
+	if len(keys) == 0 {
+		return NotFoundError{ID: id, IDPath: idPath}
+	}
+	tree, err := treeFromKeys(keys)
+	if err != nil {
+		return err
+	}
+	return unmarshallTree(tree, objValue, "URL", s.SignGet)
+}
+
+var indexRegex = regexp.MustCompile(`\[\d+]$`)
+
+func treeFromKeys(keys []string) (map[string]any, error) {
+	sort.Strings(keys)
+	tree := map[string]any{}
+
+	for _, key := range keys {
+		treeParts, err := treePartsFromKey(key)
+		if err != nil {
+			return nil, fmt.Errorf("at key: %v, %w", key, err)
+		}
+		_, err = setTree(tree, treeParts, key)
+		if err != nil {
+			return nil, fmt.Errorf("at key: %v, %w", key, err)
+		}
+	}
+	return tree, nil
+}
+
+type treePartType int
+
+const (
+	treePartStruct treePartType = iota
+	treePartSlice
+)
+
+type treePart struct {
+	typ   treePartType
+	key   string
+	index int
+}
+
+func treePartsFromKey(key string) ([]treePart, error) {
+	key = key[0 : len(key)-len(filepath.Ext(key))]
+	parts := strings.Split(key, ".")[1:]
+
+	//nolint:prealloc // can't calculate upfront
+	var treeParts []treePart
+	for _, part := range parts {
+		var arrayParts []string
+		part, arrayParts = splitArrayParts(part)
+		treeParts = append(treeParts, treePart{typ: treePartStruct, key: part})
+		for _, arrayPart := range arrayParts {
+			index, err := strconv.Atoi(arrayPart[1 : len(arrayPart)-1])
+			if err != nil {
+				return nil, err
+			}
+			treeParts = append(treeParts, treePart{typ: treePartSlice, index: index})
+		}
+	}
+	return treeParts, nil
+}
+
+func setTree(current any, treeParts []treePart, finalValue string) (any, error) {
+	if len(treeParts) == 0 {
+		return finalValue, nil
+	}
+
+	tPart := treeParts[0]
+	treeParts = treeParts[1:]
+
+	switch tPart.typ {
+	case treePartSlice:
+		return setTreeSlice(tPart, current, treeParts, finalValue)
+	case treePartStruct:
+		return setTreeStruct(tPart, current, treeParts, finalValue)
+	default:
+		return nil, fmt.Errorf("got invalid treePart.typ: %v", tPart.typ)
+	}
+}
+
+func setTreeSlice(tPart treePart, current any, treeParts []treePart, finalValue string) (any, error) {
+	if current == nil {
+		current = []any{}
+	}
+	currentSlice, ok := current.([]any)
+	if !ok {
+		return nil, fmt.Errorf("expected Slice at: %v", tPart.index)
+	}
+	if len(currentSlice) < tPart.index {
+		return nil, fmt.Errorf("slice index (%v) lower than: %v", len(currentSlice), tPart.index)
+	}
+	if len(currentSlice) == tPart.index {
+		currentSlice = append(currentSlice, nil)
+		current = currentSlice
+	}
+
+	value, err := setTree(currentSlice[tPart.index], treeParts, finalValue)
+	if err != nil {
+		return nil, err
+	}
+	if currentSlice[tPart.index] != nil {
+		valueType := reflect.TypeOf(value)
+		existingType := reflect.TypeOf(currentSlice[tPart.index])
+		if valueType != existingType {
+			return nil, fmt.Errorf("unmatched types %v and %v at: %v", valueType.String(), existingType.String(), tPart.key)
+		}
+	}
+	currentSlice[tPart.index] = value
+	return current, nil
+}
+
+func setTreeStruct(tPart treePart, current any, treeParts []treePart, finalValue string) (any, error) {
+	if current == nil {
+		current = map[string]any{}
+	}
+	currentMap, ok := current.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("expected Map at: %v", tPart.key)
+	}
+	value, err := setTree(currentMap[tPart.key], treeParts, finalValue)
+	if err != nil {
+		return nil, err
+	}
+	if currentMap[tPart.key] != nil {
+		valueType := reflect.TypeOf(value)
+		existingType := reflect.TypeOf(currentMap[tPart.key])
+		if valueType != existingType {
+			return nil, fmt.Errorf("unmatched types %v and %v at: %v", valueType.String(), existingType.String(), tPart.key)
+		}
+	}
+	currentMap[tPart.key] = value
+	return current, nil
+}
+
+func splitArrayParts(part string) (string, []string) {
+	var aParts []string
+
+	matchIndices := indexRegex.FindStringIndex(part)
+	for matchIndices != nil {
+		aParts = append([]string{part[matchIndices[0]:]}, aParts...)
+		part = part[:matchIndices[0]]
+		matchIndices = indexRegex.FindStringIndex(part)
+	}
+	return part, aParts
+}
+
+type treeValueFunc = func(key string) (string, error)
+
+func unmarshallTree(tree map[string]any, obj reflect.Value, suffix string, valueFunc treeValueFunc) error {
+	_, err := unmarshallTreeValue(tree, "", obj, suffix, valueFunc)
+	return err
+}
+
+func unmarshallTreeValue(current any, currentKey string, obj reflect.Value, suffix string, valueFunc treeValueFunc) (reflect.Value, error) {
+	switch currentTyped := current.(type) {
+	case string:
+		v, err := valueFunc(currentTyped)
+		if err != nil {
+			return reflect.Value{}, err
+		}
+		return reflect.ValueOf(v), nil
+	case []any:
+		return unmarshallTreeSlice(currentTyped, currentKey, obj, suffix, valueFunc)
+	case map[string]any:
+		return unmarshallTreeStruct(currentTyped, currentKey, obj, suffix, valueFunc)
+	default:
+		return reflect.Value{}, fmt.Errorf("at key: %v, unexcepted tree type: %T", currentKey, currentTyped)
+	}
+}
+
+func unmarshallTreeSlice(current []any, currentKey string, obj reflect.Value, suffix string, valueFunc treeValueFunc) (reflect.Value, error) {
+	if obj.IsNil() {
+		obj = reflect.MakeSlice(obj.Type(), len(current), len(current))
+	}
+	if obj.Kind() != reflect.Slice && obj.Kind() != reflect.Array {
+		return reflect.Value{}, fmt.Errorf("at key: %v, expected Nil or Slice/Array", currentKey)
+	}
+
+	for i, value := range current {
+		indexObj := obj.Index(i)
+		v, err := unmarshallTreeValue(value, fmt.Sprintf("%v[%v]", currentKey, i), indexObj, suffix, valueFunc)
+		if err != nil {
+			return reflect.Value{}, err
+		}
+		indexObj.Set(v)
+	}
+	return obj, nil
+}
+
+func unmarshallTreeStruct(current map[string]any, currentKey string, obj reflect.Value, suffix string,
+	valueFunc treeValueFunc) (reflect.Value, error) {
+	obj = indirect(obj)
+	if obj.Kind() != reflect.Struct {
+		return reflect.Value{}, fmt.Errorf("at key: %v, expected Struct", currentKey)
+	}
+
+	for key, value := range current {
+		_, isString := value.(string)
+		if isString {
+			key += suffix
+		}
+		fieldObj := obj.FieldByName(key)
+		if !fieldObj.IsValid() || !fieldObj.CanSet() {
+			return reflect.Value{}, fmt.Errorf("at key: %v.%v, not valid settable field name", currentKey, key)
+		}
+
+		v, err := unmarshallTreeValue(value, fmt.Sprintf("%v.%v", currentKey, key), fieldObj, suffix, valueFunc)
+		if err != nil {
+			return reflect.Value{}, err
+		}
+		fieldObj.Set(v)
+	}
+	return obj, nil
+}
+
 func indirect(value reflect.Value) reflect.Value {
 	for value.Kind() == reflect.Pointer && !value.IsZero() {
 		value = value.Elem()
@@ -233,25 +428,22 @@ func indirect(value reflect.Value) reflect.Value {
 	return value
 }
 
-// SignGet returns the signed GET URL for the key
-func (s Signer) SignGet(key string) (string, error) {
-	return s.api.SignGet(key)
-}
+// IDFieldName is the field name for SignPutTree()'s signTree's ID
+const IDFieldName = "ID"
 
-// SignGetByID returns the signed GET URLs for the given table, column, and ID
-func (s Signer) SignGetByID(table, column, id string) ([]string, error) {
-	keys, err := s.api.ListKeys(path.Join(table, column, id))
-	if err != nil {
-		return nil, err
+func setID(id string, obj any) (reflect.Value, error) {
+	value := reflect.ValueOf(obj)
+	if value.Kind() != reflect.Pointer {
+		return reflect.Value{}, fmt.Errorf("obj is not a pointer")
 	}
-
-	urls := make([]string, len(keys))
-	for i, key := range keys {
-		u, err := s.SignGet(key)
-		if err != nil {
-			return nil, err
-		}
-		urls[i] = u
+	value = value.Elem()
+	if value.Kind() != reflect.Struct {
+		return reflect.Value{}, fmt.Errorf("obj is not a struct")
 	}
-	return urls, nil
+	idField := value.FieldByName(IDFieldName)
+	if !idField.IsValid() || !idField.CanSet() || idField.Kind() != reflect.String {
+		return reflect.Value{}, fmt.Errorf("obj field, %v is not a valid settable String", IDFieldName)
+	}
+	idField.SetString(id)
+	return value, nil
 }

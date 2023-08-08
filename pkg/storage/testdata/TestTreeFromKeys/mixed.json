@@ -1,0 +1,22 @@
+{
+  "Key1": {
+    "SubKey1": {
+      "Value1": "column_name.Key1.SubKey1.Value1.jpg"
+    },
+    "SubKey2": [
+      [
+        {
+          "Value2": "column_name.Key1.SubKey2[0][0].Value2.jpg",
+          "Value3": "column_name.Key1.SubKey2[0][0].Value3.jpg"
+        },
+        {
+          "Value2": "column_name.Key1.SubKey2[0][1].Value2.jpg"
+        }
+      ]
+    ],
+    "SubKey3": [
+      "column_name.Key1.SubKey3[0].jpg",
+      "column_name.Key1.SubKey3[1].jpg"
+    ]
+  }
+}

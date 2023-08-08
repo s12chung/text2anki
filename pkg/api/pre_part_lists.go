@@ -94,7 +94,8 @@ func (p PrePartList) StaticCopy() any {
 
 // PrePart represents a Source part before it is created, only stored via. Routes.Storage.Storer
 type PrePart struct {
-	URL string `json:"url"`
+	ImageURL string `json:"image_url,omitempty"`
+	AudioURL string `json:"audio_url,omitempty"`
 }
 
 // PrePartListGet returns the PrePartList for a given ID
@@ -103,17 +104,13 @@ func (rs Routes) PrePartListGet(r *http.Request) (any, *httputil.HTTPError) {
 	if prePartListID == "" {
 		return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("prePartListID not found"))
 	}
-	urls, err := rs.Storage.Signer.SignGetByID(sourcesTable, partsColumn, prePartListID)
+	prePartList := PrePartList{}
+	err := rs.Storage.Signer.SignGetByID(sourcesTable, partsColumn, prePartListID, &prePartList)
 	if err != nil {
+		if storage.IsNotFoundError(err) {
+			return nil, httputil.Error(http.StatusNotFound, err)
+		}
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}
-	if len(urls) == 0 {
-		return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("no pre-parts found"))
-	}
-
-	preParts := make([]PrePart, len(urls))
-	for i, u := range urls {
-		preParts[i] = PrePart{URL: u}
-	}
-	return PrePartList{ID: prePartListID, PreParts: preParts}, nil
+	return prePartList, nil
 }
