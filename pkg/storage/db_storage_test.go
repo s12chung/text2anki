@@ -113,16 +113,16 @@ type PrePart struct {
 	AudioURL string `json:"audio_url,omitempty"`
 }
 
-func TestDBStorage_SignGetByID(t *testing.T) {
+func TestDBStorage_SignGetTree(t *testing.T) {
 	require := require.New(t)
-	testName := "TestDBStorage_SignGetByID"
+	testName := "TestDBStorage_SignGetTree"
 
 	prePartList := PrePartList{}
-	err := newTestDBStorage().SignGetByID("sources", "parts", testUUID, &prePartList)
+	err := newTestDBStorage().SignGetTree("sources", "parts", testUUID, &prePartList)
 	require.NoError(err)
 
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, prePartList))
 
-	err = newTestDBStorage().SignGetByID("sources", "parts", "some_bad_id", nil)
+	err = newTestDBStorage().SignGetTree("sources", "parts", "some_bad_id", nil)
 	require.Error(err)
 }
