@@ -26,8 +26,8 @@ type Routes struct {
 
 // Storage contains the Route's storage setup
 type Storage struct {
-	Signer storage.Signer
-	Storer storage.Storer
+	DBStorage storage.DBStorage
+	Storer    storage.Storer
 }
 
 // Setup sets up the routes

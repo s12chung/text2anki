@@ -24,7 +24,7 @@ func init() {
 
 func TestRoutes_StoragePut(t *testing.T) {
 	testName := "TestRoutes_StoragePut"
-	req, err := routes.Storage.Signer.SignPut("test_table", "my_column", ".txt")
+	req, err := routes.Storage.DBStorage.SignPut("test_table", "my_column", ".txt")
 	require.NoError(t, err)
 
 	u, err := url.Parse(req.URL)

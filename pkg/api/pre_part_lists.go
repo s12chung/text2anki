@@ -72,7 +72,7 @@ func (rs Routes) PrePartListSign(r *http.Request) (any, *httputil.HTTPError) {
 	}
 
 	resp := PrePartListSignResponse{}
-	if err := rs.Storage.Signer.SignPutTree(prePartListSignPutConfig, req, &resp); err != nil {
+	if err := rs.Storage.DBStorage.SignPutTree(prePartListSignPutConfig, req, &resp); err != nil {
 		if storage.IsInvalidInputError(err) {
 			return nil, httputil.Error(http.StatusUnprocessableEntity, err)
 		}
@@ -105,7 +105,7 @@ func (rs Routes) PrePartListGet(r *http.Request) (any, *httputil.HTTPError) {
 		return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("prePartListID not found"))
 	}
 	prePartList := PrePartList{}
-	err := rs.Storage.Signer.SignGetByID(sourcesTable, partsColumn, prePartListID, &prePartList)
+	err := rs.Storage.DBStorage.SignGetByID(sourcesTable, partsColumn, prePartListID, &prePartList)
 	if err != nil {
 		if storage.IsNotFoundError(err) {
 			return nil, httputil.Error(http.StatusNotFound, err)

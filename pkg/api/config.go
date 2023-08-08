@@ -134,7 +134,7 @@ func StorageFromConfig(config StorageConfig) Storage {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
-	return Storage{Signer: storage.NewSigner(api, config.UUIDGenerator), Storer: storer}
+	return Storage{DBStorage: storage.NewDBStorage(api, config.UUIDGenerator), Storer: storer}
 }
 
 // LocalStoreConfig defines the config for localstore
