@@ -99,6 +99,30 @@ func TestDBStorage_SignPutTree(t *testing.T) {
 	}
 }
 
+type PrePartMediaList struct {
+	ID       string            `json:"id"`
+	PreParts []SourcePartMedia `json:"pre_parts"`
+}
+
+type SourcePartMedia struct {
+	ImageKey string `json:"image_key,omitempty"`
+	AudioKey string `json:"audio_key,omitempty"`
+}
+
+func TestDBStorage_KeyTree(t *testing.T) {
+	require := require.New(t)
+	testName := "TestDBStorage_KeyTree"
+
+	prePartList := PrePartMediaList{}
+	err := newTestDBStorage().KeyTree("sources", "parts", testUUID, &prePartList)
+	require.NoError(err)
+
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, prePartList))
+
+	err = newTestDBStorage().SignGetTree("sources", "parts", "some_bad_id", nil)
+	require.Error(err)
+}
+
 type PrePartList struct {
 	ID       string    `json:"id"`
 	PreParts []PrePart `json:"pre_parts"`

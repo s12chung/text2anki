@@ -56,22 +56,20 @@ func (d DBStorage) SignPutTree(config SignPutConfig, extTree, signedTree any) er
 	return d.signPutTree(config.NameToValidExts, reflect.ValueOf(extTree), signedTreeValue, current)
 }
 
+// KeyTree fills in the matching keyTree's string with storage keys from the key structure
+func (d DBStorage) KeyTree(table, column, id string, keyTree any) error {
+	tree, objValue, err := d.preUnmarshallTree(table, column, id, keyTree)
+	if err != nil {
+		return err
+	}
+	return unmarshallTree(tree, objValue, "Key", func(key string) (string, error) {
+		return key, nil
+	})
+}
+
 // SignGetTree fills in the matching signedTree's string with signed GET URLs from the storage key structure
 func (d DBStorage) SignGetTree(table, column, id string, signedTree any) error {
-	objValue, err := setID(id, signedTree)
-	if err != nil {
-		return err
-	}
-
-	idPath := path.Join(table, column, id)
-	keys, err := d.api.ListKeys(idPath)
-	if err != nil {
-		return err
-	}
-	if len(keys) == 0 {
-		return NotFoundError{ID: id, IDPath: idPath}
-	}
-	tree, err := treeFromKeys(keys)
+	tree, objValue, err := d.preUnmarshallTree(table, column, id, signedTree)
 	if err != nil {
 		return err
 	}

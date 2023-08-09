@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"path"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -233,6 +234,27 @@ func splitArrayParts(part string) (string, []string) {
 		matchIndices = indexRegex.FindStringIndex(part)
 	}
 	return part, aParts
+}
+
+func (d DBStorage) preUnmarshallTree(table, column, id string, obj any) (map[string]any, reflect.Value, error) {
+	objValue, err := setID(id, obj)
+	if err != nil {
+		return nil, reflect.Value{}, err
+	}
+
+	idPath := path.Join(table, column, id)
+	keys, err := d.api.ListKeys(idPath)
+	if err != nil {
+		return nil, reflect.Value{}, err
+	}
+	if len(keys) == 0 {
+		return nil, reflect.Value{}, NotFoundError{ID: id, IDPath: idPath}
+	}
+	tree, err := treeFromKeys(keys)
+	if err != nil {
+		return nil, reflect.Value{}, err
+	}
+	return tree, objValue, nil
 }
 
 type treeValueFunc = func(key string) (string, error)
