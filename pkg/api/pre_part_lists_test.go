@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/storage/localstore"
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
@@ -92,12 +93,12 @@ func TestRoutes_PrePartListGet(t *testing.T) {
 	testName := "TestRoutes_PrePartListGet"
 
 	id := "my_id"
-	idPath := path.Join(sourcesTable, partsColumn, id)
-	err := routes.Storage.Storer.Store(path.Join(idPath, partsColumn+".PreParts[0].Image.txt"), bytes.NewReader([]byte("image0")))
-	require.NoError(t, err)
-	err = routes.Storage.Storer.Store(path.Join(idPath, partsColumn+".PreParts[0].Audio.txt"), bytes.NewReader([]byte("audio0!")))
-	require.NoError(t, err)
-	err = routes.Storage.Storer.Store(path.Join(idPath, partsColumn+".PreParts[1].Image.txt"), bytes.NewReader([]byte("image1!")))
+	baseKey := storage.BaseKey(sourcesTable, partsColumn, id)
+	for i := 0; i < 2; i++ {
+		err := routes.Storage.Storer.Store(baseKey+".PreParts["+strconv.Itoa(i)+"].Image.txt", bytes.NewReader([]byte("image"+strconv.Itoa(i))))
+		require.NoError(t, err)
+	}
+	err := routes.Storage.Storer.Store(baseKey+".PreParts[0].Audio.txt", bytes.NewReader([]byte("audio0!")))
 	require.NoError(t, err)
 
 	testCases := []struct {

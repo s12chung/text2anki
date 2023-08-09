@@ -46,9 +46,6 @@ type PrePartSignResponse struct {
 	AudioRequest *storage.PreSignedHTTPRequest `json:"audio_request,omitempty"`
 }
 
-const sourcesTable = "sources"
-const partsColumn = "parts"
-
 var prePartListSignPutConfig = storage.SignPutConfig{
 	Table:  sourcesTable,
 	Column: partsColumn,

@@ -24,7 +24,14 @@ type SourceSerialized struct {
 
 // SourcePart is a part of the Source that contains text
 type SourcePart struct {
-	TokenizedTexts []TokenizedText `json:"tokenized_texts"`
+	Media          *SourcePartMedia `json:"media,omitempty"`
+	TokenizedTexts []TokenizedText  `json:"tokenized_texts"`
+}
+
+// SourcePartMedia is the media of the SourcePart
+type SourcePartMedia struct {
+	ImageKey string `json:"image_key,omitempty"`
+	AudioKey string `json:"audio_key,omitempty"`
 }
 
 // DefaultedName returns the Default name

@@ -29,7 +29,8 @@ type SignPutConfig struct {
 	NameToValidExts SignPutNameToValidExts
 }
 
-func baseKey(table, column, id string) string {
+// BaseKey returns the base key for the given args
+func BaseKey(table, column, id string) string {
 	return path.Join(table, column, id, column)
 }
 
@@ -39,7 +40,7 @@ func (d DBStorage) SignPut(table, column, ext string) (PreSignedHTTPRequest, err
 	if err != nil {
 		return PreSignedHTTPRequest{}, err
 	}
-	return d.api.SignPut(baseKey(table, column, id) + ext)
+	return d.api.SignPut(BaseKey(table, column, id) + ext)
 }
 
 // SignPutTree signs the fields in extTree and fills in the matching signedTree's PreSignedHTTPRequest
@@ -48,7 +49,7 @@ func (d DBStorage) SignPutTree(config SignPutConfig, extTree, signedTree any) er
 	if err != nil {
 		return err
 	}
-	current := baseKey(config.Table, config.Column, id)
+	current := BaseKey(config.Table, config.Column, id)
 	signedTreeValue, err := setID(id, signedTree)
 	if err != nil {
 		return err

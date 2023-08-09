@@ -13,6 +13,11 @@ func newTestDBStorage() DBStorage {
 	return NewDBStorage(testAPI{}, UUIDTest{})
 }
 
+func TestBaseKey(t *testing.T) {
+	require := require.New(t)
+	require.Equal("my_table/the_column/123e4567-e89b-12d3-a456-426614174000/the_column", BaseKey("my_table", "the_column", testUUID))
+}
+
 type PrePartListSignRequest struct {
 	PreParts []PrePartSignRequest `json:"pre_parts"`
 }
