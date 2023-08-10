@@ -27,7 +27,7 @@ func init() {
 func TestRoutes_SourceIndex(t *testing.T) {
 	testName := "TestRoutes_SourceIndex"
 	resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "", nil))
-	testModelsResponse(t, resp, testName, "", &[]db.SourceSerialized{})
+	testModelsResponse(t, resp, testName, "", &[]db.SourceStructured{})
 }
 
 func TestRoutes_SourceGet(t *testing.T) {
@@ -48,7 +48,7 @@ func TestRoutes_SourceGet(t *testing.T) {
 
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, tc.path, nil))
 			require.Equal(tc.expectedCode, resp.Code)
-			testModelResponse(t, resp, testName, tc.name, &db.SourceSerialized{})
+			testModelResponse(t, resp, testName, tc.name, &db.SourceStructured{})
 		})
 	}
 }
@@ -65,7 +65,7 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 	}
 
-	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].CreateParams())
+	created, err := db.Qs().SourceCreate(context.Background(), models.SourceStructuredsMust()[1].CreateParams())
 	require.NoError(t, err)
 
 	for _, tc := range testCases {
@@ -77,13 +77,13 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPatch, idPath("", created.ID), bytes.NewReader(reqBody)))
 			require.Equal(tc.expectedCode, resp.Code)
 
-			sourceSerialized := db.SourceSerialized{}
-			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceSerialized)
+			sourceStructured := db.SourceStructured{}
+			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
 
 			if resp.Code == http.StatusOK {
-				source, err := db.Qs().SourceGet(context.Background(), sourceSerialized.ID)
+				source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
 				require.NoError(err)
-				fixture.CompareRead(t, fixtureFile, fixture.JSON(t, source.ToSourceSerialized().StaticCopy()))
+				fixture.CompareRead(t, fixtureFile, fixture.JSON(t, source.ToSourceStructured().StaticCopy()))
 			}
 		})
 	}
@@ -137,13 +137,13 @@ func TestRoutes_SourceCreate(t *testing.T) {
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPost, "", bytes.NewReader(reqBody)))
 			require.Equal(tc.expectedCode, resp.Code)
 
-			sourceSerialized := db.SourceSerialized{}
-			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceSerialized)
+			sourceStructured := db.SourceStructured{}
+			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
 
 			if resp.Code == http.StatusOK {
-				source, err := db.Qs().SourceGet(context.Background(), sourceSerialized.ID)
+				source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
 				require.NoError(err)
-				fixture.CompareRead(t, fixtureFile, fixture.JSON(t, source.ToSourceSerialized().StaticCopy()))
+				fixture.CompareRead(t, fixtureFile, fixture.JSON(t, source.ToSourceStructured().StaticCopy()))
 			}
 		})
 	}
@@ -173,7 +173,7 @@ func sourcePartFromFile(t *testing.T, testName, name string) SourceCreateRequest
 func TestRoutes_SourceDestroy(t *testing.T) {
 	testName := "TestRoutes_SourceDestroy"
 
-	created, err := db.Qs().SourceCreate(context.Background(), models.SourceSerializedsMust()[1].CreateParams())
+	created, err := db.Qs().SourceCreate(context.Background(), models.SourceStructuredsMust()[1].CreateParams())
 	require.NoError(t, err)
 
 	testCases := []struct {
@@ -193,7 +193,7 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodDelete, tc.path, nil))
 			require.Equal(tc.expectedCode, resp.Code)
 
-			testModelResponse(t, resp, testName, tc.name, &db.SourceSerialized{})
+			testModelResponse(t, resp, testName, tc.name, &db.SourceStructured{})
 			if resp.Code == http.StatusOK {
 				_, err := db.Qs().SourceGet(context.Background(), created.ID)
 				require.Equal(fmt.Errorf("sql: no rows in result set"), err)

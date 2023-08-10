@@ -27,7 +27,7 @@ func init() {
 
 var seedMap = map[string]func() error{
 	"Terms":             SeedTerms,
-	"SourceSerializeds": SeedSourceSerializeds,
+	"SourceStructureds": SeedSourceStructureds,
 	"Notes":             SeedNotes,
 }
 
@@ -98,37 +98,37 @@ func SeedTerms() error {
 	return nil
 }
 
-// SourceSerializedsSeedFilename is the filename of the testdb models
-const SourceSerializedsSeedFilename = "SourceSerializedsSeed.json"
+// SourceStructuredsSeedFilename is the filename of the testdb models
+const SourceStructuredsSeedFilename = "SourceStructuredsSeed.json"
 
-// SourceSerializeds are testdb models for SourceSerializeds
-func SourceSerializeds() ([]db.SourceSerialized, error) {
-	var sourceSerializeds []db.SourceSerialized
-	if err := unmarshall(SourceSerializedsSeedFilename, &sourceSerializeds); err != nil {
+// SourceStructureds are testdb models for SourceStructureds
+func SourceStructureds() ([]db.SourceStructured, error) {
+	var sourceStructureds []db.SourceStructured
+	if err := unmarshall(SourceStructuredsSeedFilename, &sourceStructureds); err != nil {
 		return nil, err
 	}
-	return sourceSerializeds, nil
+	return sourceStructureds, nil
 }
 
-// SourceSerializedsMust are testdb models for SourceSerializeds, fails if there is an error
-func SourceSerializedsMust() []db.SourceSerialized {
-	sourceSerializeds, err := SourceSerializeds()
+// SourceStructuredsMust are testdb models for SourceStructureds, fails if there is an error
+func SourceStructuredsMust() []db.SourceStructured {
+	sourceStructureds, err := SourceStructureds()
 	if err != nil {
-		fmt.Println("SourceSerializedsMust failed")
+		fmt.Println("SourceStructuredsMust failed")
 		os.Exit(-1)
 	}
-	return sourceSerializeds
+	return sourceStructureds
 }
 
-// SeedSourceSerializeds seeds the SourceSerializeds testdb models
-func SeedSourceSerializeds() error {
-	sourceSerializeds, err := SourceSerializeds()
+// SeedSourceStructureds seeds the SourceStructureds testdb models
+func SeedSourceStructureds() error {
+	sourceStructureds, err := SourceStructureds()
 	if err != nil {
 		return err
 	}
 	queries := db.Qs()
-	for _, sourceSerialized := range sourceSerializeds {
-		if _, err := queries.SourceCreate(context.Background(), sourceSerialized.ToSourceCreateParams()); err != nil {
+	for _, sourceStructured := range sourceStructureds {
+		if _, err := queries.SourceCreate(context.Background(), sourceStructured.ToSourceCreateParams()); err != nil {
 			return err
 		}
 	}

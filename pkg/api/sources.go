@@ -15,7 +15,7 @@ import (
 )
 
 func init() {
-	httptyped.RegisterType(db.SourceSerialized{})
+	httptyped.RegisterType(db.SourceStructured{})
 }
 
 const contextSource httputil.ContextKey = "source"
@@ -34,20 +34,20 @@ func SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError) {
 		return nil, httputil.Error(http.StatusNotFound, err)
 	}
 
-	r = r.WithContext(context.WithValue(r.Context(), contextSource, source.ToSourceSerialized()))
+	r = r.WithContext(context.WithValue(r.Context(), contextSource, source.ToSourceStructured()))
 	return r, nil
 }
 
 // SourceIndex returns a list of sources
 func (rs Routes) SourceIndex(r *http.Request) (any, *httputil.HTTPError) {
 	return httputil.ReturnModelOr500(func() (any, error) {
-		return db.Qs().SourceSerializedIndex(r.Context())
+		return db.Qs().SourceStructuredIndex(r.Context())
 	})
 }
 
 // SourceGet gets the source
 func (rs Routes) SourceGet(r *http.Request) (any, *httputil.HTTPError) {
-	return ctxSourceSerialized(r)
+	return ctxSourceStructured(r)
 }
 
 // SourceUpdateRequest represents the SourceUpdate request
@@ -63,7 +63,7 @@ func init() {
 
 // SourceUpdate updates the source
 func (rs Routes) SourceUpdate(r *http.Request) (any, *httputil.HTTPError) {
-	sourceSerialized, httpError := ctxSourceSerialized(r)
+	sourceStructured, httpError := ctxSourceStructured(r)
 	if httpError != nil {
 		return nil, httpError
 	}
@@ -72,11 +72,11 @@ func (rs Routes) SourceUpdate(r *http.Request) (any, *httputil.HTTPError) {
 	if httpError = extractAndValidate(r, &req); httpError != nil {
 		return nil, httpError
 	}
-	sourceSerialized.Name = req.Name
+	sourceStructured.Name = req.Name
 
 	return httputil.ReturnModelOr500(func() (any, error) {
-		source, err := db.Qs().SourceUpdate(r.Context(), sourceSerialized.UpdateParams())
-		return source.ToSourceSerialized(), err
+		source, err := db.Qs().SourceUpdate(r.Context(), sourceStructured.UpdateParams())
+		return source.ToSourceStructured(), err
 	})
 }
 
@@ -138,26 +138,26 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 	}
 
 	return httputil.ReturnModelOr500(func() (any, error) {
-		source, err := db.Qs().SourceCreate(r.Context(), db.SourceSerialized{Parts: parts}.CreateParams())
-		return source.ToSourceSerialized(), err
+		source, err := db.Qs().SourceCreate(r.Context(), db.SourceStructured{Parts: parts}.CreateParams())
+		return source.ToSourceStructured(), err
 	})
 }
 
 // SourceDestroy destroys the source
 func (rs Routes) SourceDestroy(r *http.Request) (any, *httputil.HTTPError) {
-	sourceSerialized, httpError := ctxSourceSerialized(r)
+	sourceStructured, httpError := ctxSourceStructured(r)
 	if httpError != nil {
 		return nil, httpError
 	}
 	return httputil.ReturnModelOr500(func() (any, error) {
-		return sourceSerialized, db.Qs().SourceDestroy(r.Context(), sourceSerialized.ID)
+		return sourceStructured, db.Qs().SourceDestroy(r.Context(), sourceStructured.ID)
 	})
 }
 
-func ctxSourceSerialized(r *http.Request) (db.SourceSerialized, *httputil.HTTPError) {
-	sourceSerialized, ok := r.Context().Value(contextSource).(db.SourceSerialized)
+func ctxSourceStructured(r *http.Request) (db.SourceStructured, *httputil.HTTPError) {
+	sourceStructured, ok := r.Context().Value(contextSource).(db.SourceStructured)
 	if !ok {
-		return db.SourceSerialized{}, httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.SourceSerialized fail"))
+		return db.SourceStructured{}, httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.SourceStructured fail"))
 	}
-	return sourceSerialized, nil
+	return sourceStructured, nil
 }

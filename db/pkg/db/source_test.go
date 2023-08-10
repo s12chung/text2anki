@@ -23,37 +23,37 @@ func firstSource(t *testing.T) db.Source {
 	return source
 }
 
-func TestSourceSerialized_StaticCopy(t *testing.T) {
+func TestSourceStructured_StaticCopy(t *testing.T) {
 	require := require.New(t)
 	test.EmptyFieldsMatch(t, firstSource(t))
 
-	sourceCopy := firstSource(t).ToSourceSerialized()
+	sourceCopy := firstSource(t).ToSourceStructured()
 	sourceCopy.ID = 0
 	sourceCopy.UpdatedAt = time.Time{}
 	sourceCopy.CreatedAt = time.Time{}
-	require.Equal(sourceCopy, firstSource(t).ToSourceSerialized().StaticCopy())
+	require.Equal(sourceCopy, firstSource(t).ToSourceStructured().StaticCopy())
 }
 
-func TestSourceSerialized_UpdateParams(t *testing.T) {
-	testName := "TestSourceSerialized_UpdateParams"
+func TestSourceStructured_UpdateParams(t *testing.T) {
+	testName := "TestSourceStructured_UpdateParams"
 	test.EmptyFieldsMatch(t, firstSource(t))
-	createParams := firstSource(t).ToSourceSerialized().UpdateParams()
+	createParams := firstSource(t).ToSourceStructured().UpdateParams()
 	test.EmptyFieldsMatch(t, createParams)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }
 
-func TestSourceSerialized_CreateParams(t *testing.T) {
-	testName := "TestSourceSerialized_CreateParams"
+func TestSourceStructured_CreateParams(t *testing.T) {
+	testName := "TestSourceStructured_CreateParams"
 	test.EmptyFieldsMatch(t, firstSource(t))
-	createParams := firstSource(t).ToSourceSerialized().CreateParams()
+	createParams := firstSource(t).ToSourceStructured().CreateParams()
 	test.EmptyFieldsMatch(t, createParams)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }
 
-func TestSource_ToSource_ToSourceSerialized(t *testing.T) {
+func TestSource_ToSource_ToSourceStructured(t *testing.T) {
 	test.EmptyFieldsMatch(t, firstSource(t))
-	test.EmptyFieldsMatch(t, firstSource(t).ToSourceSerialized())
-	reflect.DeepEqual(firstSource(t), firstSource(t).ToSourceSerialized().ToSource())
+	test.EmptyFieldsMatch(t, firstSource(t).ToSourceStructured())
+	reflect.DeepEqual(firstSource(t), firstSource(t).ToSourceStructured().ToSource())
 }
 
 var textTokenizer = db.TextTokenizer{
@@ -108,7 +108,7 @@ func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 
 func TestQueries_SourceCreate(t *testing.T) {
 	require := require.New(t)
-	source, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceSerialized().CreateParams())
+	source, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceStructured().CreateParams())
 	require.NoError(err)
 	testRecentTimestamps(t, source.CreatedAt, source.UpdatedAt)
 }
@@ -117,11 +117,11 @@ func TestQueries_SourceUpdate(t *testing.T) {
 	require := require.New(t)
 	t.Parallel()
 
-	newSource, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceSerialized().CreateParams())
+	newSource, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceStructured().CreateParams())
 	require.NoError(err)
 	time.Sleep(1 * time.Second)
 
-	source, err := db.Qs().SourceUpdate(context.Background(), newSource.ToSourceSerialized().UpdateParams())
+	source, err := db.Qs().SourceUpdate(context.Background(), newSource.ToSourceStructured().UpdateParams())
 	require.NoError(err)
 	testRecentTimestamps(t, source.UpdatedAt)
 	require.NotEqual(newSource.UpdatedAt, source.UpdatedAt)

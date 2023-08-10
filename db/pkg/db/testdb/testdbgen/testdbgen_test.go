@@ -14,7 +14,7 @@ func TestGenerateModelsCodeRaw(t *testing.T) {
 
 	code, err := generateModelsCodeRaw([]generateModelsCodeData{
 		{Name: "Term", CreateCode: "queries.TermCreate(context.Background(), term.CreateParams())"},
-		{Name: "SourceSerialized", CreateCode: "queries.SourceCreate(context.Background(), sourceSerialized.ToSourceCreateParams())"},
+		{Name: "SourceStructured", CreateCode: "queries.SourceCreate(context.Background(), sourceStructured.ToSourceCreateParams())"},
 		{Name: "Note", CreateCode: "queries.NoteCreate(context.Background(), note.CreateParams())"},
 	})
 	require.NoError(err)

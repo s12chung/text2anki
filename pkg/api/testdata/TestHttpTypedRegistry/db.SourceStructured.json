@@ -7,7 +7,7 @@
     "audio_key,omitempty": "string",
     "image_key,omitempty": "string"
   },
-  "db.SourceSerialized": {
+  "db.SourceStructured": {
     "created_at": "time.Time",
     "id,omitempty": "int64",
     "name": "string",

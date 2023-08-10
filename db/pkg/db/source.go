@@ -13,8 +13,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
-// SourceSerialized is a copy of Source for Serializing
-type SourceSerialized struct {
+// SourceStructured is a copy of Source for with JSON columns structured
+type SourceStructured struct {
 	ID        int64        `json:"id,omitempty"`
 	Name      string       `json:"name"`
 	Parts     []SourcePart `json:"parts"`
@@ -35,7 +35,7 @@ type SourcePartMedia struct {
 }
 
 // DefaultedName returns the Default name
-func (s SourceSerialized) DefaultedName() string {
+func (s SourceStructured) DefaultedName() string {
 	if s.Name != "" {
 		return s.Name
 	}
@@ -46,7 +46,7 @@ func (s SourceSerialized) DefaultedName() string {
 }
 
 // StaticCopy returns a copy without fields that variate
-func (s SourceSerialized) StaticCopy() any {
+func (s SourceStructured) StaticCopy() any {
 	c := s
 	c.ID = 0
 	c.UpdatedAt = time.Time{}
@@ -54,24 +54,24 @@ func (s SourceSerialized) StaticCopy() any {
 	return c
 }
 
-// UpdateParams returns the SourceUpdateParams for the SourceSerialized
-func (s SourceSerialized) UpdateParams() SourceUpdateParams {
+// UpdateParams returns the SourceUpdateParams for the SourceStructured
+func (s SourceStructured) UpdateParams() SourceUpdateParams {
 	return SourceUpdateParams{
 		Name: s.Name,
 		ID:   s.ID,
 	}
 }
 
-// CreateParams returns the SourceCreateParams for the SourceSerialized
-func (s SourceSerialized) CreateParams() SourceCreateParams {
+// CreateParams returns the SourceCreateParams for the SourceStructured
+func (s SourceStructured) CreateParams() SourceCreateParams {
 	return SourceCreateParams{
 		Name:  s.DefaultedName(),
 		Parts: s.ToSource().Parts,
 	}
 }
 
-// ToSource returns the Source of the SourceSerialized
-func (s SourceSerialized) ToSource() Source {
+// ToSource returns the Source of the SourceStructured
+func (s SourceStructured) ToSource() Source {
 	bytes, err := json.Marshal(s.Parts)
 	if err != nil {
 		slog.Error(err.Error())
@@ -86,14 +86,14 @@ func (s SourceSerialized) ToSource() Source {
 	}
 }
 
-// ToSourceSerialized returns the SourceSerialized of the Source
-func (s Source) ToSourceSerialized() SourceSerialized {
+// ToSourceStructured returns the SourceStructured of the Source
+func (s Source) ToSourceStructured() SourceStructured {
 	var parts []SourcePart
 	if err := json.Unmarshal([]byte(s.Parts), &parts); err != nil {
 		slog.Error(err.Error())
 		panic(-1)
 	}
-	return SourceSerialized{
+	return SourceStructured{
 		ID:        s.ID,
 		Name:      s.Name,
 		Parts:     parts,
@@ -159,16 +159,16 @@ func (t TextTokenizer) TokenizeTexts(texts []text.Text) (tokenizedTexts []Tokeni
 	return tokenizedTexts, nil
 }
 
-// SourceSerializedIndex returns a SourceSerialized from the DB
-func (q *Queries) SourceSerializedIndex(ctx context.Context) ([]SourceSerialized, error) {
+// SourceStructuredIndex returns a SourceStructured from the DB
+func (q *Queries) SourceStructuredIndex(ctx context.Context) ([]SourceStructured, error) {
 	sources, err := q.SourceIndex(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	sourceSerializeds := make([]SourceSerialized, len(sources))
+	sourceStructureds := make([]SourceStructured, len(sources))
 	for i, source := range sources {
-		sourceSerializeds[i] = source.ToSourceSerialized()
+		sourceStructureds[i] = source.ToSourceStructured()
 	}
-	return sourceSerializeds, nil
+	return sourceStructureds, nil
 }

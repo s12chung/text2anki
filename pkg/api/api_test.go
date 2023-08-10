@@ -114,7 +114,7 @@ func TestRoutes_Router(t *testing.T) {
 
 	resp := test.HTTPDo(t, req)
 	require.Equal(http.StatusOK, resp.Code)
-	jsonBody := test.StaticCopy(t, resp.Body.Bytes(), &db.SourceSerialized{})
+	jsonBody := test.StaticCopy(t, resp.Body.Bytes(), &db.SourceStructured{})
 	fixture.CompareReadOrUpdate(t, testName+".json", jsonBody)
 
 	req, err = http.NewRequest(http.MethodGet, server.URL+"/healthz", nil)

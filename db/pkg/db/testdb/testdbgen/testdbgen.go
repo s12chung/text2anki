@@ -10,7 +10,7 @@ import (
 
 var modelDatas = []generateModelsCodeData{
 	{Name: "Term", CreateCode: "queries.TermCreate(context.Background(), term.CreateParams())"},
-	{Name: "SourceSerialized", CreateCode: "queries.SourceCreate(context.Background(), sourceSerialized.CreateParams())"},
+	{Name: "SourceStructured", CreateCode: "queries.SourceCreate(context.Background(), sourceStructured.CreateParams())"},
 	{Name: "Note", CreateCode: "queries.NoteCreate(context.Background(), note.CreateParams())"},
 }
 
