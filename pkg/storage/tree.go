@@ -11,11 +11,10 @@ import (
 	"strings"
 )
 
-// SignExtSuffix is the suffix of SignPutTree's extTree for the extensions
-const SignExtSuffix = "Ext"
-
-// SignRequestSuffix is the suffix of SignPutTree's signedTree for the requests
-const SignRequestSuffix = "Request"
+const signExtSuffix = "Ext"
+const signRequestSuffix = "Request"
+const keySuffix = "Key"
+const urlSuffix = "URL"
 
 var preSignedRequestType = reflect.TypeOf(&PreSignedHTTPRequest{})
 
@@ -84,9 +83,9 @@ func (d DBStorage) signPutTreeStruct(nameToValidExts SignPutNameToValidExts, ext
 	for i := 0; i < extTree.NumField(); i++ {
 		shortName := extTree.Type().Field(i).Name
 		requestName := shortName
-		if strings.HasSuffix(shortName, SignExtSuffix) {
-			shortName = shortName[:len(shortName)-len(SignExtSuffix)]
-			requestName = shortName + SignRequestSuffix
+		if strings.HasSuffix(shortName, signExtSuffix) {
+			shortName = shortName[:len(shortName)-len(signExtSuffix)]
+			requestName = shortName + signRequestSuffix
 		}
 		signedTreeField := signedTree.FieldByName(requestName)
 		if !signedTreeField.IsValid() {
@@ -255,6 +254,58 @@ func (d DBStorage) preUnmarshallTree(table, column, id string, obj any) (map[str
 		return nil, reflect.Value{}, err
 	}
 	return tree, objValue, nil
+}
+
+func treeFromKeyTree(keyTree any) (map[string]any, error) {
+	current := reflect.ValueOf(keyTree)
+	if current.Kind() != reflect.Struct {
+		return nil, fmt.Errorf("keyTree is not a Struct")
+	}
+	tree, err := treeFromKeyTreeValue(current)
+	if err != nil {
+		return nil, err
+	}
+	treeMap, ok := tree.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("keyTree is not a Struct")
+	}
+	return treeMap, nil
+}
+
+func treeFromKeyTreeValue(current reflect.Value) (any, error) {
+	current = indirect(current)
+
+	//nolint:exhaustive // default will handle the rest
+	switch current.Kind() {
+	case reflect.String:
+		return current.String(), nil
+	case reflect.Slice, reflect.Array:
+		treeObjSlice := make([]any, current.Len())
+		for i := 0; i < current.Len(); i++ {
+			value, err := treeFromKeyTreeValue(current.Index(i))
+			if err != nil {
+				return nil, err
+			}
+			treeObjSlice[i] = value
+		}
+		return treeObjSlice, nil
+	case reflect.Struct:
+		treeObjMap := map[string]any{}
+		for i := 0; i < current.NumField(); i++ {
+			value, err := treeFromKeyTreeValue(current.Field(i))
+			if err != nil {
+				return nil, err
+			}
+			keyName := current.Type().Field(i).Name
+			if _, isString := value.(string); isString {
+				keyName = keyName[:len(keyName)-len(keySuffix)]
+			}
+			treeObjMap[keyName] = value
+		}
+		return treeObjMap, nil
+	default:
+		return nil, fmt.Errorf("invalid type for treeFromKeyTree(): %v", current.Kind())
+	}
 }
 
 type treeValueFunc = func(key string) (string, error)

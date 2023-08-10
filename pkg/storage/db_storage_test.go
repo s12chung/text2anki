@@ -155,3 +155,20 @@ func TestDBStorage_SignGetTree(t *testing.T) {
 	err = newTestDBStorage().SignGetTree("sources", "parts", "some_bad_id", nil)
 	require.Error(err)
 }
+
+type SourcePartMediaResponse struct {
+	ImageURL string `json:"image_url,omitempty"`
+	AudioURL string `json:"audio_url,omitempty"`
+}
+
+func TestDBStorage_SignGetKeyTree(t *testing.T) {
+	require := require.New(t)
+	testName := "TestDBStorage_SignGetKeyTree"
+
+	media := SourcePartMedia{ImageKey: "waka.jpg", AudioKey: "haha.mp3"}
+	signedTree := SourcePartMediaResponse{}
+	err := newTestDBStorage().SignGetKeyTree(media, &signedTree)
+	require.NoError(err)
+
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, signedTree))
+}

@@ -63,7 +63,7 @@ func (d DBStorage) KeyTree(table, column, id string, keyTree any) error {
 	if err != nil {
 		return err
 	}
-	return unmarshallTree(tree, objValue, "Key", func(key string) (string, error) {
+	return unmarshallTree(tree, objValue, keySuffix, func(key string) (string, error) {
 		return key, nil
 	})
 }
@@ -74,5 +74,14 @@ func (d DBStorage) SignGetTree(table, column, id string, signedTree any) error {
 	if err != nil {
 		return err
 	}
-	return unmarshallTree(tree, objValue, "URL", d.api.SignGet)
+	return unmarshallTree(tree, objValue, urlSuffix, d.api.SignGet)
+}
+
+// SignGetKeyTree creates a signedTree from the keyTree
+func (d DBStorage) SignGetKeyTree(keyTree any, signedTree any) error {
+	tree, err := treeFromKeyTree(keyTree)
+	if err != nil {
+		return err
+	}
+	return unmarshallTree(tree, reflect.ValueOf(signedTree), urlSuffix, d.api.SignGet)
 }

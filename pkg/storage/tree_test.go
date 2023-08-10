@@ -13,18 +13,18 @@ import (
 )
 
 type BasicTree struct {
-	Value1Suffix string
-	Key1         BasicTreeKey1
-	Key2         []BasicTreeKey2
+	Value1Key string          `json:"value_1_key,omitempty"`
+	Key1      BasicTreeKey1   `json:"key_1"`
+	Key2      []BasicTreeKey2 `json:"key_2,omitempty"`
 }
 
 type BasicTreeKey1 struct {
-	Value2Suffix string
+	Value2Key string `json:"value_2_key,omitempty"`
 }
 
 type BasicTreeKey2 struct {
-	Value3Suffix string
-	Value4Suffix string
+	Value3Key string `json:"value_3_key,omitempty"`
+	Value4Key string `json:"value_4_key,omitempty"`
 }
 
 var basicKeys = []string{
@@ -123,9 +123,22 @@ func TestUnmarshallTree(t *testing.T) {
 	require.NoError(err)
 
 	obj := BasicTree{}
-	err = unmarshallTree(tree, reflect.ValueOf(&obj), "Suffix", func(key string) (string, error) {
+	err = unmarshallTree(tree, reflect.ValueOf(&obj), keySuffix, func(key string) (string, error) {
 		return key, nil
 	})
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, obj))
+}
+
+func TestTreeFromKeyTree(t *testing.T) {
+	require := require.New(t)
+	testName := "TestTreeFromKeyTree"
+
+	basicTree := BasicTree{}
+	err := json.Unmarshal(fixture.Read(t, "TestUnmarshallTree.json"), &basicTree)
+	require.NoError(err)
+
+	tree, err := treeFromKeyTree(basicTree)
+	require.NoError(err)
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, tree))
 }
