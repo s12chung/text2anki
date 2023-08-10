@@ -152,7 +152,7 @@ func treePartsFromKey(key string) ([]treePart, error) {
 	return treeParts, nil
 }
 
-func setTree(current any, treeParts []treePart, finalValue string) (any, error) {
+func setTree(treeObj any, treeParts []treePart, finalValue string) (any, error) {
 	if len(treeParts) == 0 {
 		return finalValue, nil
 	}
@@ -162,66 +162,66 @@ func setTree(current any, treeParts []treePart, finalValue string) (any, error) 
 
 	switch tPart.typ {
 	case treePartSlice:
-		return setTreeSlice(tPart, current, treeParts, finalValue)
+		return setTreeSlice(tPart, treeObj, treeParts, finalValue)
 	case treePartStruct:
-		return setTreeStruct(tPart, current, treeParts, finalValue)
+		return setTreeStruct(tPart, treeObj, treeParts, finalValue)
 	default:
 		return nil, fmt.Errorf("got invalid treePart.typ: %v", tPart.typ)
 	}
 }
 
-func setTreeSlice(tPart treePart, current any, treeParts []treePart, finalValue string) (any, error) {
-	if current == nil {
-		current = []any{}
+func setTreeSlice(part treePart, treeObj any, treeParts []treePart, finalValue string) (any, error) {
+	if treeObj == nil {
+		treeObj = []any{}
 	}
-	currentSlice, ok := current.([]any)
+	currentSlice, ok := treeObj.([]any)
 	if !ok {
-		return nil, fmt.Errorf("expected Slice at: %v", tPart.index)
+		return nil, fmt.Errorf("expected Slice at: %v", part.index)
 	}
-	if len(currentSlice) < tPart.index {
-		return nil, fmt.Errorf("slice index (%v) lower than: %v", len(currentSlice), tPart.index)
+	if len(currentSlice) < part.index {
+		return nil, fmt.Errorf("slice index (%v) lower than: %v", len(currentSlice), part.index)
 	}
-	if len(currentSlice) == tPart.index {
+	if len(currentSlice) == part.index {
 		currentSlice = append(currentSlice, nil)
-		current = currentSlice
+		treeObj = currentSlice
 	}
 
-	value, err := setTree(currentSlice[tPart.index], treeParts, finalValue)
+	value, err := setTree(currentSlice[part.index], treeParts, finalValue)
 	if err != nil {
 		return nil, err
 	}
-	if currentSlice[tPart.index] != nil {
+	if currentSlice[part.index] != nil {
 		valueType := reflect.TypeOf(value)
-		existingType := reflect.TypeOf(currentSlice[tPart.index])
+		existingType := reflect.TypeOf(currentSlice[part.index])
 		if valueType != existingType {
-			return nil, fmt.Errorf("unmatched types %v and %v at: %v", valueType.String(), existingType.String(), tPart.key)
+			return nil, fmt.Errorf("unmatched types %v and %v at: %v", valueType.String(), existingType.String(), part.key)
 		}
 	}
-	currentSlice[tPart.index] = value
-	return current, nil
+	currentSlice[part.index] = value
+	return treeObj, nil
 }
 
-func setTreeStruct(tPart treePart, current any, treeParts []treePart, finalValue string) (any, error) {
-	if current == nil {
-		current = map[string]any{}
+func setTreeStruct(part treePart, treeObj any, treeParts []treePart, finalValue string) (any, error) {
+	if treeObj == nil {
+		treeObj = map[string]any{}
 	}
-	currentMap, ok := current.(map[string]any)
+	currentMap, ok := treeObj.(map[string]any)
 	if !ok {
-		return nil, fmt.Errorf("expected Map at: %v", tPart.key)
+		return nil, fmt.Errorf("expected Map at: %v", part.key)
 	}
-	value, err := setTree(currentMap[tPart.key], treeParts, finalValue)
+	value, err := setTree(currentMap[part.key], treeParts, finalValue)
 	if err != nil {
 		return nil, err
 	}
-	if currentMap[tPart.key] != nil {
+	if currentMap[part.key] != nil {
 		valueType := reflect.TypeOf(value)
-		existingType := reflect.TypeOf(currentMap[tPart.key])
+		existingType := reflect.TypeOf(currentMap[part.key])
 		if valueType != existingType {
-			return nil, fmt.Errorf("unmatched types %v and %v at: %v", valueType.String(), existingType.String(), tPart.key)
+			return nil, fmt.Errorf("unmatched types %v and %v at: %v", valueType.String(), existingType.String(), part.key)
 		}
 	}
-	currentMap[tPart.key] = value
-	return current, nil
+	currentMap[part.key] = value
+	return treeObj, nil
 }
 
 func splitArrayParts(part string) (string, []string) {
