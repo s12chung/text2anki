@@ -39,8 +39,8 @@ func (d DBStorage) signPutTreeString(nameToValidExts SignPutNameToValidExts, ext
 	if extTree.IsZero() {
 		return nil
 	}
-	if !signedTree.IsValid() || !signedTree.CanSet() || signedTree.Type() != preSignedRequestType {
-		return fmt.Errorf("not valid settable for PreSignedHTTPRequest at %v", current)
+	if !signedTree.IsValid() || signedTree.Type() != preSignedRequestType {
+		return fmt.Errorf("not valid for PreSignedHTTPRequest at %v", current)
 	}
 	ext := extTree.String()
 	fieldName := current[strings.LastIndex(current, ".")+1:]
@@ -57,8 +57,8 @@ func (d DBStorage) signPutTreeString(nameToValidExts SignPutNameToValidExts, ext
 }
 
 func (d DBStorage) signPutTreeSlice(nameToValidExts SignPutNameToValidExts, extTree, signedTree reflect.Value, current string) error {
-	if !signedTree.IsValid() || !signedTree.CanSet() || (signedTree.Kind() != reflect.Slice && signedTree.Kind() != reflect.Array) {
-		return fmt.Errorf("signedTree not valid settable Slice or Array at %v", current)
+	if !signedTree.IsValid() || (signedTree.Kind() != reflect.Slice && signedTree.Kind() != reflect.Array) {
+		return fmt.Errorf("signedTree not valid Slice or Array at %v", current)
 	}
 	if extTree.IsZero() || extTree.Len() == 0 {
 		return InvalidInputError{Message: fmt.Sprintf("empty slice or array given for DBStorage.SignPutTree() at %v", current)}
@@ -74,8 +74,8 @@ func (d DBStorage) signPutTreeSlice(nameToValidExts SignPutNameToValidExts, extT
 }
 
 func (d DBStorage) signPutTreeStruct(nameToValidExts SignPutNameToValidExts, extTree, signedTree reflect.Value, current string) error {
-	if !signedTree.IsValid() || !signedTree.CanSet() || signedTree.Kind() != reflect.Struct {
-		return fmt.Errorf("signedTree not valid settable Struct at %v", current)
+	if !signedTree.IsValid() || signedTree.Kind() != reflect.Struct {
+		return fmt.Errorf("signedTree not valid Struct at %v", current)
 	}
 	if extTree.IsZero() {
 		return InvalidInputError{Message: fmt.Sprintf("empty struct given for DBStorage.SignPutTree() at %v", current)}
@@ -257,9 +257,13 @@ func (d DBStorage) preUnmarshallTree(table, column, id string, obj any) (map[str
 }
 
 func treeFromKeyTree(keyTree any) (map[string]any, error) {
-	current := reflect.ValueOf(keyTree)
+	keyTreeValue := reflect.ValueOf(keyTree)
+	if keyTreeValue.IsZero() {
+		return map[string]any{}, nil
+	}
+	current := indirect(keyTreeValue)
 	if current.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("keyTree is not a Struct")
+		return nil, fmt.Errorf("%v is not a Struct", keyTreeValue.Type().String())
 	}
 	tree, err := treeFromKeyTreeValue(current)
 	if err != nil {
@@ -267,7 +271,7 @@ func treeFromKeyTree(keyTree any) (map[string]any, error) {
 	}
 	treeMap, ok := tree.(map[string]any)
 	if !ok {
-		return nil, fmt.Errorf("keyTree is not a Struct")
+		return nil, fmt.Errorf("%v is not a Struct", keyTreeValue.Type().String())
 	}
 	return treeMap, nil
 }
@@ -318,6 +322,9 @@ func unmarshallTree(tree map[string]any, obj reflect.Value, suffix string, value
 func unmarshallTreeValue(current any, currentKey string, obj reflect.Value, suffix string, valueFunc treeValueFunc) (reflect.Value, error) {
 	switch currentTyped := current.(type) {
 	case string:
+		if currentTyped == "" {
+			return reflect.ValueOf(currentTyped), nil
+		}
 		v, err := valueFunc(currentTyped)
 		if err != nil {
 			return reflect.Value{}, err
@@ -364,8 +371,8 @@ func unmarshallTreeStruct(current map[string]any, currentKey string, obj reflect
 			key += suffix
 		}
 		fieldObj := obj.FieldByName(key)
-		if !fieldObj.IsValid() || !fieldObj.CanSet() {
-			return reflect.Value{}, fmt.Errorf("at key: %v.%v, not valid settable field name", currentKey, key)
+		if !fieldObj.IsValid() {
+			return reflect.Value{}, fmt.Errorf("at key: %v.%v, not valid field name", currentKey, key)
 		}
 
 		v, err := unmarshallTreeValue(value, fmt.Sprintf("%v.%v", currentKey, key), fieldObj, suffix, valueFunc)
@@ -389,16 +396,19 @@ const IDFieldName = "ID"
 
 func setID(id string, obj any) (reflect.Value, error) {
 	value := reflect.ValueOf(obj)
+	if !value.IsValid() {
+		return reflect.Value{}, fmt.Errorf("passed nil as settable obj")
+	}
 	if value.Kind() != reflect.Pointer {
-		return reflect.Value{}, fmt.Errorf("obj is not a pointer")
+		return reflect.Value{}, fmt.Errorf("%v is not a pointer", value.Type().String())
 	}
 	value = value.Elem()
 	if value.Kind() != reflect.Struct {
-		return reflect.Value{}, fmt.Errorf("obj is not a struct")
+		return reflect.Value{}, fmt.Errorf("%v is not a struct", value.Type().String())
 	}
 	idField := value.FieldByName(IDFieldName)
-	if !idField.IsValid() || !idField.CanSet() || idField.Kind() != reflect.String {
-		return reflect.Value{}, fmt.Errorf("obj field, %v is not a valid settable String", IDFieldName)
+	if !idField.IsValid() || idField.Kind() != reflect.String {
+		return reflect.Value{}, fmt.Errorf("%v field, %v is not a valid String", value.Type().String(), IDFieldName)
 	}
 	idField.SetString(id)
 	return value, nil

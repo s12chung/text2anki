@@ -34,6 +34,9 @@ func (t testAPI) SignGet(key string) (string, error) {
 }
 
 func (t testAPI) ListKeys(prefix string) ([]string, error) {
+	if prefix != "sources/parts/123e4567-e89b-12d3-a456-426614174000" {
+		return []string{}, nil
+	}
 	return []string{
 			path.Join(prefix, "parts.PreParts[0].Image.jpg"),
 			path.Join(prefix, "parts.PreParts[0].Audio.mp3"),

@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"path"
 	"reflect"
 )
@@ -83,5 +84,9 @@ func (d DBStorage) SignGetKeyTree(keyTree any, signedTree any) error {
 	if err != nil {
 		return err
 	}
-	return unmarshallTree(tree, reflect.ValueOf(signedTree), urlSuffix, d.api.SignGet)
+	signedTreeValue := reflect.ValueOf(signedTree)
+	if signedTreeValue.Kind() != reflect.Pointer {
+		return fmt.Errorf("signedTree, %v, is not a pointer", signedTreeValue.Type().String())
+	}
+	return unmarshallTree(tree, signedTreeValue, urlSuffix, d.api.SignGet)
 }

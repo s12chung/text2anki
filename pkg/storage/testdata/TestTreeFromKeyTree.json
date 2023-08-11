@@ -1,12 +1,13 @@
 {
+  "Empty": "",
   "Key1": {
-    "Value2": "column_name.Key1.Value2.jpg"
+    "Value2": "testPrefix/column_name.Key1.Value2.jpg"
   },
   "Key2": [
     {
-      "Value3": "column_name.Key2[0].Value3.jpg",
-      "Value4": "column_name.Key2[0].Value4.jpg"
+      "Value3": "testPrefix/column_name.Key2[0].Value3.jpg",
+      "Value4": "testPrefix/column_name.Key2[0].Value4.jpg"
     }
   ],
-  "Value1": "column_name.Value1.jpg"
+  "Value1": "testPrefix/column_name.Value1.jpg"
 }

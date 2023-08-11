@@ -14,6 +14,7 @@ import (
 
 type BasicTree struct {
 	Value1Key string          `json:"value_1_key,omitempty"`
+	EmptyKey  string          `json:"empty_key,omitempty"`
 	Key1      BasicTreeKey1   `json:"key_1"`
 	Key2      []BasicTreeKey2 `json:"key_2,omitempty"`
 }
@@ -120,11 +121,12 @@ func TestUnmarshallTree(t *testing.T) {
 
 	var tree map[string]any
 	err := json.Unmarshal(fixture.Read(t, "TestTreeFromKeys/basic.json"), &tree)
+	tree["Empty"] = ""
 	require.NoError(err)
 
 	obj := BasicTree{}
 	err = unmarshallTree(tree, reflect.ValueOf(&obj), keySuffix, func(key string) (string, error) {
-		return key, nil
+		return path.Join("testPrefix", key), nil
 	})
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, obj))
@@ -134,11 +136,16 @@ func TestTreeFromKeyTree(t *testing.T) {
 	require := require.New(t)
 	testName := "TestTreeFromKeyTree"
 
-	basicTree := BasicTree{}
-	err := json.Unmarshal(fixture.Read(t, "TestUnmarshallTree.json"), &basicTree)
+	basicTree := &BasicTree{}
+	err := json.Unmarshal(fixture.Read(t, "TestUnmarshallTree.json"), basicTree)
 	require.NoError(err)
 
 	tree, err := treeFromKeyTree(basicTree)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, tree))
+
+	basicTree = nil
+	tree, err = treeFromKeyTree(basicTree)
+	require.NoError(err)
+	require.Equal(map[string]any{}, tree)
 }

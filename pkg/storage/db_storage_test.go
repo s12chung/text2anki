@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"path"
 	"testing"
 
@@ -85,14 +86,19 @@ func TestDBStorage_SignPutTree(t *testing.T) {
 				Message: "empty slice or array given for DBStorage.SignPutTree() at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts"}},
 		{name: "invalid", req: PrePartListSignRequest{PreParts: []PrePartSignRequest{{ImageExt: ".waka"}}},
 			err: InvalidInputError{Message: "invalid extension, .waka, at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image"}},
+		{name: "no_pointer", err: fmt.Errorf("storage.PrePartListSignResponse is not a pointer")},
 	}
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			resp := PrePartListSignResponse{}
+			respAny := any(&resp)
+			if tc.name == "no_pointer" {
+				respAny = resp
+			}
 
-			err := newTestDBStorage().SignPutTree(basicConfig, tc.req, &resp)
+			err := newTestDBStorage().SignPutTree(basicConfig, tc.req, respAny)
 			if tc.err != nil {
 				require.Equal(tc.err, err)
 				return
@@ -143,17 +149,37 @@ type PrePart struct {
 }
 
 func TestDBStorage_SignGetTree(t *testing.T) {
-	require := require.New(t)
 	testName := "TestDBStorage_SignGetTree"
 
 	prePartList := PrePartList{}
-	err := newTestDBStorage().SignGetTree("sources", "parts", testUUID, &prePartList)
-	require.NoError(err)
-
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, prePartList))
-
-	err = newTestDBStorage().SignGetTree("sources", "parts", "some_bad_id", nil)
-	require.Error(err)
+	testCases := []struct {
+		name       string
+		signedTree any
+		id         string
+		err        error
+	}{
+		{name: "basic", signedTree: &prePartList},
+		{name: "non_pointer", signedTree: prePartList, err: fmt.Errorf("storage.PrePartList is not a pointer")},
+		{name: "nil", signedTree: nil, err: fmt.Errorf("passed nil as settable obj")},
+		{name: "bad_id", signedTree: &prePartList, id: "bad_id", err: NotFoundError{ID: "bad_id", IDPath: "sources/parts/bad_id"}},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			id := tc.id
+			if id == "" {
+				id = testUUID
+			}
+			require := require.New(t)
+			err := newTestDBStorage().SignGetTree("sources", "parts", id, tc.signedTree)
+			if tc.err != nil {
+				require.Equal(tc.err, err)
+				return
+			}
+			require.NoError(err)
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, prePartList))
+		})
+	}
 }
 
 type SourcePartMediaResponse struct {
@@ -171,4 +197,7 @@ func TestDBStorage_SignGetKeyTree(t *testing.T) {
 	require.NoError(err)
 
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, signedTree))
+
+	err = newTestDBStorage().SignGetKeyTree(media, signedTree)
+	require.Equal(fmt.Errorf("signedTree, storage.SourcePartMediaResponse, is not a pointer"), err)
 }
