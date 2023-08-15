@@ -296,11 +296,15 @@ func treeFromKeyTreeValue(current reflect.Value) (any, error) {
 	case reflect.Struct:
 		treeObjMap := map[string]any{}
 		for i := 0; i < current.NumField(); i++ {
+			fieldType := current.Type().Field(i)
+			if !fieldType.IsExported() {
+				continue
+			}
 			value, err := treeFromKeyTreeValue(current.Field(i))
 			if err != nil {
 				return nil, err
 			}
-			keyName := current.Type().Field(i).Name
+			keyName := fieldType.Name
 			if _, isString := value.(string); isString {
 				keyName = keyName[:len(keyName)-len(keySuffix)]
 			}
@@ -344,7 +348,7 @@ func unmarshallTreeSlice(current []any, currentKey string, obj reflect.Value, su
 		obj = reflect.MakeSlice(obj.Type(), len(current), len(current))
 	}
 	if obj.Kind() != reflect.Slice && obj.Kind() != reflect.Array {
-		return reflect.Value{}, fmt.Errorf("at key: %v, expected Nil or Slice/Array", currentKey)
+		return reflect.Value{}, fmt.Errorf("at key: %v, expected Nil or Slice/Array, but got %v", currentKey, obj.Type().String())
 	}
 
 	for i, value := range current {
@@ -362,7 +366,7 @@ func unmarshallTreeStruct(current map[string]any, currentKey string, obj reflect
 	valueFunc treeValueFunc) (reflect.Value, error) {
 	obj = indirect(obj)
 	if obj.Kind() != reflect.Struct {
-		return reflect.Value{}, fmt.Errorf("at key: %v, expected Struct", currentKey)
+		return reflect.Value{}, fmt.Errorf("at key: %v, expected Struct, but got %v", currentKey, obj.Type().String())
 	}
 
 	for key, value := range current {

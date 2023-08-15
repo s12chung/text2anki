@@ -13,10 +13,12 @@ import (
 )
 
 type BasicTree struct {
-	Value1Key string          `json:"value_1_key,omitempty"`
-	EmptyKey  string          `json:"empty_key,omitempty"`
-	Key1      BasicTreeKey1   `json:"key_1"`
-	Key2      []BasicTreeKey2 `json:"key_2,omitempty"`
+	//nolint:unused // used to test if notExported fields are ignored
+	notExported bool
+	Value1Key   string          `json:"value_1_key,omitempty"`
+	EmptyKey    string          `json:"empty_key,omitempty"`
+	Key1        BasicTreeKey1   `json:"key_1"`
+	Key2        []BasicTreeKey2 `json:"key_2,omitempty"`
 }
 
 type BasicTreeKey1 struct {
