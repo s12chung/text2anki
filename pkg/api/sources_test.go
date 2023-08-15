@@ -44,10 +44,8 @@ func TestRoutes_SourceGet(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, tc.path, nil))
-			require.Equal(tc.expectedCode, resp.Code)
+			resp.EqualCode(t, tc.expectedCode)
 			testModelResponse(t, resp, testName, tc.name, &db.SourceStructured{})
 		})
 	}
@@ -75,7 +73,7 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 
 			reqBody := test.JSON(t, SourceUpdateRequest{Name: tc.newName})
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPatch, idPath("", created.ID), bytes.NewReader(reqBody)))
-			require.Equal(tc.expectedCode, resp.Code)
+			resp.EqualCode(t, tc.expectedCode)
 
 			sourceStructured := db.SourceStructured{}
 			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
@@ -135,7 +133,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 
 			reqBody := test.JSON(t, body)
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPost, "", bytes.NewReader(reqBody)))
-			require.Equal(tc.expectedCode, resp.Code)
+			resp.EqualCode(t, tc.expectedCode)
 
 			sourceStructured := db.SourceStructured{}
 			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
@@ -191,7 +189,7 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 			require := require.New(t)
 
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodDelete, tc.path, nil))
-			require.Equal(tc.expectedCode, resp.Code)
+			resp.EqualCode(t, tc.expectedCode)
 
 			testModelResponse(t, resp, testName, tc.name, &db.SourceStructured{})
 			if resp.Code == http.StatusOK {

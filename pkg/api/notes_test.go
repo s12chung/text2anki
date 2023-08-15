@@ -38,7 +38,7 @@ func TestRoutes_NoteCreate(t *testing.T) {
 
 			reqBody := fixture.Read(t, path.Join(testName, tc.name+".json"))
 			resp := test.HTTPDo(t, notesServer.NewRequest(t, http.MethodPost, "", bytes.NewReader(reqBody)))
-			require.Equal(tc.expectedCode, resp.Code)
+			resp.EqualCode(t, tc.expectedCode)
 
 			note := db.Note{}
 			fixtureFile := testModelResponse(t, resp, testName, tc.name, &note)

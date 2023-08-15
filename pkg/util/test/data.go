@@ -193,3 +193,8 @@ func NewResponse(t *testing.T, resp *http.Response) Response {
 func (r Response) Result() *http.Response {
 	return r.result
 }
+
+// EqualCode tests if the given status code matches the response
+func (r Response) EqualCode(t *testing.T, expected int) {
+	require.Equal(t, expected, r.Code, "body: "+r.Body.String())
+}

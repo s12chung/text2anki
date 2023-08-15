@@ -113,7 +113,7 @@ func TestRoutes_Router(t *testing.T) {
 	require.NoError(err)
 
 	resp := test.HTTPDo(t, req)
-	require.Equal(http.StatusOK, resp.Code)
+	resp.EqualCode(t, http.StatusOK)
 	jsonBody := test.StaticCopy(t, resp.Body.Bytes(), &db.SourceStructured{})
 	fixture.CompareReadOrUpdate(t, testName+".json", jsonBody)
 
@@ -121,22 +121,20 @@ func TestRoutes_Router(t *testing.T) {
 	require.NoError(err)
 
 	resp = test.HTTPDo(t, req)
-	require.Equal(http.StatusOK, resp.Code)
+	resp.EqualCode(t, http.StatusOK)
 	require.Equal(".", resp.Body.String())
 }
 
 func TestRoutes_NotFound(t *testing.T) {
 	testName := "TestRoutes_NotFound"
-	require := require.New(t)
 	resp := test.HTTPDo(t, server.NewRequest(t, http.MethodGet, "/not_found_me", nil))
-	require.Equal(http.StatusNotFound, resp.Code)
+	resp.EqualCode(t, http.StatusNotFound)
 	testIndent(t, resp, testName, "")
 }
 
 func TestRoutes_NotAllowed(t *testing.T) {
 	testName := "TestRoutes_NotAllowed"
-	require := require.New(t)
 	resp := test.HTTPDo(t, server.NewRequest(t, http.MethodPost, "/terms/search", nil))
-	require.Equal(http.StatusMethodNotAllowed, resp.Code)
+	resp.EqualCode(t, http.StatusMethodNotAllowed)
 	testIndent(t, resp, testName, "")
 }

@@ -80,10 +80,8 @@ func TestRoutes_PrePartListSign(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
 			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodPost, "/sign", bytes.NewReader(test.JSON(t, tc.req))))
-			require.Equal(tc.expectedCode, resp.Code)
+			resp.EqualCode(t, tc.expectedCode)
 			testModelResponse(t, resp, testName, tc.name, &signPrePartListResponse{})
 		})
 	}
@@ -112,10 +110,8 @@ func TestRoutes_PrePartListGet(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
 			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodGet, "/"+tc.id, nil))
-			require.Equal(tc.expectedCode, resp.Code)
+			resp.EqualCode(t, tc.expectedCode)
 			testModelResponse(t, resp, testName, tc.name, &PrePartList{})
 		})
 	}

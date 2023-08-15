@@ -49,7 +49,7 @@ func TestRoutes_StoragePut(t *testing.T) {
 			require := require.New(t)
 
 			resp := test.HTTPDo(t, storageServer.NewRequest(t, http.MethodPut, tc.path, bytes.NewReader(tc.body)))
-			require.Equal(tc.expectedCode, resp.Code)
+			resp.EqualCode(t, tc.expectedCode)
 			testModelResponse(t, resp, testName, tc.name, &StoragePutOk{})
 			if resp.Code == http.StatusOK {
 				fileBytes, err := os.ReadFile(path.Join(routesConfig.StorageConfig.LocalStoreConfig.KeyBasePath, tc.key))
@@ -79,7 +79,7 @@ func TestRoutes_StorageGet(t *testing.T) {
 				require.NoError(routes.Storage.Storer.Store(tc.key, bytes.NewReader(tc.body)))
 			}
 			resp := test.HTTPDo(t, storageServer.NewRequest(t, http.MethodGet, tc.key, bytes.NewReader(tc.body)))
-			require.Equal(tc.expectedCode, resp.Code)
+			resp.EqualCode(t, tc.expectedCode)
 			if resp.Code == http.StatusOK {
 				require.Equal(resp.Body.String(), string(tc.body))
 			}
