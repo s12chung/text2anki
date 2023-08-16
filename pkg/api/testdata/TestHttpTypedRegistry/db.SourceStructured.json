@@ -1,11 +1,11 @@
 {
   "db.SourcePart": {
-    "media,omitempty": "*db.SourcePartMedia",
+    "media,omitempty": "*db.SourcePartMediaSerialized",
     "tokenized_texts": "[]db.TokenizedText"
   },
-  "db.SourcePartMedia": {
-    "audio_key,omitempty": "string",
-    "image_key,omitempty": "string"
+  "db.SourcePartMediaSerialized": {
+    "audio_url,omitempty": "string",
+    "image_url,omitempty": "string"
   },
   "db.SourceStructured": {
     "created_at": "time.Time",

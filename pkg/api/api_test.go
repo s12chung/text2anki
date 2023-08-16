@@ -43,6 +43,7 @@ var server = test.Server{Server: httptest.NewServer(routes.Router())}
 type MustSetupAndSeed struct{}
 
 func TestMain(m *testing.M) {
+	db.SetDBStorage(routes.Storage.DBStorage)
 	testdb.MustSetupAndSeed(MustSetupAndSeed{})
 	code := m.Run()
 	server.Close()

@@ -22,6 +22,16 @@ type SourceStructured struct {
 	CreatedAt time.Time    `json:"created_at"`
 }
 
+// PrepareSerialize prepares the model for Serializing for API endpoints
+func (s SourceStructured) PrepareSerialize() {
+	for _, part := range s.Parts {
+		if part.Media == nil {
+			continue
+		}
+		part.Media.toSerialize = true
+	}
+}
+
 // SourcePart is a part of the Source that contains text
 type SourcePart struct {
 	Media          *SourcePartMedia `json:"media,omitempty"`
@@ -30,8 +40,70 @@ type SourcePart struct {
 
 // SourcePartMedia is the media of the SourcePart
 type SourcePartMedia struct {
-	ImageKey string `json:"image_key,omitempty"`
-	AudioKey string `json:"audio_key,omitempty"`
+	toSerialize bool
+	ImageKey    string `json:"image_key,omitempty"`
+	AudioKey    string `json:"audio_key,omitempty"`
+}
+
+type sourcePartMediaAlias SourcePartMedia
+
+// SourcePartMediaSerialized is the API endpoint version of SourcePartMedia
+type SourcePartMediaSerialized struct {
+	ImageURL string `json:"image_url,omitempty"`
+	AudioURL string `json:"audio_url,omitempty"`
+}
+
+// ToDB returns the matching SourcePartMedia
+func (s SourcePartMediaSerialized) ToDB() (SourcePartMedia, error) {
+	db := SourcePartMedia{}
+	return db, dbStorage.KeyTreeFromSignGetTree(s, &db)
+}
+
+// SerializedEmpty returns an empty model for Serializing for API endpoints
+func (s *SourcePartMedia) SerializedEmpty() any {
+	return SourcePartMediaSerialized{}
+}
+
+// ToSerialized returns the matching SourcePartMediaSerialized
+func (s *SourcePartMedia) ToSerialized() (SourcePartMediaSerialized, error) {
+	serialized := SourcePartMediaSerialized{}
+	return serialized, dbStorage.SignGetTreeFromKeyTree(s, &serialized)
+}
+
+// MarshalJSON returns the JSON representation
+func (s *SourcePartMedia) MarshalJSON() ([]byte, error) {
+	if !s.toSerialize {
+		return json.Marshal(sourcePartMediaAlias(*s))
+	}
+	serialized, err := s.ToSerialized()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(serialized)
+}
+
+// UnmarshalJSON sets the data based on the data JSON
+func (s *SourcePartMedia) UnmarshalJSON(data []byte) error {
+	alias := sourcePartMediaAlias(*s)
+	if err := json.Unmarshal(data, &alias); err != nil {
+		return err
+	}
+	if alias != (sourcePartMediaAlias{}) {
+		*s = SourcePartMedia(alias)
+		return nil
+	}
+
+	serialized := SourcePartMediaSerialized{}
+	if err := json.Unmarshal(data, &serialized); err != nil {
+		return err
+	}
+	db, err := serialized.ToDB()
+	if err != nil {
+		return err
+	}
+	*s = db
+	s.toSerialize = true
+	return nil
 }
 
 // DefaultedName returns the Default name

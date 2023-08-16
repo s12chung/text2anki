@@ -3,8 +3,8 @@
   "parts": [
     {
       "media": {
-        "image_key": "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image.txt",
-        "audio_key": "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Audio.txt"
+        "image_url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image.txt",
+        "audio_url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Audio.txt"
       },
       "tokenized_texts": [
         {
@@ -71,7 +71,7 @@
     },
     {
       "media": {
-        "image_key": "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[1].Image.txt"
+        "image_url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[1].Image.txt"
       },
       "tokenized_texts": [
         {
@@ -132,7 +132,7 @@
     },
     {
       "media": {
-        "image_key": "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[2].Image.txt"
+        "image_url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[2].Image.txt"
       },
       "tokenized_texts": [
         {

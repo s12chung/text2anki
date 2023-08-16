@@ -1,6 +1,7 @@
 package httptyped
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -38,6 +39,67 @@ type Recurse struct {
 type Layer struct {
 	Recurse  *Recurse  `json:"recurse"`
 	Recurses []Recurse `json:"recurses"`
+}
+
+type WithSerializedParent struct {
+	Basic WithSerializedChild  `json:"basic"`
+	Pt    *WithSerializedChild `json:"pt,omitempty"`
+}
+
+func (w WithSerializedParent) PrepareSerialize() {
+	w.Pt.toSerialize = true
+}
+
+type WithSerializedChild struct {
+	toSerialize   bool
+	NonSerialized string `json:"non_serialized,omitempty"`
+}
+
+type withSerializedChildAlias WithSerializedChild
+
+type SerializedChild struct {
+	Serialized string `json:"serialized,omitempty"`
+}
+
+func (w WithSerializedChild) SerializedEmpty() any {
+	return SerializedChild{}
+}
+
+func (w WithSerializedChild) ToSerialized() (any, error) {
+	return SerializedChild{Serialized: w.NonSerialized + "CEREAL"}, nil
+}
+
+func (w WithSerializedChild) MarshalJSON() ([]byte, error) {
+	if !w.toSerialize {
+		return json.Marshal(withSerializedChildAlias(w))
+	}
+	serialized, err := w.ToSerialized()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(&serialized)
+}
+
+type WithSerializedParentPt struct {
+	Basic WithSerializedChildPt  `json:"basic"`
+	Pt    *WithSerializedChildPt `json:"pt,omitempty"`
+}
+
+func (w WithSerializedParentPt) PrepareSerialize() {
+	w.Pt.toSerialize = true
+}
+
+type WithSerializedChildPt struct {
+	toSerialize   bool
+	NonSerialized string `json:"non_serialized,omitempty"`
+}
+
+type SerializedChildPt struct {
+	Serialized string `json:"serialized,omitempty"`
+}
+
+func (w *WithSerializedChildPt) SerializedEmpty() any {
+	return SerializedChildPt{}
 }
 
 func TestRegistry_RegisterType(t *testing.T) {
@@ -89,6 +151,8 @@ func TestStructureMap(t *testing.T) {
 		{name: "Parent", str: Parent{}},
 		{name: "Child", str: Child{}},
 		{name: "Recurse", str: Recurse{}},
+		{name: "WithSerialized", str: WithSerializedParent{}},
+		{name: "WithSerializedPt", str: WithSerializedParentPt{}},
 	}
 	for _, tc := range testCases {
 		tc := tc
@@ -108,6 +172,7 @@ type invalidTestObj struct {
 
 func TestRespondTypedJSONWrap(t *testing.T) {
 	DefaultRegistry.RegisterType(testObj{})
+	DefaultRegistry.RegisterType(WithSerializedParent{})
 
 	var testVal string
 	handlerFunc := RespondTypedJSONWrap(func(r *http.Request) (any, *httputil.HTTPError) {
@@ -120,6 +185,12 @@ func TestRespondTypedJSONWrap(t *testing.T) {
 		if r.Method == http.MethodPut {
 			return []invalidTestObj{{Val: testVal}}, nil
 		}
+		if testVal == "toSerialize" {
+			return WithSerializedParent{
+				Basic: WithSerializedChild{NonSerialized: "Basic"},
+				Pt:    &WithSerializedChild{NonSerialized: "Pt"},
+			}, nil
+		}
 		return testObj{Val: testVal}, nil
 	})
 
@@ -131,6 +202,8 @@ func TestRespondTypedJSONWrap(t *testing.T) {
 		expectedBody string
 	}{
 		{name: "normal", val: "123", status: http.StatusOK, expectedBody: "{\"val\":\"123\"}\n"},
+		{name: "toSerialize", val: "toSerialize", status: http.StatusOK,
+			expectedBody: "{\"basic\":{\"non_serialized\":\"Basic\"},\"pt\":{\"serialized\":\"PtCEREAL\"}}\n"},
 		{name: "err", method: http.MethodPost, status: http.StatusUnprocessableEntity,
 			expectedBody: "{\"error\":\"not a GET\",\"code\":422,\"status_text\":\"Unprocessable Entity\"}\n"},
 		{name: "not_registered", method: http.MethodPatch, status: http.StatusInternalServerError,

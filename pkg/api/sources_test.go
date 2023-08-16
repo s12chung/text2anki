@@ -141,7 +141,9 @@ func TestRoutes_SourceCreate(t *testing.T) {
 			if resp.Code == http.StatusOK {
 				source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
 				require.NoError(err)
-				fixture.CompareRead(t, fixtureFile, fixture.JSON(t, source.ToSourceStructured().StaticCopy()))
+				sourceStructured = source.ToSourceStructured()
+				sourceStructured.PrepareSerialize()
+				fixture.CompareRead(t, fixtureFile, fixture.JSON(t, sourceStructured.StaticCopy()))
 			}
 		})
 	}

@@ -8,6 +8,8 @@ import (
 	"fmt"
 
 	_ "github.com/mattn/go-sqlite3" // sql.Open needs it from init()
+
+	"github.com/s12chung/text2anki/pkg/storage"
 )
 
 const arraySeparator = ", "
@@ -100,4 +102,11 @@ func (q *Queries) ClearAll(ctx context.Context) error {
 		return err
 	}
 	return nil
+}
+
+var dbStorage storage.DBStorage
+
+// SetDBStorage sets the storage.DBStorage used in model JSON marshall/unmarshall
+func SetDBStorage(d storage.DBStorage) {
+	dbStorage = d
 }
