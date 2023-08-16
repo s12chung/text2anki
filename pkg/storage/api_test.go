@@ -3,22 +3,25 @@ package storage
 import (
 	"net/http"
 	"path"
+	"strings"
 )
 
 const testUUID = "123e4567-e89b-12d3-a456-426614174000"
 
-type UUIDTest struct {
+type uuidTest struct {
 }
 
-func (u UUIDTest) Generate() (string, error) {
+func (u uuidTest) Generate() (string, error) {
 	return testUUID, nil
 }
 
 type testAPI struct {
 }
 
+const keyURLPrefix = "http://localhost:3000/"
+
 func keyURL(key string) string {
-	return "http://localhost:3000/" + key
+	return keyURLPrefix + key
 }
 
 func (t testAPI) SignPut(key string) (PreSignedHTTPRequest, error) {
@@ -44,4 +47,8 @@ func (t testAPI) ListKeys(prefix string) ([]string, error) {
 			path.Join(prefix, "parts.PreParts[2].Audio.mp3"),
 		},
 		nil
+}
+
+func (t testAPI) KeyFromSignGet(key string) (string, error) {
+	return strings.TrimPrefix(key, keyURLPrefix), nil
 }

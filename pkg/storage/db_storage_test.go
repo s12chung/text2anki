@@ -11,7 +11,7 @@ import (
 )
 
 func newTestDBStorage() DBStorage {
-	return NewDBStorage(testAPI{}, UUIDTest{})
+	return NewDBStorage(testAPI{}, uuidTest{})
 }
 
 func TestBaseKey(t *testing.T) {
@@ -187,17 +187,33 @@ type SourcePartMediaResponse struct {
 	AudioURL string `json:"audio_url,omitempty"`
 }
 
-func TestDBStorage_SignGetKeyTree(t *testing.T) {
+func TestDBStorage_SignGetTreeFromKeyTree(t *testing.T) {
 	require := require.New(t)
-	testName := "TestDBStorage_SignGetKeyTree"
+	testName := "TestDBStorage_SignGetTreeFromKeyTree"
 
 	media := SourcePartMedia{ImageKey: "waka.jpg", AudioKey: "haha.mp3"}
 	signedTree := SourcePartMediaResponse{}
-	err := newTestDBStorage().SignGetKeyTree(media, &signedTree)
+	err := newTestDBStorage().SignGetTreeFromKeyTree(media, &signedTree)
 	require.NoError(err)
 
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, signedTree))
 
-	err = newTestDBStorage().SignGetKeyTree(media, signedTree)
+	err = newTestDBStorage().SignGetTreeFromKeyTree(media, signedTree)
 	require.Equal(fmt.Errorf("signedTree, storage.SourcePartMediaResponse, is not a pointer"), err)
+}
+
+func TestDBStorage_KeyTreeFromSignGetTree(t *testing.T) {
+	require := require.New(t)
+	testName := "TestDBStorage_KeyTreeFromSignGetTree"
+
+	signedTree := SourcePartMediaResponse{ImageURL: keyURL("haha.jpg"), AudioURL: keyURL("me.mp3")}
+	media := SourcePartMedia{}
+
+	err := newTestDBStorage().KeyTreeFromSignGetTree(signedTree, &media)
+	require.NoError(err)
+
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, media))
+
+	err = newTestDBStorage().KeyTreeFromSignGetTree(signedTree, media)
+	require.Equal(fmt.Errorf("keyTree, storage.SourcePartMedia, is not a pointer"), err)
 }

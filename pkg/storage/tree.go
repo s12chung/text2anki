@@ -11,11 +11,6 @@ import (
 	"strings"
 )
 
-const signExtSuffix = "Ext"
-const signRequestSuffix = "Request"
-const keySuffix = "Key"
-const urlSuffix = "URL"
-
 var preSignedRequestType = reflect.TypeOf(&PreSignedHTTPRequest{})
 
 func (d DBStorage) signPutTree(nameToValidExts SignPutNameToValidExts, extTree, signedTree reflect.Value, current string) error {
@@ -256,7 +251,7 @@ func (d DBStorage) preUnmarshallTree(table, column, id string, obj any) (map[str
 	return tree, objValue, nil
 }
 
-func treeFromKeyTree(keyTree any) (map[string]any, error) {
+func mapTree(keyTree any, fieldSuffix string) (map[string]any, error) {
 	keyTreeValue := reflect.ValueOf(keyTree)
 	if keyTreeValue.IsZero() {
 		return map[string]any{}, nil
@@ -265,7 +260,7 @@ func treeFromKeyTree(keyTree any) (map[string]any, error) {
 	if current.Kind() != reflect.Struct {
 		return nil, fmt.Errorf("%v is not a Struct", keyTreeValue.Type().String())
 	}
-	tree, err := treeFromKeyTreeValue(current)
+	tree, err := mapTreeFromValue(current, fieldSuffix)
 	if err != nil {
 		return nil, err
 	}
@@ -276,7 +271,7 @@ func treeFromKeyTree(keyTree any) (map[string]any, error) {
 	return treeMap, nil
 }
 
-func treeFromKeyTreeValue(current reflect.Value) (any, error) {
+func mapTreeFromValue(current reflect.Value, fieldSuffix string) (any, error) {
 	current = indirect(current)
 
 	//nolint:exhaustive // default will handle the rest
@@ -286,7 +281,7 @@ func treeFromKeyTreeValue(current reflect.Value) (any, error) {
 	case reflect.Slice, reflect.Array:
 		treeObjSlice := make([]any, current.Len())
 		for i := 0; i < current.Len(); i++ {
-			value, err := treeFromKeyTreeValue(current.Index(i))
+			value, err := mapTreeFromValue(current.Index(i), fieldSuffix)
 			if err != nil {
 				return nil, err
 			}
@@ -300,19 +295,19 @@ func treeFromKeyTreeValue(current reflect.Value) (any, error) {
 			if !fieldType.IsExported() {
 				continue
 			}
-			value, err := treeFromKeyTreeValue(current.Field(i))
+			value, err := mapTreeFromValue(current.Field(i), fieldSuffix)
 			if err != nil {
 				return nil, err
 			}
 			keyName := fieldType.Name
 			if _, isString := value.(string); isString {
-				keyName = keyName[:len(keyName)-len(keySuffix)]
+				keyName = keyName[:len(keyName)-len(fieldSuffix)]
 			}
 			treeObjMap[keyName] = value
 		}
 		return treeObjMap, nil
 	default:
-		return nil, fmt.Errorf("invalid type for treeFromKeyTree(): %v", current.Kind())
+		return nil, fmt.Errorf("invalid type for mapTree(): %v", current.Kind())
 	}
 }
 

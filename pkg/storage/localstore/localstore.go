@@ -80,6 +80,16 @@ func (a API) ListKeys(prefix string) ([]string, error) {
 	return keys, nil
 }
 
+// KeyFromSignGet returns the key given the signGet string
+func (a API) KeyFromSignGet(signGet string) (string, error) {
+	u, err := url.Parse(signGet)
+	if err != nil {
+		return "", err
+	}
+	u.RawQuery = ""
+	return strings.TrimPrefix(u.String(), a.origin), nil
+}
+
 // Validate validates whether the given key and values match for signing
 func (a API) Validate(key string, values url.Values) error {
 	ciphertext := values.Get(CipherQueryParam)

@@ -5,4 +5,5 @@ type API interface {
 	SignPut(key string) (PreSignedHTTPRequest, error)
 	SignGet(key string) (string, error)
 	ListKeys(prefix string) ([]string, error)
+	KeyFromSignGet(signGet string) (string, error)
 }

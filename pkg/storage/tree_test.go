@@ -134,20 +134,20 @@ func TestUnmarshallTree(t *testing.T) {
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, obj))
 }
 
-func TestTreeFromKeyTree(t *testing.T) {
+func TestMapTree(t *testing.T) {
 	require := require.New(t)
-	testName := "TestTreeFromKeyTree"
+	testName := "TestMapTree"
 
 	basicTree := &BasicTree{}
 	err := json.Unmarshal(fixture.Read(t, "TestUnmarshallTree.json"), basicTree)
 	require.NoError(err)
 
-	tree, err := treeFromKeyTree(basicTree)
+	tree, err := mapTree(basicTree, keySuffix)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, tree))
 
 	basicTree = nil
-	tree, err = treeFromKeyTree(basicTree)
+	tree, err = mapTree(basicTree, keySuffix)
 	require.NoError(err)
 	require.Equal(map[string]any{}, tree)
 }

@@ -58,6 +58,11 @@ func (d DBStorage) SignPutTree(config SignPutConfig, extTree, signedTree any) er
 	return d.signPutTree(config.NameToValidExts, reflect.ValueOf(extTree), signedTreeValue, current)
 }
 
+const signExtSuffix = "Ext"
+const signRequestSuffix = "Request"
+const keySuffix = "Key"
+const urlSuffix = "URL"
+
 // KeyTree fills in the matching keyTree's string with storage keys from the key structure
 func (d DBStorage) KeyTree(table, column, id string, keyTree any) error {
 	tree, objValue, err := d.preUnmarshallTree(table, column, id, keyTree)
@@ -69,7 +74,7 @@ func (d DBStorage) KeyTree(table, column, id string, keyTree any) error {
 	})
 }
 
-// SignGetTree fills in the matching signedTree's string with signed GET URLs from the storage key structure
+// SignGetTree fills in the matching signedTree's strings with signed GET URLs from the storage key structure
 func (d DBStorage) SignGetTree(table, column, id string, signedTree any) error {
 	tree, objValue, err := d.preUnmarshallTree(table, column, id, signedTree)
 	if err != nil {
@@ -78,9 +83,9 @@ func (d DBStorage) SignGetTree(table, column, id string, signedTree any) error {
 	return unmarshallTree(tree, objValue, urlSuffix, d.api.SignGet)
 }
 
-// SignGetKeyTree creates a signedTree from the keyTree
-func (d DBStorage) SignGetKeyTree(keyTree any, signedTree any) error {
-	tree, err := treeFromKeyTree(keyTree)
+// SignGetTreeFromKeyTree creates a signedTree from the keyTree
+func (d DBStorage) SignGetTreeFromKeyTree(keyTree, signedTree any) error {
+	tree, err := mapTree(keyTree, keySuffix)
 	if err != nil {
 		return err
 	}
@@ -89,4 +94,17 @@ func (d DBStorage) SignGetKeyTree(keyTree any, signedTree any) error {
 		return fmt.Errorf("signedTree, %v, is not a pointer", signedTreeValue.Type().String())
 	}
 	return unmarshallTree(tree, signedTreeValue, urlSuffix, d.api.SignGet)
+}
+
+// KeyTreeFromSignGetTree creates a keyTree from a signedTree
+func (d DBStorage) KeyTreeFromSignGetTree(signedTree, keyTree any) error {
+	tree, err := mapTree(signedTree, urlSuffix)
+	if err != nil {
+		return err
+	}
+	keyTreeValue := reflect.ValueOf(keyTree)
+	if keyTreeValue.Kind() != reflect.Pointer {
+		return fmt.Errorf("keyTree, %v, is not a pointer", keyTreeValue.Type().String())
+	}
+	return unmarshallTree(tree, keyTreeValue, keySuffix, d.api.KeyFromSignGet)
 }
