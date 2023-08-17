@@ -1,0 +1,12 @@
+{
+  "value_1_key": "testPrefix/column_name.Value1.jpg",
+  "key_1": {
+    "value_2_key": "testPrefix/column_name.Key1.Value2.jpg"
+  },
+  "key_2": [
+    {
+      "value_3_key": "testPrefix/column_name.Key2[0].Value3.jpg",
+      "value_4_key": "testPrefix/column_name.Key2[0].Value4.jpg"
+    }
+  ]
+}

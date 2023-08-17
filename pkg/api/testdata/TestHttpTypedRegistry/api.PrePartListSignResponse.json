@@ -1,7 +1,11 @@
 {
   "api.PrePartListSignResponse": {
     "id": "string",
-    "requests": "[]storage.PreSignedHTTPRequest"
+    "pre_parts": "[]api.PrePartSignResponse"
+  },
+  "api.PrePartSignResponse": {
+    "audio_request,omitempty": "*storage.PreSignedHTTPRequest",
+    "image_request,omitempty": "*storage.PreSignedHTTPRequest"
   },
   "storage.PreSignedHTTPRequest": {
     "method": "string",

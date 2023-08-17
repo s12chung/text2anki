@@ -1,0 +1,5 @@
+{
+  "url": "http://localhost:3000/test_table/test_column/123e4567-e89b-12d3-a456-426614174000/test_column.txt?cipher=blah",
+  "method": "PUT",
+  "signed_header": {}
+}

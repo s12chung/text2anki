@@ -1,5 +1,5 @@
 {
-  "error": ".waka is not a valid file extension",
+  "error": "invalid extension, .waka, at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[1].Image",
   "code": 422,
   "status_text": "Unprocessable Entity"
 }

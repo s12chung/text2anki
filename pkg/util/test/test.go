@@ -32,5 +32,5 @@ func GenerateFilename(name, ext string) string {
 
 // GenerateName returns a non-colliding name
 func GenerateName(name string) string {
-	return fmt.Sprintf("text2anki-%v-%v", name, timeNow().Format(time.StampMilli))
+	return fmt.Sprintf("text2anki-%v-%v", name, timeNow().Format(time.StampNano))
 }

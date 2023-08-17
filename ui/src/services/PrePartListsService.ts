@@ -1,9 +1,22 @@
-import { queryString } from "../utils/RequestUtil.ts"
-import ApplicationService from "./ApplicationService.ts"
+import ApplicationService, { Http, requestInit } from "./ApplicationService.ts"
+
+export interface PrePartListSignData {
+  preParts: PrePartSignData[]
+}
+
+export interface PrePartSignData {
+  imageExt?: string
+  audioExt?: string
+}
 
 export interface PrePartListSignResponse {
   id: string
-  requests: PreSignedHTTPRequest[]
+  preParts: PrePartSignResponse[]
+}
+
+export interface PrePartSignResponse {
+  imageRequest?: PreSignedHTTPRequest
+  audioRequest?: PreSignedHTTPRequest
 }
 
 export interface PreSignedHTTPRequest {
@@ -18,14 +31,15 @@ export interface PrePartList {
 }
 
 export interface PrePart {
-  url: string
+  imageUrl?: string
+  audioUrl?: string
 }
 
 class PrePartListsService extends ApplicationService {
   protected pathPrefix = "/sources/pre_part_lists"
 
-  async sign(exts: string[]): Promise<PrePartListSignResponse> {
-    return (await this.fetch(`/sign?${queryString({ exts })}`)) as PrePartListSignResponse
+  async sign(data: PrePartListSignData): Promise<PrePartListSignResponse> {
+    return (await this.fetch("/sign", requestInit(Http.POST, data))) as PrePartListSignResponse
   }
 
   async get(id: string | number): Promise<PrePartList> {

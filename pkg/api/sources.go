@@ -4,20 +4,24 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
+	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/chiutil"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 )
 
 func init() {
-	httptyped.RegisterType(db.SourceSerialized{})
+	httptyped.RegisterType(db.SourceStructured{})
 }
 
 const contextSource httputil.ContextKey = "source"
+const sourcesTable = "sources"
+const partsColumn = "parts"
 
 // SourceCtx sets the source context from the sourceID
 func SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError) {
@@ -31,20 +35,20 @@ func SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError) {
 		return nil, httputil.Error(http.StatusNotFound, err)
 	}
 
-	r = r.WithContext(context.WithValue(r.Context(), contextSource, source.ToSourceSerialized()))
+	r = r.WithContext(context.WithValue(r.Context(), contextSource, source.ToSourceStructured()))
 	return r, nil
 }
 
 // SourceIndex returns a list of sources
 func (rs Routes) SourceIndex(r *http.Request) (any, *httputil.HTTPError) {
 	return httputil.ReturnModelOr500(func() (any, error) {
-		return db.Qs().SourceSerializedIndex(r.Context())
+		return db.Qs().SourceStructuredIndex(r.Context())
 	})
 }
 
 // SourceGet gets the source
 func (rs Routes) SourceGet(r *http.Request) (any, *httputil.HTTPError) {
-	return ctxSourceSerialized(r)
+	return ctxSourceStructured(r)
 }
 
 // SourceUpdateRequest represents the SourceUpdate request
@@ -60,7 +64,7 @@ func init() {
 
 // SourceUpdate updates the source
 func (rs Routes) SourceUpdate(r *http.Request) (any, *httputil.HTTPError) {
-	sourceSerialized, httpError := ctxSourceSerialized(r)
+	sourceStructured, httpError := ctxSourceStructured(r)
 	if httpError != nil {
 		return nil, httpError
 	}
@@ -69,32 +73,36 @@ func (rs Routes) SourceUpdate(r *http.Request) (any, *httputil.HTTPError) {
 	if httpError = extractAndValidate(r, &req); httpError != nil {
 		return nil, httpError
 	}
-	sourceSerialized.Name = req.Name
+	sourceStructured.Name = req.Name
 
 	return httputil.ReturnModelOr500(func() (any, error) {
-		source, err := db.Qs().SourceUpdate(r.Context(), sourceSerialized.UpdateParams())
-		return source.ToSourceSerialized(), err
+		source, err := db.Qs().SourceUpdate(r.Context(), sourceStructured.UpdateParams())
+		return source.ToSourceStructured(), err
 	})
 }
 
 // SourceCreateRequest represents the SourceCreate request
 type SourceCreateRequest struct {
-	Parts []SourceCreateRequestPart
+	PrePartListID string                    `json:"pre_part_list_id,omitempty"`
+	Parts         []SourceCreateRequestPart `json:"parts"`
 }
 
 // SourceCreateRequestPart represents a part of a Source in a SourceCreate request
 type SourceCreateRequestPart struct {
-	Text        string
-	Translation string
+	Text        string `json:"text"`
+	Translation string `json:"translation,omitempty"`
 }
 
 func init() {
 	firm.RegisterType(firm.NewDefinition(SourceCreateRequest{}).Validates(firm.RuleMap{
 		"Parts": {rule.Presence{}},
 	}))
-	firm.RegisterType(firm.NewDefinition(SourceCreateRequestPart{}).Validates(firm.RuleMap{
-		"Text": {rule.Presence{}},
-	}))
+}
+
+// PrePartMediaList is the list of media for the SourcePart with an ID
+type PrePartMediaList struct {
+	ID       string               `json:"id"`
+	PreParts []db.SourcePartMedia `json:"pre_parts"`
 }
 
 // SourceCreate creates a new source
@@ -104,36 +112,57 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 		return nil, httpError
 	}
 
-	parts := make([]db.SourcePart, len(req.Parts))
+	prePartList := PrePartMediaList{}
+	if req.PrePartListID != "" {
+		if err := rs.Storage.DBStorage.KeyTree(sourcesTable, partsColumn, req.PrePartListID, &prePartList); err != nil {
+			if storage.IsNotFoundError(err) {
+				return nil, httputil.Error(http.StatusNotFound, err)
+			}
+			return nil, httputil.Error(http.StatusInternalServerError, err)
+		}
+	}
+
+	parts := make([]db.SourcePart, 0, len(req.Parts))
 	for i, part := range req.Parts {
+		if strings.TrimSpace(part.Text) == "" {
+			continue
+		}
 		tokenizedTexts, err := rs.TextTokenizer.TokenizedTexts(part.Text, part.Translation)
 		if err != nil {
 			return nil, httputil.Error(http.StatusUnprocessableEntity, err)
 		}
-		parts[i] = db.SourcePart{TokenizedTexts: tokenizedTexts}
+		part := db.SourcePart{TokenizedTexts: tokenizedTexts}
+		if req.PrePartListID != "" {
+			part.Media = &prePartList.PreParts[i]
+		}
+		parts = append(parts, part)
+	}
+
+	if len(parts) == 0 {
+		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("no parts found with text set"))
 	}
 
 	return httputil.ReturnModelOr500(func() (any, error) {
-		source, err := db.Qs().SourceCreate(r.Context(), db.SourceSerialized{Parts: parts}.CreateParams())
-		return source.ToSourceSerialized(), err
+		source, err := db.Qs().SourceCreate(r.Context(), db.SourceStructured{Parts: parts}.CreateParams())
+		return source.ToSourceStructured(), err
 	})
 }
 
 // SourceDestroy destroys the source
 func (rs Routes) SourceDestroy(r *http.Request) (any, *httputil.HTTPError) {
-	sourceSerialized, httpError := ctxSourceSerialized(r)
+	sourceStructured, httpError := ctxSourceStructured(r)
 	if httpError != nil {
 		return nil, httpError
 	}
 	return httputil.ReturnModelOr500(func() (any, error) {
-		return sourceSerialized, db.Qs().SourceDestroy(r.Context(), sourceSerialized.ID)
+		return sourceStructured, db.Qs().SourceDestroy(r.Context(), sourceStructured.ID)
 	})
 }
 
-func ctxSourceSerialized(r *http.Request) (db.SourceSerialized, *httputil.HTTPError) {
-	sourceSerialized, ok := r.Context().Value(contextSource).(db.SourceSerialized)
+func ctxSourceStructured(r *http.Request) (db.SourceStructured, *httputil.HTTPError) {
+	sourceStructured, ok := r.Context().Value(contextSource).(db.SourceStructured)
 	if !ok {
-		return db.SourceSerialized{}, httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.SourceSerialized fail"))
+		return db.SourceStructured{}, httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.SourceStructured fail"))
 	}
-	return sourceSerialized, nil
+	return sourceStructured, nil
 }

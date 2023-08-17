@@ -26,8 +26,8 @@ type Routes struct {
 
 // Storage contains the Route's storage setup
 type Storage struct {
-	Signer storage.Signer
-	Storer storage.Storer
+	DBStorage storage.DBStorage
+	Storer    storage.Storer
 }
 
 // Setup sets up the routes
@@ -55,7 +55,7 @@ func (rs Routes) Router() chi.Router {
 		})
 
 		r.Route("/pre_part_lists", func(r chi.Router) {
-			r.Get("/sign", httptyped.RespondTypedJSONWrap(rs.PrePartListSign))
+			r.Post("/sign", httptyped.RespondTypedJSONWrap(rs.PrePartListSign))
 			r.Route("/{prePartListID}", func(r chi.Router) {
 				r.Get("/", httptyped.RespondTypedJSONWrap(rs.PrePartListGet))
 			})

@@ -1,0 +1,15 @@
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "pre_parts": [
+    {
+      "image_key": "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image.jpg",
+      "audio_key": "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Audio.mp3"
+    },
+    {
+      "image_key": "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[1].Image.png"
+    },
+    {
+      "audio_key": "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[2].Audio.mp3"
+    }
+  ]
+}

@@ -6,6 +6,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/s12chung/text2anki/pkg/firm"
+	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
@@ -15,38 +17,65 @@ func init() {
 	httptyped.RegisterType(PrePartListSignResponse{}, PrePartList{})
 }
 
-var validSignPartExts = map[string]bool{
-	".jpg":  true,
-	".jpeg": true,
-	".png":  true,
+// PrePartListSignRequest represents the PrePartListSign request
+type PrePartListSignRequest struct {
+	PreParts []PrePartSignRequest `json:"pre_parts"`
+}
+
+func init() {
+	firm.RegisterType(firm.NewDefinition(PrePartListSignRequest{}).Validates(firm.RuleMap{
+		"PreParts": {rule.Presence{}},
+	}))
+}
+
+// PrePartSignRequest represents a pre_part for PrePartListSign request
+type PrePartSignRequest struct {
+	ImageExt string `json:"image_ext,omitempty"`
+	AudioExt string `json:"audio_ext,omitempty"`
 }
 
 // PrePartListSignResponse is the response returned by PrePartListSign
 type PrePartListSignResponse struct {
-	ID       string                         `json:"id"`
-	Requests []storage.PreSignedHTTPRequest `json:"requests"`
+	ID       string                `json:"id"`
+	PreParts []PrePartSignResponse `json:"pre_parts"`
 }
 
-const sourcesTable = "sources"
-const partsColumn = "parts"
+// PrePartSignResponse represents a pre_part for PrePartListSign response
+type PrePartSignResponse struct {
+	ImageRequest *storage.PreSignedHTTPRequest `json:"image_request,omitempty"`
+	AudioRequest *storage.PreSignedHTTPRequest `json:"audio_request,omitempty"`
+}
+
+var prePartListSignPutConfig = storage.SignPutConfig{
+	Table:  sourcesTable,
+	Column: partsColumn,
+	NameToValidExts: map[string]map[string]bool{
+		"Image": {
+			".jpg":  true,
+			".jpeg": true,
+			".png":  true,
+		},
+		"Audio": {
+			".mp3": true,
+		},
+	},
+}
 
 // PrePartListSign returns signed requests to generate Source Parts
 func (rs Routes) PrePartListSign(r *http.Request) (any, *httputil.HTTPError) {
-	exts := r.URL.Query()["exts"]
-	if len(exts) == 0 {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("no file extension given"))
-	}
-	for _, ext := range exts {
-		if !validSignPartExts[ext] {
-			return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("%v is not a valid file extension", ext))
-		}
+	req := PrePartListSignRequest{}
+	if httpError := extractAndValidate(r, &req); httpError != nil {
+		return nil, httpError
 	}
 
-	reqs, id, err := rs.Storage.Signer.SignPut(sourcesTable, partsColumn, exts)
-	if err != nil {
+	resp := PrePartListSignResponse{}
+	if err := rs.Storage.DBStorage.SignPutTree(prePartListSignPutConfig, req, &resp); err != nil {
+		if storage.IsInvalidInputError(err) {
+			return nil, httputil.Error(http.StatusUnprocessableEntity, err)
+		}
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}
-	return PrePartListSignResponse{ID: id, Requests: reqs}, nil
+	return resp, nil
 }
 
 // PrePartList represents all the Source parts together for a given id
@@ -62,7 +91,8 @@ func (p PrePartList) StaticCopy() any {
 
 // PrePart represents a Source part before it is created, only stored via. Routes.Storage.Storer
 type PrePart struct {
-	URL string `json:"url"`
+	ImageURL string `json:"image_url,omitempty"`
+	AudioURL string `json:"audio_url,omitempty"`
 }
 
 // PrePartListGet returns the PrePartList for a given ID
@@ -71,17 +101,13 @@ func (rs Routes) PrePartListGet(r *http.Request) (any, *httputil.HTTPError) {
 	if prePartListID == "" {
 		return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("prePartListID not found"))
 	}
-	urls, err := rs.Storage.Signer.SignGetByID(sourcesTable, partsColumn, prePartListID)
+	prePartList := PrePartList{}
+	err := rs.Storage.DBStorage.SignGetTree(sourcesTable, partsColumn, prePartListID, &prePartList)
 	if err != nil {
+		if storage.IsNotFoundError(err) {
+			return nil, httputil.Error(http.StatusNotFound, err)
+		}
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}
-	if len(urls) == 0 {
-		return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("no pre-parts found"))
-	}
-
-	preParts := make([]PrePart, len(urls))
-	for i, u := range urls {
-		preParts[i] = PrePart{URL: u}
-	}
-	return PrePartList{ID: prePartListID, PreParts: preParts}, nil
+	return prePartList, nil
 }

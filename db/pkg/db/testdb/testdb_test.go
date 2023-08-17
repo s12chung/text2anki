@@ -72,8 +72,8 @@ func TestGen___TermsSeed(t *testing.T) {
 	writeModelFile(t, models.TermsSeedFilename, fixture.JSON(t, terms))
 }
 
-func TestGen___SourceSerializedsSeed(t *testing.T) {
-	testName := "TestGen___SourceSerializedsSeed"
+func TestGen___SourceStructuredsSeed(t *testing.T) {
+	testName := "TestGen___SourceStructuredsSeed"
 	if !fixture.WillUpdate() {
 		t.Skip("TestGen___ test generates fixtures")
 	}
@@ -86,7 +86,7 @@ func TestGen___SourceSerializedsSeed(t *testing.T) {
 	}()
 
 	filepaths := allFilePaths(t, fixture.JoinTestData(testName))
-	sources := make([]db.SourceSerialized, len(filepaths))
+	sources := make([]db.SourceStructured, len(filepaths))
 	for i, fp := range filepaths {
 		split := strings.Split(string(test.Read(t, fp)), "===")
 		if len(split) == 1 {
@@ -94,10 +94,10 @@ func TestGen___SourceSerializedsSeed(t *testing.T) {
 		}
 		tokenizedTexts, err := tokenizer.TokenizedTexts(split[0], split[1])
 		require.NoError(err)
-		sources[i] = db.SourceSerialized{Name: path.Base(fp), Parts: []db.SourcePart{{TokenizedTexts: tokenizedTexts}}}
+		sources[i] = db.SourceStructured{Name: path.Base(fp), Parts: []db.SourcePart{{TokenizedTexts: tokenizedTexts}}}
 		test.EmptyFieldsMatch(t, sources[i], "ID", "UpdatedAt", "CreatedAt")
 	}
-	writeModelFile(t, models.SourceSerializedsSeedFilename, fixture.JSON(t, sources))
+	writeModelFile(t, models.SourceStructuredsSeedFilename, fixture.JSON(t, sources))
 }
 
 func allFilePaths(t *testing.T, p string) []string {

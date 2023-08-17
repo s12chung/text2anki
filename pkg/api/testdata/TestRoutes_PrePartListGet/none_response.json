@@ -1,5 +1,5 @@
 {
-  "error": "no pre-parts found",
+  "error": "the ID, does_not_exist, is not found in the storage for path: sources/parts/does_not_exist",
   "code": 404,
   "status_text": "Not Found"
 }

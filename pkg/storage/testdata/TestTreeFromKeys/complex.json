@@ -1,0 +1,50 @@
+{
+  "Key1": [
+    [
+      "column_name.Key1[0][0].jpg",
+      "column_name.Key1[0][1].jpg"
+    ]
+  ],
+  "Key2": [
+    [
+      {
+        "DeepKey1": {
+          "DeepDeep1": "column_name.Key2[0][0].DeepKey1.DeepDeep1.jpg"
+        },
+        "DeepKey2": [
+          {
+            "SubDeep2": [
+              "column_name.Key2[0][0].DeepKey2[0].SubDeep2[0].jpg",
+              "column_name.Key2[0][0].DeepKey2[0].SubDeep2[1].jpg"
+            ]
+          },
+          {
+            "SubDeep2": [
+              "column_name.Key2[0][0].DeepKey2[1].SubDeep2[0].jpg"
+            ]
+          }
+        ]
+      },
+      {
+        "DeepKey1": {
+          "DeepDeep2": "column_name.Key2[0][1].DeepKey1.DeepDeep2.jpg"
+        }
+      }
+    ],
+    [
+      {
+        "DeepKey1": {
+          "DeepDeep1": "column_name.Key2[1][0].DeepKey1.DeepDeep1.jpg"
+        },
+        "DeepKey2": [
+          {
+            "SubDeep2": [
+              "column_name.Key2[1][0].DeepKey2[0].SubDeep2[0].jpg"
+            ],
+            "SubDeep3": "column_name.Key2[1][0].DeepKey2[0].SubDeep3.jpg"
+          }
+        ]
+      }
+    ]
+  ]
+}

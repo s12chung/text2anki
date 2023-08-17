@@ -1,4 +1,8 @@
-import { prePartListService } from "../../services/PrePartListsService.ts"
+import {
+  prePartListService,
+  PrePartSignData,
+  PreSignedHTTPRequest,
+} from "../../services/PrePartListsService.ts"
 import { printError } from "../../utils/ErrorUtil.ts"
 import { headers } from "../../utils/RequestUtil.ts"
 import { XMarkIcon } from "@heroicons/react/24/outline"
@@ -99,16 +103,21 @@ async function uploadFiles(files: File[]): Promise<string> {
     const splitName = file.name.split(".")
     return splitName.length > 1 ? `.${splitName[splitName.length - 1]}` : ""
   })
-  const signedResponse = await prePartListService.sign(exts)
+  const signedResponse = await prePartListService.sign({
+    preParts: exts.map<PrePartSignData>((ext) => ({ imageExt: ext })),
+  })
 
   return Promise.all<Response>(
-    signedResponse.requests.map((req, index) =>
-      fetch(req.url, {
-        method: req.method,
-        headers: headers(req.signedHeader),
-        body: files[index],
-      })
-    )
+    signedResponse.preParts
+      .map((part) => part.imageRequest)
+      .filter((imageRequest): imageRequest is PreSignedHTTPRequest => Boolean(imageRequest))
+      .map((imageRequest, index) =>
+        fetch(imageRequest.url, {
+          method: imageRequest.method,
+          headers: headers(imageRequest.signedHeader),
+          body: files[index],
+        })
+      )
   ).then(() => signedResponse.id)
 }
 

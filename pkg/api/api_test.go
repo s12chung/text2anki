@@ -19,6 +19,15 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
+const testUUID = "123e4567-e89b-12d3-a456-426614174000"
+
+type UUIDTest struct {
+}
+
+func (u UUIDTest) Generate() (string, error) {
+	return testUUID, nil
+}
+
 var routesConfig = Config{
 	StorageConfig: StorageConfig{
 		LocalStoreConfig: LocalStoreConfig{
@@ -26,6 +35,7 @@ var routesConfig = Config{
 			KeyBasePath:   path.Join(os.TempDir(), test.GenerateName("filestore-router")),
 			EncryptorPath: fixture.TestDataDir,
 		},
+		UUIDGenerator: UUIDTest{},
 	}}
 var routes = NewRoutes(routesConfig)
 var server = test.Server{Server: httptest.NewServer(routes.Router())}
@@ -103,30 +113,28 @@ func TestRoutes_Router(t *testing.T) {
 	require.NoError(err)
 
 	resp := test.HTTPDo(t, req)
-	require.Equal(http.StatusOK, resp.Code)
-	jsonBody := test.StaticCopy(t, resp.Body.Bytes(), &db.SourceSerialized{})
+	resp.EqualCode(t, http.StatusOK)
+	jsonBody := test.StaticCopy(t, resp.Body.Bytes(), &db.SourceStructured{})
 	fixture.CompareReadOrUpdate(t, testName+".json", jsonBody)
 
 	req, err = http.NewRequest(http.MethodGet, server.URL+"/healthz", nil)
 	require.NoError(err)
 
 	resp = test.HTTPDo(t, req)
-	require.Equal(http.StatusOK, resp.Code)
+	resp.EqualCode(t, http.StatusOK)
 	require.Equal(".", resp.Body.String())
 }
 
 func TestRoutes_NotFound(t *testing.T) {
 	testName := "TestRoutes_NotFound"
-	require := require.New(t)
 	resp := test.HTTPDo(t, server.NewRequest(t, http.MethodGet, "/not_found_me", nil))
-	require.Equal(http.StatusNotFound, resp.Code)
+	resp.EqualCode(t, http.StatusNotFound)
 	testIndent(t, resp, testName, "")
 }
 
 func TestRoutes_NotAllowed(t *testing.T) {
 	testName := "TestRoutes_NotAllowed"
-	require := require.New(t)
 	resp := test.HTTPDo(t, server.NewRequest(t, http.MethodPost, "/terms/search", nil))
-	require.Equal(http.StatusMethodNotAllowed, resp.Code)
+	resp.EqualCode(t, http.StatusMethodNotAllowed)
 	testIndent(t, resp, testName, "")
 }

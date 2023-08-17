@@ -52,24 +52,25 @@ func TestAPI_SignPut(t *testing.T) {
 }
 
 func TestAPI_SignGet(t *testing.T) {
-	prefix := "TestAPI_SignGet/test/me"
 	require := require.New(t)
 
+	key := "TestAPI_SignGet/test/me/" + testKeyFile
+
 	api := testAPI(t)
-	u, err := api.SignGet(prefix + "/" + testKeyFile)
+	u, err := api.SignGet(key)
 	require.Equal(errSignGetNotFound, err)
 	require.Empty(u)
 
-	require.NoError(api.Store(prefix+"/"+testKeyFile, bytes.NewReader([]byte("test_me"))))
-	u, err = api.SignGet(prefix + "/" + testKeyFile)
+	require.NoError(api.Store(key, bytes.NewReader([]byte("test_me"))))
+	u, err = api.SignGet(key)
 	require.NoError(err)
-	require.Equal(api.keyURL(prefix+"/"+testKeyFile), u)
+	require.Equal(api.keyURL(key), u)
 }
 
 func TestAPI_ListKeys(t *testing.T) {
-	prefix := "TestAPI_ListKeys/test/me"
 	require := require.New(t)
 
+	prefix := "TestAPI_ListKeys/test/me"
 	api := testAPI(t)
 	keys, err := api.ListKeys(prefix)
 	require.NoError(err)
@@ -88,6 +89,21 @@ func TestAPI_ListKeys(t *testing.T) {
 	keys, err = api.ListKeys(prefix + "/")
 	require.NoError(err)
 	require.Equal(expectedKeys, keys)
+}
+
+func TestAPI_KeyFromSignGet(t *testing.T) {
+	require := require.New(t)
+
+	expectedKey := "TestAPI_SignGet/test/me/" + testKeyFile
+
+	api := testAPI(t)
+	require.NoError(api.Store(expectedKey, bytes.NewReader([]byte("test_me"))))
+	signGet, err := api.SignGet(expectedKey)
+	require.NoError(err)
+
+	key, err := api.KeyFromSignGet(signGet)
+	require.NoError(err)
+	require.Equal(expectedKey, key)
 }
 
 func TestAPI_Validate(t *testing.T) {
@@ -109,7 +125,7 @@ func testStore(t *testing.T) {
 	require := require.New(t)
 
 	api := testAPI(t)
-	fileData := []byte("abc")
+	fileData := []byte("Store")
 	require.NoError(api.Store(testKey, bytes.NewReader(fileData)))
 
 	fileBytes, err := os.ReadFile(path.Join(api.keyBasePath, testKey))

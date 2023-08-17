@@ -1,0 +1,31 @@
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "pre_parts": [
+    {
+      "image_request": {
+        "url": "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image.jpg?cipher=blah",
+        "method": "PUT",
+        "signed_header": {}
+      },
+      "audio_request": {
+        "url": "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Audio.mp3?cipher=blah",
+        "method": "PUT",
+        "signed_header": {}
+      }
+    },
+    {
+      "audio_request": {
+        "url": "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[1].Audio.mp3?cipher=blah",
+        "method": "PUT",
+        "signed_header": {}
+      }
+    },
+    {
+      "image_request": {
+        "url": "http://localhost:3000/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[2].Image.jpeg?cipher=blah",
+        "method": "PUT",
+        "signed_header": {}
+      }
+    }
+  ]
+}

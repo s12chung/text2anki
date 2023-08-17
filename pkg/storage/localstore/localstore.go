@@ -80,6 +80,16 @@ func (a API) ListKeys(prefix string) ([]string, error) {
 	return keys, nil
 }
 
+// KeyFromSignGet returns the key given the signGet string
+func (a API) KeyFromSignGet(signGet string) (string, error) {
+	u, err := url.Parse(signGet)
+	if err != nil {
+		return "", err
+	}
+	u.RawQuery = ""
+	return strings.TrimPrefix(u.String(), a.origin), nil
+}
+
 // Validate validates whether the given key and values match for signing
 func (a API) Validate(key string, values url.Values) error {
 	ciphertext := values.Get(CipherQueryParam)
@@ -91,11 +101,6 @@ func (a API) Validate(key string, values url.Values) error {
 		return fmt.Errorf("ciphertext (%v) does not match key (%v)", ciphertext, key)
 	}
 	return nil
-}
-
-// FileHandler returns the http.Handler to serve the files
-func (a API) FileHandler() http.Handler {
-	return http.FileServer(http.Dir(a.keyBasePath))
 }
 
 // Store stores the file at key, checking if it was signed from the values
@@ -113,6 +118,11 @@ func (a API) Store(key string, file io.Reader) error {
 	}
 
 	return outFile.Close()
+}
+
+// FileHandler returns the http.Handler to serve the files
+func (a API) FileHandler() http.Handler {
+	return http.FileServer(http.Dir(a.keyBasePath))
 }
 
 func (a API) keyPath(key string) string {

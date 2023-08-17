@@ -1,0 +1,9 @@
+{
+  "httptyped.SerializedChild": {
+    "serialized,omitempty": "string"
+  },
+  "httptyped.WithSerializedParent": {
+    "basic": "httptyped.SerializedChild",
+    "pt,omitempty": "*httptyped.SerializedChild"
+  }
+}

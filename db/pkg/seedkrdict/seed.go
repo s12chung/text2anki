@@ -3,6 +3,7 @@ package seedkrdict
 import (
 	"context"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"os"
 
@@ -126,14 +127,13 @@ type NoTranslationsFoundError struct {
 	text string
 }
 
-func (e *NoTranslationsFoundError) Error() string {
+func (e NoTranslationsFoundError) Error() string {
 	return fmt.Sprintf("no translations found with text: %v", e.text)
 }
 
 // IsNoTranslationsFoundError returns true if the error is a NoTranslationsFoundError
 func IsNoTranslationsFoundError(err error) bool {
-	//nolint:errorlint // code does what it says
-	_, ok := err.(*NoTranslationsFoundError)
+	ok := errors.As(err, &NoTranslationsFoundError{})
 	return ok
 }
 
@@ -151,7 +151,7 @@ func (l *LexicalEntry) Term() (dictionary.Term, error) {
 
 	translations := l.translations()
 	if len(translations) == 0 {
-		return dictionary.Term{}, &NoTranslationsFoundError{text: text}
+		return dictionary.Term{}, NoTranslationsFoundError{text: text}
 	}
 
 	return dictionary.Term{

@@ -13,8 +13,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
-// SourceSerialized is a copy of Source for Serializing
-type SourceSerialized struct {
+// SourceStructured is a copy of Source for with JSON columns structured
+type SourceStructured struct {
 	ID        int64        `json:"id,omitempty"`
 	Name      string       `json:"name"`
 	Parts     []SourcePart `json:"parts"`
@@ -22,13 +22,92 @@ type SourceSerialized struct {
 	CreatedAt time.Time    `json:"created_at"`
 }
 
+// PrepareSerialize prepares the model for Serializing for API endpoints
+func (s SourceStructured) PrepareSerialize() {
+	for _, part := range s.Parts {
+		if part.Media == nil {
+			continue
+		}
+		part.Media.toSerialize = true
+	}
+}
+
 // SourcePart is a part of the Source that contains text
 type SourcePart struct {
-	TokenizedTexts []TokenizedText `json:"tokenized_texts"`
+	Media          *SourcePartMedia `json:"media,omitempty"`
+	TokenizedTexts []TokenizedText  `json:"tokenized_texts"`
+}
+
+// SourcePartMedia is the media of the SourcePart
+type SourcePartMedia struct {
+	toSerialize bool
+	ImageKey    string `json:"image_key,omitempty"`
+	AudioKey    string `json:"audio_key,omitempty"`
+}
+
+type sourcePartMediaAlias SourcePartMedia
+
+// SourcePartMediaSerialized is the API endpoint version of SourcePartMedia
+type SourcePartMediaSerialized struct {
+	ImageURL string `json:"image_url,omitempty"`
+	AudioURL string `json:"audio_url,omitempty"`
+}
+
+// ToDB returns the matching SourcePartMedia
+func (s SourcePartMediaSerialized) ToDB() (SourcePartMedia, error) {
+	db := SourcePartMedia{}
+	return db, dbStorage.KeyTreeFromSignGetTree(s, &db)
+}
+
+// SerializedEmpty returns an empty model for Serializing for API endpoints
+func (s *SourcePartMedia) SerializedEmpty() any {
+	return SourcePartMediaSerialized{}
+}
+
+// ToSerialized returns the matching SourcePartMediaSerialized
+func (s *SourcePartMedia) ToSerialized() (SourcePartMediaSerialized, error) {
+	serialized := SourcePartMediaSerialized{}
+	return serialized, dbStorage.SignGetTreeFromKeyTree(s, &serialized)
+}
+
+// MarshalJSON returns the JSON representation
+func (s *SourcePartMedia) MarshalJSON() ([]byte, error) {
+	if !s.toSerialize {
+		return json.Marshal(sourcePartMediaAlias(*s))
+	}
+	serialized, err := s.ToSerialized()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(serialized)
+}
+
+// UnmarshalJSON sets the data based on the data JSON
+func (s *SourcePartMedia) UnmarshalJSON(data []byte) error {
+	alias := sourcePartMediaAlias(*s)
+	if err := json.Unmarshal(data, &alias); err != nil {
+		return err
+	}
+	if alias != (sourcePartMediaAlias{}) {
+		*s = SourcePartMedia(alias)
+		return nil
+	}
+
+	serialized := SourcePartMediaSerialized{}
+	if err := json.Unmarshal(data, &serialized); err != nil {
+		return err
+	}
+	db, err := serialized.ToDB()
+	if err != nil {
+		return err
+	}
+	*s = db
+	s.toSerialize = true
+	return nil
 }
 
 // DefaultedName returns the Default name
-func (s SourceSerialized) DefaultedName() string {
+func (s SourceStructured) DefaultedName() string {
 	if s.Name != "" {
 		return s.Name
 	}
@@ -39,7 +118,7 @@ func (s SourceSerialized) DefaultedName() string {
 }
 
 // StaticCopy returns a copy without fields that variate
-func (s SourceSerialized) StaticCopy() any {
+func (s SourceStructured) StaticCopy() any {
 	c := s
 	c.ID = 0
 	c.UpdatedAt = time.Time{}
@@ -47,24 +126,24 @@ func (s SourceSerialized) StaticCopy() any {
 	return c
 }
 
-// UpdateParams returns the SourceUpdateParams for the SourceSerialized
-func (s SourceSerialized) UpdateParams() SourceUpdateParams {
+// UpdateParams returns the SourceUpdateParams for the SourceStructured
+func (s SourceStructured) UpdateParams() SourceUpdateParams {
 	return SourceUpdateParams{
 		Name: s.Name,
 		ID:   s.ID,
 	}
 }
 
-// CreateParams returns the SourceCreateParams for the SourceSerialized
-func (s SourceSerialized) CreateParams() SourceCreateParams {
+// CreateParams returns the SourceCreateParams for the SourceStructured
+func (s SourceStructured) CreateParams() SourceCreateParams {
 	return SourceCreateParams{
 		Name:  s.DefaultedName(),
 		Parts: s.ToSource().Parts,
 	}
 }
 
-// ToSource returns the Source of the SourceSerialized
-func (s SourceSerialized) ToSource() Source {
+// ToSource returns the Source of the SourceStructured
+func (s SourceStructured) ToSource() Source {
 	bytes, err := json.Marshal(s.Parts)
 	if err != nil {
 		slog.Error(err.Error())
@@ -79,14 +158,14 @@ func (s SourceSerialized) ToSource() Source {
 	}
 }
 
-// ToSourceSerialized returns the SourceSerialized of the Source
-func (s Source) ToSourceSerialized() SourceSerialized {
+// ToSourceStructured returns the SourceStructured of the Source
+func (s Source) ToSourceStructured() SourceStructured {
 	var parts []SourcePart
 	if err := json.Unmarshal([]byte(s.Parts), &parts); err != nil {
 		slog.Error(err.Error())
 		panic(-1)
 	}
-	return SourceSerialized{
+	return SourceStructured{
 		ID:        s.ID,
 		Name:      s.Name,
 		Parts:     parts,
@@ -152,16 +231,16 @@ func (t TextTokenizer) TokenizeTexts(texts []text.Text) (tokenizedTexts []Tokeni
 	return tokenizedTexts, nil
 }
 
-// SourceSerializedIndex returns a SourceSerialized from the DB
-func (q *Queries) SourceSerializedIndex(ctx context.Context) ([]SourceSerialized, error) {
+// SourceStructuredIndex returns a SourceStructured from the DB
+func (q *Queries) SourceStructuredIndex(ctx context.Context) ([]SourceStructured, error) {
 	sources, err := q.SourceIndex(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	sourceSerializeds := make([]SourceSerialized, len(sources))
+	sourceStructureds := make([]SourceStructured, len(sources))
 	for i, source := range sources {
-		sourceSerializeds[i] = source.ToSourceSerialized()
+		sourceStructureds[i] = source.ToSourceStructured()
 	}
-	return sourceSerializeds, nil
+	return sourceStructureds, nil
 }

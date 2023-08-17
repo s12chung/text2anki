@@ -74,6 +74,40 @@ func indirectTypeElement(typ reflect.Type) reflect.Type {
 	return typ
 }
 
+const serializedEmptyFunctionName = "SerializedEmpty"
+
+// HasSerialized are models that has a Serialized version of the model
+type HasSerialized interface {
+	SerializedEmpty() any
+}
+
+var hasSerializedType = reflect.TypeOf((*HasSerialized)(nil)).Elem()
+
+func serializedType(typ reflect.Type) reflect.Type {
+	isPointer := typ.Kind() == reflect.Pointer
+	typ = indirectSerializedType(indirectType(typ))
+	if isPointer {
+		typ = reflect.PointerTo(typ)
+	}
+	return typ
+}
+
+func indirectSerializedType(typ reflect.Type) reflect.Type {
+	var method reflect.Value
+	if typ.Implements(hasSerializedType) {
+		method = reflect.New(typ).Elem().MethodByName(serializedEmptyFunctionName)
+	} else {
+		typPointer := reflect.PointerTo(typ)
+		if typPointer.Implements(hasSerializedType) {
+			method = reflect.New(typPointer).Elem().MethodByName(serializedEmptyFunctionName)
+		}
+	}
+	if !method.IsValid() {
+		return typ
+	}
+	return method.Call(nil)[0].Elem().Type()
+}
+
 // StructureMap returns a map of the structure of the type
 func StructureMap(typ reflect.Type) map[string]map[string]string {
 	m := map[string]map[string]string{}
@@ -83,6 +117,8 @@ func StructureMap(typ reflect.Type) map[string]map[string]string {
 
 func structureMap(typ reflect.Type, m map[string]map[string]string, handledTypeMap map[reflect.Type]bool) {
 	currentTypeMap := map[string]string{}
+	typ = serializedType(typ)
+
 	m[typ.String()] = currentTypeMap
 	handledTypeMap[typ] = true
 
@@ -98,13 +134,18 @@ func structureMap(typ reflect.Type, m map[string]map[string]string, handledTypeM
 		if jsonKey == "-" {
 			continue
 		}
-		currentTypeMap[jsonKey] = field.Type.String()
+		currentTypeMap[jsonKey] = serializedType(field.Type).String()
 
 		fieldType := indirectTypeElement(field.Type)
 		if !handledTypeMap[fieldType] && fieldType.Kind() == reflect.Struct {
 			structureMap(fieldType, m, handledTypeMap)
 		}
 	}
+}
+
+// Preparable is a model that has a Serialized version of itself or embedded
+type Preparable interface {
+	PrepareSerialize()
 }
 
 // RespondTypedJSONWrap wraps around httputil.RespondJSONWrap, but also checks the type of the response beforehand
@@ -117,6 +158,9 @@ func RespondTypedJSONWrap(f httputil.RespondJSONWrapFunc) http.HandlerFunc {
 		if !HasType(resp) {
 			return nil, httputil.Error(http.StatusInternalServerError,
 				fmt.Errorf("%v is not registered to httptyped", indirectTypeElement(reflect.TypeOf(resp))))
+		}
+		if preparable, ok := resp.(Preparable); ok {
+			preparable.PrepareSerialize()
 		}
 		return resp, httpError
 	})

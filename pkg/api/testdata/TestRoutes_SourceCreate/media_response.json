@@ -1,0 +1,197 @@
+{
+  "name": "나 오늘은 혼자",
+  "parts": [
+    {
+      "media": {
+        "image_url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image.txt",
+        "audio_url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Audio.txt"
+      },
+      "tokenized_texts": [
+        {
+          "text": "나 오늘은 혼자 쉬고시퍼.",
+          "translation": "",
+          "tokens": [
+            {
+              "text": "나",
+              "part_of_speech": "Pronoun",
+              "start_index": 0,
+              "length": 1
+            },
+            {
+              "text": "오늘",
+              "part_of_speech": "Noun",
+              "start_index": 2,
+              "length": 2
+            },
+            {
+              "text": "은",
+              "part_of_speech": "Postposition",
+              "start_index": 4,
+              "length": 1
+            },
+            {
+              "text": "혼자",
+              "part_of_speech": "Noun",
+              "start_index": 6,
+              "length": 2
+            },
+            {
+              "text": "쉬",
+              "part_of_speech": "Verb",
+              "start_index": 9,
+              "length": 1
+            },
+            {
+              "text": "고시",
+              "part_of_speech": "Ending",
+              "start_index": 10,
+              "length": 2
+            },
+            {
+              "text": "푸",
+              "part_of_speech": "Verb",
+              "start_index": 12,
+              "length": 1
+            },
+            {
+              "text": "어",
+              "part_of_speech": "Ending",
+              "start_index": 13,
+              "length": 1
+            },
+            {
+              "text": ".",
+              "part_of_speech": "Punctuation",
+              "start_index": 14,
+              "length": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "media": {
+        "image_url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[1].Image.txt"
+      },
+      "tokenized_texts": [
+        {
+          "text": "알게써. 그럼 나 갈께.",
+          "translation": "",
+          "tokens": [
+            {
+              "text": "알",
+              "part_of_speech": "Verb",
+              "start_index": 0,
+              "length": 1
+            },
+            {
+              "text": "게써",
+              "part_of_speech": "Ending",
+              "start_index": 1,
+              "length": 2
+            },
+            {
+              "text": ".",
+              "part_of_speech": "Punctuation",
+              "start_index": 3,
+              "length": 1
+            },
+            {
+              "text": "그럼",
+              "part_of_speech": "Adverb",
+              "start_index": 5,
+              "length": 2
+            },
+            {
+              "text": "나",
+              "part_of_speech": "Pronoun",
+              "start_index": 8,
+              "length": 1
+            },
+            {
+              "text": "가",
+              "part_of_speech": "Verb",
+              "start_index": 10,
+              "length": 1
+            },
+            {
+              "text": "ㄹ께",
+              "part_of_speech": "Ending",
+              "start_index": 11,
+              "length": 2
+            },
+            {
+              "text": ".",
+              "part_of_speech": "Punctuation",
+              "start_index": 13,
+              "length": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "media": {
+        "image_url": "https://test.com/storage/sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[2].Image.txt"
+      },
+      "tokenized_texts": [
+        {
+          "text": "그건 안 됑.",
+          "translation": "",
+          "tokens": [
+            {
+              "text": "그것",
+              "part_of_speech": "Pronoun",
+              "start_index": 0,
+              "length": 2
+            },
+            {
+              "text": "ㄴ",
+              "part_of_speech": "Postposition",
+              "start_index": 2,
+              "length": 1
+            },
+            {
+              "text": "안",
+              "part_of_speech": "Adverb",
+              "start_index": 4,
+              "length": 1
+            },
+            {
+              "text": "됑",
+              "part_of_speech": "OtherLanguage",
+              "start_index": 6,
+              "length": 1
+            },
+            {
+              "text": ".",
+              "part_of_speech": "Punctuation",
+              "start_index": 7,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "text": "쮸욱",
+          "translation": "",
+          "tokens": [
+            {
+              "text": "쮸",
+              "part_of_speech": "Noun",
+              "start_index": 0,
+              "length": 1
+            },
+            {
+              "text": "욱",
+              "part_of_speech": "Postposition",
+              "start_index": 1,
+              "length": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "updated_at": "0001-01-01T00:00:00Z",
+  "created_at": "0001-01-01T00:00:00Z"
+}

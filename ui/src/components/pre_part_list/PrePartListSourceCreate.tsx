@@ -1,4 +1,4 @@
-import { PrePart, PrePartList } from "../../services/PrePartListsService.ts"
+import { PrePartList } from "../../services/PrePartListsService.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import AwaitError from "../AwaitError.tsx"
 import Header from "../Header.tsx"
@@ -18,14 +18,15 @@ const PrePartListSourceCreate: React.FC<IPrePartListSourceCreateProps> = ({ data
   return (
     <React.Suspense fallback={<div>Loading....</div>}>
       <Await resolve={data.prePartList} errorElement={<AwaitError />}>
-        {(prePartList: PrePartList) => <PrePartsForm preParts={prePartList.preParts} />}
+        {(prePartList: PrePartList) => <PrePartsForm prePartList={prePartList} />}
       </Await>
     </React.Suspense>
   )
 }
 
 // eslint-disable-next-line max-lines-per-function
-const PrePartsForm: React.FC<{ preParts: PrePart[] }> = ({ preParts }) => {
+const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) => {
+  const { preParts } = prePartList
   const [currentIndex, setCurrentIndex] = useState<number>(0)
   const [partTextsMap, setPartTextsMap] = useState<Record<number, string>>({})
 
@@ -73,7 +74,7 @@ const PrePartsForm: React.FC<{ preParts: PrePart[] }> = ({ preParts }) => {
   }, [handleKeyDown])
 
   return (
-    <SlideOver.Dialog show leftNode={<PrePartLeft image={preParts[currentIndex].url} />}>
+    <SlideOver.Dialog show leftNode={<PrePartLeft image={preParts[currentIndex].imageUrl ?? ""} />}>
       <SlideOver.Header title="Create Source from Parts" />
       <Form action="/sources" method="post" className="m-std space-y-std">
         <div className="text-center">
@@ -88,9 +89,11 @@ const PrePartsForm: React.FC<{ preParts: PrePart[] }> = ({ preParts }) => {
           </button>
         </div>
 
+        <input type="hidden" name="prePartListId" value={prePartList.id} />
+
         {preParts.map((prePart, index) => (
           <textarea
-            key={prePart.url}
+            key={prePart.imageUrl}
             ref={(ref) => (textAreaRefs.current[index] = ref)}
             autoFocus={index === 0}
             name={`parts[${index}].text`}
@@ -101,6 +104,7 @@ const PrePartsForm: React.FC<{ preParts: PrePart[] }> = ({ preParts }) => {
             onChange={(e) => setPartTextsAt(index, e.target.value)}
           />
         ))}
+
         <div className="flex justify-end">
           <button type="submit" className="btn-primary">
             Create Source from Parts

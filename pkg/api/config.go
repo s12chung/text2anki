@@ -31,7 +31,7 @@ type Config struct {
 
 // NewRoutes is the routes used by the API
 func NewRoutes(config Config) Routes {
-	return Routes{
+	routes := Routes{
 		Dictionary:  Dictionary(config.DictionaryType),
 		Synthesizer: Synthesizer(),
 		TextTokenizer: db.TextTokenizer{
@@ -41,6 +41,8 @@ func NewRoutes(config Config) Routes {
 		},
 		Storage: StorageFromConfig(config.StorageConfig),
 	}
+	db.SetDBStorage(routes.Storage.DBStorage)
+	return routes
 }
 
 // Parser returns the default Parser
@@ -113,6 +115,7 @@ const (
 type StorageConfig struct {
 	StorageType
 	LocalStoreConfig LocalStoreConfig
+	UUIDGenerator    storage.UUIDGenerator
 }
 
 // StorageFromConfig returns a storage from the given config
@@ -133,7 +136,7 @@ func StorageFromConfig(config StorageConfig) Storage {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
-	return Storage{Signer: storage.NewSigner(api), Storer: storer}
+	return Storage{DBStorage: storage.NewDBStorage(api, config.UUIDGenerator), Storer: storer}
 }
 
 // LocalStoreConfig defines the config for localstore
