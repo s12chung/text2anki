@@ -1,9 +1,9 @@
 import PrePartListSourceCreate, {
   IPrePartListSourceCreateData,
-} from "./components/pre_part_list/PrePartListSourceCreate.tsx"
-import SourceCreate from "./components/source/SourceCreate.tsx"
-import SourceEdit, { ISourceEditData } from "./components/source/SourceEdit.tsx"
-import SourceShow, { ISourceShowData } from "./components/source/SourceShow.tsx"
+} from "./components/pre_part_lists/PrePartListSourceCreate.tsx"
+import SourceCreate from "./components/sources/SourceCreate.tsx"
+import SourceEdit, { ISourceEditData } from "./components/sources/SourceEdit.tsx"
+import SourceShow, { ISourceShowData } from "./components/sources/SourceShow.tsx"
 import * as NotesController from "./controllers/NotesController.ts"
 import * as PrePartListsController from "./controllers/PrePartListsController.ts"
 import * as SourceController from "./controllers/SourcesController.ts"

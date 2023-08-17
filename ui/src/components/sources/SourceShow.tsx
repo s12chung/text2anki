@@ -9,7 +9,7 @@ import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitError from "../AwaitError.tsx"
 import SlideOver from "../SlideOver.tsx"
-import NoteForm from "../note/NoteForm.tsx"
+import NoteForm from "../notes/NoteForm.tsx"
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Await, Link, useFetcher } from "react-router-dom"
 

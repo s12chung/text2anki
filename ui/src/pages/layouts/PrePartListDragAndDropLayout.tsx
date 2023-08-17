@@ -1,4 +1,4 @@
-import PrePartListDragAndDrop from "../../components/pre_part_list/PrePartListDragAndDrop.tsx"
+import PrePartListDragAndDrop from "../../components/pre_part_lists/PrePartListDragAndDrop.tsx"
 import ApplicationLayout from "./ApplicationLayout.tsx"
 import React from "react"
 
