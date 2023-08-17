@@ -31,7 +31,7 @@ type Config struct {
 
 // NewRoutes is the routes used by the API
 func NewRoutes(config Config) Routes {
-	return Routes{
+	routes := Routes{
 		Dictionary:  Dictionary(config.DictionaryType),
 		Synthesizer: Synthesizer(),
 		TextTokenizer: db.TextTokenizer{
@@ -41,6 +41,8 @@ func NewRoutes(config Config) Routes {
 		},
 		Storage: StorageFromConfig(config.StorageConfig),
 	}
+	db.SetDBStorage(routes.Storage.DBStorage)
+	return routes
 }
 
 // Parser returns the default Parser
