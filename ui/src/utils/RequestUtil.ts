@@ -29,9 +29,14 @@ export function queryObject<T extends Record<keyof T, string[] | string | number
 type FormTypes = FormDataEntryValue | number | boolean
 
 export function formData<
-  T extends Record<keyof T, FormTypes | U[]>,
-  U extends Record<keyof U, FormTypes>
->(formData: FormData, empty: T): T {
+  T extends { [K in keyof T]: FormTypes | U[] },
+  U extends { [K in keyof U]: FormTypes }
+>(
+  formData: FormData,
+  empty: T
+): {
+  -readonly [K in keyof T]: T[K]
+} {
   const formKeys = Array.from(formData.keys()).sort()
 
   const obj = { ...empty }

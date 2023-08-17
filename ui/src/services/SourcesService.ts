@@ -20,7 +20,13 @@ export interface TokenizedText extends Text {
 }
 
 export interface SourcePart {
+  media?: SourcePartMedia
   tokenizedTexts: TokenizedText[]
+}
+
+export interface SourcePartMedia {
+  imageUrl?: string
+  audioUrl?: string
 }
 
 export interface Source {
@@ -32,6 +38,7 @@ export interface Source {
 }
 
 export const CreateSourceDataEmpty = Object.freeze<CreateSourceData>({
+  prePartListId: "",
   parts: [
     Object.freeze({
       text: "",
@@ -41,6 +48,7 @@ export const CreateSourceDataEmpty = Object.freeze<CreateSourceData>({
 })
 
 export interface CreateSourceData {
+  prePartListId?: string
   parts: CreateSourcePartData[]
 }
 

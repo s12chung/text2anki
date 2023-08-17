@@ -157,42 +157,50 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
       </div>
 
       <div className="text-center">
-        {source.parts.map((part, partIndex) =>
-          part.tokenizedTexts.map((tokenizedText, textIndex) => {
-            const textFocus = partIndex === partFocusIndex && textIndex === textFocusIndex
-            return (
-              /* eslint-disable-next-line react/no-array-index-key */
-              <div key={`${tokenizedText.text}-${textIndex}`}>
-                {Boolean(tokenizedText.previousBreak) && <div className="text-4xl">&nbsp;</div>}
-                <div
-                  ref={(ref) => {
-                    if (!textRefs.current[partIndex]) textRefs.current[partIndex] = []
-                    textRefs.current[partIndex][textIndex] = ref
-                  }}
-                  tabIndex={-1}
-                  className={tokenizedTextClass(textFocus)}
-                  onClick={() => textOnClick(textIndex)}
-                >
-                  <div className={textClass(textFocus)}>{tokenizedText.text}</div>
-                  {textFocus ? (
-                    <TokensComponent
-                      tokens={tokenizedText.tokens}
-                      termsFocus={termsFocus}
-                      setTermsFocus={setTermsFocus}
-                    />
-                  ) : null}
-                  <div className={translationClass(textFocus)}>{tokenizedText.translation}</div>
-                  {textFocus && termsFocus ? (
-                    <TermsComponent
-                      token={termsComponentProps.token}
-                      usage={termsComponentProps.usage}
-                    />
-                  ) : null}
+        {source.parts.map((part, partIndex) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <div key={`part-${partIndex}`}>
+            {part.tokenizedTexts.map((tokenizedText, textIndex) => {
+              const textFocus = partIndex === partFocusIndex && textIndex === textFocusIndex
+              return (
+                /* eslint-disable-next-line react/no-array-index-key */
+                <div key={`${tokenizedText.text}-${textIndex}`}>
+                  {Boolean(tokenizedText.previousBreak) && <div className="text-4xl">&nbsp;</div>}
+                  <div
+                    ref={(ref) => {
+                      if (!textRefs.current[partIndex]) textRefs.current[partIndex] = []
+                      textRefs.current[partIndex][textIndex] = ref
+                    }}
+                    tabIndex={-1}
+                    className={tokenizedTextClass(textFocus)}
+                    onClick={() => textOnClick(textIndex)}
+                  >
+                    <div className={textClass(textFocus)}>{tokenizedText.text}</div>
+                    {textFocus ? (
+                      <TokensComponent
+                        tokens={tokenizedText.tokens}
+                        termsFocus={termsFocus}
+                        setTermsFocus={setTermsFocus}
+                      />
+                    ) : null}
+                    <div className={translationClass(textFocus)}>{tokenizedText.translation}</div>
+                    {textFocus && termsFocus ? (
+                      <TermsComponent
+                        token={termsComponentProps.token}
+                        usage={termsComponentProps.usage}
+                      />
+                    ) : null}
+                  </div>
                 </div>
+              )
+            })}
+            {part.media?.imageUrl ? (
+              <div className="grid-std">
+                <img src={part.media.imageUrl} alt="Part Image" />
               </div>
-            )
-          })
-        )}
+            ) : null}
+          </div>
+        ))}
       </div>
     </>
   )
