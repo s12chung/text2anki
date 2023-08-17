@@ -1,5 +1,5 @@
 {
-  "error": "api.SourceCreateRequest.Parts.[0].Text.Presence: value is not present",
+  "error": "no parts found with text set",
   "code": 422,
   "status_text": "Unprocessable Entity"
 }

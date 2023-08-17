@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/firm"
@@ -96,9 +97,6 @@ func init() {
 	firm.RegisterType(firm.NewDefinition(SourceCreateRequest{}).Validates(firm.RuleMap{
 		"Parts": {rule.Presence{}},
 	}))
-	firm.RegisterType(firm.NewDefinition(SourceCreateRequestPart{}).Validates(firm.RuleMap{
-		"Text": {rule.Presence{}},
-	}))
 }
 
 // PrePartMediaList is the list of media for the SourcePart with an ID
@@ -124,8 +122,11 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 		}
 	}
 
-	parts := make([]db.SourcePart, len(req.Parts))
+	parts := make([]db.SourcePart, 0, len(req.Parts))
 	for i, part := range req.Parts {
+		if strings.TrimSpace(part.Text) == "" {
+			continue
+		}
 		tokenizedTexts, err := rs.TextTokenizer.TokenizedTexts(part.Text, part.Translation)
 		if err != nil {
 			return nil, httputil.Error(http.StatusUnprocessableEntity, err)
@@ -134,7 +135,11 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 		if req.PrePartListID != "" {
 			part.Media = &prePartList.PreParts[i]
 		}
-		parts[i] = part
+		parts = append(parts, part)
+	}
+
+	if len(parts) == 0 {
+		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("no parts found with text set"))
 	}
 
 	return httputil.ReturnModelOr500(func() (any, error) {

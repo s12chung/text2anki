@@ -99,15 +99,17 @@ func TestRoutes_SourceCreate(t *testing.T) {
 	}()
 
 	testCases := []struct {
-		name          string
-		partCount     int
-		prePartListID string
-		expectedCode  int
+		name           string
+		partCount      int
+		finalPartCount int
+		prePartListID  string
+		expectedCode   int
 	}{
 		{name: "split", expectedCode: http.StatusOK},
 		{name: "no_translation", expectedCode: http.StatusOK},
 		{name: "weave", expectedCode: http.StatusOK},
 		{name: "multi_part", partCount: 2, expectedCode: http.StatusOK},
+		{name: "multi_with_empty", partCount: 3, finalPartCount: 2, expectedCode: http.StatusOK},
 		{name: "media", partCount: 3, prePartListID: prePartListID, expectedCode: http.StatusOK},
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty", expectedCode: http.StatusUnprocessableEntity},
@@ -118,19 +120,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			body := SourceCreateRequest{PrePartListID: tc.prePartListID}
-			if tc.partCount == 0 {
-				body.Parts = []SourceCreateRequestPart{sourcePartFromFile(t, testName, tc.name+".txt")}
-			} else {
-				body.Parts = make([]SourceCreateRequestPart, tc.partCount)
-				for i := 0; i < tc.partCount; i++ {
-					body.Parts[i] = sourcePartFromFile(t, testName, tc.name+strconv.Itoa(i)+".txt")
-				}
-			}
-			if tc.name == "empty_parts" {
-				body.Parts = []SourceCreateRequestPart{}
-			}
-
+			body := SourceCreateRequest{PrePartListID: tc.prePartListID, Parts: sourceParts(t, tc.name, testName, tc.partCount)}
 			reqBody := test.JSON(t, body)
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPost, "", bytes.NewReader(reqBody)))
 			resp.EqualCode(t, tc.expectedCode)
@@ -139,6 +129,12 @@ func TestRoutes_SourceCreate(t *testing.T) {
 			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
 
 			if resp.Code == http.StatusOK {
+				finalPartCount := tc.finalPartCount
+				if finalPartCount == 0 {
+					finalPartCount = len(body.Parts)
+				}
+				require.Equal(finalPartCount, len(sourceStructured.Parts), "finalPartCount count not matching")
+
 				source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
 				require.NoError(err)
 				sourceStructured = source.ToSourceStructured()
@@ -158,6 +154,25 @@ func setupSourceCreateMedia(t *testing.T, prePartListID string) {
 	}
 	err := routes.Storage.Storer.Store(baseKey+".PreParts[0].Audio.txt", bytes.NewReader([]byte("audio0!")))
 	require.NoError(t, err)
+}
+
+func sourceParts(t *testing.T, caseName, testName string, partCount int) []SourceCreateRequestPart {
+	if partCount != 0 {
+		parts := make([]SourceCreateRequestPart, partCount)
+		for i := 0; i < partCount; i++ {
+			parts[i] = sourcePartFromFile(t, testName, caseName+strconv.Itoa(i)+".txt")
+		}
+		return parts
+	}
+
+	parts := []SourceCreateRequestPart{sourcePartFromFile(t, testName, caseName+".txt")}
+	switch caseName {
+	case "empty":
+		parts[0].Text = "  "
+	case "empty_parts":
+		parts = []SourceCreateRequestPart{}
+	}
+	return parts
 }
 
 func sourcePartFromFile(t *testing.T, testName, name string) SourceCreateRequestPart {
