@@ -1,0 +1,7 @@
+{
+  "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Audio.mp3": "audio_content",
+  "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image.jpg": "image_content",
+  "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[1].Image.jpeg": "image_content",
+  "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[2].Audio.mp3": "audio_content",
+  "sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[2].Image.png": "image_content"
+}

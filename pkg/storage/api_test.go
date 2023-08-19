@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"io"
 	"net/http"
 	"path"
 	"strings"
@@ -16,6 +17,11 @@ func (u uuidTest) Generate() (string, error) {
 }
 
 type testAPI struct {
+	storeMap map[string]string
+}
+
+func newTestAPI() testAPI {
+	return testAPI{storeMap: make(map[string]string)}
 }
 
 const keyURLPrefix = "http://localhost:3000/"
@@ -51,4 +57,13 @@ func (t testAPI) ListKeys(prefix string) ([]string, error) {
 
 func (t testAPI) KeyFromSignGet(key string) (string, error) {
 	return strings.TrimPrefix(key, keyURLPrefix), nil
+}
+
+func (t testAPI) Store(key string, file io.Reader) error {
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return err
+	}
+	t.storeMap[key] = string(data)
+	return nil
 }

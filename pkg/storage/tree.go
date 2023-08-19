@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"io/fs"
 	"path"
 	"path/filepath"
 	"reflect"
@@ -59,6 +60,59 @@ func (d DBStorage) signPutTree(nameToValidExts SignPutNameToValidExts, extTree, 
 	default:
 		return fmt.Errorf("invalid type for DBStorage.SignPutTree(): %v", extTree.Kind())
 	}
+}
+
+var fileType = reflect.TypeOf((*fs.File)(nil)).Elem()
+
+func (d DBStorage) putTree(nameToValidExts SignPutNameToValidExts, fileTree, keyTree reflect.Value, current string) error {
+	fileTree = indirect(fileTree)
+	keyTree = indirect(keyTree)
+
+	if fileTree.Type().Implements(fileType) {
+		if fileTree.IsZero() {
+			return nil
+		}
+		file, ok := fileTree.Interface().(fs.File)
+		if !ok {
+			return fmt.Errorf("expecting fs.File for DBStorage.SignPutTree() at %v", current)
+		}
+		if !keyTree.IsValid() || keyTree.Kind() != reflect.String {
+			return fmt.Errorf("not valid String at %v", current)
+		}
+
+		key, err := d.storeFile(file, nameToValidExts, current)
+		if err != nil {
+			return err
+		}
+		keyTree.SetString(key)
+		return nil
+	}
+
+	//nolint:exhaustive // default will handle the rest
+	switch fileTree.Kind() {
+	case reflect.Slice, reflect.Array:
+		return putTreeSlice(nameToValidExts, fileTree, keyTree, current, d.putTree)
+	case reflect.Struct:
+		return putTreeStruct(nameToValidExts, fileTree, keyTree, fileSuffix, keySuffix, current, d.putTree)
+	default:
+		return fmt.Errorf("invalid type for DBStorage.PutTree(): %v", fileTree.Kind())
+	}
+}
+
+func (d DBStorage) storeFile(file fs.File, nameToValidExts SignPutNameToValidExts, current string) (string, error) {
+	info, err := file.Stat()
+	if err != nil {
+		return "", err
+	}
+	ext := path.Ext(info.Name())
+	if err := fieldExtError(nameToValidExts, ext, current); err != nil {
+		return "", err
+	}
+	key := current + ext
+	if err := d.api.Store(key, file); err != nil {
+		return "", err
+	}
+	return key, file.Close()
 }
 
 func fieldExtError(nameToValidExts SignPutNameToValidExts, ext, current string) error {

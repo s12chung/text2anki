@@ -53,10 +53,20 @@ func (d DBStorage) SignPutTree(config SignPutConfig, extTree, signedTree any) er
 	return d.signPutTree(config.NameToValidExts, reflect.ValueOf(extTree), signedTreeValue, current)
 }
 
+// PutTree puts the files from fileTree and sets the keyTree
+func (d DBStorage) PutTree(config SignPutConfig, fileTree, keyTree any) error {
+	keyTreeValue, current, err := d.putTreeSetup(config, keyTree)
+	if err != nil {
+		return err
+	}
+	return d.putTree(config.NameToValidExts, reflect.ValueOf(fileTree), keyTreeValue, current)
+}
+
 const signExtSuffix = "Ext"
 const signRequestSuffix = "Request"
 const keySuffix = "Key"
 const urlSuffix = "URL"
+const fileSuffix = "File"
 
 // KeyTree fills in the matching keyTree's string with storage keys from the key structure
 func (d DBStorage) KeyTree(table, column, id string, keyTree any) error {
