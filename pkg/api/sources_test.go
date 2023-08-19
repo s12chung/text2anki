@@ -157,20 +157,19 @@ func setupSourceCreateMedia(t *testing.T, prePartListID string) {
 }
 
 func sourceParts(t *testing.T, caseName, testName string, partCount int) []SourceCreateRequestPart {
-	if partCount != 0 {
-		parts := make([]SourceCreateRequestPart, partCount)
-		for i := 0; i < partCount; i++ {
-			parts[i] = sourcePartFromFile(t, testName, caseName+strconv.Itoa(i)+".txt")
-		}
-		return parts
+	if partCount == 0 {
+		partCount = 1
 	}
-
-	parts := []SourceCreateRequestPart{sourcePartFromFile(t, testName, caseName+".txt")}
+	parts := make([]SourceCreateRequestPart, partCount)
 	switch caseName {
 	case "empty":
 		parts[0].Text = "  "
 	case "empty_parts":
 		parts = []SourceCreateRequestPart{}
+	default:
+		for i := 0; i < partCount; i++ {
+			parts[i] = sourcePartFromFile(t, testName, caseName+strconv.Itoa(i)+".txt")
+		}
 	}
 	return parts
 }
