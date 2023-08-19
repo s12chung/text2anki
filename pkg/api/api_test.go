@@ -21,12 +21,9 @@ import (
 
 const testUUID = "123e4567-e89b-12d3-a456-426614174000"
 
-type UUIDTest struct {
-}
+type UUIDTest struct{}
 
-func (u UUIDTest) Generate() (string, error) {
-	return testUUID, nil
-}
+func (u UUIDTest) Generate() (string, error) { return testUUID, nil }
 
 var routesConfig = Config{
 	StorageConfig: StorageConfig{

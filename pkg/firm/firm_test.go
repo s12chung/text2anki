@@ -7,8 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type testPresence struct {
-}
+type testPresence struct{}
 
 const testPresenceKey = "testPresence"
 

@@ -29,8 +29,7 @@ type UUIDGenerator interface {
 }
 
 // UUID7 generates UUID v7 uuids
-type UUID7 struct {
-}
+type UUID7 struct{}
 
 // Generate generates a UUId
 func (u UUID7) Generate() (string, error) {

@@ -9,12 +9,9 @@ import (
 
 const testUUID = "123e4567-e89b-12d3-a456-426614174000"
 
-type uuidTest struct {
-}
+type uuidTest struct{}
 
-func (u uuidTest) Generate() (string, error) {
-	return testUUID, nil
-}
+func (u uuidTest) Generate() (string, error) { return testUUID, nil }
 
 type testAPI struct {
 	storeMap map[string]string

@@ -43,13 +43,9 @@ func TestMain(m *testing.M) {
 
 var cleaned = false
 
-type SplitTokenizer struct {
-}
+type SplitTokenizer struct{}
 
-func (s *SplitTokenizer) Cleanup() {
-	cleaned = true
-}
-
+func (s *SplitTokenizer) Cleanup() { cleaned = true }
 func (s *SplitTokenizer) Tokenize(str string) (any, error) {
 	return &tokenizeResponse{strings.Split(str, " ")}, nil
 }
