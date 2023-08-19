@@ -80,10 +80,10 @@ func TestDBStorage_SignPutTree(t *testing.T) {
 			PreParts: []PrePartSignRequest{{ImageExt: ".jpg", AudioExt: ".mp3"}, {AudioExt: ".mp3"}, {ImageExt: ".jpeg"}}},
 		},
 		{name: "empty", req: PrePartListSignRequest{},
-			err: InvalidInputError{Message: "empty struct given for DBStorage.SignPutTree() at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts"}},
+			err: InvalidInputError{Message: "srcTree empty struct given at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts"}},
 		{name: "empty_array", req: PrePartListSignRequest{PreParts: []PrePartSignRequest{}},
 			err: InvalidInputError{
-				Message: "empty slice or array given for DBStorage.SignPutTree() at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts"}},
+				Message: "srcTree empty slice or array given at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts"}},
 		{name: "invalid", req: PrePartListSignRequest{PreParts: []PrePartSignRequest{{ImageExt: ".waka"}}},
 			err: InvalidInputError{Message: "invalid extension, .waka, at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image"}},
 		{name: "no_pointer", err: fmt.Errorf("storage.PrePartListSignResponse is not a pointer")},

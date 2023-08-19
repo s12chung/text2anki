@@ -46,12 +46,7 @@ func (d DBStorage) SignPut(table, column, ext string) (PreSignedHTTPRequest, err
 
 // SignPutTree signs the fields in extTree and fills in the matching signedTree's PreSignedHTTPRequest
 func (d DBStorage) SignPutTree(config SignPutConfig, extTree, signedTree any) error {
-	id, err := d.uuidGenerator.Generate()
-	if err != nil {
-		return err
-	}
-	current := BaseKey(config.Table, config.Column, id)
-	signedTreeValue, err := setID(id, signedTree)
+	signedTreeValue, current, err := d.putTreeSetup(config, signedTree)
 	if err != nil {
 		return err
 	}

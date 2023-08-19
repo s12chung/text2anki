@@ -11,6 +11,21 @@ import (
 	"strings"
 )
 
+func (d DBStorage) putTreeSetup(config SignPutConfig, tree any) (reflect.Value, string, error) {
+	id, err := d.uuidGenerator.Generate()
+	if err != nil {
+		return reflect.Value{}, "", err
+	}
+	treeValue, err := setID(id, tree)
+	if err != nil {
+		return reflect.Value{}, "", err
+	}
+	current := BaseKey(config.Table, config.Column, id)
+	return treeValue, current, nil
+}
+
+type putTreeFunc = func(nameToValidExts SignPutNameToValidExts, extTree, signedTree reflect.Value, current string) error
+
 var preSignedRequestType = reflect.TypeOf(&PreSignedHTTPRequest{})
 
 func (d DBStorage) signPutTree(nameToValidExts SignPutNameToValidExts, extTree, signedTree reflect.Value, current string) error {
@@ -20,73 +35,77 @@ func (d DBStorage) signPutTree(nameToValidExts SignPutNameToValidExts, extTree, 
 	//nolint:exhaustive // default will handle the rest
 	switch extTree.Kind() {
 	case reflect.String:
-		return d.signPutTreeString(nameToValidExts, extTree, signedTree, current)
+		if extTree.IsZero() {
+			return nil
+		}
+		if !signedTree.IsValid() || signedTree.Type() != preSignedRequestType {
+			return fmt.Errorf("not valid PreSignedHTTPRequest at %v", current)
+		}
+		ext := extTree.String()
+		if err := fieldExtError(nameToValidExts, ext, current); err != nil {
+			return err
+		}
+
+		req, err := d.api.SignPut(current + ext)
+		if err != nil {
+			return err
+		}
+		signedTree.Set(reflect.ValueOf(&req))
+		return nil
 	case reflect.Slice, reflect.Array:
-		return d.signPutTreeSlice(nameToValidExts, extTree, signedTree, current)
+		return putTreeSlice(nameToValidExts, extTree, signedTree, current, d.signPutTree)
 	case reflect.Struct:
-		return d.signPutTreeStruct(nameToValidExts, extTree, signedTree, current)
+		return putTreeStruct(nameToValidExts, extTree, signedTree, signExtSuffix, signRequestSuffix, current, d.signPutTree)
 	default:
 		return fmt.Errorf("invalid type for DBStorage.SignPutTree(): %v", extTree.Kind())
 	}
 }
 
-func (d DBStorage) signPutTreeString(nameToValidExts SignPutNameToValidExts, extTree, signedTree reflect.Value, current string) error {
-	if extTree.IsZero() {
-		return nil
-	}
-	if !signedTree.IsValid() || signedTree.Type() != preSignedRequestType {
-		return fmt.Errorf("not valid for PreSignedHTTPRequest at %v", current)
-	}
-	ext := extTree.String()
+func fieldExtError(nameToValidExts SignPutNameToValidExts, ext, current string) error {
 	fieldName := current[strings.LastIndex(current, ".")+1:]
 	if !nameToValidExts[fieldName][ext] {
 		return InvalidInputError{Message: fmt.Sprintf("invalid extension, %v, at %v", ext, current)}
 	}
-
-	req, err := d.api.SignPut(current + ext)
-	if err != nil {
-		return err
-	}
-	signedTree.Set(reflect.ValueOf(&req))
 	return nil
 }
 
-func (d DBStorage) signPutTreeSlice(nameToValidExts SignPutNameToValidExts, extTree, signedTree reflect.Value, current string) error {
-	if !signedTree.IsValid() || (signedTree.Kind() != reflect.Slice && signedTree.Kind() != reflect.Array) {
-		return fmt.Errorf("signedTree not valid Slice or Array at %v", current)
+func putTreeSlice(nameToValidExts SignPutNameToValidExts, srcTree, destTree reflect.Value, current string, treeFunc putTreeFunc) error {
+	if srcTree.IsZero() || srcTree.Len() == 0 {
+		return InvalidInputError{Message: fmt.Sprintf("srcTree empty slice or array given at %v", current)}
 	}
-	if extTree.IsZero() || extTree.Len() == 0 {
-		return InvalidInputError{Message: fmt.Sprintf("empty slice or array given for DBStorage.SignPutTree() at %v", current)}
+	if !destTree.IsValid() || (destTree.Kind() != reflect.Slice && destTree.Kind() != reflect.Array) {
+		return fmt.Errorf("destTree not valid Slice or Array at %v", current)
 	}
 
-	signedTree.Set(reflect.MakeSlice(signedTree.Type(), extTree.Len(), extTree.Len()))
-	for i := 0; i < extTree.Len(); i++ {
-		if err := d.signPutTree(nameToValidExts, extTree.Index(i), signedTree.Index(i), current+"["+strconv.Itoa(i)+"]"); err != nil {
+	destTree.Set(reflect.MakeSlice(destTree.Type(), srcTree.Len(), srcTree.Len()))
+	for i := 0; i < srcTree.Len(); i++ {
+		if err := treeFunc(nameToValidExts, srcTree.Index(i), destTree.Index(i), current+"["+strconv.Itoa(i)+"]"); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (d DBStorage) signPutTreeStruct(nameToValidExts SignPutNameToValidExts, extTree, signedTree reflect.Value, current string) error {
-	if !signedTree.IsValid() || signedTree.Kind() != reflect.Struct {
-		return fmt.Errorf("signedTree not valid Struct at %v", current)
+func putTreeStruct(nameToValidExts SignPutNameToValidExts, srcTree, destTree reflect.Value,
+	srcSuffix, destSuffix, current string, treeFunc putTreeFunc) error {
+	if srcTree.IsZero() {
+		return InvalidInputError{Message: fmt.Sprintf("srcTree empty struct given at %v", current)}
 	}
-	if extTree.IsZero() {
-		return InvalidInputError{Message: fmt.Sprintf("empty struct given for DBStorage.SignPutTree() at %v", current)}
+	if !destTree.IsValid() || destTree.Kind() != reflect.Struct {
+		return fmt.Errorf("destTree not valid Struct at %v", current)
 	}
-	for i := 0; i < extTree.NumField(); i++ {
-		shortName := extTree.Type().Field(i).Name
+	for i := 0; i < srcTree.NumField(); i++ {
+		shortName := srcTree.Type().Field(i).Name
 		requestName := shortName
-		if strings.HasSuffix(shortName, signExtSuffix) {
-			shortName = shortName[:len(shortName)-len(signExtSuffix)]
-			requestName = shortName + signRequestSuffix
+		if strings.HasSuffix(shortName, srcSuffix) {
+			shortName = shortName[:len(shortName)-len(srcSuffix)]
+			requestName = shortName + destSuffix
 		}
-		signedTreeField := signedTree.FieldByName(requestName)
+		signedTreeField := destTree.FieldByName(requestName)
 		if !signedTreeField.IsValid() {
-			return fmt.Errorf("signedTree does not have matching field name, %v, at %v", requestName, current)
+			return fmt.Errorf("destTree does not have matching field name, %v, at %v", requestName, current)
 		}
-		if err := d.signPutTree(nameToValidExts, extTree.Field(i), signedTreeField, current+"."+shortName); err != nil {
+		if err := treeFunc(nameToValidExts, srcTree.Field(i), signedTreeField, current+"."+shortName); err != nil {
 			return err
 		}
 	}
