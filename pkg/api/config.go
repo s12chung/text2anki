@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
 	"github.com/s12chung/text2anki/pkg/dictionary/krdict"
+	"github.com/s12chung/text2anki/pkg/extractor"
+	"github.com/s12chung/text2anki/pkg/extractor/instagram"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/storage"
@@ -22,11 +25,23 @@ import (
 	"github.com/s12chung/text2anki/pkg/tokenizer/komoran"
 )
 
+var appCacheDir string
+
+func init() {
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+	appCacheDir = path.Join(cacheDir, "Text2Anki")
+}
+
 // Config contains config settings for the API
 type Config struct {
 	TokenizerType
 	DictionaryType
 	StorageConfig StorageConfig
+	ExtractorMap  extractor.Map
 }
 
 // NewRoutes is the routes used by the API
@@ -39,7 +54,8 @@ func NewRoutes(config Config) Routes {
 			Tokenizer:    Tokenizer(config.TokenizerType),
 			CleanSpeaker: true,
 		},
-		Storage: StorageFromConfig(config.StorageConfig),
+		Storage:      StorageFromConfig(config.StorageConfig),
+		ExtractorMap: ExtractorMap(config.ExtractorMap),
 	}
 	db.SetDBStorage(routes.Storage.DBStorage)
 	return routes
@@ -172,4 +188,14 @@ func LocalStoreAPI(config LocalStoreConfig) (localstore.API, error) {
 		return localstore.API{}, err
 	}
 	return localstore.NewAPI(config.Origin, config.KeyBasePath, encryptor), nil
+}
+
+// ExtractorMap returns the ExtractorMap config
+func ExtractorMap(extractorMap extractor.Map) extractor.Map {
+	if extractorMap != nil {
+		return extractorMap
+	}
+	return extractor.Map{
+		"instagram": extractor.NewExtractor(filepath.Join(appCacheDir, "instagram"), instagram.Factory{}),
+	}
 }

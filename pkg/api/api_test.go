@@ -14,7 +14,10 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
+	"github.com/s12chung/text2anki/pkg/extractor"
+	"github.com/s12chung/text2anki/pkg/extractor/extractortest"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -25,6 +28,17 @@ type UUIDTest struct{}
 
 func (u UUIDTest) Generate() (string, error) { return testUUID, nil }
 
+var extractorCacheDir = path.Join(os.TempDir(), test.GenerateName("Extractor"))
+
+func init() {
+	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+}
+
+const extractorType = "testy"
+
 var routesConfig = Config{
 	StorageConfig: StorageConfig{
 		LocalStoreConfig: LocalStoreConfig{
@@ -33,7 +47,12 @@ var routesConfig = Config{
 			EncryptorPath: fixture.TestDataDir,
 		},
 		UUIDGenerator: UUIDTest{},
-	}}
+	},
+	ExtractorMap: extractor.Map{
+		extractorType: extractor.NewExtractor(extractorCacheDir, extractortest.NewFactory("Extractor")),
+	},
+}
+
 var routes = NewRoutes(routesConfig)
 var server = test.Server{Server: httptest.NewServer(routes.Router())}
 

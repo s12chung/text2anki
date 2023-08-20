@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"io/fs"
 	"path"
 	"reflect"
 )
@@ -42,6 +43,11 @@ func (d DBStorage) SignPut(table, column, ext string) (PreSignedHTTPRequest, err
 		return PreSignedHTTPRequest{}, err
 	}
 	return d.api.SignPut(BaseKey(table, column, id) + ext)
+}
+
+// Get returns the file at key
+func (d DBStorage) Get(key string) (fs.File, error) {
+	return d.api.Get(key)
 }
 
 // SignPutTree signs the fields in extTree and fills in the matching signedTree's PreSignedHTTPRequest

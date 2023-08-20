@@ -33,7 +33,7 @@ type Source struct {
 }
 
 // VerifyString is the string to compare for Verify()
-const VerifyString = "waka"
+const VerifyString = "good_verify"
 
 // Verify returns true if the string matches VerifyString
 func (t Source) Verify() bool { return t.s == VerifyString }

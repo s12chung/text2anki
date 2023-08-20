@@ -3,17 +3,21 @@ package api
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/pkg/extractor/extractortest"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/storage/localstore"
 	"github.com/s12chung/text2anki/pkg/util/test"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 var prePartListServer test.Server
@@ -112,7 +116,70 @@ func TestRoutes_PrePartListGet(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodGet, "/"+tc.id, nil))
 			resp.EqualCode(t, tc.expectedCode)
-			testModelResponse(t, resp, testName, tc.name, &PrePartList{})
+			testModelResponse(t, resp, testName, tc.name, &PrePartListURL{})
+		})
+	}
+}
+
+func TestRoutes_PrePartListVerify(t *testing.T) {
+	testName := "TestRoutes_PrePartListVerify"
+	testCases := []struct {
+		name         string
+		text         string
+		expectedType string
+	}{
+		{name: "matched", text: extractortest.VerifyString, expectedType: extractorType},
+		{name: "not_matched", text: "does not match", expectedType: ""},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			req := PrePartListVerifyRequest{Text: tc.text}
+			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodPost, "/verify", bytes.NewReader(test.JSON(t, req))))
+			resp.EqualCode(t, http.StatusOK)
+			testModelResponse(t, resp, testName, tc.name, &PrePartListVerifyResponse{})
+		})
+	}
+}
+
+func TestRoutes_PrePartListCreate(t *testing.T) {
+	testName := "TestRoutes_PrePartListCreate"
+	testCases := []struct {
+		name         string
+		req          PrePartListCreateRequest
+		expectedCode int
+	}{
+		{name: "matched", req: PrePartListCreateRequest{ExtractorType: extractorType, Text: extractortest.VerifyString}, expectedCode: http.StatusOK},
+		{name: "bad_string", req: PrePartListCreateRequest{ExtractorType: extractorType, Text: "bad_string"},
+			expectedCode: http.StatusUnprocessableEntity},
+		{name: "bad_type", req: PrePartListCreateRequest{ExtractorType: "bad_type", Text: extractortest.VerifyString},
+			expectedCode: http.StatusUnprocessableEntity},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodPost, "/", bytes.NewReader(test.JSON(t, tc.req))))
+			resp.EqualCode(t, tc.expectedCode)
+			prePartListResp := PrePartListCreateResponse{}
+			testModelResponse(t, resp, testName, tc.name, &prePartListResp)
+
+			if resp.Code != http.StatusOK {
+				return
+			}
+
+			keyTree := PrePartList{}
+			err := routes.Storage.DBStorage.KeyTree(sourcesTable, partsColumn, prePartListResp.ID, &keyTree)
+			require.NoError(err)
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+"_KeyTree.json"), fixture.JSON(t, keyTree))
+
+			for _, prePart := range keyTree.PreParts {
+				file, err := routes.Storage.DBStorage.Get(prePart.ImageKey)
+				require.NoError(err)
+				fileBytes, err := io.ReadAll(file)
+				require.NoError(err)
+				require.Equal("image_content", string(fileBytes))
+			}
 		})
 	}
 }

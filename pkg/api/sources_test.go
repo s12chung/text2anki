@@ -78,11 +78,12 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 			sourceStructured := db.SourceStructured{}
 			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
 
-			if resp.Code == http.StatusOK {
-				source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
-				require.NoError(err)
-				fixture.CompareRead(t, fixtureFile, fixture.JSON(t, source.ToSourceStructured().StaticCopy()))
+			if resp.Code != http.StatusOK {
+				return
 			}
+			source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
+			require.NoError(err)
+			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, source.ToSourceStructured().StaticCopy()))
 		})
 	}
 }
@@ -128,19 +129,20 @@ func TestRoutes_SourceCreate(t *testing.T) {
 			sourceStructured := db.SourceStructured{}
 			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
 
-			if resp.Code == http.StatusOK {
-				finalPartCount := tc.finalPartCount
-				if finalPartCount == 0 {
-					finalPartCount = len(body.Parts)
-				}
-				require.Equal(finalPartCount, len(sourceStructured.Parts), "finalPartCount count not matching")
-
-				source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
-				require.NoError(err)
-				sourceStructured = source.ToSourceStructured()
-				sourceStructured.PrepareSerialize()
-				fixture.CompareRead(t, fixtureFile, fixture.JSON(t, sourceStructured.StaticCopy()))
+			if resp.Code != http.StatusOK {
+				return
 			}
+			finalPartCount := tc.finalPartCount
+			if finalPartCount == 0 {
+				finalPartCount = len(body.Parts)
+			}
+			require.Equal(finalPartCount, len(sourceStructured.Parts), "finalPartCount count not matching")
+
+			source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
+			require.NoError(err)
+			sourceStructured = source.ToSourceStructured()
+			sourceStructured.PrepareSerialize()
+			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, sourceStructured.StaticCopy()))
 		})
 	}
 }
@@ -208,10 +210,11 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 			resp.EqualCode(t, tc.expectedCode)
 
 			testModelResponse(t, resp, testName, tc.name, &db.SourceStructured{})
-			if resp.Code == http.StatusOK {
-				_, err := db.Qs().SourceGet(context.Background(), created.ID)
-				require.Equal(fmt.Errorf("sql: no rows in result set"), err)
+			if resp.Code != http.StatusOK {
+				return
 			}
+			_, err := db.Qs().SourceGet(context.Background(), created.ID)
+			require.Equal(fmt.Errorf("sql: no rows in result set"), err)
 		})
 	}
 }

@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	dir := path.Join(os.TempDir(), test.GenerateName("text2anki-anki.TestMain"))
+	dir := path.Join(os.TempDir(), test.GenerateName("anki.TestMain"))
 	config.NotesCacheDir = path.Join(dir, "files")
 	if err = os.MkdirAll(path.Join(dir, "files"), ioutil.OwnerRWXGroupRX); err != nil {
 		log.Fatal(err)

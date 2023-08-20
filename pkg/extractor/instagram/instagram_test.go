@@ -12,7 +12,7 @@ import (
 
 const testProtocol = "https://"
 const testHash = "nF1jE8cVT8O"
-const testPath = "/p/" + testHash + "/"
+const testPath = pathPrefix + testHash + "/"
 const testQueryParams = "?igshid=nF1jE3HOcXWZjiBqjZQayKs"
 const testURL = testProtocol + hostname + testPath + testQueryParams
 

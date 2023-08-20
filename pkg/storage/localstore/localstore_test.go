@@ -2,6 +2,7 @@ package localstore
 
 import (
 	"bytes"
+	"io"
 	"net/url"
 	"os"
 	"path"
@@ -67,30 +68,6 @@ func TestAPI_SignGet(t *testing.T) {
 	require.Equal(api.keyURL(key), u)
 }
 
-func TestAPI_ListKeys(t *testing.T) {
-	require := require.New(t)
-
-	prefix := "TestAPI_ListKeys/test/me"
-	api := testAPI(t)
-	keys, err := api.ListKeys(prefix)
-	require.NoError(err)
-	require.Len(keys, 0)
-
-	key1 := path.Join(prefix, testKeyFile)
-	key2 := path.Join(prefix, "again_me.txt")
-	require.NoError(api.Store(key1, bytes.NewReader([]byte("test_me"))))
-	require.NoError(api.Store(key2, bytes.NewReader([]byte("again"))))
-
-	expectedKeys := []string{key1, key2}
-	keys, err = api.ListKeys(prefix)
-	require.NoError(err)
-	require.Equal(expectedKeys, keys)
-
-	keys, err = api.ListKeys(prefix + "/")
-	require.NoError(err)
-	require.Equal(expectedKeys, keys)
-}
-
 func TestAPI_KeyFromSignGet(t *testing.T) {
 	require := require.New(t)
 
@@ -116,21 +93,47 @@ func TestAPI_Validate(t *testing.T) {
 	require.Error(api.Validate(testKey, url.Values{CipherQueryParam: []string{"bad_cipher"}}))
 }
 
-func TestAPI_Store(t *testing.T) {
-	testStore(t)
-	testStore(t)
-}
-
-func testStore(t *testing.T) {
+func TestAPI_ListKeys(t *testing.T) {
 	require := require.New(t)
 
+	prefix := "TestAPI_ListKeys/test/me"
 	api := testAPI(t)
-	fileData := []byte("Store")
-	require.NoError(api.Store(testKey, bytes.NewReader(fileData)))
-
-	fileBytes, err := os.ReadFile(path.Join(api.keyBasePath, testKey))
+	keys, err := api.ListKeys(prefix)
 	require.NoError(err)
-	require.Equal(fileData, fileBytes)
+	require.Len(keys, 0)
+
+	key1 := path.Join(prefix, testKeyFile)
+	key2 := path.Join(prefix, "again_me.txt")
+	require.NoError(api.Store(key1, bytes.NewReader([]byte("test_me"))))
+	require.NoError(api.Store(key2, bytes.NewReader([]byte("again"))))
+
+	expectedKeys := []string{key1, key2}
+	keys, err = api.ListKeys(prefix)
+	require.NoError(err)
+	require.Equal(expectedKeys, keys)
+
+	keys, err = api.ListKeys(prefix + "/")
+	require.NoError(err)
+	require.Equal(expectedKeys, keys)
+}
+
+func TestAPI_StoreGet(t *testing.T) {
+	testStore := func(t *testing.T) {
+		require := require.New(t)
+
+		api := testAPI(t)
+		fileData := []byte("Store")
+		require.NoError(api.Store(testKey, bytes.NewReader(fileData)))
+
+		file, err := api.Get(testKey)
+		require.NoError(err)
+		fileBytes, err := io.ReadAll(file)
+		require.NoError(err)
+		require.Equal(fileData, fileBytes)
+	}
+
+	testStore(t)
+	testStore(t)
 }
 
 func TestAESEncryptor_EncryptDecrypt(t *testing.T) {
