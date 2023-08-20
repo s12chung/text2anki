@@ -10,8 +10,8 @@ import (
 
 	api "github.com/s12chung/text2anki/integrations/tokenizers/khaiii/pkg/khaiii"
 	"github.com/s12chung/text2anki/pkg/lang"
-	"github.com/s12chung/text2anki/pkg/tokenizers"
-	"github.com/s12chung/text2anki/pkg/tokenizers/server"
+	"github.com/s12chung/text2anki/pkg/tokenizer"
+	"github.com/s12chung/text2anki/pkg/tokenizer/server"
 )
 
 const stopWarningDuration = time.Second
@@ -25,7 +25,7 @@ func init() {
 }
 
 // New returns a Khaiii Korean tokenizer
-func New() tokenizers.Tokenizer {
+func New() tokenizer.Tokenizer {
 	return newKhaiii(port)
 }
 
@@ -38,18 +38,18 @@ func newKhaiii(port int) *Khaiii {
 	name := "Khaiii"
 	return &Khaiii{
 		name:            name,
-		ServerTokenizer: tokenizers.NewServerTokenizer(name, server),
+		ServerTokenizer: tokenizer.NewServerTokenizer(name, server),
 	}
 }
 
 // Khaiii is a Korean Tokenizer in java
 type Khaiii struct {
 	name string
-	tokenizers.ServerTokenizer
+	tokenizer.ServerTokenizer
 }
 
 // Tokenize returns the part of speech tokens of the given string
-func (k *Khaiii) Tokenize(str string) ([]tokenizers.Token, error) {
+func (k *Khaiii) Tokenize(str string) ([]tokenizer.Token, error) {
 	resp := &api.TokenizeResponse{}
 	err := k.ServerTokenize(str, resp)
 	if err != nil {
@@ -58,11 +58,11 @@ func (k *Khaiii) Tokenize(str string) ([]tokenizers.Token, error) {
 	return k.toTokenizerTokens(resp)
 }
 
-func (k *Khaiii) toTokenizerTokens(resp *api.TokenizeResponse) ([]tokenizers.Token, error) {
+func (k *Khaiii) toTokenizerTokens(resp *api.TokenizeResponse) ([]tokenizer.Token, error) {
 	var lastRuneEnd uint = 0
 	var lastWordCharEnd uint = 0
 
-	tokens := []tokenizers.Token{}
+	tokens := []tokenizer.Token{}
 	for _, word := range resp.Words {
 		lastRuneEnd += word.Begin - lastWordCharEnd // add spaces between words
 		lastWordCharEnd = word.Begin + word.Length
@@ -74,7 +74,7 @@ func (k *Khaiii) toTokenizerTokens(resp *api.TokenizeResponse) ([]tokenizers.Tok
 			}
 
 			runeCount := uint(utf8.RuneCountInString(morph.Lex))
-			tokens = append(tokens, tokenizers.Token{
+			tokens = append(tokens, tokenizer.Token{
 				Text:         morph.Lex,
 				PartOfSpeech: partOfSpeech,
 				StartIndex:   lastRuneEnd,

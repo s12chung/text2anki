@@ -1,5 +1,5 @@
-// Package synthesizers contains synthesizers (text to speech)
-package synthesizers
+// Package synthesizer contains synthesizers (text to speech)
+package synthesizer
 
 // Synthesizer is a text to speech API interface
 type Synthesizer interface {

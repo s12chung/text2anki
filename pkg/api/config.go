@@ -14,12 +14,12 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/storage/localstore"
-	"github.com/s12chung/text2anki/pkg/synthesizers"
-	"github.com/s12chung/text2anki/pkg/synthesizers/azure"
+	"github.com/s12chung/text2anki/pkg/synthesizer"
+	"github.com/s12chung/text2anki/pkg/synthesizer/azure"
 	"github.com/s12chung/text2anki/pkg/text"
-	"github.com/s12chung/text2anki/pkg/tokenizers"
-	"github.com/s12chung/text2anki/pkg/tokenizers/khaiii"
-	"github.com/s12chung/text2anki/pkg/tokenizers/komoran"
+	"github.com/s12chung/text2anki/pkg/tokenizer"
+	"github.com/s12chung/text2anki/pkg/tokenizer/khaiii"
+	"github.com/s12chung/text2anki/pkg/tokenizer/komoran"
 )
 
 // Config contains config settings for the API
@@ -51,7 +51,7 @@ func Parser() text.Parser {
 }
 
 // Synthesizer returns the default Synthesizer
-func Synthesizer() synthesizers.Synthesizer {
+func Synthesizer() synthesizer.Synthesizer {
 	return azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
 }
 
@@ -66,7 +66,7 @@ const (
 )
 
 // Tokenizer returns the default Tokenizer
-func Tokenizer(tokenizerType TokenizerType) tokenizers.Tokenizer {
+func Tokenizer(tokenizerType TokenizerType) tokenizer.Tokenizer {
 	switch tokenizerType {
 	case TokenizerKomoran:
 		return komoran.New()

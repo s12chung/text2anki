@@ -11,7 +11,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/storage"
-	"github.com/s12chung/text2anki/pkg/synthesizers"
+	"github.com/s12chung/text2anki/pkg/synthesizer"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 )
@@ -19,7 +19,7 @@ import (
 // Routes contains the routes used for the api
 type Routes struct {
 	Dictionary    dictionary.Dictionary
-	Synthesizer   synthesizers.Synthesizer
+	Synthesizer   synthesizer.Synthesizer
 	TextTokenizer db.TextTokenizer
 	Storage       Storage
 }

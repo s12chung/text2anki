@@ -11,7 +11,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/text"
-	"github.com/s12chung/text2anki/pkg/tokenizers"
+	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -58,7 +58,7 @@ func TestSource_ToSource_ToSourceStructured(t *testing.T) {
 
 var textTokenizer = db.TextTokenizer{
 	Parser:       text.NewParser(text.Korean, text.English),
-	Tokenizer:    tokenizers.NewSplitTokenizer(),
+	Tokenizer:    tokenizer.NewSplitTokenizer(),
 	CleanSpeaker: true,
 }
 

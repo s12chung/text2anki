@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/s12chung/text2anki/integrations/tokenizers/khaiii/pkg/khaiii"
-	"github.com/s12chung/text2anki/pkg/tokenizers/server/serverimpl"
+	"github.com/s12chung/text2anki/pkg/tokenizer/server/serverimpl"
 )
 
 var port int

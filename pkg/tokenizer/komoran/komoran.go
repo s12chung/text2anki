@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/s12chung/text2anki/pkg/lang"
-	"github.com/s12chung/text2anki/pkg/tokenizers"
-	"github.com/s12chung/text2anki/pkg/tokenizers/server"
+	"github.com/s12chung/text2anki/pkg/tokenizer"
+	"github.com/s12chung/text2anki/pkg/tokenizer/server"
 )
 
 const stopWarningDuration = 15 * time.Second
@@ -24,7 +24,7 @@ func init() {
 }
 
 // New returns a Komoran Korean tokenizer
-func New() tokenizers.Tokenizer {
+func New() tokenizer.Tokenizer {
 	return newKomoran(port)
 }
 
@@ -37,14 +37,14 @@ func newKomoran(port int) *Komoran {
 	name := "Komoran"
 	return &Komoran{
 		name:            name,
-		ServerTokenizer: tokenizers.NewServerTokenizer(name, server),
+		ServerTokenizer: tokenizer.NewServerTokenizer(name, server),
 	}
 }
 
 // Komoran is a Korean Tokenizer in java
 type Komoran struct {
 	name string
-	tokenizers.ServerTokenizer
+	tokenizer.ServerTokenizer
 }
 type response struct {
 	Tokens []token `json:"tokens"`
@@ -59,7 +59,7 @@ type token struct {
 }
 
 // Tokenize returns the part of speech tokens of the given string
-func (k *Komoran) Tokenize(str string) ([]tokenizers.Token, error) {
+func (k *Komoran) Tokenize(str string) ([]tokenizer.Token, error) {
 	resp := &response{}
 	err := k.ServerTokenize(str, resp)
 	if err != nil {
@@ -68,14 +68,14 @@ func (k *Komoran) Tokenize(str string) ([]tokenizers.Token, error) {
 	return k.toTokenizerTokens(resp)
 }
 
-func (k *Komoran) toTokenizerTokens(resp *response) ([]tokenizers.Token, error) {
-	tokens := make([]tokenizers.Token, len(resp.Tokens))
+func (k *Komoran) toTokenizerTokens(resp *response) ([]tokenizer.Token, error) {
+	tokens := make([]tokenizer.Token, len(resp.Tokens))
 	for i, token := range resp.Tokens {
 		partOfSpeech, found := partOfSpeechMap[token.POS]
 		if !found {
 			return nil, fmt.Errorf("%v POS not mapped: %v", k.name, token.POS)
 		}
-		tokens[i] = tokenizers.Token{
+		tokens[i] = tokenizer.Token{
 			Text:         token.Morph,
 			PartOfSpeech: partOfSpeech,
 			StartIndex:   token.BeginIndex,

@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/s12chung/text2anki/pkg/synthesizers"
+	"github.com/s12chung/text2anki/pkg/synthesizer"
 )
 
 // GetAPIKeyFromEnv gets the API key from the default ENV var
@@ -62,7 +62,7 @@ const (
 )
 
 // New returns a new Azure API struct
-func New(apiKey string, region Region) synthesizers.Synthesizer {
+func New(apiKey string, region Region) synthesizer.Synthesizer {
 	return &Azure{apiKey: apiKey, region: region, client: http.DefaultClient, cache: map[string][]byte{}}
 }
 
