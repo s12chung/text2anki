@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"time"
 
 	"golang.org/x/exp/slog"
@@ -51,6 +52,12 @@ type sourcePartMediaAlias SourcePartMedia
 type SourcePartMediaSerialized struct {
 	ImageURL string `json:"image_url,omitempty"`
 	AudioURL string `json:"audio_url,omitempty"`
+}
+
+// SourcePartMediaFile is the File version of SourcePartMedia
+type SourcePartMediaFile struct {
+	ImageFile fs.File
+	AudioFile fs.File
 }
 
 // ToDB returns the matching SourcePartMedia
