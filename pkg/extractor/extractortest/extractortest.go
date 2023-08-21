@@ -35,14 +35,20 @@ type Source struct {
 // VerifyString is the string to compare for Verify()
 const VerifyString = "good_verify"
 
+// SkipExtractString is the string to compare for Verify() and skipping ExtractToDir()
+const SkipExtractString = "skip_extract"
+
 // Verify returns true if the string matches VerifyString
-func (t Source) Verify() bool { return t.s == VerifyString }
+func (t Source) Verify() bool { return t.s == VerifyString || t.s == SkipExtractString }
 
 // ID returns a static id for the Source
-func (t Source) ID() string { return "Source" }
+func (t Source) ID() string { return t.s }
 
 // ExtractToDir uses the fixture path as an extraction point to the cacheDir
 func (t Source) ExtractToDir(cacheDir string) error {
+	if t.s == SkipExtractString {
+		return nil
+	}
 	err := filepath.Walk(t.fixturePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err

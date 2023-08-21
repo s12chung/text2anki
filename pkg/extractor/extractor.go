@@ -69,6 +69,9 @@ func (e Extractor) Extract(s string) ([]db.SourcePartMediaFile, error) {
 		}
 	}
 
+	if len(files) == 0 {
+		return nil, fmt.Errorf("no files that match extensions extracted: %v", strings.Join(e.factory.Extensions(), ", "))
+	}
 	parts := make([]db.SourcePartMediaFile, len(files))
 	for i, file := range files {
 		f, err := os.Open(file) //nolint:gosec // needed
