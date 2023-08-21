@@ -49,7 +49,11 @@ export function formData<
       value = objFromArrayKeys(objValue[0], key, formKeys, formData)
     } else {
       const v = formData.get(key)
-      if (v === null) continue
+      if (v === null) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete obj[key]
+        continue
+      }
       value = formValue(objValue, key, v)
     }
     obj[key] = value as T[Extract<keyof T, string>]
