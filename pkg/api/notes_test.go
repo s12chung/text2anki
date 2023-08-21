@@ -43,11 +43,12 @@ func TestRoutes_NoteCreate(t *testing.T) {
 			note := db.Note{}
 			fixtureFile := testModelResponse(t, resp, testName, tc.name, &note)
 
-			if resp.Code == http.StatusOK {
-				note, err := db.Qs().NoteGet(context.Background(), note.ID)
-				require.NoError(err)
-				fixture.CompareRead(t, fixtureFile, fixture.JSON(t, note.StaticCopy()))
+			if resp.Code != http.StatusOK {
+				return
 			}
+			note, err := db.Qs().NoteGet(context.Background(), note.ID)
+			require.NoError(err)
+			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, note.StaticCopy()))
 		})
 	}
 }

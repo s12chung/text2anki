@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"net/http"
 	"net/url"
 	"os"
@@ -63,23 +64,6 @@ func (a API) SignGet(key string) (string, error) {
 	return a.keyURL(key), nil
 }
 
-// ListKeys lists the keys for the given path prefix
-func (a API) ListKeys(prefix string) ([]string, error) {
-	files, err := os.ReadDir(a.keyPath(prefix)) // Replace with your directory
-	if err != nil {
-		if os.IsNotExist(err) {
-			return []string{}, nil
-		}
-		return nil, err
-	}
-
-	keys := make([]string, len(files))
-	for i, file := range files {
-		keys[i] = path.Join(prefix, file.Name())
-	}
-	return keys, nil
-}
-
 // KeyFromSignGet returns the key given the signGet string
 func (a API) KeyFromSignGet(signGet string) (string, error) {
 	u, err := url.Parse(signGet)
@@ -103,6 +87,23 @@ func (a API) Validate(key string, values url.Values) error {
 	return nil
 }
 
+// ListKeys lists the keys for the given path prefix
+func (a API) ListKeys(prefix string) ([]string, error) {
+	files, err := os.ReadDir(a.keyPath(prefix)) // Replace with your directory
+	if err != nil {
+		if os.IsNotExist(err) {
+			return []string{}, nil
+		}
+		return nil, err
+	}
+
+	keys := make([]string, len(files))
+	for i, file := range files {
+		keys[i] = path.Join(prefix, file.Name())
+	}
+	return keys, nil
+}
+
 // Store stores the file at key, checking if it was signed from the values
 func (a API) Store(key string, file io.Reader) error {
 	p := a.keyPath(key)
@@ -118,6 +119,11 @@ func (a API) Store(key string, file io.Reader) error {
 	}
 
 	return outFile.Close()
+}
+
+// Get returns the file at key
+func (a API) Get(key string) (fs.File, error) {
+	return os.Open(a.keyPath(key))
 }
 
 // FileHandler returns the http.Handler to serve the files

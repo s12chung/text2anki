@@ -12,7 +12,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/tokenizers/server"
+	"github.com/s12chung/text2anki/pkg/tokenizer/server"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
@@ -43,13 +43,9 @@ func TestMain(m *testing.M) {
 
 var cleaned = false
 
-type SplitTokenizer struct {
-}
+type SplitTokenizer struct{}
 
-func (s *SplitTokenizer) Cleanup() {
-	cleaned = true
-}
-
+func (s *SplitTokenizer) Cleanup() { cleaned = true }
 func (s *SplitTokenizer) Tokenize(str string) (any, error) {
 	return &tokenizeResponse{strings.Split(str, " ")}, nil
 }

@@ -1,11 +1,11 @@
-// Package tokenizers contains tokenizers
-package tokenizers
+// Package tokenizer contains tokenizers
+package tokenizer
 
 import (
 	"fmt"
 
 	"github.com/s12chung/text2anki/pkg/lang"
-	"github.com/s12chung/text2anki/pkg/tokenizers/server"
+	"github.com/s12chung/text2anki/pkg/tokenizer/server"
 )
 
 // Tokenizer takes a string and gets it's part of speech tokens

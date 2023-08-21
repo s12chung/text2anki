@@ -1,0 +1,5 @@
+{
+  "api.PrePartListCreateResponse": {
+    "id": "string"
+  }
+}

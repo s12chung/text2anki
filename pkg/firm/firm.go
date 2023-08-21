@@ -21,8 +21,7 @@ var DefaultRegistry = &Registry{}
 var DefaultValidator = NewValueValidator(NotFoundRule{})
 
 // NotFoundRule is the rule used for not found types in the DefaultValidator
-type NotFoundRule struct {
-}
+type NotFoundRule struct{}
 
 // ValidateValue validates the value (always an error)
 func (n NotFoundRule) ValidateValue(value reflect.Value) ErrorMap {

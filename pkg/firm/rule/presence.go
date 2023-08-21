@@ -7,8 +7,7 @@ import (
 )
 
 // Presence checks if value is non-Zero and non-Empty
-type Presence struct {
-}
+type Presence struct{}
 
 // ValidateValue returns true if the value is present
 func (p Presence) ValidateValue(value reflect.Value) firm.ErrorMap {

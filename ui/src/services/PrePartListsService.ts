@@ -35,6 +35,23 @@ export interface PrePart {
   audioUrl?: string
 }
 
+export interface PrePartListVerifyData {
+  text: string
+}
+
+export interface PrePartListVerifyResponse {
+  extractorType: string
+}
+
+export interface PrePartListCreateData {
+  extractorType: string
+  text: string
+}
+
+export interface PrePartListCreateResponse {
+  id: string
+}
+
 class PrePartListsService extends ApplicationService {
   protected pathPrefix = "/sources/pre_part_lists"
 
@@ -44,6 +61,14 @@ class PrePartListsService extends ApplicationService {
 
   async get(id: string | number): Promise<PrePartList> {
     return (await this.fetch(`/${id}`)) as PrePartList
+  }
+
+  async verify(data: PrePartListVerifyData): Promise<PrePartListVerifyResponse> {
+    return (await this.fetch("/verify", requestInit(Http.POST, data))) as PrePartListVerifyResponse
+  }
+
+  async create(data: PrePartListCreateData): Promise<PrePartListCreateResponse> {
+    return (await this.fetch("/", requestInit(Http.POST, data))) as PrePartListCreateResponse
   }
 }
 

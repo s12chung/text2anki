@@ -1,0 +1,10 @@
+{
+  "api.PrePartListURL": {
+    "id": "string",
+    "pre_parts": "[]api.PrePartMediaURL"
+  },
+  "api.PrePartMediaURL": {
+    "audio_url,omitempty": "string",
+    "image_url,omitempty": "string"
+  }
+}

@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"io/fs"
 	"path"
 	"reflect"
 )
@@ -44,24 +45,34 @@ func (d DBStorage) SignPut(table, column, ext string) (PreSignedHTTPRequest, err
 	return d.api.SignPut(BaseKey(table, column, id) + ext)
 }
 
+// Get returns the file at key
+func (d DBStorage) Get(key string) (fs.File, error) {
+	return d.api.Get(key)
+}
+
 // SignPutTree signs the fields in extTree and fills in the matching signedTree's PreSignedHTTPRequest
 func (d DBStorage) SignPutTree(config SignPutConfig, extTree, signedTree any) error {
-	id, err := d.uuidGenerator.Generate()
-	if err != nil {
-		return err
-	}
-	current := BaseKey(config.Table, config.Column, id)
-	signedTreeValue, err := setID(id, signedTree)
+	signedTreeValue, current, err := d.putTreeSetup(config, signedTree)
 	if err != nil {
 		return err
 	}
 	return d.signPutTree(config.NameToValidExts, reflect.ValueOf(extTree), signedTreeValue, current)
 }
 
+// PutTree puts the files from fileTree and sets the keyTree
+func (d DBStorage) PutTree(config SignPutConfig, fileTree, keyTree any) error {
+	keyTreeValue, current, err := d.putTreeSetup(config, keyTree)
+	if err != nil {
+		return err
+	}
+	return d.putTree(config.NameToValidExts, reflect.ValueOf(fileTree), keyTreeValue, current)
+}
+
 const signExtSuffix = "Ext"
 const signRequestSuffix = "Request"
 const keySuffix = "Key"
 const urlSuffix = "URL"
+const fileSuffix = "File"
 
 // KeyTree fills in the matching keyTree's string with storage keys from the key structure
 func (d DBStorage) KeyTree(table, column, id string, keyTree any) error {

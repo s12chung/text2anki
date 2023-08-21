@@ -13,6 +13,7 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
+	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
@@ -21,12 +22,10 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	dir, err := os.MkdirTemp("", "text2anki-anki.TestMain-")
-	if err != nil {
-		log.Fatal(err)
-	}
+
+	dir := path.Join(os.TempDir(), test.GenerateName("anki.TestMain"))
 	config.NotesCacheDir = path.Join(dir, "files")
-	if err = os.Mkdir(path.Join(dir, "files"), ioutil.OwnerRWXGroupRX); err != nil {
+	if err = os.MkdirAll(path.Join(dir, "files"), ioutil.OwnerRWXGroupRX); err != nil {
 		log.Fatal(err)
 	}
 	SetConfig(config)
@@ -57,22 +56,22 @@ func koreanBasicNotesWithSounds(t *testing.T) []Note {
 
 func TestExportFiles(t *testing.T) {
 	require := require.New(t)
+	testName := "TestExportFiles"
 
-	exportDir, err := os.MkdirTemp("", "text2anki-TestExportFiles-")
-	require.NoError(err)
-	err = ExportFiles(koreanBasicNotesWithSounds(t), exportDir)
-	require.NoError(err)
+	exportDir := path.Join(os.TempDir(), test.GenerateName(testName))
+	test.MkdirAll(t, exportDir)
+	require.NoError(ExportFiles(koreanBasicNotesWithSounds(t), exportDir))
 
 	fixture.CompareOrUpdateDir(t, "ExportFiles", exportDir)
 }
 
 func TestExportSounds(t *testing.T) {
 	require := require.New(t)
+	testName := "TestExportSounds"
 
-	exportDir, err := os.MkdirTemp("", "text2anki-TestExportSounds-")
-	require.NoError(err)
-	err = ExportSounds(koreanBasicNotesWithSounds(t), exportDir)
-	require.NoError(err)
+	exportDir := path.Join(os.TempDir(), test.GenerateName(testName))
+	test.MkdirAll(t, exportDir)
+	require.NoError(ExportSounds(koreanBasicNotesWithSounds(t), exportDir))
 
 	dirEntries, err := os.ReadDir(exportDir)
 	require.NoError(err)
@@ -86,13 +85,13 @@ func TestExportSounds(t *testing.T) {
 
 func TestExportCSVFile(t *testing.T) {
 	require := require.New(t)
+	testName := "TestExportCSVFile"
 
-	dir, err := os.MkdirTemp("", "text2anki-TestExportCSVFile-")
-	require.NoError(err)
-	dir = path.Join(dir, "TestExportCSVFile.csv")
+	dir := path.Join(os.TempDir(), test.GenerateName(testName))
+	test.MkdirAll(t, dir)
 
-	err = ExportCSVFile(notesFromTerms(t), dir)
-	require.NoError(err)
+	dir = path.Join(dir, "basic.csv")
+	require.NoError(ExportCSVFile(notesFromTerms(t), dir))
 	//nolint:gosec // for tests
 	bytes, err := os.ReadFile(dir)
 	require.NoError(err)

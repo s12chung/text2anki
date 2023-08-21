@@ -6,6 +6,10 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
 // IsCI returns true if the test envirnment is under CI
@@ -33,4 +37,9 @@ func GenerateFilename(name, ext string) string {
 // GenerateName returns a non-colliding name
 func GenerateName(name string) string {
 	return fmt.Sprintf("text2anki-%v-%v", name, timeNow().Format(time.StampNano))
+}
+
+// MkdirAll is a simple wrapper around os.MkdirAll
+func MkdirAll(t *testing.T, path string) {
+	require.NoError(t, os.MkdirAll(path, ioutil.OwnerRWXGroupRX))
 }

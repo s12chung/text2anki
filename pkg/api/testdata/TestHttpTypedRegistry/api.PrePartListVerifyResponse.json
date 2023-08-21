@@ -1,0 +1,5 @@
+{
+  "api.PrePartListVerifyResponse": {
+    "extractor_type": "string"
+  }
+}

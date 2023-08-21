@@ -54,7 +54,7 @@ export interface CreateSourceData {
 
 export interface CreateSourcePartData {
   text: string
-  translation: string
+  translation?: string
 }
 
 export const UpdateSourceDataEmpty = Object.freeze<UpdateSourceData>({

@@ -16,7 +16,7 @@
   },
   "db.TokenizedText": {
     "Text": "text.Text",
-    "tokens": "[]tokenizers.Token"
+    "tokens": "[]tokenizer.Token"
   },
   "text.Text": {
     "previous_break,omitempty": "bool",
@@ -24,7 +24,7 @@
     "translation": "string"
   },
   "time.Time": {},
-  "tokenizers.Token": {
+  "tokenizer.Token": {
     "length": "uint",
     "part_of_speech": "lang.PartOfSpeech",
     "start_index": "uint",

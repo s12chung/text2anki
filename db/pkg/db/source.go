@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"time"
 
 	"golang.org/x/exp/slog"
 
 	"github.com/s12chung/text2anki/pkg/text"
-	"github.com/s12chung/text2anki/pkg/tokenizers"
+	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
@@ -51,6 +52,12 @@ type sourcePartMediaAlias SourcePartMedia
 type SourcePartMediaSerialized struct {
 	ImageURL string `json:"image_url,omitempty"`
 	AudioURL string `json:"audio_url,omitempty"`
+}
+
+// SourcePartMediaFile is the File version of SourcePartMedia
+type SourcePartMediaFile struct {
+	ImageFile fs.File
+	AudioFile fs.File
 }
 
 // ToDB returns the matching SourcePartMedia
@@ -177,14 +184,14 @@ func (s Source) ToSourceStructured() SourceStructured {
 // TextTokenizer is used to generate TokenizedText
 type TextTokenizer struct {
 	Parser       text.Parser
-	Tokenizer    tokenizers.Tokenizer
+	Tokenizer    tokenizer.Tokenizer
 	CleanSpeaker bool
 }
 
 // TokenizedText is the text grouped with its tokens
 type TokenizedText struct {
 	text.Text
-	Tokens []tokenizers.Token `json:"tokens"`
+	Tokens []tokenizer.Token `json:"tokens"`
 }
 
 // Setup sets up the TextTokenizer
@@ -217,7 +224,7 @@ func (t TextTokenizer) TokenizeTexts(texts []text.Text) (tokenizedTexts []Tokeni
 
 	tokenizedTexts = make([]TokenizedText, len(texts))
 	for i, text := range texts {
-		var tokens []tokenizers.Token
+		var tokens []tokenizer.Token
 		tokens, err = t.Tokenizer.Tokenize(text.Text)
 		if err != nil {
 			return nil, err

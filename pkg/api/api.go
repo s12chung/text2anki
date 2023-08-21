@@ -9,9 +9,10 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
+	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/storage"
-	"github.com/s12chung/text2anki/pkg/synthesizers"
+	"github.com/s12chung/text2anki/pkg/synthesizer"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 )
@@ -19,9 +20,10 @@ import (
 // Routes contains the routes used for the api
 type Routes struct {
 	Dictionary    dictionary.Dictionary
-	Synthesizer   synthesizers.Synthesizer
+	Synthesizer   synthesizer.Synthesizer
 	TextTokenizer db.TextTokenizer
 	Storage       Storage
+	ExtractorMap  extractor.Map
 }
 
 // Storage contains the Route's storage setup
@@ -55,7 +57,9 @@ func (rs Routes) Router() chi.Router {
 		})
 
 		r.Route("/pre_part_lists", func(r chi.Router) {
+			r.Post("/", httptyped.RespondTypedJSONWrap(rs.PrePartListCreate))
 			r.Post("/sign", httptyped.RespondTypedJSONWrap(rs.PrePartListSign))
+			r.Post("/verify", httptyped.RespondTypedJSONWrap(rs.PrePartListVerify))
 			r.Route("/{prePartListID}", func(r chi.Router) {
 				r.Get("/", httptyped.RespondTypedJSONWrap(rs.PrePartListGet))
 			})
