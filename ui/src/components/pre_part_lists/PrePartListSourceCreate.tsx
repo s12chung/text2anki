@@ -1,4 +1,5 @@
 import { PrePartList } from "../../services/PrePartListsService.ts"
+import { imageToClipboard } from "../../utils/ClipboardUtils.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import AwaitError from "../AwaitError.tsx"
 import Header from "../Header.tsx"
@@ -30,13 +31,23 @@ const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) =
   const [currentIndex, setCurrentIndex] = useState<number>(0)
   const [partTextsMap, setPartTextsMap] = useState<Record<number, string>>({})
 
+  const setCurrentIndexWithClipboard = useCallback(
+    (changeFunction: (index: number, length: number) => number) => {
+      const index = changeFunction(currentIndex, preParts.length)
+      setCurrentIndex(index)
+      const { imageUrl } = preParts[index]
+      if (!imageUrl) return
+      imageToClipboard(imageUrl)
+    },
+    [currentIndex, preParts]
+  )
   const next = useCallback(
-    () => setCurrentIndex(increment(currentIndex, preParts.length)),
-    [currentIndex, preParts.length]
+    () => setCurrentIndexWithClipboard(increment),
+    [setCurrentIndexWithClipboard]
   )
   const prev = useCallback(
-    () => setCurrentIndex(decrement(currentIndex, preParts.length)),
-    [currentIndex, preParts.length]
+    () => setCurrentIndexWithClipboard(decrement),
+    [setCurrentIndexWithClipboard]
   )
   const setPartTextsAt = (index: number, value: string) => {
     const c = { ...partTextsMap }
