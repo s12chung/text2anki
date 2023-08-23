@@ -85,19 +85,16 @@ const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) =
   }, [handleKeyDown])
 
   return (
-    <SlideOver.Dialog show leftNode={<PrePartLeft image={preParts[currentIndex].imageUrl ?? ""} />}>
+    <SlideOver.Dialog
+      show
+      leftNode={
+        <PrePartLeft image={preParts[currentIndex].imageUrl ?? ""} prev={prev} next={next} />
+      }
+    >
       <SlideOver.Header title="Create Source from Parts" />
       <Form action="/sources" method="post" className="m-std space-y-std">
         <div className="text-center">
           Part {currentIndex + 1}/{preParts.length}
-        </div>
-        <div className="flex">
-          <button type="button" className="btn flex-grow" onClick={prev}>
-            ←
-          </button>
-          <button type="button" className="btn flex-grow" onClick={next}>
-            →
-          </button>
         </div>
 
         <input type="hidden" name="prePartListId" value={prePartList.id} />
@@ -126,13 +123,41 @@ const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) =
   )
 }
 
-const PrePartLeft: React.FC<{ image: string }> = ({ image }) => (
+const PrePartLeft: React.FC<{ image: string; prev: () => void; next: () => void }> = ({
+  image,
+  prev,
+  next,
+}) => (
   <div className="h-screen flex flex-col">
     <div className="m-std">
       <Header />
     </div>
-    <img className="flex-grow" src={image} alt="Drag and Dropped image" />
+    <div className="flex flex-grow relative">
+      <ImageNav char="<" changeF={prev} />
+      <div className="flex-1" />
+      <ImageNav char=">" changeF={next} />
+      <img
+        className="absolute flex-grow h-full w-full object-contain -z-10"
+        src={image}
+        alt="Drag and Dropped image"
+      />
+    </div>
   </div>
 )
+
+const ImageNav: React.FC<{ char: string; changeF: () => void }> = ({ char, changeF }) => {
+  return (
+    <a
+      href="#"
+      className="flex flex-1 bg-black justify-center items-center opacity-0 hover:opacity-50 transition ease-out duration-300"
+      onClick={(e) => {
+        e.preventDefault()
+        changeF()
+      }}
+    >
+      <span className="text-white text-8xl font-bold">{char}</span>
+    </a>
+  )
+}
 
 export default PrePartListSourceCreate
