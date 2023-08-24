@@ -1,5 +1,6 @@
 {
   "name": "new_name.txt",
+  "reference": "weave.txt",
   "parts": [
     {
       "tokenized_texts": [

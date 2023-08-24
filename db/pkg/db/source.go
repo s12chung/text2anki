@@ -18,6 +18,7 @@ import (
 type SourceStructured struct {
 	ID        int64        `json:"id,omitempty"`
 	Name      string       `json:"name"`
+	Reference string       `json:"reference"`
 	Parts     []SourcePart `json:"parts"`
 	UpdatedAt time.Time    `json:"updated_at"`
 	CreatedAt time.Time    `json:"created_at"`
@@ -136,16 +137,18 @@ func (s SourceStructured) StaticCopy() any {
 // UpdateParams returns the SourceUpdateParams for the SourceStructured
 func (s SourceStructured) UpdateParams() SourceUpdateParams {
 	return SourceUpdateParams{
-		Name: s.Name,
-		ID:   s.ID,
+		Name:      s.Name,
+		Reference: s.Reference,
+		ID:        s.ID,
 	}
 }
 
 // CreateParams returns the SourceCreateParams for the SourceStructured
 func (s SourceStructured) CreateParams() SourceCreateParams {
 	return SourceCreateParams{
-		Name:  s.DefaultedName(),
-		Parts: s.ToSource().Parts,
+		Name:      s.DefaultedName(),
+		Reference: s.Reference,
+		Parts:     s.ToSource().Parts,
 	}
 }
 
@@ -159,6 +162,7 @@ func (s SourceStructured) ToSource() Source {
 	return Source{
 		ID:        s.ID,
 		Name:      s.Name,
+		Reference: s.Reference,
 		Parts:     string(bytes),
 		UpdatedAt: s.UpdatedAt,
 		CreatedAt: s.CreatedAt,
@@ -175,6 +179,7 @@ func (s Source) ToSourceStructured() SourceStructured {
 	return SourceStructured{
 		ID:        s.ID,
 		Name:      s.Name,
+		Reference: s.Reference,
 		Parts:     parts,
 		UpdatedAt: s.UpdatedAt,
 		CreatedAt: s.CreatedAt,

@@ -81,21 +81,23 @@ func (q *Queries) NoteGet(ctx context.Context, id int64) (Note, error) {
 
 const sourceCreate = `-- name: SourceCreate :one
 INSERT INTO sources (
-    name, parts
-) VALUES (?, ?) RETURNING id, name, parts, updated_at, created_at
+    name, reference, parts
+) VALUES (?, ?, ?) RETURNING id, name, reference, parts, updated_at, created_at
 `
 
 type SourceCreateParams struct {
-	Name  string `json:"name"`
-	Parts string `json:"parts"`
+	Name      string `json:"name"`
+	Reference string `json:"reference"`
+	Parts     string `json:"parts"`
 }
 
 func (q *Queries) SourceCreate(ctx context.Context, arg SourceCreateParams) (Source, error) {
-	row := q.db.QueryRowContext(ctx, sourceCreate, arg.Name, arg.Parts)
+	row := q.db.QueryRowContext(ctx, sourceCreate, arg.Name, arg.Reference, arg.Parts)
 	var i Source
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.Reference,
 		&i.Parts,
 		&i.UpdatedAt,
 		&i.CreatedAt,
@@ -113,7 +115,7 @@ func (q *Queries) SourceDestroy(ctx context.Context, id int64) error {
 }
 
 const sourceGet = `-- name: SourceGet :one
-SELECT id, name, parts, updated_at, created_at FROM sources WHERE id = ? LIMIT 1
+SELECT id, name, reference, parts, updated_at, created_at FROM sources WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) SourceGet(ctx context.Context, id int64) (Source, error) {
@@ -122,6 +124,7 @@ func (q *Queries) SourceGet(ctx context.Context, id int64) (Source, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.Reference,
 		&i.Parts,
 		&i.UpdatedAt,
 		&i.CreatedAt,
@@ -130,7 +133,7 @@ func (q *Queries) SourceGet(ctx context.Context, id int64) (Source, error) {
 }
 
 const sourceIndex = `-- name: SourceIndex :many
-SELECT id, name, parts, updated_at, created_at FROM sources ORDER BY created_at DESC
+SELECT id, name, reference, parts, updated_at, created_at FROM sources ORDER BY created_at DESC
 `
 
 func (q *Queries) SourceIndex(ctx context.Context) ([]Source, error) {
@@ -145,6 +148,7 @@ func (q *Queries) SourceIndex(ctx context.Context) ([]Source, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.Reference,
 			&i.Parts,
 			&i.UpdatedAt,
 			&i.CreatedAt,
@@ -164,21 +168,24 @@ func (q *Queries) SourceIndex(ctx context.Context) ([]Source, error) {
 
 const sourceUpdate = `-- name: SourceUpdate :one
 UPDATE sources
-SET name = ?
-WHERE id = ? RETURNING id, name, parts, updated_at, created_at
+SET name = ?,
+reference = ?
+WHERE id = ? RETURNING id, name, reference, parts, updated_at, created_at
 `
 
 type SourceUpdateParams struct {
-	Name string `json:"name"`
-	ID   int64  `json:"id"`
+	Name      string `json:"name"`
+	Reference string `json:"reference"`
+	ID        int64  `json:"id"`
 }
 
 func (q *Queries) SourceUpdate(ctx context.Context, arg SourceUpdateParams) (Source, error) {
-	row := q.db.QueryRowContext(ctx, sourceUpdate, arg.Name, arg.ID)
+	row := q.db.QueryRowContext(ctx, sourceUpdate, arg.Name, arg.Reference, arg.ID)
 	var i Source
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.Reference,
 		&i.Parts,
 		&i.UpdatedAt,
 		&i.CreatedAt,

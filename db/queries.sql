@@ -6,13 +6,14 @@ SELECT * FROM sources WHERE id = ? LIMIT 1;
 
 -- name: SourceUpdate :one
 UPDATE sources
-SET name = ?
+SET name = ?,
+reference = ?
 WHERE id = ? RETURNING *;
 
 -- name: SourceCreate :one
 INSERT INTO sources (
-    name, parts
-) VALUES (?, ?) RETURNING *;
+    name, reference, parts
+) VALUES (?, ?, ?) RETURNING *;
 
 -- name: SourceDestroy :exec
 DELETE FROM sources WHERE id = ?;

@@ -12,6 +12,7 @@
     "id,omitempty": "int64",
     "name": "string",
     "parts": "[]db.SourcePart",
+    "reference": "string",
     "updated_at": "time.Time"
   },
   "db.TokenizedText": {
