@@ -53,7 +53,8 @@ func (rs Routes) SourceGet(r *http.Request) (any, *httputil.HTTPError) {
 
 // SourceUpdateRequest represents the SourceUpdate request
 type SourceUpdateRequest struct {
-	Name string
+	Name      string `json:"name"`
+	Reference string `json:"reference"`
 }
 
 func init() {
@@ -74,6 +75,7 @@ func (rs Routes) SourceUpdate(r *http.Request) (any, *httputil.HTTPError) {
 		return nil, httpError
 	}
 	sourceStructured.Name = req.Name
+	sourceStructured.Reference = req.Reference
 
 	return httputil.ReturnModelOr500(func() (any, error) {
 		source, err := db.Qs().SourceUpdate(r.Context(), sourceStructured.UpdateParams())
@@ -84,6 +86,8 @@ func (rs Routes) SourceUpdate(r *http.Request) (any, *httputil.HTTPError) {
 // SourceCreateRequest represents the SourceCreate request
 type SourceCreateRequest struct {
 	PrePartListID string                    `json:"pre_part_list_id,omitempty"`
+	Name          string                    `json:"name"`
+	Reference     string                    `json:"reference"`
 	Parts         []SourceCreateRequestPart `json:"parts"`
 }
 
@@ -143,7 +147,7 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 	}
 
 	return httputil.ReturnModelOr500(func() (any, error) {
-		source, err := db.Qs().SourceCreate(r.Context(), db.SourceStructured{Parts: parts}.CreateParams())
+		source, err := db.Qs().SourceCreate(r.Context(), db.SourceStructured{Name: req.Name, Reference: req.Reference, Parts: parts}.CreateParams())
 		return source.ToSourceStructured(), err
 	})
 }

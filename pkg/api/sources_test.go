@@ -57,9 +57,11 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 	testCases := []struct {
 		name         string
 		newName      string
+		reference    string
 		expectedCode int
 	}{
-		{name: "basic", newName: "new_name.txt", expectedCode: http.StatusOK},
+		{name: "basic", newName: "new_name", expectedCode: http.StatusOK},
+		{name: "with_reference", newName: "new_name", reference: "new_ref.txt", expectedCode: http.StatusOK},
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 	}
 
@@ -71,7 +73,7 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			reqBody := test.JSON(t, SourceUpdateRequest{Name: tc.newName})
+			reqBody := test.JSON(t, SourceUpdateRequest{Name: tc.newName, Reference: tc.reference})
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPatch, idPath("", created.ID), bytes.NewReader(reqBody)))
 			resp.EqualCode(t, tc.expectedCode)
 
@@ -88,6 +90,7 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 	}
 }
 
+// nolint:funlen // for testing
 func TestRoutes_SourceCreate(t *testing.T) {
 	testName := "TestRoutes_SourceCreate"
 	test.CISkip(t, "can't run C environment in CI")
@@ -101,12 +104,16 @@ func TestRoutes_SourceCreate(t *testing.T) {
 
 	testCases := []struct {
 		name           string
+		sName          string
+		reference      string
 		partCount      int
 		finalPartCount int
 		prePartListID  string
 		expectedCode   int
 	}{
 		{name: "split", expectedCode: http.StatusOK},
+		{name: "split_with_reference", reference: "split_with_reference.txt", expectedCode: http.StatusOK},
+		{name: "split_with_name_and_ref", sName: "some_name", reference: "split_with_name_and_ref.txt", expectedCode: http.StatusOK},
 		{name: "no_translation", expectedCode: http.StatusOK},
 		{name: "weave", expectedCode: http.StatusOK},
 		{name: "multi_part", partCount: 2, expectedCode: http.StatusOK},
@@ -121,7 +128,12 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			body := SourceCreateRequest{PrePartListID: tc.prePartListID, Parts: sourceParts(t, tc.name, testName, tc.partCount)}
+			body := SourceCreateRequest{
+				PrePartListID: tc.prePartListID,
+				Name:          tc.sName,
+				Reference:     tc.reference,
+				Parts:         sourceParts(t, tc.name, testName, tc.partCount),
+			}
 			reqBody := test.JSON(t, body)
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPost, "", bytes.NewReader(reqBody)))
 			resp.EqualCode(t, tc.expectedCode)
