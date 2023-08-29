@@ -1,6 +1,6 @@
 {
-  "name": "split",
-  "reference": "split.txt",
+  "name": "내가 가는 이길이",
+  "reference": "split_with_reference.txt",
   "parts": [
     {
       "tokenized_texts": [

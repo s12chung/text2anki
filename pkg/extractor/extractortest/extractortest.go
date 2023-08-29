@@ -60,3 +60,11 @@ func (t Source) ExtractToDir(cacheDir string) error {
 	})
 	return err
 }
+
+// Info returns the info from the extraction
+func (t Source) Info(_ string) (extractor.SourceInfo, error) {
+	return extractor.SourceInfo{
+		Name:      "extractortest",
+		Reference: "extractortest.go source code",
+	}, nil
+}

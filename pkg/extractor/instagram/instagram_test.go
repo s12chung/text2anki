@@ -2,12 +2,14 @@ package instagram
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/pkg/extractor"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 const testProtocol = "https://"
@@ -72,4 +74,13 @@ func TestPost_ExtractToDir(t *testing.T) {
 			require.Equal(tc.err, NewPost(tc.url).ExtractToDir(""))
 		})
 	}
+}
+
+func TestPost_Info(t *testing.T) {
+	require := require.New(t)
+	testName := "TestPost_Info"
+
+	info, err := NewPost("https://testpostinfo.com").Info(fixture.JoinTestData(testName))
+	require.NoError(err)
+	fixture.CompareReadOrUpdate(t, filepath.Join(testName, "postInfo.json"), fixture.JSON(t, info))
 }

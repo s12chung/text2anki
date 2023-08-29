@@ -115,8 +115,8 @@ func fixtureFileName(testName, name string) string {
 }
 
 func TestRoutes_Router(t *testing.T) {
-	testName := "TestRoutes_Router"
 	require := require.New(t)
+	testName := "TestRoutes_Router"
 
 	r := chi.NewRouter()
 	r.Use(middleware.Heartbeat("/healthz"))

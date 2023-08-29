@@ -1,6 +1,6 @@
 {
-  "name": "split",
-  "reference": "split.txt",
+  "name": "some_name",
+  "reference": "split_with_name_and_ref.txt",
   "parts": [
     {
       "tokenized_texts": [

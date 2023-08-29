@@ -34,6 +34,15 @@ func TestSourceStructured_StaticCopy(t *testing.T) {
 	require.Equal(sourceCopy, firstSource(t).ToSourceStructured().StaticCopy())
 }
 
+func TestSourceStructured_DefaultedName(t *testing.T) {
+	require := require.New(t)
+
+	source := firstSource(t).ToSourceStructured()
+	require.Equal(source.Name, source.DefaultedName())
+	source.Name = ""
+	require.Equal(source.Parts[0].TokenizedTexts[0].Text.Text, source.DefaultedName())
+}
+
 func TestSourceStructured_UpdateParams(t *testing.T) {
 	testName := "TestSourceStructured_UpdateParams"
 	test.EmptyFieldsMatch(t, firstSource(t))

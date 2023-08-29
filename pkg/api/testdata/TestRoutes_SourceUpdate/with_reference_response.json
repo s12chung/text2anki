@@ -1,6 +1,6 @@
 {
   "name": "new_name",
-  "reference": "",
+  "reference": "new_ref.txt",
   "parts": [
     {
       "tokenized_texts": [

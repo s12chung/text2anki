@@ -1,11 +1,11 @@
 {
-  "name": "나 오늘은 혼자",
-  "reference": "",
+  "name": "override name",
+  "reference": "override.txt",
   "parts": [
     {
       "media": {
-        "image_url": "https://test.com/storage/sources/parts/a1234567-3456-9abc-d123-456789abcdef/parts.PreParts[0].Image.txt",
-        "audio_url": "https://test.com/storage/sources/parts/a1234567-3456-9abc-d123-456789abcdef/parts.PreParts[0].Audio.txt"
+        "image_url": "https://test.com/storage/sources/parts/a47ac10b-58cc-4372-a567-0e02b2c3d479/parts.PreParts[0].Image.txt",
+        "audio_url": "https://test.com/storage/sources/parts/a47ac10b-58cc-4372-a567-0e02b2c3d479/parts.PreParts[0].Audio.txt"
       },
       "tokenized_texts": [
         {
@@ -72,7 +72,7 @@
     },
     {
       "media": {
-        "image_url": "https://test.com/storage/sources/parts/a1234567-3456-9abc-d123-456789abcdef/parts.PreParts[1].Image.txt"
+        "image_url": "https://test.com/storage/sources/parts/a47ac10b-58cc-4372-a567-0e02b2c3d479/parts.PreParts[1].Image.txt"
       },
       "tokenized_texts": [
         {
@@ -125,67 +125,6 @@
               "text": ".",
               "part_of_speech": "Punctuation",
               "start_index": 13,
-              "length": 1
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "media": {
-        "image_url": "https://test.com/storage/sources/parts/a1234567-3456-9abc-d123-456789abcdef/parts.PreParts[2].Image.txt"
-      },
-      "tokenized_texts": [
-        {
-          "text": "그건 안 됑.",
-          "translation": "",
-          "tokens": [
-            {
-              "text": "그것",
-              "part_of_speech": "Pronoun",
-              "start_index": 0,
-              "length": 2
-            },
-            {
-              "text": "ㄴ",
-              "part_of_speech": "Postposition",
-              "start_index": 2,
-              "length": 1
-            },
-            {
-              "text": "안",
-              "part_of_speech": "Adverb",
-              "start_index": 4,
-              "length": 1
-            },
-            {
-              "text": "됑",
-              "part_of_speech": "OtherLanguage",
-              "start_index": 6,
-              "length": 1
-            },
-            {
-              "text": ".",
-              "part_of_speech": "Punctuation",
-              "start_index": 7,
-              "length": 1
-            }
-          ]
-        },
-        {
-          "text": "쮸욱",
-          "translation": "",
-          "tokens": [
-            {
-              "text": "쮸",
-              "part_of_speech": "Noun",
-              "start_index": 0,
-              "length": 1
-            },
-            {
-              "text": "욱",
-              "part_of_speech": "Postposition",
-              "start_index": 1,
               "length": 1
             }
           ]

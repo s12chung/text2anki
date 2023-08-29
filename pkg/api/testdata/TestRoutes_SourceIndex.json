@@ -1,6 +1,7 @@
 [
   {
-    "name": "split.txt",
+    "name": "split",
+    "reference": "split.txt",
     "parts": [
       {
         "tokenized_texts": [
@@ -83,7 +84,8 @@
     "created_at": "0001-01-01T00:00:00Z"
   },
   {
-    "name": "weave.txt",
+    "name": "weave",
+    "reference": "weave.txt",
     "parts": [
       {
         "tokenized_texts": [

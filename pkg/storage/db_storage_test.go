@@ -18,6 +18,16 @@ func newTestDBStorage() DBStorage {
 	return NewDBStorage(newTestAPI(), uuidTest{})
 }
 
+func TestSignPutConfig_KeyFor(t *testing.T) {
+	require := require.New(t)
+
+	key := SignPutConfig{
+		Table:  "my_table",
+		Column: "sources",
+	}.KeyFor(testUUID, "output.json")
+	require.Equal("my_table/sources/123e4567-e89b-12d3-a456-426614174000/output.json", key)
+}
+
 func TestBaseKey(t *testing.T) {
 	require := require.New(t)
 	require.Equal("my_table/the_column/123e4567-e89b-12d3-a456-426614174000/the_column", BaseKey("my_table", "the_column", testUUID))

@@ -1,5 +1,6 @@
 {
-  "name": "weave.txt",
+  "name": "weave",
+  "reference": "weave.txt",
   "parts": [
     {
       "tokenized_texts": [

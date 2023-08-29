@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"io/fs"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -21,12 +22,14 @@ func init() {
 
 // PrePartListFile is the fileTree for PreParts
 type PrePartListFile struct {
+	InfoFile fs.File                  `json:"info_file,omitempty"`
 	PreParts []db.SourcePartMediaFile `json:"pre_parts"`
 }
 
 // PrePartList is a KeyTree for PreParts
 type PrePartList struct {
 	ID       string               `json:"id"`
+	InfoKey  string               `json:"info_key,omitempty"`
 	PreParts []db.SourcePartMedia `json:"pre_parts"`
 }
 
@@ -34,6 +37,7 @@ var prePartListPutConfig = storage.SignPutConfig{
 	Table:  sourcesTable,
 	Column: partsColumn,
 	NameToValidExts: map[string]map[string]bool{
+		"Info": {".json": true},
 		"Image": {
 			".jpg":  true,
 			".jpeg": true,
@@ -188,13 +192,19 @@ func (rs Routes) PrePartListCreate(r *http.Request) (any, *httputil.HTTPError) {
 	if !exists {
 		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("given type is not valid: %v", req.ExtractorType))
 	}
-	preParts, err := ex.Extract(req.Text)
+	extraction, err := ex.Extract(req.Text)
 	if err != nil {
 		return nil, httputil.Error(http.StatusUnprocessableEntity, err)
 	}
 	prePartListKey := PrePartList{}
-	if err := rs.Storage.DBStorage.PutTree(prePartListPutConfig, PrePartListFile{PreParts: preParts}, &prePartListKey); err != nil {
+	infoFile, err := extraction.InfoFile()
+	if err != nil {
+		return nil, httputil.Error(http.StatusUnprocessableEntity, err)
+	}
+	prePartListFile := PrePartListFile{InfoFile: infoFile, PreParts: extraction.Parts}
+	if err := rs.Storage.DBStorage.PutTree(prePartListPutConfig, prePartListFile, &prePartListKey); err != nil {
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}
+
 	return PrePartListCreateResponse{ID: prePartListKey.ID}, nil
 }

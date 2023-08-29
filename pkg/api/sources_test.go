@@ -13,6 +13,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
+	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
@@ -57,9 +58,11 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 	testCases := []struct {
 		name         string
 		newName      string
+		reference    string
 		expectedCode int
 	}{
-		{name: "basic", newName: "new_name.txt", expectedCode: http.StatusOK},
+		{name: "basic", newName: "new_name", expectedCode: http.StatusOK},
+		{name: "with_reference", newName: "new_name", reference: "new_ref.txt", expectedCode: http.StatusOK},
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 	}
 
@@ -71,7 +74,7 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			reqBody := test.JSON(t, SourceUpdateRequest{Name: tc.newName})
+			reqBody := test.JSON(t, SourceUpdateRequest{Name: tc.newName, Reference: tc.reference})
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPatch, idPath("", created.ID), bytes.NewReader(reqBody)))
 			resp.EqualCode(t, tc.expectedCode)
 
@@ -88,12 +91,15 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 	}
 }
 
+// nolint:funlen // for testing
 func TestRoutes_SourceCreate(t *testing.T) {
 	testName := "TestRoutes_SourceCreate"
 	test.CISkip(t, "can't run C environment in CI")
 
-	prePartListID := testUUID
-	setupSourceCreateMedia(t, prePartListID)
+	mediaID := "a1234567-3456-9abc-d123-456789abcdef"
+	mediaWithInfoID := "a47ac10b-58cc-4372-a567-0e02b2c3d479"
+	setupSourceCreateMedia(t, mediaID)
+	setupSourceCreateMediaWithInfo(t, mediaWithInfoID)
 	require.NoError(t, routes.Setup())
 	defer func() {
 		require.NoError(t, routes.Cleanup())
@@ -101,17 +107,24 @@ func TestRoutes_SourceCreate(t *testing.T) {
 
 	testCases := []struct {
 		name           string
+		sName          string
+		reference      string
 		partCount      int
 		finalPartCount int
 		prePartListID  string
 		expectedCode   int
 	}{
 		{name: "split", expectedCode: http.StatusOK},
+		{name: "split_with_reference", reference: "split_with_reference.txt", expectedCode: http.StatusOK},
+		{name: "split_with_name_and_ref", sName: "some_name", reference: "split_with_name_and_ref.txt", expectedCode: http.StatusOK},
 		{name: "no_translation", expectedCode: http.StatusOK},
 		{name: "weave", expectedCode: http.StatusOK},
 		{name: "multi_part", partCount: 2, expectedCode: http.StatusOK},
 		{name: "multi_with_empty", partCount: 3, finalPartCount: 2, expectedCode: http.StatusOK},
-		{name: "media", partCount: 3, prePartListID: prePartListID, expectedCode: http.StatusOK},
+		{name: "media", partCount: 3, prePartListID: mediaID, expectedCode: http.StatusOK},
+		{name: "media_with_info", partCount: 2, prePartListID: mediaWithInfoID, expectedCode: http.StatusOK},
+		{name: "media_with_info_name_ref", partCount: 2, prePartListID: mediaWithInfoID,
+			sName: "override name", reference: "override.txt", expectedCode: http.StatusOK},
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty_parts", expectedCode: http.StatusUnprocessableEntity},
@@ -121,7 +134,12 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			body := SourceCreateRequest{PrePartListID: tc.prePartListID, Parts: sourceParts(t, tc.name, testName, tc.partCount)}
+			body := SourceCreateRequest{
+				PrePartListID: tc.prePartListID,
+				Name:          tc.sName,
+				Reference:     tc.reference,
+				Parts:         sourceParts(t, tc.name, testName, tc.partCount),
+			}
 			reqBody := test.JSON(t, body)
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPost, "", bytes.NewReader(reqBody)))
 			resp.EqualCode(t, tc.expectedCode)
@@ -145,6 +163,18 @@ func TestRoutes_SourceCreate(t *testing.T) {
 			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, sourceStructured.StaticCopy()))
 		})
 	}
+}
+
+func setupSourceCreateMediaWithInfo(t *testing.T, prePartListID string) {
+	setupSourceCreateMedia(t, prePartListID)
+
+	info := extractor.SourceInfo{
+		Name:      "test name",
+		Reference: "https://www.testref.com",
+	}
+	baseKey := storage.BaseKey(sourcesTable, partsColumn, prePartListID)
+	err := routes.Storage.Storer.Store(baseKey+".Info.json", bytes.NewReader(test.JSON(t, info)))
+	require.NoError(t, err)
 }
 
 func setupSourceCreateMedia(t *testing.T, prePartListID string) {
