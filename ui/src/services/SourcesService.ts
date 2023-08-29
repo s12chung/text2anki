@@ -32,6 +32,7 @@ export interface SourcePartMedia {
 export interface Source {
   id: number
   name: string
+  reference: string
   parts: SourcePart[]
   updatedAt: Date
   createdAt: Date
@@ -59,10 +60,12 @@ export interface CreateSourcePartData {
 
 export const UpdateSourceDataEmpty = Object.freeze<UpdateSourceData>({
   name: "",
+  reference: "",
 })
 
 export interface UpdateSourceData {
   name: string
+  reference?: string
 }
 
 class SourcesService extends ApplicationService {

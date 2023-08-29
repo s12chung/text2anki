@@ -148,8 +148,9 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
       <div className="grid-std flex-std my-std">
         <div className="flex-grow">
           <h2>{source.name}</h2>
+          <div>{source.reference}</div>
         </div>
-        <div className="flex">
+        <div>
           <Link to={`/sources/${source.id}/edit`} className="btn">
             Edit
           </Link>

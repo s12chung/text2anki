@@ -23,8 +23,15 @@ const SourceEdit: React.FC<ISourceEditProps> = ({ data }) => {
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   return (
     <Form action={`/sources/${source.id}`} method="patch">
-      <div className="flex-std">
-        <input name="name" type="text" defaultValue={source.name} className="flex-grow" />
+      <div className="space-y-std">
+        <label>
+          Name:
+          <input name="name" type="text" defaultValue={source.name} />
+        </label>
+        <label>
+          Reference:
+          <input name="reference" type="text" defaultValue={source.reference} />
+        </label>
 
         <Link to={`/sources/${source.id}`} className="btn">
           Cancel
