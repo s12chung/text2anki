@@ -3,8 +3,10 @@ import {
   PrePartSignData,
   PreSignedHTTPRequest,
 } from "../../services/PrePartListsService.ts"
+import { Source } from "../../services/SourcesService.ts"
 import { printError } from "../../utils/ErrorUtil.ts"
 import { headers } from "../../utils/RequestUtil.ts"
+import { removeExtension } from "../../utils/StringUtil.ts"
 import { XMarkIcon } from "@heroicons/react/24/outline"
 import React, {
   DragEventHandler,
@@ -14,13 +16,18 @@ import React, {
   useRef,
   useState,
 } from "react"
-import { useNavigate } from "react-router-dom"
+import { useFetcher, useNavigate } from "react-router-dom"
 import { DotLoader } from "react-spinners"
 
 enum DragState {
   None,
   Dragging,
   Dropped,
+}
+
+const textFileExts: Record<string, boolean> = {
+  "text/plain": true,
+  "text/markdown": true,
 }
 
 const PrePartListDragAndDrop: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -121,19 +128,45 @@ async function uploadFiles(files: File[]): Promise<string> {
   ).then(() => signedResponse.id)
 }
 
+interface ISourceCreateData {
+  source: Source
+}
+
 const PrePartListDrop: React.FC<{ files: File[] }> = ({ files }) => {
   const navigate = useNavigate()
+  const fetcher = useFetcher<ISourceCreateData>()
 
   const didRun = useRef(false)
   const [errorMessage, setErrorMessage] = useState<string>("")
 
   useEffect(() => {
-    if (didRun.current || files.length === 0) return
+    if (didRun.current || files.length === 0 || onlyTextFile(files)) return
     didRun.current = true
     uploadFiles(files)
       .then((id) => navigate(`/sources/pre_part_lists/${id}`))
       .catch((error) => setErrorMessage(printError(error).message))
   }, [files, navigate])
+
+  useEffect(() => {
+    if (fetcher.data) {
+      navigate(`/sources/${fetcher.data.source.id}`)
+      return
+    }
+
+    const file = onlyTextFile(files)
+    if (didRun.current || !file || fetcher.state !== "idle") return
+
+    didRun.current = true
+    file
+      .text()
+      .then((text) => {
+        fetcher.submit(
+          { name: removeExtension(file.name), reference: file.name, "parts[0].text": text },
+          { method: "post", action: "/sources" }
+        )
+      })
+      .catch((error) => setErrorMessage(printError(error).message))
+  }, [fetcher, files, navigate])
 
   return (
     <div className="m-auto text-2xl flex-col items-center text-center">
@@ -157,6 +190,17 @@ const PrePartListDrop: React.FC<{ files: File[] }> = ({ files }) => {
       </div>
     </div>
   )
+}
+
+function onlyTextFile(files: File[]): File | null {
+  if (files.length === 1) {
+    // eslint-disable-next-line prefer-destructuring
+    const file = files[0]
+    if (textFileExts[file.type]) {
+      return file
+    }
+  }
+  return null
 }
 
 export default PrePartListDragAndDrop

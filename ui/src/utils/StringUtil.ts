@@ -1,3 +1,8 @@
+export function removeExtension(fileName: string): string {
+  const lastDotIndex = fileName.lastIndexOf(".")
+  return lastDotIndex === -1 ? fileName : fileName.substring(0, lastDotIndex)
+}
+
 export function snakeToCamel(str: string): string {
   return str.replace(/_[a-z]/gu, (group) => group.charAt(1).toUpperCase())
 }

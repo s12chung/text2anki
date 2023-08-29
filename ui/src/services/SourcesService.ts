@@ -40,6 +40,8 @@ export interface Source {
 
 export const CreateSourceDataEmpty = Object.freeze<CreateSourceData>({
   prePartListId: "",
+  name: "",
+  reference: "",
   parts: [
     Object.freeze({
       text: "",
@@ -50,6 +52,8 @@ export const CreateSourceDataEmpty = Object.freeze<CreateSourceData>({
 
 export interface CreateSourceData {
   prePartListId?: string
+  name?: string
+  reference?: string
   parts: CreateSourcePartData[]
 }
 
