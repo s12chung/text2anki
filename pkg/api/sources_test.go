@@ -123,6 +123,8 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		{name: "multi_with_empty", partCount: 3, finalPartCount: 2, expectedCode: http.StatusOK},
 		{name: "media", partCount: 3, prePartListID: mediaID, expectedCode: http.StatusOK},
 		{name: "media_with_info", partCount: 2, prePartListID: mediaWithInfoID, expectedCode: http.StatusOK},
+		{name: "media_with_info_name_ref", partCount: 2, prePartListID: mediaWithInfoID,
+			sName: "override name", reference: "override.txt", expectedCode: http.StatusOK},
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty_parts", expectedCode: http.StatusUnprocessableEntity},
