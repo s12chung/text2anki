@@ -57,8 +57,8 @@ type SourcePartMediaSerialized struct {
 
 // SourcePartMediaFile is the File version of SourcePartMedia
 type SourcePartMediaFile struct {
-	ImageFile fs.File
-	AudioFile fs.File
+	ImageFile fs.File `json:"image_file,omitempty"`
+	AudioFile fs.File `json:"audio_file,omitempty"`
 }
 
 // ToDB returns the matching SourcePartMedia
@@ -122,7 +122,7 @@ func (s SourceStructured) DefaultedName() string {
 	if len(s.Parts) == 0 && len(s.Parts[0].TokenizedTexts) == 0 {
 		return ""
 	}
-	return stringutil.FirstUnbrokenSubstring(s.Parts[0].TokenizedTexts[0].Text.Text, 25)
+	return stringutil.FirstUnbrokenSubstring(s.Parts[0].TokenizedTexts[0].Text.Text, 30)
 }
 
 // StaticCopy returns a copy without fields that variate

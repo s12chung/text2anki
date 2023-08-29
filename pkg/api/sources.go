@@ -2,11 +2,14 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/storage"
@@ -106,6 +109,7 @@ func init() {
 // PrePartMediaList is the list of media for the SourcePart with an ID
 type PrePartMediaList struct {
 	ID       string               `json:"id"`
+	InfoKey  string               `json:"info_key,omitempty"`
 	PreParts []db.SourcePartMedia `json:"pre_parts"`
 }
 
@@ -116,14 +120,32 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 		return nil, httpError
 	}
 
-	prePartList := PrePartMediaList{}
+	var prePartList *PrePartMediaList
 	if req.PrePartListID != "" {
-		if err := rs.Storage.DBStorage.KeyTree(sourcesTable, partsColumn, req.PrePartListID, &prePartList); err != nil {
+		prePartList = &PrePartMediaList{}
+		if err := rs.Storage.DBStorage.KeyTree(sourcesTable, partsColumn, req.PrePartListID, prePartList); err != nil {
 			if storage.IsNotFoundError(err) {
 				return nil, httputil.Error(http.StatusNotFound, err)
 			}
 			return nil, httputil.Error(http.StatusInternalServerError, err)
 		}
+	}
+
+	source, err := rs.sourceCreateSource(req, prePartList)
+	if err != nil {
+		return nil, err
+	}
+
+	return httputil.ReturnModelOr500(func() (any, error) {
+		source, err := db.Qs().SourceCreate(r.Context(), source.CreateParams())
+		return source.ToSourceStructured(), err
+	})
+}
+
+func (rs Routes) sourceCreateSource(req SourceCreateRequest, prePartList *PrePartMediaList) (*db.SourceStructured, *httputil.HTTPError) {
+	name, reference, err := rs.sourceCreateSourceNameRef(req.Name, req.Reference, prePartList)
+	if err != nil {
+		return nil, err
 	}
 
 	parts := make([]db.SourcePart, 0, len(req.Parts))
@@ -136,7 +158,7 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 			return nil, httputil.Error(http.StatusUnprocessableEntity, err)
 		}
 		part := db.SourcePart{TokenizedTexts: tokenizedTexts}
-		if req.PrePartListID != "" {
+		if prePartList != nil {
 			part.Media = &prePartList.PreParts[i]
 		}
 		parts = append(parts, part)
@@ -145,11 +167,34 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 	if len(parts) == 0 {
 		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("no parts found with text set"))
 	}
+	return &db.SourceStructured{Name: name, Reference: reference, Parts: parts}, nil
+}
 
-	return httputil.ReturnModelOr500(func() (any, error) {
-		source, err := db.Qs().SourceCreate(r.Context(), db.SourceStructured{Name: req.Name, Reference: req.Reference, Parts: parts}.CreateParams())
-		return source.ToSourceStructured(), err
-	})
+func (rs Routes) sourceCreateSourceNameRef(name, ref string, prePartList *PrePartMediaList) (string, string, *httputil.HTTPError) {
+	if prePartList == nil || prePartList.InfoKey == "" || (name != "" && ref != "") {
+		return name, ref, nil
+	}
+
+	f, err := rs.Storage.DBStorage.Get(prePartList.InfoKey)
+	if err != nil {
+		return "", "", httputil.Error(http.StatusInternalServerError, err)
+	}
+	b, err := io.ReadAll(f)
+	if err != nil {
+		return "", "", httputil.Error(http.StatusInternalServerError, err)
+	}
+
+	info := extractor.SourceInfo{}
+	if err := json.Unmarshal(b, &info); err != nil {
+		return "", "", httputil.Error(http.StatusInternalServerError, err)
+	}
+	if name == "" {
+		name = info.Name
+	}
+	if ref == "" {
+		ref = info.Reference
+	}
+	return name, ref, nil
 }
 
 // SourceDestroy destroys the source

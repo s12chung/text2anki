@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"io"
 	"io/fs"
 	"path"
 	"reflect"
@@ -31,6 +32,11 @@ type SignPutConfig struct {
 	NameToValidExts SignPutNameToValidExts
 }
 
+// KeyFor returns the key for the given id and filename for a non-tree file
+func (s SignPutConfig) KeyFor(id, filename string) string {
+	return path.Join(s.Table, s.Column, id, filename)
+}
+
 // BaseKey returns the base key for the given args
 func BaseKey(table, column, id string) string {
 	return path.Join(table, column, id, column)
@@ -43,6 +49,11 @@ func (d DBStorage) SignPut(table, column, ext string) (PreSignedHTTPRequest, err
 		return PreSignedHTTPRequest{}, err
 	}
 	return d.api.SignPut(BaseKey(table, column, id) + ext)
+}
+
+// Put stores the file at key
+func (d DBStorage) Put(key string, file io.Reader) error {
+	return d.api.Store(key, file)
 }
 
 // Get returns the file at key

@@ -13,6 +13,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
+	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
@@ -95,8 +96,10 @@ func TestRoutes_SourceCreate(t *testing.T) {
 	testName := "TestRoutes_SourceCreate"
 	test.CISkip(t, "can't run C environment in CI")
 
-	prePartListID := testUUID
-	setupSourceCreateMedia(t, prePartListID)
+	mediaID := "a1234567-3456-9abc-d123-456789abcdef"
+	mediaWithInfoID := "a47ac10b-58cc-4372-a567-0e02b2c3d479"
+	setupSourceCreateMedia(t, mediaID)
+	setupSourceCreateMediaWithInfo(t, mediaWithInfoID)
 	require.NoError(t, routes.Setup())
 	defer func() {
 		require.NoError(t, routes.Cleanup())
@@ -118,7 +121,8 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		{name: "weave", expectedCode: http.StatusOK},
 		{name: "multi_part", partCount: 2, expectedCode: http.StatusOK},
 		{name: "multi_with_empty", partCount: 3, finalPartCount: 2, expectedCode: http.StatusOK},
-		{name: "media", partCount: 3, prePartListID: prePartListID, expectedCode: http.StatusOK},
+		{name: "media", partCount: 3, prePartListID: mediaID, expectedCode: http.StatusOK},
+		{name: "media_with_info", partCount: 2, prePartListID: mediaWithInfoID, expectedCode: http.StatusOK},
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty_parts", expectedCode: http.StatusUnprocessableEntity},
@@ -157,6 +161,18 @@ func TestRoutes_SourceCreate(t *testing.T) {
 			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, sourceStructured.StaticCopy()))
 		})
 	}
+}
+
+func setupSourceCreateMediaWithInfo(t *testing.T, prePartListID string) {
+	setupSourceCreateMedia(t, prePartListID)
+
+	info := extractor.SourceInfo{
+		Name:      "test name",
+		Reference: "https://www.testref.com",
+	}
+	baseKey := storage.BaseKey(sourcesTable, partsColumn, prePartListID)
+	err := routes.Storage.Storer.Store(baseKey+".Info.json", bytes.NewReader(test.JSON(t, info)))
+	require.NoError(t, err)
 }
 
 func setupSourceCreateMedia(t *testing.T, prePartListID string) {

@@ -2,12 +2,16 @@
 package instagram
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/s12chung/text2anki/pkg/extractor"
+	"github.com/s12chung/text2anki/pkg/util/archive"
+	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
 // Factory generates Sources
@@ -67,4 +71,47 @@ func (s *Post) ExtractToDir(cacheDir string) error {
 	cmd := exec.Command("instaloader", "--dirname-pattern", ".", "--", "-"+s.ID()) //nolint:gosec //this is how it works
 	cmd.Dir = cacheDir
 	return cmd.Run()
+}
+
+const infoGlob = "*.xz"
+
+type postInfo struct {
+	Node struct {
+		Owner struct {
+			Username string `json:"username"`
+		} `json:"owner"`
+
+		EdgeMediaToCaption struct {
+			Edges []struct {
+				Node struct {
+					Text string `json:"text"`
+				} `json:"node"`
+			} `json:"edges"`
+		} `json:"edge_media_to_caption"`
+	} `json:"node"`
+}
+
+// Info returns the info given from the extraction
+func (s *Post) Info(cacheDir string) (extractor.SourceInfo, error) {
+	matches, err := filepath.Glob(filepath.Join(cacheDir, infoGlob))
+	if err != nil {
+		return extractor.SourceInfo{}, err
+	}
+	if len(matches) != 1 {
+		return extractor.SourceInfo{}, fmt.Errorf("found != 1 files with glob (%v): %v", infoGlob, strings.Join(matches, ", "))
+	}
+	bytes, err := archive.XZBytes(matches[0])
+	if err != nil {
+		return extractor.SourceInfo{}, err
+	}
+	info := &postInfo{}
+	if err := json.Unmarshal(bytes, info); err != nil {
+		return extractor.SourceInfo{}, err
+	}
+	username := info.Node.Owner.Username
+	title := stringutil.FirstUnbrokenSubstring(info.Node.EdgeMediaToCaption.Edges[0].Node.Text, 30)
+	return extractor.SourceInfo{
+		Name:      fmt.Sprintf("%v - %v", username, title),
+		Reference: s.url,
+	}, nil
 }

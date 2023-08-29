@@ -1,6 +1,7 @@
 package extractor_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -15,6 +16,23 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
+func TestSourceExtraction_InfoFile(t *testing.T) {
+	require := require.New(t)
+
+	info := extractor.SourceInfo{
+		Name:      "extractor_test_name",
+		Reference: "https://extactor-test.com",
+	}
+	f, err := extractor.SourceExtraction{Info: info}.InfoFile()
+	require.NoError(err)
+	b, err := io.ReadAll(f)
+	require.NoError(err)
+
+	fileInfo := extractor.SourceInfo{}
+	require.NoError(json.Unmarshal(b, &fileInfo))
+	require.Equal(info, fileInfo)
+}
+
 func TestExtractor_Extract(t *testing.T) {
 	testName := "TestExtractor_Extract"
 	cacheDir := path.Join(os.TempDir(), test.GenerateName(testName))
@@ -26,7 +44,7 @@ func TestExtractor_Extract(t *testing.T) {
 		err  error
 	}{
 		{name: "basic", s: extractortest.VerifyString},
-		{name: "skip_extract", s: extractortest.SkipExtractString, err: fmt.Errorf("no files that match extensions extracted: .jpg, .png")},
+		{name: "skip_extract", s: extractortest.SkipExtractString, err: fmt.Errorf("no filenames that match extensions extracted: .jpg, .png")},
 		{name: "no_verify", s: "fail", err: fmt.Errorf("string does not match factory source: fail")},
 	}
 	for _, tc := range testCases {
@@ -34,15 +52,16 @@ func TestExtractor_Extract(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			parts, err := extractor.NewExtractor(cacheDir, extractortest.NewFactory(testName)).Extract(tc.s)
+			source, err := extractor.NewExtractor(cacheDir, extractortest.NewFactory(testName)).Extract(tc.s)
 			if tc.err != nil {
 				require.Equal(tc.err, err)
 				return
 			}
 			require.NoError(err)
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+"_info.json"), fixture.JSON(t, source.Info))
 
 			partMap := map[string]string{}
-			for _, part := range parts {
+			for _, part := range source.Parts {
 				require.Nil(part.AudioFile)
 
 				file := part.ImageFile
@@ -52,7 +71,7 @@ func TestExtractor_Extract(t *testing.T) {
 				require.NoError(err)
 				partMap[info.Name()] = string(bytes)
 			}
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, partMap))
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+"_parts.json"), fixture.JSON(t, partMap))
 		})
 	}
 }

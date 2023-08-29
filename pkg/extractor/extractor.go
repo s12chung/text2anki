@@ -2,7 +2,9 @@
 package extractor
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,11 +19,18 @@ type Factory interface {
 	Extensions() []string
 }
 
-// Source represents a souce to extract from
+// SourceInfo contains Source related info from the extractor
+type SourceInfo struct {
+	Name      string `json:"name"`
+	Reference string `json:"reference"`
+}
+
+// Source represents a source to extract from
 type Source interface {
 	Verify() bool
 	ID() string
 	ExtractToDir(cacheDir string) error
+	Info(cacheDir string) (SourceInfo, error)
 }
 
 // Extractor extracts Source data given the Factory Source
@@ -30,57 +39,90 @@ type Extractor struct {
 	factory  Factory
 }
 
+// SourceExtraction is all the data extracted
+type SourceExtraction struct {
+	Info  SourceInfo               `json:"info"`
+	Parts []db.SourcePartMediaFile `json:"parts"`
+}
+
+// InfoFile returns a file that contains .Info as json
+func (s SourceExtraction) InfoFile() (fs.File, error) {
+	f, err := os.CreateTemp("", "text2anki-InfoFile-*.json")
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(s.Info)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := f.Write(b); err != nil {
+		return nil, err
+	}
+	if err := f.Close(); err != nil {
+		return nil, err
+	}
+	return os.Open(f.Name())
+}
+
 // NewExtractor returns a new Extractor
 func NewExtractor(cacheDir string, factory Factory) Extractor {
 	return Extractor{cacheDir: cacheDir, factory: factory}
 }
 
 // Extract extracts data given the Factory Source
-func (e Extractor) Extract(s string) ([]db.SourcePartMediaFile, error) {
+func (e Extractor) Extract(s string) (SourceExtraction, error) {
 	source := e.factory.NewSource(s)
 	if !source.Verify() {
-		return nil, fmt.Errorf("string does not match factory source: %v", s)
+		return SourceExtraction{}, fmt.Errorf("string does not match factory source: %v", s)
 	}
 
 	hash := source.ID()
 	cacheDir := filepath.Join(e.cacheDir, hash)
 	if err := os.MkdirAll(cacheDir, ioutil.OwnerRWXGroupRX); err != nil {
-		return nil, err
+		return SourceExtraction{}, err
 	}
 	if err := source.ExtractToDir(cacheDir); err != nil {
-		return nil, err
+		return SourceExtraction{}, err
 	}
 
 	entries, err := os.ReadDir(cacheDir)
 	if err != nil {
-		return nil, err
+		return SourceExtraction{}, err
+	}
+	filenames := filenamesWithExtensions(entries, e.factory.Extensions())
+	if len(filenames) == 0 {
+		return SourceExtraction{}, fmt.Errorf("no filenames that match extensions extracted: %v", strings.Join(e.factory.Extensions(), ", "))
 	}
 
-	files := make([]string, 0, len(entries))
+	parts := make([]db.SourcePartMediaFile, len(filenames))
+	for i, filename := range filenames {
+		f, err := os.Open(filepath.Join(cacheDir, filename)) //nolint:gosec // needed
+		if err != nil {
+			return SourceExtraction{}, err
+		}
+		parts[i] = db.SourcePartMediaFile{ImageFile: f}
+	}
+	info, err := source.Info(cacheDir)
+	if err != nil {
+		return SourceExtraction{}, err
+	}
+	return SourceExtraction{Info: info, Parts: parts}, nil
+}
+
+func filenamesWithExtensions(entries []os.DirEntry, extensions []string) []string {
+	filenames := make([]string, 0, len(entries))
 	for _, file := range entries {
 		if file.IsDir() {
 			continue
 		}
-		for _, ext := range e.factory.Extensions() {
+		for _, ext := range extensions {
 			if strings.HasSuffix(file.Name(), ext) {
-				files = append(files, filepath.Join(cacheDir, file.Name()))
+				filenames = append(filenames, file.Name())
 				break
 			}
 		}
 	}
-
-	if len(files) == 0 {
-		return nil, fmt.Errorf("no files that match extensions extracted: %v", strings.Join(e.factory.Extensions(), ", "))
-	}
-	parts := make([]db.SourcePartMediaFile, len(files))
-	for i, file := range files {
-		f, err := os.Open(file) //nolint:gosec // needed
-		if err != nil {
-			return nil, err
-		}
-		parts[i] = db.SourcePartMediaFile{ImageFile: f}
-	}
-	return parts, nil
+	return filenames
 }
 
 // Map is a map of extractor name to Extractor
