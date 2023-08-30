@@ -33,10 +33,14 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
           <input name="reference" type="text" defaultValue={source.reference} />
         </label>
 
-        <Link to={`/sources/${source.id}`} className="btn">
-          Cancel
-        </Link>
-        <button type="submit">Submit</button>
+        <div className="flex justify-end space-x-basic">
+          <Link to={`/sources/${source.id}`} className="btn">
+            Cancel
+          </Link>
+          <button type="submit" className="btn-primary">
+            Submit
+          </button>
+        </div>
       </div>
     </Form>
   )

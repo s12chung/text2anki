@@ -64,7 +64,7 @@ const NoteForm: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ dat
         <button type="button" onClick={onClose}>
           Cancel
         </button>
-        <button ref={submitButtonRef} type="submit" disabled={submitted}>
+        <button ref={submitButtonRef} type="submit" className="btn-primary" disabled={submitted}>
           Create
         </button>
       </div>

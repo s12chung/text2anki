@@ -20,7 +20,7 @@ const SourceCreateMini: React.FC = () => {
           </Link>
         </div>
         <div className="flex-shrink-0">
-          <button type="submit" disabled={!text}>
+          <button type="submit" className="btn-primary" disabled={!text}>
             Submit
           </button>
         </div>
