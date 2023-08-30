@@ -148,13 +148,8 @@ const PrePartListDrop: React.FC<{ files: File[] }> = ({ files }) => {
   }, [files, navigate])
 
   useEffect(() => {
-    if (fetcher.data) {
-      navigate(`/sources/${fetcher.data.source.id}`)
-      return
-    }
-
     const file = onlyTextFile(files)
-    if (didRun.current || !file || fetcher.state !== "idle") return
+    if (didRun.current || !file || fetcher.data || fetcher.state !== "idle") return
 
     didRun.current = true
     file
