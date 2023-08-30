@@ -1,40 +1,29 @@
-package localstore
+package localstore_test
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/url"
-	"os"
 	"path"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/util/test"
-	"github.com/s12chung/text2anki/pkg/util/test/fixture"
+	"github.com/s12chung/text2anki/pkg/storage/localstore"
+	"github.com/s12chung/text2anki/pkg/storage/localstore/localstoretest"
 )
-
-var apiOrigin = "http://localhost:3000"
-
-func testAPI(t *testing.T) API {
-	return NewAPI(apiOrigin, path.Join(os.TempDir(), test.GenerateName("filestore-api")), testEncryptor(t))
-}
-
-func testEncryptor(t *testing.T) AESEncryptor {
-	require := require.New(t)
-	encryptor, err := NewAESEncryptorFromFile(fixture.JoinTestData("test.key"))
-	require.NoError(err)
-	return encryptor
-}
 
 const testKeyPrefix = "some_table_name/my_columns_me_now/123e4567-e89b-12d3-a456-426614174000"
 const testKeyFile = "0.txt"
 const testKey = testKeyPrefix + "/" + testKeyFile
 
+const testStoragePrefix = "localstore_test"
+
 func TestAPI_SignPut(t *testing.T) {
 	require := require.New(t)
 
-	api := testAPI(t)
+	api := localstoretest.NewAPIWithT(t, testStoragePrefix)
 	req, err := api.SignPut(testKey)
 	require.NoError(err)
 
@@ -44,12 +33,12 @@ func TestAPI_SignPut(t *testing.T) {
 	u, err := url.Parse(req.URL)
 	require.NoError(err)
 
-	key, err := api.encryptor.Decrypt(u.Query().Get(CipherQueryParam))
+	key, err := localstoretest.NewEncryptorT(t).Decrypt(u.Query().Get(localstore.CipherQueryParam))
 	require.NoError(err)
 	require.Equal(testKey, key)
 
 	u.RawQuery = ""
-	require.Equal(apiOrigin+"/"+testKey, u.String())
+	require.Equal(localstoretest.APIOrigin+"/"+testKey, u.String())
 }
 
 func TestAPI_SignGet(t *testing.T) {
@@ -57,15 +46,15 @@ func TestAPI_SignGet(t *testing.T) {
 
 	key := "TestAPI_SignGet/test/me/" + testKeyFile
 
-	api := testAPI(t)
+	api := localstoretest.NewAPIWithT(t, testStoragePrefix)
 	u, err := api.SignGet(key)
-	require.Equal(errSignGetNotFound, err)
+	require.Equal(fmt.Errorf("file does not exist"), err)
 	require.Empty(u)
 
 	require.NoError(api.Store(key, bytes.NewReader([]byte("test_me"))))
 	u, err = api.SignGet(key)
 	require.NoError(err)
-	require.Equal(api.keyURL(key), u)
+	require.Equal(localstoretest.APIOrigin+"/"+key, u)
 }
 
 func TestAPI_KeyFromSignGet(t *testing.T) {
@@ -73,7 +62,7 @@ func TestAPI_KeyFromSignGet(t *testing.T) {
 
 	expectedKey := "TestAPI_SignGet/test/me/" + testKeyFile
 
-	api := testAPI(t)
+	api := localstoretest.NewAPIWithT(t, testStoragePrefix)
 	require.NoError(api.Store(expectedKey, bytes.NewReader([]byte("test_me"))))
 	signGet, err := api.SignGet(expectedKey)
 	require.NoError(err)
@@ -85,19 +74,19 @@ func TestAPI_KeyFromSignGet(t *testing.T) {
 
 func TestAPI_Validate(t *testing.T) {
 	require := require.New(t)
-	api := testAPI(t)
-	ciphertext, err := api.encryptor.Encrypt(testKey)
+	api := localstoretest.NewAPIWithT(t, testStoragePrefix)
+	ciphertext, err := localstoretest.NewEncryptorT(t).Encrypt(testKey)
 	require.NoError(err)
-	require.NoError(api.Validate(testKey, url.Values{CipherQueryParam: []string{ciphertext}}))
+	require.NoError(api.Validate(testKey, url.Values{localstore.CipherQueryParam: []string{ciphertext}}))
 	require.Error(api.Validate(testKey, url.Values{}))
-	require.Error(api.Validate(testKey, url.Values{CipherQueryParam: []string{"bad_cipher"}}))
+	require.Error(api.Validate(testKey, url.Values{localstore.CipherQueryParam: []string{"bad_cipher"}}))
 }
 
 func TestAPI_ListKeys(t *testing.T) {
 	require := require.New(t)
 
 	prefix := "TestAPI_ListKeys/test/me"
-	api := testAPI(t)
+	api := localstoretest.NewAPIWithT(t, testStoragePrefix)
 	keys, err := api.ListKeys(prefix)
 	require.NoError(err)
 	require.Len(keys, 0)
@@ -121,7 +110,7 @@ func TestAPI_StoreGet(t *testing.T) {
 	testStore := func(t *testing.T) {
 		require := require.New(t)
 
-		api := testAPI(t)
+		api := localstoretest.NewAPIWithT(t, testStoragePrefix)
 		fileData := []byte("Store")
 		require.NoError(api.Store(testKey, bytes.NewReader(fileData)))
 
@@ -139,9 +128,11 @@ func TestAPI_StoreGet(t *testing.T) {
 func TestAESEncryptor_EncryptDecrypt(t *testing.T) {
 	require := require.New(t)
 
-	cipher, err := testEncryptor(t).Encrypt(testKey)
+	encryptor := localstoretest.NewEncryptorT(t)
+
+	cipher, err := encryptor.Encrypt(testKey)
 	require.NoError(err)
-	message, err := testEncryptor(t).Decrypt(cipher)
+	message, err := encryptor.Decrypt(cipher)
 	require.NoError(err)
 	require.Equal(testKey, message)
 }

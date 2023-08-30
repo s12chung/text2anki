@@ -2,14 +2,11 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/storage"
@@ -106,13 +103,6 @@ func init() {
 	}))
 }
 
-// PrePartMediaList is the list of media for the SourcePart with an ID
-type PrePartMediaList struct {
-	ID       string               `json:"id"`
-	InfoKey  string               `json:"info_key,omitempty"`
-	PreParts []db.SourcePartMedia `json:"pre_parts"`
-}
-
 // SourceCreate creates a new source
 func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 	req := SourceCreateRequest{}
@@ -120,9 +110,9 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 		return nil, httpError
 	}
 
-	var prePartList *PrePartMediaList
+	var prePartList *db.PrePartList
 	if req.PrePartListID != "" {
-		prePartList = &PrePartMediaList{}
+		prePartList = &db.PrePartList{}
 		if err := rs.Storage.DBStorage.KeyTree(sourcesTable, partsColumn, req.PrePartListID, prePartList); err != nil {
 			if storage.IsNotFoundError(err) {
 				return nil, httputil.Error(http.StatusNotFound, err)
@@ -142,7 +132,7 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 	})
 }
 
-func (rs Routes) sourceCreateSource(req SourceCreateRequest, prePartList *PrePartMediaList) (*db.SourceStructured, *httputil.HTTPError) {
+func (rs Routes) sourceCreateSource(req SourceCreateRequest, prePartList *db.PrePartList) (*db.SourceStructured, *httputil.HTTPError) {
 	name, reference, err := rs.sourceCreateSourceNameRef(req.Name, req.Reference, prePartList)
 	if err != nil {
 		return nil, err
@@ -170,22 +160,13 @@ func (rs Routes) sourceCreateSource(req SourceCreateRequest, prePartList *PrePar
 	return &db.SourceStructured{Name: name, Reference: reference, Parts: parts}, nil
 }
 
-func (rs Routes) sourceCreateSourceNameRef(name, ref string, prePartList *PrePartMediaList) (string, string, *httputil.HTTPError) {
-	if prePartList == nil || prePartList.InfoKey == "" || (name != "" && ref != "") {
+func (rs Routes) sourceCreateSourceNameRef(name, ref string, prePartList *db.PrePartList) (string, string, *httputil.HTTPError) {
+	if prePartList == nil || (name != "" && ref != "") {
 		return name, ref, nil
 	}
 
-	f, err := rs.Storage.DBStorage.Get(prePartList.InfoKey)
+	info, err := prePartList.Info()
 	if err != nil {
-		return "", "", httputil.Error(http.StatusInternalServerError, err)
-	}
-	b, err := io.ReadAll(f)
-	if err != nil {
-		return "", "", httputil.Error(http.StatusInternalServerError, err)
-	}
-
-	info := extractor.SourceInfo{}
-	if err := json.Unmarshal(b, &info); err != nil {
 		return "", "", httputil.Error(http.StatusInternalServerError, err)
 	}
 	if name == "" {

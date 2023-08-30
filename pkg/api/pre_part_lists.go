@@ -2,7 +2,6 @@ package api
 
 import (
 	"fmt"
-	"io/fs"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -17,20 +16,7 @@ import (
 )
 
 func init() {
-	httptyped.RegisterType(PrePartListSignResponse{}, PrePartListURL{}, PrePartListVerifyResponse{}, PrePartListCreateResponse{})
-}
-
-// PrePartListFile is the fileTree for PreParts
-type PrePartListFile struct {
-	InfoFile fs.File                  `json:"info_file,omitempty"`
-	PreParts []db.SourcePartMediaFile `json:"pre_parts"`
-}
-
-// PrePartList is a KeyTree for PreParts
-type PrePartList struct {
-	ID       string               `json:"id"`
-	InfoKey  string               `json:"info_key,omitempty"`
-	PreParts []db.SourcePartMedia `json:"pre_parts"`
+	httptyped.RegisterType(PrePartListSignResponse{}, db.PrePartListURL{}, PrePartListVerifyResponse{}, PrePartListCreateResponse{})
 }
 
 var prePartListPutConfig = storage.SignPutConfig{
@@ -95,30 +81,13 @@ func (rs Routes) PrePartListSign(r *http.Request) (any, *httputil.HTTPError) {
 	return resp, nil
 }
 
-// PrePartListURL represents all the Source parts together for a given id
-type PrePartListURL struct {
-	ID       string            `json:"id"`
-	PreParts []PrePartMediaURL `json:"pre_parts"`
-}
-
-// StaticCopy returns a copy without fields that variate
-func (p PrePartListURL) StaticCopy() any {
-	return p
-}
-
-// PrePartMediaURL represents a SourcePartMedia before it is created, only stored via. Routes.Storage.Storer
-type PrePartMediaURL struct {
-	ImageURL string `json:"image_url,omitempty"`
-	AudioURL string `json:"audio_url,omitempty"`
-}
-
 // PrePartListGet returns the PrePartListURL for a given ID
 func (rs Routes) PrePartListGet(r *http.Request) (any, *httputil.HTTPError) {
 	prePartListID := chi.URLParam(r, "prePartListID")
 	if prePartListID == "" {
 		return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("prePartListID not found"))
 	}
-	prePartList := PrePartListURL{}
+	prePartList := db.PrePartListURL{}
 	err := rs.Storage.DBStorage.SignGetTree(sourcesTable, partsColumn, prePartListID, &prePartList)
 	if err != nil {
 		if storage.IsNotFoundError(err) {
@@ -196,12 +165,12 @@ func (rs Routes) PrePartListCreate(r *http.Request) (any, *httputil.HTTPError) {
 	if err != nil {
 		return nil, httputil.Error(http.StatusUnprocessableEntity, err)
 	}
-	prePartListKey := PrePartList{}
+	prePartListKey := db.PrePartList{}
 	infoFile, err := extraction.InfoFile()
 	if err != nil {
 		return nil, httputil.Error(http.StatusUnprocessableEntity, err)
 	}
-	prePartListFile := PrePartListFile{InfoFile: infoFile, PreParts: extraction.Parts}
+	prePartListFile := db.PrePartListFile{InfoFile: infoFile, PreParts: extraction.Parts}
 	if err := rs.Storage.DBStorage.PutTree(prePartListPutConfig, prePartListFile, &prePartListKey); err != nil {
 		return nil, httputil.Error(http.StatusInternalServerError, err)
 	}

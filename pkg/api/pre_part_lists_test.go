@@ -13,6 +13,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/extractor/extractortest"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/storage/localstore"
@@ -116,7 +117,7 @@ func TestRoutes_PrePartListGet(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodGet, "/"+tc.id, nil))
 			resp.EqualCode(t, tc.expectedCode)
-			testModelResponse(t, resp, testName, tc.name, &PrePartListURL{})
+			testModelResponse(t, resp, testName, tc.name, &db.PrePartListURL{})
 		})
 	}
 }
@@ -168,7 +169,7 @@ func TestRoutes_PrePartListCreate(t *testing.T) {
 				return
 			}
 
-			keyTree := PrePartList{}
+			keyTree := db.PrePartList{}
 			err := routes.Storage.DBStorage.KeyTree(sourcesTable, partsColumn, prePartListResp.ID, &keyTree)
 			require.NoError(err)
 			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+"_KeyTree.json"), fixture.JSON(t, keyTree))

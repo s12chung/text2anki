@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
@@ -62,8 +63,8 @@ func (t Source) ExtractToDir(cacheDir string) error {
 }
 
 // Info returns the info from the extraction
-func (t Source) Info(_ string) (extractor.SourceInfo, error) {
-	return extractor.SourceInfo{
+func (t Source) Info(_ string) (db.PrePartInfo, error) {
+	return db.PrePartInfo{
 		Name:      "extractortest",
 		Reference: "extractortest.go source code",
 	}, nil

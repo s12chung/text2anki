@@ -19,18 +19,12 @@ type Factory interface {
 	Extensions() []string
 }
 
-// SourceInfo contains Source related info from the extractor
-type SourceInfo struct {
-	Name      string `json:"name"`
-	Reference string `json:"reference"`
-}
-
 // Source represents a source to extract from
 type Source interface {
 	Verify() bool
 	ID() string
 	ExtractToDir(cacheDir string) error
-	Info(cacheDir string) (SourceInfo, error)
+	Info(cacheDir string) (db.PrePartInfo, error)
 }
 
 // Extractor extracts Source data given the Factory Source
@@ -41,7 +35,7 @@ type Extractor struct {
 
 // SourceExtraction is all the data extracted
 type SourceExtraction struct {
-	Info  SourceInfo               `json:"info"`
+	Info  db.PrePartInfo           `json:"info"`
 	Parts []db.SourcePartMediaFile `json:"parts"`
 }
 

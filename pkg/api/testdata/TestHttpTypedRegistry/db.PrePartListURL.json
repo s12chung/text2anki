@@ -1,9 +1,9 @@
 {
-  "api.PrePartListURL": {
+  "db.PrePartListURL": {
     "id": "string",
-    "pre_parts": "[]api.PrePartMediaURL"
+    "pre_parts": "[]db.PrePartMediaURL"
   },
-  "api.PrePartMediaURL": {
+  "db.PrePartMediaURL": {
     "audio_url,omitempty": "string",
     "image_url,omitempty": "string"
   }
