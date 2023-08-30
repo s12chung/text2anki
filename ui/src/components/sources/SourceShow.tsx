@@ -10,7 +10,7 @@ import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitError from "../AwaitError.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteForm from "../notes/NoteForm.tsx"
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Await, Form, Link, useFetcher } from "react-router-dom"
 
 export interface ISourceShowData {
@@ -30,6 +30,93 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
   )
 }
 
+const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
+  const [nav, setNav] = useState<boolean>(true)
+
+  const onReadKorean: MouseEventHandler<HTMLAnchorElement> = (e) => {
+    e.preventDefault()
+    setNav(!nav)
+  }
+
+  return (
+    <>
+      <div className="grid-std flex-std">
+        <div className="flex-grow">
+          <h2>{source.name}</h2>
+          <div>{source.reference}</div>
+        </div>
+        <Form
+          action={`/sources/${source.id}`}
+          method="delete"
+          className="space-x-basic"
+          onSubmit={(event) => {
+            // eslint-disable-next-line no-alert
+            if (!window.confirm("Delete Source?")) event.preventDefault()
+          }}
+        >
+          <button type="submit" className="btn">
+            Delete
+          </button>
+          <Link to={`/sources/${source.id}/edit`} className="btn">
+            Edit
+          </Link>
+        </Form>
+      </div>
+
+      <div className="flex justify-center mb-10">
+        <a href="#" className="btn" onClick={onReadKorean}>
+          Read Korean
+        </a>
+      </div>
+
+      {nav ? <SourceNavComponent source={source} /> : <SourceShowComponent source={source} />}
+    </>
+  )
+}
+
+const SourceWrapper: React.FC<{
+  source: Source
+  children: (tokenizedText: TokenizedText, partIndex: number, textIndex: number) => React.ReactNode
+}> = ({ source, children }) => {
+  return (
+    <div className="text-center">
+      {source.parts.map((part, partIndex) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <div key={`part-${partIndex}`}>
+          {part.tokenizedTexts.map((tokenizedText, textIndex) => (
+            /* eslint-disable-next-line react/no-array-index-key */
+            <div key={`${tokenizedText.text}-${textIndex}`}>
+              {Boolean(tokenizedText.previousBreak) && <div className="text-4xl">&nbsp;</div>}
+              {children(tokenizedText, partIndex, textIndex)}
+            </div>
+          ))}
+          {part.media?.imageUrl ? (
+            <div className="grid-std">
+              <img src={part.media.imageUrl} alt="Part Image" />
+            </div>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+const textClassBase = "ko-sans text-2xl focgrin:text-light"
+const translationClassBase = "text-lg focgrin:text-2xl"
+
+const SourceShowComponent: React.FC<{ source: Source }> = ({ source }) => {
+  return (
+    <SourceWrapper source={source}>
+      {(tokenizedText) => (
+        <>
+          <div className={textClassBase}>{tokenizedText.text}</div>
+          <div className={translationClassBase}>{tokenizedText.translation}</div>
+        </>
+      )}
+    </SourceWrapper>
+  )
+}
+
 function getTermsComponentProps(
   tokenizedText: TokenizedText,
   tokenFocusIndex: number
@@ -46,7 +133,7 @@ function getTermsComponentProps(
 let openModal = false
 
 // eslint-disable-next-line max-lines-per-function
-const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
+const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
   const [partFocusIndex, setPartFocusIndex] = useState<number>(0)
   const [textFocusIndex, setTextFocusIndex] = useState<number>(0)
   const [termsComponentProps, setTermsComponentProps] = useState<ITermsComponentProps | null>(null)
@@ -140,81 +227,39 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const tokenizedTextClass = (b: boolean) =>
     `group py-2 focin:py-4 focin:bg-gray-std ${b ? "py-4 bg-gray-std" : ""}`
 
-  const textClass = (b: boolean) => `ko-sans text-2xl focgrin:text-light ${b ? "text-light" : ""}`
-  const translationClass = (b: boolean) => `text-lg focgrin:text-2xl ${b ? "text-2xl" : "text-lg"}`
+  const textClass = (b: boolean) => `${textClassBase} ${b ? "text-light" : ""}`
+  const translationClass = (b: boolean) => `${translationClassBase} ${b ? "text-2xl" : ""}`
 
   return (
-    <>
-      <div className="grid-std flex-std my-std">
-        <div className="flex-grow">
-          <h2>{source.name}</h2>
-          <div>{source.reference}</div>
-        </div>
-        <Form
-          action={`/sources/${source.id}`}
-          method="delete"
-          className="space-x-basic"
-          onSubmit={(event) => {
-            // eslint-disable-next-line no-alert
-            if (!window.confirm("Delete Source?")) event.preventDefault()
-          }}
-        >
-          <button type="submit" className="btn">
-            Delete
-          </button>
-          <Link to={`/sources/${source.id}/edit`} className="btn">
-            Edit
-          </Link>
-        </Form>
-      </div>
-
-      <div className="text-center">
-        {source.parts.map((part, partIndex) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <div key={`part-${partIndex}`}>
-            {part.tokenizedTexts.map((tokenizedText, textIndex) => {
-              const textFocus = partIndex === partFocusIndex && textIndex === textFocusIndex
-              return (
-                /* eslint-disable-next-line react/no-array-index-key */
-                <div key={`${tokenizedText.text}-${textIndex}`}>
-                  {Boolean(tokenizedText.previousBreak) && <div className="text-4xl">&nbsp;</div>}
-                  <div
-                    ref={(ref) => {
-                      if (!textRefs.current[partIndex]) textRefs.current[partIndex] = []
-                      textRefs.current[partIndex][textIndex] = ref
-                    }}
-                    tabIndex={-1}
-                    className={tokenizedTextClass(textFocus)}
-                    onClick={() => textOnClick(textIndex)}
-                  >
-                    <div className={textClass(textFocus)}>{tokenizedText.text}</div>
-                    {textFocus ? (
-                      <TokensComponent
-                        tokens={tokenizedText.tokens}
-                        termsFocus={termsFocus}
-                        setTermsFocus={setTermsFocus}
-                      />
-                    ) : null}
-                    <div className={translationClass(textFocus)}>{tokenizedText.translation}</div>
-                    {textFocus && termsFocus ? (
-                      <TermsComponent
-                        token={termsComponentProps.token}
-                        usage={termsComponentProps.usage}
-                      />
-                    ) : null}
-                  </div>
-                </div>
-              )
-            })}
-            {part.media?.imageUrl ? (
-              <div className="grid-std">
-                <img src={part.media.imageUrl} alt="Part Image" />
-              </div>
+    <SourceWrapper source={source}>
+      {(tokenizedText, partIndex, textIndex) => {
+        const textFocus = partIndex === partFocusIndex && textIndex === textFocusIndex
+        return (
+          <div
+            ref={(ref) => {
+              if (!textRefs.current[partIndex]) textRefs.current[partIndex] = []
+              textRefs.current[partIndex][textIndex] = ref
+            }}
+            tabIndex={-1}
+            className={tokenizedTextClass(textFocus)}
+            onClick={() => textOnClick(textIndex)}
+          >
+            <div className={textClass(textFocus)}>{tokenizedText.text}</div>
+            {textFocus ? (
+              <TokensComponent
+                tokens={tokenizedText.tokens}
+                termsFocus={termsFocus}
+                setTermsFocus={setTermsFocus}
+              />
+            ) : null}
+            <div className={translationClass(textFocus)}>{tokenizedText.translation}</div>
+            {textFocus && termsFocus ? (
+              <TermsComponent token={termsComponentProps.token} usage={termsComponentProps.usage} />
             ) : null}
           </div>
-        ))}
-      </div>
-    </>
+        )
+      }}
+    </SourceWrapper>
   )
 }
 
