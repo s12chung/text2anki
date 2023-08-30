@@ -1,6 +1,6 @@
-import PrePartListSourceCreate, {
-  IPrePartListSourceCreateData,
-} from "./components/pre_part_lists/PrePartListSourceCreate.tsx"
+import PrePartListShow, {
+  IPrePartListShowData,
+} from "./components/pre_part_lists/PrePartListShow.tsx"
 import SourceCreate from "./components/sources/SourceCreate.tsx"
 import SourceEdit, { ISourceEditData } from "./components/sources/SourceEdit.tsx"
 import SourceShow, { ISourceShowData } from "./components/sources/SourceShow.tsx"
@@ -46,7 +46,7 @@ const routes = route("/", null, {}, [
   withLayout(el(EmptyLayout), [
     resources("sources", {}, {}, [
       resources("pre_part_lists", PrePartListsController, {
-        show: el(LoaderPage<IPrePartListSourceCreateData>, { Component: PrePartListSourceCreate }),
+        show: el(LoaderPage<IPrePartListShowData>, { Component: PrePartListShow }),
       }),
     ]),
   ]),

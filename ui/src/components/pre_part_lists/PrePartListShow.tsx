@@ -7,15 +7,15 @@ import SlideOver from "../SlideOver.tsx"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Await, Form } from "react-router-dom"
 
-export interface IPrePartListSourceCreateData {
+export interface IPrePartListShowData {
   prePartList: Promise<PrePartList>
 }
 
-interface IPrePartListSourceCreateProps {
-  data: IPrePartListSourceCreateData
+interface IPrePartListShowProps {
+  data: IPrePartListShowData
 }
 
-const PrePartListSourceCreate: React.FC<IPrePartListSourceCreateProps> = ({ data }) => {
+const PrePartListShow: React.FC<IPrePartListShowProps> = ({ data }) => {
   return (
     <React.Suspense fallback={<div>Loading....</div>}>
       <Await resolve={data.prePartList} errorElement={<AwaitError />}>
@@ -160,4 +160,4 @@ const ImageNav: React.FC<{ char: string; changeF: () => void }> = ({ char, chang
   )
 }
 
-export default PrePartListSourceCreate
+export default PrePartListShow
