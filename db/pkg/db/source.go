@@ -55,16 +55,15 @@ type SourcePartMediaSerialized struct {
 	AudioURL string `json:"audio_url,omitempty"`
 }
 
+func (s SourcePartMediaSerialized) toDB() (SourcePartMedia, error) {
+	db := SourcePartMedia{}
+	return db, dbStorage.KeyTreeFromSignGetTree(s, &db)
+}
+
 // SourcePartMediaFile is the File version of SourcePartMedia
 type SourcePartMediaFile struct {
 	ImageFile fs.File `json:"image_file,omitempty"`
 	AudioFile fs.File `json:"audio_file,omitempty"`
-}
-
-// ToDB returns the matching SourcePartMedia
-func (s SourcePartMediaSerialized) ToDB() (SourcePartMedia, error) {
-	db := SourcePartMedia{}
-	return db, dbStorage.KeyTreeFromSignGetTree(s, &db)
 }
 
 // SerializedEmpty returns an empty model for Serializing for API endpoints
@@ -72,8 +71,7 @@ func (s *SourcePartMedia) SerializedEmpty() any {
 	return SourcePartMediaSerialized{}
 }
 
-// ToSerialized returns the matching SourcePartMediaSerialized
-func (s *SourcePartMedia) ToSerialized() (SourcePartMediaSerialized, error) {
+func (s *SourcePartMedia) toSerialized() (SourcePartMediaSerialized, error) {
 	serialized := SourcePartMediaSerialized{}
 	return serialized, dbStorage.SignGetTreeFromKeyTree(s, &serialized)
 }
@@ -83,7 +81,7 @@ func (s *SourcePartMedia) MarshalJSON() ([]byte, error) {
 	if !s.toSerialize {
 		return json.Marshal(sourcePartMediaAlias(*s))
 	}
-	serialized, err := s.ToSerialized()
+	serialized, err := s.toSerialized()
 	if err != nil {
 		return nil, err
 	}
@@ -91,6 +89,8 @@ func (s *SourcePartMedia) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON sets the data based on the data JSON
+//
+// Should be removed if tests are improved such that they're not relying on Unmarshalling requests
 func (s *SourcePartMedia) UnmarshalJSON(data []byte) error {
 	alias := sourcePartMediaAlias(*s)
 	if err := json.Unmarshal(data, &alias); err != nil {
@@ -105,7 +105,7 @@ func (s *SourcePartMedia) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &serialized); err != nil {
 		return err
 	}
-	db, err := serialized.ToDB()
+	db, err := serialized.toDB()
 	if err != nil {
 		return err
 	}

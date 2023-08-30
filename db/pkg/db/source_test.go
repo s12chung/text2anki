@@ -34,6 +34,14 @@ func TestSourceStructured_StaticCopy(t *testing.T) {
 	require.Equal(sourceCopy, firstSource(t).ToSourceStructured().StaticCopy())
 }
 
+func TestSourcePartMedia_MarshalJSON(t *testing.T) {
+	t.Skip("Test later... When this is outside of the db_test package testdb is changed to use transaction")
+}
+
+func TestSourcePartMedia_UnmarshalJSON(t *testing.T) {
+	t.Skip("Function should be removed if tests are improved such that they're not relying on Unmarshalling requests")
+}
+
 func TestSourceStructured_DefaultedName(t *testing.T) {
 	require := require.New(t)
 

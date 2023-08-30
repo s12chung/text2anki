@@ -10,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/extractor/extractortest"
 	"github.com/s12chung/text2anki/pkg/util/test"
@@ -19,7 +20,7 @@ import (
 func TestSourceExtraction_InfoFile(t *testing.T) {
 	require := require.New(t)
 
-	info := extractor.SourceInfo{
+	info := db.PrePartInfo{
 		Name:      "extractor_test_name",
 		Reference: "https://extactor-test.com",
 	}
@@ -28,7 +29,7 @@ func TestSourceExtraction_InfoFile(t *testing.T) {
 	b, err := io.ReadAll(f)
 	require.NoError(err)
 
-	fileInfo := extractor.SourceInfo{}
+	fileInfo := db.PrePartInfo{}
 	require.NoError(json.Unmarshal(b, &fileInfo))
 	require.Equal(info, fileInfo)
 }

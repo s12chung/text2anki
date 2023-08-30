@@ -13,7 +13,6 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
-	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
@@ -168,7 +167,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 func setupSourceCreateMediaWithInfo(t *testing.T, prePartListID string) {
 	setupSourceCreateMedia(t, prePartListID)
 
-	info := extractor.SourceInfo{
+	info := db.PrePartInfo{
 		Name:      "test name",
 		Reference: "https://www.testref.com",
 	}

@@ -53,13 +53,11 @@ func (a API) SignPut(key string) (storage.PreSignedHTTPRequest, error) {
 	}, nil
 }
 
-var errSignGetNotFound = fmt.Errorf("file does not exist")
-
 // SignGet gets the signed URL for the key
 func (a API) SignGet(key string) (string, error) {
 	p := a.keyPath(key)
 	if _, err := os.Stat(p); errors.Is(err, os.ErrNotExist) {
-		return "", errSignGetNotFound
+		return "", fmt.Errorf("file does not exist")
 	}
 	return a.keyURL(key), nil
 }
