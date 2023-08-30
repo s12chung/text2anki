@@ -18,6 +18,7 @@ export function actionFunc(actionMap: IActionMap): ActionFunction {
 export interface RouteOptions {
   loader?: LoaderFunction
   action?: ActionFunction
+  errorElement?: ReactNode | null
 }
 
 // eslint-disable-next-line max-params

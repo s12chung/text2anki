@@ -8,6 +8,7 @@ import * as NotesController from "./controllers/NotesController.ts"
 import * as PrePartListsController from "./controllers/PrePartListsController.ts"
 import * as SourceController from "./controllers/SourcesController.ts"
 import * as TermsController from "./controllers/TermsController.ts"
+import ErrorPage from "./pages/ErrorPage.tsx"
 import HomePage from "./pages/HomePage.tsx"
 import LoaderPage from "./pages/LoaderPage.tsx"
 import ApplicationLayout from "./pages/layouts/ApplicationLayout.tsx"
@@ -20,10 +21,11 @@ import { createElement } from "react"
 
 const el = createElement
 
+const rootOptions = { errorElement: el(ErrorPage) }
 const appLayoutSourceController: IController = pick(SourceController, "create", "edit")
 const fullLayoutSourceController: IController = pick(SourceController, "get", "update", "destroy")
 
-const routes = route("/", null, {}, [
+const routes = route("/", null, rootOptions, [
   withLayout(el(PrePartListDragAndDropLayout), [
     route("", el(HomePage), { loader: SourceController.index }),
   ]),
