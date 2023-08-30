@@ -1,5 +1,6 @@
 import { PrePartList } from "../../services/PrePartListsService.ts"
 import { imageToClipboard } from "../../utils/ClipboardUtils.ts"
+import { printAndAlertError } from "../../utils/ErrorUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import AwaitError from "../AwaitError.tsx"
 import Header from "../Header.tsx"
@@ -37,7 +38,9 @@ const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) =
       setCurrentIndex(index)
       const { imageUrl } = preParts[index]
       if (!imageUrl) return
-      imageToClipboard(imageUrl)
+      imageToClipboard(imageUrl).catch((error) => {
+        printAndAlertError(error)
+      })
     },
     [currentIndex, preParts]
   )
