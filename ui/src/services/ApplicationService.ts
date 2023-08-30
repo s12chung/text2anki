@@ -17,13 +17,18 @@ abstract class ApplicationService {
   }
 }
 
-export function requestInit(method: Http, data: unknown): RequestInit {
+export function requestInit<T extends { [K in keyof T]: unknown }>(
+  method: Http,
+  data?: T
+): RequestInit {
   return {
     method,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(convertKeys(data, camelToSnake)),
+    ...(data
+      ? {
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(convertKeys(data, camelToSnake)),
+        }
+      : {}),
   }
 }
 

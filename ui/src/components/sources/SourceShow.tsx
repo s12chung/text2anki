@@ -11,7 +11,7 @@ import AwaitError from "../AwaitError.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteForm from "../notes/NoteForm.tsx"
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Await, Link, useFetcher } from "react-router-dom"
+import { Await, Form, Link, useFetcher } from "react-router-dom"
 
 export interface ISourceShowData {
   source: Promise<Source>
@@ -150,11 +150,22 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
           <h2>{source.name}</h2>
           <div>{source.reference}</div>
         </div>
-        <div>
+        <Form
+          action={`/sources/${source.id}`}
+          method="delete"
+          className="space-x-basic"
+          onSubmit={(event) => {
+            // eslint-disable-next-line no-alert
+            if (!window.confirm("Delete Source?")) event.preventDefault()
+          }}
+        >
+          <button type="submit" className="btn">
+            Delete
+          </button>
           <Link to={`/sources/${source.id}/edit`} className="btn">
             Edit
           </Link>
-        </div>
+        </Form>
       </div>
 
       <div className="text-center">

@@ -55,7 +55,7 @@ export interface IController {
 
   create?: ActionFunction
   update?: ActionFunction
-  delete?: ActionFunction
+  destroy?: ActionFunction
 }
 
 export interface IElementMap {
@@ -136,7 +136,7 @@ function resourceRoute(controller: IController, elements: IElementMap): RouteObj
 
   const actionMap: IActionMap = {}
   if (controller.update) actionMap.PATCH = controller.update
-  if (controller.delete) actionMap.DELETE = controller.delete
+  if (controller.destroy) actionMap.DELETE = controller.destroy
 
   if (Object.keys(actionMap).length !== 0) {
     route.action = actionFunc(actionMap)

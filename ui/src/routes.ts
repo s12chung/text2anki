@@ -21,7 +21,7 @@ import { createElement } from "react"
 const el = createElement
 
 const appLayoutSourceController: IController = pick(SourceController, "create", "edit")
-const fullLayoutSourceController: IController = pick(SourceController, "get", "update")
+const fullLayoutSourceController: IController = pick(SourceController, "get", "update", "destroy")
 
 const routes = route("/", null, {}, [
   withLayout(el(PrePartListDragAndDropLayout), [
