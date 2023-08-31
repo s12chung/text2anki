@@ -3,6 +3,7 @@ package httputil
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,7 +18,7 @@ type HTTPError struct {
 }
 
 // Error returns the string representation of HTTPError
-func (e *HTTPError) Error() string {
+func (e HTTPError) Error() string {
 	return fmt.Sprintf("%v: %v", e.Code, e.Cause)
 }
 
@@ -113,6 +114,10 @@ func ExtractJSON(r *http.Request, o any) *HTTPError {
 func ReturnModelOr500(modelFunc func() (any, error)) (any, *HTTPError) {
 	model, err := modelFunc()
 	if err != nil {
+		var httpErr *HTTPError
+		if errors.As(err, &httpErr) {
+			return nil, httpErr
+		}
 		return nil, Error(http.StatusInternalServerError, err)
 	}
 	return model, nil
