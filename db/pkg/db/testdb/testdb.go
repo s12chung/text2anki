@@ -31,18 +31,62 @@ func init() {
 	tmpPath = path.Join(callerPath, "..", "..", "..", "tmp")
 }
 
+// NewTx returns a new transaction
+func NewTx(t *testing.T) db.Tx {
+	require := require.New(t)
+
+	tx, err := db.NewTx()
+	require.NoError(err)
+	t.Cleanup(func() {
+		require.NoError(tx.Rollback())
+	})
+	return tx
+}
+
+// TxQs returns a db.NewTxQs used for testing
+func TxQs(t *testing.T) db.TxQs {
+	require := require.New(t)
+
+	txQs, err := db.NewTxQs()
+	require.NoError(err)
+	t.Cleanup(func() {
+		require.NoError(txQs.Rollback())
+	})
+	return txQs
+}
+
 // MustSetupAndSeed calls Setup() and Seed(), if it fails, it exits
 func MustSetupAndSeed(packageStruct any) {
-	MustSetup(packageStruct)
+	MustSetupPackage(packageStruct)
 	if err := Seed(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
 }
 
-// MustSetup calls Setup(), if it fails, it exits
-func MustSetup(packageStruct any) {
+// MustSetupPackage calls Setup(), if it fails, it exits
+func MustSetupPackage(packageStruct any) {
 	if err := Setup(path.Base(reflect.TypeOf(packageStruct).PkgPath())); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+}
+
+// MustSetup sets up the main database
+func MustSetup() {
+	if err := Setup("main"); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+	if err := Seed(); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+}
+
+// MustSetupEmpty sets up the empty database
+func MustSetupEmpty() {
+	if err := Setup("empty"); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
@@ -111,7 +155,15 @@ func ensureSafeSchema(dbPath, dbSHAPath string) (string, bool, error) {
 
 // Seed seeds the database with a small amount of data
 func Seed() error {
-	return models.SeedList(nil)
+	tx, err := db.NewTx()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback() //nolint:errcheck // rollback can fail if committed
+	if err := models.SeedList(tx, nil); err != nil {
+		return err
+	}
+	return tx.Commit()
 }
 
 // SearchTerm is a search term used for tests

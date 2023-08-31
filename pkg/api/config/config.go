@@ -99,7 +99,7 @@ func Dictionary(dictionaryType DictionaryType) dictionary.Dictionary {
 			fmt.Println("failure to SetDB()\n", err)
 			os.Exit(-1)
 		}
-		return krdict.New(db.DB())
+		return krdict.New(db.Qs())
 	}
 }
 

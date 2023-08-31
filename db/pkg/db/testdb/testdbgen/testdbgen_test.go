@@ -13,9 +13,9 @@ func TestGenerateModelsCodeRaw(t *testing.T) {
 	testName := "TestGenerateModelsCodeRaw"
 
 	code, err := generateModelsCodeRaw([]generateModelsCodeData{
-		{Name: "Term", CreateCode: "queries.TermCreate(context.Background(), term.CreateParams())"},
-		{Name: "SourceStructured", CreateCode: "queries.SourceCreate(context.Background(), sourceStructured.ToSourceCreateParams())"},
-		{Name: "Note", CreateCode: "queries.NoteCreate(context.Background(), note.CreateParams())"},
+		{Name: "Term", CreateCode: "qs.TermCreate(tx.Ctx(), term.CreateParams())"},
+		{Name: "SourceStructured", CreateCode: "qs.SourceCreate(tx.Ctx(), sourceStructured.ToSourceCreateParams())"},
+		{Name: "Note", CreateCode: "qs.NoteCreate(tx.Ctx(), note.CreateParams())"},
 	})
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".go.txt", code)

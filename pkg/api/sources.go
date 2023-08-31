@@ -19,7 +19,7 @@ func init() {
 	httptyped.RegisterType(db.SourceStructured{})
 }
 
-const contextSource httputil.ContextKey = "source"
+const sourceContextKey httputil.ContextKey = "source"
 const sourcesTable = "sources"
 const partsColumn = "parts"
 
@@ -30,19 +30,27 @@ func SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError) {
 		return nil, httputil.Error(http.StatusNotFound, err)
 	}
 
-	source, err := db.Qs().SourceGet(r.Context(), sourceID)
+	txQs, httpErr := ctxTxQs(r)
+	if httpErr != nil {
+		return nil, httpErr
+	}
+	source, err := txQs.SourceGet(r.Context(), sourceID)
 	if err != nil {
 		return nil, httputil.Error(http.StatusNotFound, err)
 	}
 
-	r = r.WithContext(context.WithValue(r.Context(), contextSource, source.ToSourceStructured()))
+	r = r.WithContext(context.WithValue(r.Context(), sourceContextKey, source.ToSourceStructured()))
 	return r, nil
 }
 
 // SourceIndex returns a list of sources
 func (rs Routes) SourceIndex(r *http.Request) (any, *httputil.HTTPError) {
+	txQs, httpErr := ctxTxQs(r)
+	if httpErr != nil {
+		return nil, httpErr
+	}
 	return httputil.ReturnModelOr500(func() (any, error) {
-		return db.Qs().SourceStructuredIndex(r.Context())
+		return txQs.SourceStructuredIndex(txQs.Ctx())
 	})
 }
 
@@ -65,20 +73,24 @@ func init() {
 
 // SourceUpdate updates the source
 func (rs Routes) SourceUpdate(r *http.Request) (any, *httputil.HTTPError) {
-	sourceStructured, httpError := ctxSourceStructured(r)
-	if httpError != nil {
-		return nil, httpError
+	sourceStructured, httpErr := ctxSourceStructured(r)
+	if httpErr != nil {
+		return nil, httpErr
 	}
 
 	req := SourceUpdateRequest{}
-	if httpError = extractAndValidate(r, &req); httpError != nil {
-		return nil, httpError
+	if httpErr = extractAndValidate(r, &req); httpErr != nil {
+		return nil, httpErr
 	}
 	sourceStructured.Name = req.Name
 	sourceStructured.Reference = req.Reference
 
+	txQs, httpErr := ctxTxQs(r)
+	if httpErr != nil {
+		return nil, httpErr
+	}
 	return httputil.ReturnModelOr500(func() (any, error) {
-		source, err := db.Qs().SourceUpdate(r.Context(), sourceStructured.UpdateParams())
+		source, err := txQs.SourceUpdate(txQs.Ctx(), sourceStructured.UpdateParams())
 		return source.ToSourceStructured(), err
 	})
 }
@@ -106,8 +118,8 @@ func init() {
 // SourceCreate creates a new source
 func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 	req := SourceCreateRequest{}
-	if httpError := extractAndValidate(r, &req); httpError != nil {
-		return nil, httpError
+	if httpErr := extractAndValidate(r, &req); httpErr != nil {
+		return nil, httpErr
 	}
 
 	var prePartList *db.PrePartList
@@ -126,8 +138,12 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 		return nil, err
 	}
 
+	txQs, httpErr := ctxTxQs(r)
+	if httpErr != nil {
+		return nil, httpErr
+	}
 	return httputil.ReturnModelOr500(func() (any, error) {
-		source, err := db.Qs().SourceCreate(r.Context(), source.CreateParams())
+		source, err := txQs.SourceCreate(txQs.Ctx(), source.CreateParams())
 		return source.ToSourceStructured(), err
 	})
 }
@@ -180,17 +196,21 @@ func (rs Routes) sourceCreateSourceNameRef(name, ref string, prePartList *db.Pre
 
 // SourceDestroy destroys the source
 func (rs Routes) SourceDestroy(r *http.Request) (any, *httputil.HTTPError) {
-	sourceStructured, httpError := ctxSourceStructured(r)
-	if httpError != nil {
-		return nil, httpError
+	sourceStructured, httpErr := ctxSourceStructured(r)
+	if httpErr != nil {
+		return nil, httpErr
+	}
+	txQs, httpErr := ctxTxQs(r)
+	if httpErr != nil {
+		return nil, httpErr
 	}
 	return httputil.ReturnModelOr500(func() (any, error) {
-		return sourceStructured, db.Qs().SourceDestroy(r.Context(), sourceStructured.ID)
+		return sourceStructured, txQs.SourceDestroy(txQs.Ctx(), sourceStructured.ID)
 	})
 }
 
 func ctxSourceStructured(r *http.Request) (db.SourceStructured, *httputil.HTTPError) {
-	sourceStructured, ok := r.Context().Value(contextSource).(db.SourceStructured)
+	sourceStructured, ok := r.Context().Value(sourceContextKey).(db.SourceStructured)
 	if !ok {
 		return db.SourceStructured{}, httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.SourceStructured fail"))
 	}

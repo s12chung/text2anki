@@ -4,7 +4,6 @@
 package models
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -25,14 +24,14 @@ func init() {
 	callerPath = path.Dir(callerFilePath)
 }
 
-var seedMap = map[string]func() error{
+var seedMap = map[string]func(tx db.Tx) error{
 	"Terms":             SeedTerms,
 	"SourceStructureds": SeedSourceStructureds,
 	"Notes":             SeedNotes,
 }
 
 // SeedList seeds the models for the testdb
-func SeedList(list map[string]bool) error {
+func SeedList(tx db.Tx, list map[string]bool) error {
 	isWhiteList, isBlacklist := true, true
 	for k, v := range list {
 		if v {
@@ -45,7 +44,7 @@ func SeedList(list map[string]bool) error {
 		if !exists {
 			return fmt.Errorf("seedFunc for '%v' doesn't exist", k)
 		}
-		if err := seedFunc(); err != nil {
+		if err := seedFunc(tx); err != nil {
 			return err
 		}
 	}
@@ -54,7 +53,7 @@ func SeedList(list map[string]bool) error {
 			(isBlacklist && exists || isWhiteList && !exists) {
 			continue
 		}
-		if err := seedFunc(); err != nil {
+		if err := seedFunc(tx); err != nil {
 			return err
 		}
 	}
@@ -84,14 +83,14 @@ func TermsMust() []db.Term {
 }
 
 // SeedTerms seeds the Terms testdb models
-func SeedTerms() error {
+func SeedTerms(tx db.Tx) error {
 	terms, err := Terms()
 	if err != nil {
 		return err
 	}
-	queries := db.Qs()
+	qs := db.New(tx)
 	for _, term := range terms {
-		if _, err := queries.TermCreate(context.Background(), term.CreateParams()); err != nil {
+		if _, err := qs.TermCreate(tx.Ctx(), term.CreateParams()); err != nil {
 			return err
 		}
 	}
@@ -121,14 +120,14 @@ func SourceStructuredsMust() []db.SourceStructured {
 }
 
 // SeedSourceStructureds seeds the SourceStructureds testdb models
-func SeedSourceStructureds() error {
+func SeedSourceStructureds(tx db.Tx) error {
 	sourceStructureds, err := SourceStructureds()
 	if err != nil {
 		return err
 	}
-	queries := db.Qs()
+	qs := db.New(tx)
 	for _, sourceStructured := range sourceStructureds {
-		if _, err := queries.SourceCreate(context.Background(), sourceStructured.CreateParams()); err != nil {
+		if _, err := qs.SourceCreate(tx.Ctx(), sourceStructured.CreateParams()); err != nil {
 			return err
 		}
 	}
@@ -158,14 +157,14 @@ func NotesMust() []db.Note {
 }
 
 // SeedNotes seeds the Notes testdb models
-func SeedNotes() error {
+func SeedNotes(tx db.Tx) error {
 	notes, err := Notes()
 	if err != nil {
 		return err
 	}
-	queries := db.Qs()
+	qs := db.New(tx)
 	for _, note := range notes {
-		if _, err := queries.NoteCreate(context.Background(), note.CreateParams()); err != nil {
+		if _, err := qs.NoteCreate(tx.Ctx(), note.CreateParams()); err != nil {
 			return err
 		}
 	}

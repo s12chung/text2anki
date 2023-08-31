@@ -16,7 +16,7 @@ const arraySeparator = ", "
 
 var database *sql.DB
 
-// SetDB sets the database returned from the DB() function
+// SetDB sets the database for the global database
 func SetDB(dataSourceName string) error {
 	var err error
 	// related to require above
@@ -27,14 +27,59 @@ func SetDB(dataSourceName string) error {
 	return nil
 }
 
-// DB returns the database set by SetDB()
-func DB() *sql.DB {
-	return database
+// Tx represents a transaction that also carries the context
+type Tx interface {
+	DBTX
+	Ctx() context.Context
+
+	Commit() error
+	Rollback() error
 }
 
-// Qs returns the Queries for the database returned from the DB() function
+// Transaction represents a transaction that also carries the context
+type Transaction struct {
+	*sql.Tx
+	ctx context.Context //nolint:containedctx //it's very clear what the context is about, the transaction
+}
+
+// Ctx returns the context of the transaction
+func (t Transaction) Ctx() context.Context {
+	return t.ctx
+}
+
+// TxQs is a queries with a transaction attached
+type TxQs struct {
+	*Queries
+	Tx
+}
+
+// NewTx returns a new Transaction
+func NewTx() (Tx, error) {
+	ctx := context.Background()
+	tx, err := database.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &Transaction{Tx: tx, ctx: ctx}, err
+}
+
+// NewTxQs returns a new TxQs
+func NewTxQs() (TxQs, error) {
+	return NewTxQsWithCtx(context.Background())
+}
+
+// NewTxQsWithCtx returns a new TxQs with the context
+func NewTxQsWithCtx(ctx context.Context) (TxQs, error) {
+	tx, err := database.BeginTx(ctx, nil)
+	if err != nil {
+		return TxQs{}, err
+	}
+	return TxQs{Tx: &Transaction{Tx: tx, ctx: ctx}, Queries: New(tx)}, nil
+}
+
+// Qs returns the Queries for the global database
 func Qs() *Queries {
-	return &Queries{db: DB()}
+	return &Queries{db: database}
 }
 
 //go:embed schema.sql
@@ -50,7 +95,7 @@ func SchemaBytes() []byte {
 
 // Create creates the tables from schema.sql
 func (q *Queries) Create(ctx context.Context) error {
-	if _, err := DB().ExecContext(ctx, schemaSQL); err != nil {
+	if _, err := q.db.ExecContext(ctx, schemaSQL); err != nil {
 		return err
 	}
 	return nil
@@ -98,7 +143,7 @@ func (q *Queries) ClearAll(ctx context.Context) error {
 		sql += fmt.Sprintf("DELETE FROM %v; ", tableName)
 	}
 
-	if _, err := DB().ExecContext(ctx, sql); err != nil {
+	if _, err := q.db.ExecContext(ctx, sql); err != nil {
 		return err
 	}
 	return nil

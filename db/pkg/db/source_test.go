@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/util/test"
@@ -125,20 +126,23 @@ func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 
 func TestQueries_SourceCreate(t *testing.T) {
 	require := require.New(t)
-	source, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceStructured().CreateParams())
+
+	txQs := testdb.TxQs(t)
+	source, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t).ToSourceStructured().CreateParams())
 	require.NoError(err)
 	testRecentTimestamps(t, source.CreatedAt, source.UpdatedAt)
 }
 
 func TestQueries_SourceUpdate(t *testing.T) {
 	require := require.New(t)
-	t.Parallel()
 
-	newSource, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceStructured().CreateParams())
+	txQs := testdb.TxQs(t)
+
+	newSource, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t).ToSourceStructured().CreateParams())
 	require.NoError(err)
 	time.Sleep(1 * time.Second)
 
-	source, err := db.Qs().SourceUpdate(context.Background(), newSource.ToSourceStructured().UpdateParams())
+	source, err := txQs.SourceUpdate(txQs.Ctx(), newSource.ToSourceStructured().UpdateParams())
 	require.NoError(err)
 	testRecentTimestamps(t, source.UpdatedAt)
 	require.NotEqual(newSource.UpdatedAt, source.UpdatedAt)

@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/test"
@@ -54,6 +55,9 @@ func TestRoutes_SourceGet(t *testing.T) {
 func TestRoutes_SourceUpdate(t *testing.T) {
 	testName := "TestRoutes_SourceUpdate"
 
+	created, err := db.Qs().SourceCreate(context.Background(), models.SourceStructuredsMust()[1].CreateParams())
+	require.NoError(t, err)
+
 	testCases := []struct {
 		name         string
 		newName      string
@@ -64,10 +68,6 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 		{name: "with_reference", newName: "new_name", reference: "new_ref.txt", expectedCode: http.StatusOK},
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 	}
-
-	created, err := db.Qs().SourceCreate(context.Background(), models.SourceStructuredsMust()[1].CreateParams())
-	require.NoError(t, err)
-
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
@@ -79,11 +79,12 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 
 			sourceStructured := db.SourceStructured{}
 			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
-
 			if resp.Code != http.StatusOK {
 				return
 			}
-			source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
+
+			txQs := testdb.TxQs(t)
+			source, err := txQs.SourceGet(txQs.Ctx(), sourceStructured.ID)
 			require.NoError(err)
 			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, source.ToSourceStructured().StaticCopy()))
 		})
@@ -155,7 +156,8 @@ func TestRoutes_SourceCreate(t *testing.T) {
 			}
 			require.Equal(finalPartCount, len(sourceStructured.Parts), "finalPartCount count not matching")
 
-			source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
+			txQs := testdb.TxQs(t)
+			source, err := txQs.SourceGet(txQs.Ctx(), sourceStructured.ID)
 			require.NoError(err)
 			sourceStructured = source.ToSourceStructured()
 			sourceStructured.PrepareSerialize()
@@ -242,7 +244,9 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 			if resp.Code != http.StatusOK {
 				return
 			}
-			_, err := db.Qs().SourceGet(context.Background(), created.ID)
+
+			txQs := testdb.TxQs(t)
+			_, err := txQs.SourceGet(txQs.Ctx(), created.ID)
 			require.Equal(fmt.Errorf("sql: no rows in result set"), err)
 		})
 	}

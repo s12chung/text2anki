@@ -110,26 +110,47 @@ func cmdDiff() error {
 	}
 	if text != "" {
 		fmt.Println(text)
-		return fmt.Errorf("diff exists")
+		return fmt.Errorf("diff exists for generated result and %v", generateFile)
 	}
 	return nil
 }
 
 func cmdCreate() error {
+	txQs, err := db.NewTxQs()
+	if err != nil {
+		return err
+	}
+	defer txQs.Rollback() //nolint:errcheck // rollback can fail if committed
+	if err := cmdCreateWithTx(txQs); err != nil {
+		return err
+	}
+	return txQs.Commit()
+}
+
+func cmdCreateWithTx(txQs db.TxQs) error {
 	if err := setDB(); err != nil {
 		return err
 	}
-	return db.Qs().Create(context.Background())
+	return txQs.Create(txQs.Ctx())
 }
 
 func cmdSeed() error {
-	if err := cmdCreate(); err != nil {
+	txQs, err := db.NewTxQs()
+	if err != nil {
 		return err
 	}
-	if err := seedkrdict.Seed(context.Background(), seedkrdict.DefaultRscPath); err != nil {
+	defer txQs.Rollback() //nolint:errcheck // rollback can fail if committed
+
+	if err := cmdCreateWithTx(txQs); err != nil {
 		return err
 	}
-	return models.SeedList(map[string]bool{"Terms": false})
+	if err := seedkrdict.Seed(txQs, seedkrdict.DefaultRscPath); err != nil {
+		return err
+	}
+	if err := models.SeedList(txQs, map[string]bool{"Terms": false}); err != nil {
+		return err
+	}
+	return txQs.Commit()
 }
 
 func cmdSchema() error {

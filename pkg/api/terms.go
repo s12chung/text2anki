@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
@@ -25,8 +24,13 @@ func (rs Routes) TermsSearch(r *http.Request) (any, *httputil.HTTPError) {
 	if !found {
 		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("pos is invalid: '%v'", posQuery))
 	}
+
+	txQs, httpErr := ctxTxQs(r)
+	if httpErr != nil {
+		return nil, httpErr
+	}
 	return httputil.ReturnModelOr500(func() (any, error) {
-		termsSearchRow, err := db.Qs().TermsSearch(r.Context(), query, pos)
+		termsSearchRow, err := txQs.TermsSearch(txQs.Ctx(), query, pos)
 		if err != nil {
 			return nil, err
 		}

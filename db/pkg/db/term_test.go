@@ -1,7 +1,6 @@
 package db_test
 
 import (
-	"context"
 	"encoding/json"
 	"path"
 	"testing"
@@ -77,25 +76,26 @@ func TestTerm_CreateParams(t *testing.T) {
 func TestQueries_TermsSearchRaw(t *testing.T) {
 	require := require.New(t)
 	testName := "TestQueries_TermsSearchRaw"
-	ctx := context.Background()
 
-	results, err := db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechUnknown, testdb.SearchConfig)
+	txQs := testdb.TxQs(t)
+
+	results, err := txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, lang.PartOfSpeechUnknown, testdb.SearchConfig)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, path.Join(testName, "unknown.json"), fixture.JSON(t, results))
 
-	_, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, lang.PartOfSpeechUnknown, db.TermsSearchConfig{
+	_, err = txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, lang.PartOfSpeechUnknown, db.TermsSearchConfig{
 		PopWeight:    50,
 		CommonWeight: 51,
 	})
 	require.Error(err)
 
-	results, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
+	results, err = txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, path.Join(testName, "verb.json"), fixture.JSON(t, results))
 
 	configCopy := testdb.SearchConfig
 	configCopy.Limit = 1
-	results, err = db.Qs().TermsSearchRaw(ctx, testdb.SearchTerm, testdb.SearchPOS, configCopy)
+	results, err = txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, testdb.SearchPOS, configCopy)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, path.Join(testName, "limit.json"), fixture.JSON(t, results))
 }

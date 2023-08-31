@@ -5,8 +5,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
+
+func init() {
+	testdb.MustSetupEmpty()
+}
 
 const rscPath = "../../" + DefaultRscPath
 

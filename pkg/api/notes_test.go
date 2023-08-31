@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"context"
 	"net/http"
 	"path"
 	"testing"
@@ -10,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -42,11 +42,12 @@ func TestRoutes_NoteCreate(t *testing.T) {
 
 			note := db.Note{}
 			fixtureFile := testModelResponse(t, resp, testName, tc.name, &note)
-
 			if resp.Code != http.StatusOK {
 				return
 			}
-			note, err := db.Qs().NoteGet(context.Background(), note.ID)
+
+			txQs := testdb.TxQs(t)
+			note, err := txQs.NoteGet(txQs.Ctx(), note.ID)
 			require.NoError(err)
 			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, note.StaticCopy()))
 		})

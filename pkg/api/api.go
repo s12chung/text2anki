@@ -2,6 +2,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -56,6 +57,7 @@ func (rs Routes) Cleanup() error {
 // Router returns the router with all the routes set
 func (rs Routes) Router() chi.Router {
 	r := chi.NewRouter()
+	r.Use(httputil.RequestWrap(setTxQs))
 	r.Route("/sources", func(r chi.Router) {
 		r.Get("/", responseWrap(rs.SourceIndex))
 		r.Post("/", responseWrap(rs.SourceCreate))
@@ -92,7 +94,7 @@ func (rs Routes) Router() chi.Router {
 }
 
 func responseWrap(f httputil.RespondJSONWrapFunc) http.HandlerFunc {
-	return httputil.RespondJSONWrap(httptyped.TypedWrap(f))
+	return httputil.RespondJSONWrap(txFinalizeWrap(httptyped.TypedWrap(f)))
 }
 
 // NotFound is the route handler for not matching pattern routes
@@ -115,4 +117,39 @@ func extractAndValidate(r *http.Request, req any) *httputil.HTTPError {
 		return httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf(result.ErrorMap().String()))
 	}
 	return nil
+}
+
+const txQsContextKey httputil.ContextKey = "db.TxQs"
+
+func setTxQs(r *http.Request) (*http.Request, *httputil.HTTPError) {
+	txQs, err := db.NewTxQsWithCtx(r.Context())
+	if err != nil {
+		return nil, httputil.Error(http.StatusInternalServerError, err)
+	}
+	return r.WithContext(context.WithValue(r.Context(), txQsContextKey, txQs)), nil
+}
+
+func ctxTxQs(r *http.Request) (db.TxQs, *httputil.HTTPError) {
+	txQs, ok := r.Context().Value(txQsContextKey).(db.TxQs)
+	if !ok {
+		return db.TxQs{}, httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.Tx fail"))
+	}
+	return txQs, nil
+}
+
+func txFinalizeWrap(f httputil.RespondJSONWrapFunc) httputil.RespondJSONWrapFunc {
+	return func(r *http.Request) (any, *httputil.HTTPError) {
+		resp, httpError := f(r)
+		if httpError != nil {
+			return resp, httpError
+		}
+		txQs, httpErr := ctxTxQs(r)
+		if httpErr != nil {
+			return nil, httpErr
+		}
+		if err := txQs.Commit(); err != nil {
+			return nil, httputil.Error(http.StatusInternalServerError, err)
+		}
+		return resp, nil
+	}
 }
