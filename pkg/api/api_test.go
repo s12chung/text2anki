@@ -14,6 +14,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
+	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/extractor/extractortest"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
@@ -39,9 +40,9 @@ func init() {
 
 const extractorType = "testy"
 
-var routesConfig = Config{
-	StorageConfig: StorageConfig{
-		LocalStoreConfig: LocalStoreConfig{
+var routesConfig = config.Config{
+	StorageConfig: config.StorageConfig{
+		LocalStoreConfig: config.LocalStoreConfig{
 			Origin:        "https://test.com",
 			KeyBasePath:   path.Join(os.TempDir(), test.GenerateName("filestore-router")),
 			EncryptorPath: fixture.TestDataDir,

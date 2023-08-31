@@ -19,6 +19,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/api"
+	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
@@ -28,23 +29,23 @@ var routes = api.NewRoutes(configFromEnv())
 const host = "http://localhost"
 const port = "3000"
 
-func configFromEnv() api.Config {
-	config := api.Config{}
+func configFromEnv() config.Config {
+	c := config.Config{}
 	if os.Getenv("TOKENIZER") == "komoran" {
-		config.TokenizerType = api.TokenizerKomoran
+		c.TokenizerType = config.TokenizerKomoran
 	}
 	if os.Getenv("DICTIONARY") == "koreanbasic" {
-		config.DictionaryType = api.DictionaryKoreanBasic
+		c.DictionaryType = config.DictionaryKoreanBasic
 	}
-	config.StorageConfig = api.StorageConfig{
-		StorageType: api.StorageLocalStore,
-		LocalStoreConfig: api.LocalStoreConfig{
+	c.StorageConfig = config.StorageConfig{
+		StorageType: config.StorageLocalStore,
+		LocalStoreConfig: config.LocalStoreConfig{
 			Origin:        host + ":" + port,
 			KeyBasePath:   "db/tmp/filestore",
 			EncryptorPath: "db/tmp",
 		},
 	}
-	return config
+	return c
 }
 
 var cleanSpeaker bool

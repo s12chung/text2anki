@@ -8,10 +8,10 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/firm"
-	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/synthesizer"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
@@ -22,14 +22,25 @@ type Routes struct {
 	Dictionary    dictionary.Dictionary
 	Synthesizer   synthesizer.Synthesizer
 	TextTokenizer db.TextTokenizer
-	Storage       Storage
+	Storage       config.Storage
 	ExtractorMap  extractor.Map
 }
 
-// Storage contains the Route's storage setup
-type Storage struct {
-	DBStorage storage.DBStorage
-	Storer    storage.Storer
+// NewRoutes is the routes used by the API
+func NewRoutes(c config.Config) Routes {
+	routes := Routes{
+		Dictionary:  config.Dictionary(c.DictionaryType),
+		Synthesizer: config.Synthesizer(),
+		TextTokenizer: db.TextTokenizer{
+			Parser:       config.Parser(),
+			Tokenizer:    config.Tokenizer(c.TokenizerType),
+			CleanSpeaker: true,
+		},
+		Storage:      config.StorageFromConfig(c.StorageConfig),
+		ExtractorMap: config.ExtractorMap(c.ExtractorMap),
+	}
+	db.SetDBStorage(routes.Storage.DBStorage)
+	return routes
 }
 
 // Setup sets up the routes
@@ -71,8 +82,8 @@ func (rs Routes) Router() chi.Router {
 	r.Route("/notes", func(r chi.Router) {
 		r.Post("/", httptyped.RespondTypedJSONWrap(rs.NoteCreate))
 	})
-	r.Route(storageURLPath, func(r chi.Router) {
-		r.Method(http.MethodGet, "/*", http.StripPrefix(storageURLPath, rs.StorageGet()))
+	r.Route(config.StorageURLPath, func(r chi.Router) {
+		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
 		r.Put("/*", httptyped.RespondTypedJSONWrap(rs.StoragePut))
 	})
 	r.NotFound(httputil.RespondJSONWrap(rs.NotFound))
