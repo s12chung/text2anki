@@ -148,9 +148,9 @@ type Preparable interface {
 	PrepareSerialize()
 }
 
-// RespondTypedJSONWrap wraps around httputil.RespondJSONWrap, but also checks the type of the response beforehand
-func RespondTypedJSONWrap(f httputil.RespondJSONWrapFunc) http.HandlerFunc {
-	return httputil.RespondJSONWrap(func(r *http.Request) (any, *httputil.HTTPError) {
+// TypedWrap wraps around httputil.RespondJSONWrap, but also checks the type of the response beforehand
+func TypedWrap(f httputil.RespondJSONWrapFunc) httputil.RespondJSONWrapFunc {
+	return func(r *http.Request) (any, *httputil.HTTPError) {
 		resp, httpError := f(r)
 		if httpError != nil {
 			return resp, httpError
@@ -162,6 +162,6 @@ func RespondTypedJSONWrap(f httputil.RespondJSONWrapFunc) http.HandlerFunc {
 		if preparable, ok := resp.(Preparable); ok {
 			preparable.PrepareSerialize()
 		}
-		return resp, httpError
-	})
+		return resp, nil
+	}
 }

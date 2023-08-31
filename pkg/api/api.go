@@ -57,38 +57,42 @@ func (rs Routes) Cleanup() error {
 func (rs Routes) Router() chi.Router {
 	r := chi.NewRouter()
 	r.Route("/sources", func(r chi.Router) {
-		r.Get("/", httptyped.RespondTypedJSONWrap(rs.SourceIndex))
-		r.Post("/", httptyped.RespondTypedJSONWrap(rs.SourceCreate))
+		r.Get("/", responseWrap(rs.SourceIndex))
+		r.Post("/", responseWrap(rs.SourceCreate))
 
 		r.Route("/{sourceID}", func(r chi.Router) {
 			r.Use(httputil.RequestWrap(SourceCtx))
-			r.Get("/", httptyped.RespondTypedJSONWrap(rs.SourceGet))
-			r.Patch("/", httptyped.RespondTypedJSONWrap(rs.SourceUpdate))
-			r.Delete("/", httptyped.RespondTypedJSONWrap(rs.SourceDestroy))
+			r.Get("/", responseWrap(rs.SourceGet))
+			r.Patch("/", responseWrap(rs.SourceUpdate))
+			r.Delete("/", responseWrap(rs.SourceDestroy))
 		})
 
 		r.Route("/pre_part_lists", func(r chi.Router) {
-			r.Post("/", httptyped.RespondTypedJSONWrap(rs.PrePartListCreate))
-			r.Post("/sign", httptyped.RespondTypedJSONWrap(rs.PrePartListSign))
-			r.Post("/verify", httptyped.RespondTypedJSONWrap(rs.PrePartListVerify))
+			r.Post("/", responseWrap(rs.PrePartListCreate))
+			r.Post("/sign", responseWrap(rs.PrePartListSign))
+			r.Post("/verify", responseWrap(rs.PrePartListVerify))
 			r.Route("/{prePartListID}", func(r chi.Router) {
-				r.Get("/", httptyped.RespondTypedJSONWrap(rs.PrePartListGet))
+				r.Get("/", responseWrap(rs.PrePartListGet))
 			})
 		})
 	})
 	r.Route("/terms", func(r chi.Router) {
-		r.Get("/search", httptyped.RespondTypedJSONWrap(rs.TermsSearch))
+		r.Get("/search", responseWrap(rs.TermsSearch))
 	})
 	r.Route("/notes", func(r chi.Router) {
-		r.Post("/", httptyped.RespondTypedJSONWrap(rs.NoteCreate))
+		r.Post("/", responseWrap(rs.NoteCreate))
 	})
 	r.Route(config.StorageURLPath, func(r chi.Router) {
 		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
-		r.Put("/*", httptyped.RespondTypedJSONWrap(rs.StoragePut))
+		r.Put("/*", responseWrap(rs.StoragePut))
 	})
 	r.NotFound(httputil.RespondJSONWrap(rs.NotFound))
 	r.MethodNotAllowed(httputil.RespondJSONWrap(rs.NotAllowed))
 	return r
+}
+
+func responseWrap(f httputil.RespondJSONWrapFunc) http.HandlerFunc {
+	return httputil.RespondJSONWrap(httptyped.TypedWrap(f))
 }
 
 // NotFound is the route handler for not matching pattern routes
