@@ -29,6 +29,10 @@
     @apply space-y-4;
   }
 
+  .space-x-basic {
+    @apply space-x-1;
+  }
+
   .m-std {
     @apply m-4;
   }

@@ -1,5 +1,6 @@
 import { PrePartList } from "../../services/PrePartListsService.ts"
 import { imageToClipboard } from "../../utils/ClipboardUtils.ts"
+import { printAndAlertError } from "../../utils/ErrorUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import AwaitError from "../AwaitError.tsx"
 import Header from "../Header.tsx"
@@ -7,15 +8,15 @@ import SlideOver from "../SlideOver.tsx"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Await, Form } from "react-router-dom"
 
-export interface IPrePartListSourceCreateData {
+export interface IPrePartListShowData {
   prePartList: Promise<PrePartList>
 }
 
-interface IPrePartListSourceCreateProps {
-  data: IPrePartListSourceCreateData
+interface IPrePartListShowProps {
+  data: IPrePartListShowData
 }
 
-const PrePartListSourceCreate: React.FC<IPrePartListSourceCreateProps> = ({ data }) => {
+const PrePartListShow: React.FC<IPrePartListShowProps> = ({ data }) => {
   return (
     <React.Suspense fallback={<div>Loading....</div>}>
       <Await resolve={data.prePartList} errorElement={<AwaitError />}>
@@ -37,7 +38,9 @@ const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) =
       setCurrentIndex(index)
       const { imageUrl } = preParts[index]
       if (!imageUrl) return
-      imageToClipboard(imageUrl)
+      imageToClipboard(imageUrl).catch((error) => {
+        printAndAlertError(error)
+      })
     },
     [currentIndex, preParts]
   )
@@ -160,4 +163,4 @@ const ImageNav: React.FC<{ char: string; changeF: () => void }> = ({ char, chang
   )
 }
 
-export default PrePartListSourceCreate
+export default PrePartListShow

@@ -90,6 +90,10 @@ class SourcesService extends ApplicationService {
   async update(id: string | number, data: UpdateSourceData): Promise<Source> {
     return (await this.fetch(`/${id}`, requestInit(Http.PATCH, data))) as Source
   }
+
+  async destroy(id: string | number): Promise<Source> {
+    return (await this.fetch(`/${id}`, requestInit(Http.DELETE))) as Source
+  }
 }
 
 export const sourcesService = new SourcesService()

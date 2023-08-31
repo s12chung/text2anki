@@ -33,7 +33,7 @@ const SourceCreate: React.FC = () => {
       <div className="flex-std mt-half mb-std">
         <div className="flex-grow" />
         <div className="flex-shrink-0">
-          <button type="submit" disabled={!valid}>
+          <button type="submit" className="btn-primary" disabled={!valid}>
             Submit
           </button>
         </div>

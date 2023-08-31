@@ -24,9 +24,6 @@
   button:not([type="submit"]) {
     @apply btn;
   }
-  button[type="submit"] {
-    @apply btn-primary;
-  }
 }
 
 @layer components {
