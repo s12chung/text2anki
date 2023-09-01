@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/db/pkg/db"
+	. "github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
@@ -24,7 +24,7 @@ func TestToDBTerm(t *testing.T) {
 	require.NoError(err)
 	test.EmptyFieldsMatch(t, term)
 
-	dbTerm, err := db.ToDBTerm(term, 1)
+	dbTerm, err := ToDBTerm(term, 1)
 	require.NoError(err)
 	test.EmptyFieldsMatch(t, dbTerm)
 
@@ -45,7 +45,7 @@ func TestTerm_DictionaryTerm(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			term := db.Term{}
+			term := Term{}
 			err := json.Unmarshal(fixture.Read(t, path.Join(testName, tc.name+"Src.json")), &term)
 			require.NoError(err)
 			test.EmptyFieldsMatch(t, term, tc.emptyFields...)
@@ -63,7 +63,7 @@ func TestTerm_CreateParams(t *testing.T) {
 	require := require.New(t)
 	testName := "TestTerm_CreateParams"
 
-	term := db.Term{}
+	term := Term{}
 	err := json.Unmarshal(fixture.Read(t, "TestToDBTerm.json"), &term)
 	require.NoError(err)
 	test.EmptyFieldsMatch(t, term)
@@ -83,7 +83,7 @@ func TestQueries_TermsSearchRaw(t *testing.T) {
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, path.Join(testName, "unknown.json"), fixture.JSON(t, results))
 
-	_, err = txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, lang.PartOfSpeechUnknown, db.TermsSearchConfig{
+	_, err = txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, lang.PartOfSpeechUnknown, TermsSearchConfig{
 		PopWeight:    50,
 		CommonWeight: 51,
 	})

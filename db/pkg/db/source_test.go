@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/db/pkg/db"
+	. "github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizer"
@@ -17,9 +17,9 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func firstSource(t *testing.T) db.Source {
+func firstSource(t *testing.T) Source {
 	require := require.New(t)
-	source, err := db.Qs().SourceGet(context.Background(), 1)
+	source, err := Qs().SourceGet(context.Background(), 1)
 	require.NoError(err)
 	return source
 }
@@ -74,7 +74,7 @@ func TestSource_ToSource_ToSourceStructured(t *testing.T) {
 	reflect.DeepEqual(firstSource(t), firstSource(t).ToSourceStructured().ToSource())
 }
 
-var textTokenizer = db.TextTokenizer{
+var textTokenizer = TextTokenizer{
 	Parser:       text.NewParser(text.Korean, text.English),
 	Tokenizer:    tokenizer.NewSplitTokenizer(),
 	CleanSpeaker: true,

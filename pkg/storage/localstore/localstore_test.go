@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/storage/localstore"
+	. "github.com/s12chung/text2anki/pkg/storage/localstore"
 	"github.com/s12chung/text2anki/pkg/storage/localstore/localstoretest"
 )
 
@@ -33,7 +33,7 @@ func TestAPI_SignPut(t *testing.T) {
 	u, err := url.Parse(req.URL)
 	require.NoError(err)
 
-	key, err := localstoretest.NewEncryptorT(t).Decrypt(u.Query().Get(localstore.CipherQueryParam))
+	key, err := localstoretest.NewEncryptorT(t).Decrypt(u.Query().Get(CipherQueryParam))
 	require.NoError(err)
 	require.Equal(testKey, key)
 
@@ -77,9 +77,9 @@ func TestAPI_Validate(t *testing.T) {
 	api := localstoretest.NewAPIWithT(t, testStoragePrefix)
 	ciphertext, err := localstoretest.NewEncryptorT(t).Encrypt(testKey)
 	require.NoError(err)
-	require.NoError(api.Validate(testKey, url.Values{localstore.CipherQueryParam: []string{ciphertext}}))
+	require.NoError(api.Validate(testKey, url.Values{CipherQueryParam: []string{ciphertext}}))
 	require.Error(api.Validate(testKey, url.Values{}))
-	require.Error(api.Validate(testKey, url.Values{localstore.CipherQueryParam: []string{"bad_cipher"}}))
+	require.Error(api.Validate(testKey, url.Values{CipherQueryParam: []string{"bad_cipher"}}))
 }
 
 func TestAPI_ListKeys(t *testing.T) {

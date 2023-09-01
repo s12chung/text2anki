@@ -1,4 +1,4 @@
-// Package extractortest is an implementation of extractor interfaces for tsting
+// Package extractortest is an implementation of extractor interfaces for testing
 package extractortest
 
 import (
