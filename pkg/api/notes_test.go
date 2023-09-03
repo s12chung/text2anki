@@ -14,7 +14,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-var notesServer test.Server
+var notesServer txServer
 
 func init() {
 	notesServer = server.WithPathPrefix("/notes")
@@ -35,9 +35,11 @@ func TestRoutes_NoteCreate(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+			txQs := testdb.TxQs(t)
 
 			reqBody := fixture.Read(t, path.Join(testName, tc.name+".json"))
-			resp := test.HTTPDo(t, notesServer.NewRequest(t, http.MethodPost, "", bytes.NewReader(reqBody)))
+			req := notesServer.NewTxRequest(t, txQs, http.MethodPost, "", bytes.NewReader(reqBody))
+			resp := test.HTTPDo(t, req)
 			resp.EqualCode(t, tc.expectedCode)
 
 			note := db.Note{}
@@ -46,7 +48,6 @@ func TestRoutes_NoteCreate(t *testing.T) {
 				return
 			}
 
-			txQs := testdb.TxQs(t)
 			note, err := txQs.NoteGet(txQs.Ctx(), note.ID)
 			require.NoError(err)
 			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, note.StaticCopy()))

@@ -24,13 +24,13 @@ const sourcesTable = "sources"
 const partsColumn = "parts"
 
 // SourceCtx sets the source context from the sourceID
-func SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError) {
+func (rs Routes) SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError) {
 	sourceID, err := chiutil.ParamID(r, "sourceID")
 	if err != nil {
 		return nil, httputil.Error(http.StatusNotFound, err)
 	}
 
-	txQs, httpErr := ctxTxQs(r)
+	txQs, httpErr := rs.txQs(r)
 	if httpErr != nil {
 		return nil, httpErr
 	}
@@ -45,7 +45,7 @@ func SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError) {
 
 // SourceIndex returns a list of sources
 func (rs Routes) SourceIndex(r *http.Request) (any, *httputil.HTTPError) {
-	txQs, httpErr := ctxTxQs(r)
+	txQs, httpErr := rs.txQs(r)
 	if httpErr != nil {
 		return nil, httpErr
 	}
@@ -85,7 +85,7 @@ func (rs Routes) SourceUpdate(r *http.Request) (any, *httputil.HTTPError) {
 	sourceStructured.Name = req.Name
 	sourceStructured.Reference = req.Reference
 
-	txQs, httpErr := ctxTxQs(r)
+	txQs, httpErr := rs.txQs(r)
 	if httpErr != nil {
 		return nil, httpErr
 	}
@@ -138,7 +138,7 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 		return nil, err
 	}
 
-	txQs, httpErr := ctxTxQs(r)
+	txQs, httpErr := rs.txQs(r)
 	if httpErr != nil {
 		return nil, httpErr
 	}
@@ -200,7 +200,7 @@ func (rs Routes) SourceDestroy(r *http.Request) (any, *httputil.HTTPError) {
 	if httpErr != nil {
 		return nil, httpErr
 	}
-	txQs, httpErr := ctxTxQs(r)
+	txQs, httpErr := rs.txQs(r)
 	if httpErr != nil {
 		return nil, httpErr
 	}

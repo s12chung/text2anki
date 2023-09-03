@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -19,7 +18,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-var sourcesServer test.Server
+var sourcesServer txServer
 
 func init() {
 	sourcesServer = server.WithPathPrefix("/sources")
@@ -55,9 +54,6 @@ func TestRoutes_SourceGet(t *testing.T) {
 func TestRoutes_SourceUpdate(t *testing.T) {
 	testName := "TestRoutes_SourceUpdate"
 
-	created, err := db.Qs().SourceCreate(context.Background(), models.SourceStructuredsMust()[1].CreateParams())
-	require.NoError(t, err)
-
 	testCases := []struct {
 		name         string
 		newName      string
@@ -73,8 +69,12 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
+			txQs := testdb.TxQs(t)
+			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructuredsMust()[1].CreateParams())
+			require.NoError(err)
+
 			reqBody := test.JSON(t, SourceUpdateRequest{Name: tc.newName, Reference: tc.reference})
-			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPatch, idPath("", created.ID), bytes.NewReader(reqBody)))
+			resp := test.HTTPDo(t, sourcesServer.NewTxRequest(t, txQs, http.MethodPatch, idPath("", created.ID), bytes.NewReader(reqBody)))
 			resp.EqualCode(t, tc.expectedCode)
 
 			sourceStructured := db.SourceStructured{}
@@ -83,7 +83,6 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 				return
 			}
 
-			txQs := testdb.TxQs(t)
 			source, err := txQs.SourceGet(txQs.Ctx(), sourceStructured.ID)
 			require.NoError(err)
 			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, source.ToSourceStructured().StaticCopy()))
@@ -133,6 +132,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+			txQs := testdb.TxQs(t)
 
 			body := SourceCreateRequest{
 				PrePartListID: tc.prePartListID,
@@ -140,8 +140,8 @@ func TestRoutes_SourceCreate(t *testing.T) {
 				Reference:     tc.reference,
 				Parts:         sourceParts(t, tc.name, testName, tc.partCount),
 			}
-			reqBody := test.JSON(t, body)
-			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPost, "", bytes.NewReader(reqBody)))
+			req := sourcesServer.NewTxRequest(t, txQs, http.MethodPost, "", bytes.NewReader(test.JSON(t, body)))
+			resp := test.HTTPDo(t, req)
 			resp.EqualCode(t, tc.expectedCode)
 
 			sourceStructured := db.SourceStructured{}
@@ -156,7 +156,6 @@ func TestRoutes_SourceCreate(t *testing.T) {
 			}
 			require.Equal(finalPartCount, len(sourceStructured.Parts), "finalPartCount count not matching")
 
-			txQs := testdb.TxQs(t)
 			source, err := txQs.SourceGet(txQs.Ctx(), sourceStructured.ID)
 			require.NoError(err)
 			sourceStructured = source.ToSourceStructured()
@@ -220,15 +219,12 @@ func sourcePartFromFile(t *testing.T, testName, name string) SourceCreateRequest
 func TestRoutes_SourceDestroy(t *testing.T) {
 	testName := "TestRoutes_SourceDestroy"
 
-	created, err := db.Qs().SourceCreate(context.Background(), models.SourceStructuredsMust()[1].CreateParams())
-	require.NoError(t, err)
-
 	testCases := []struct {
 		name         string
 		path         string
 		expectedCode int
 	}{
-		{name: "normal", path: idPath("", created.ID), expectedCode: http.StatusOK},
+		{name: "normal", expectedCode: http.StatusOK},
 		{name: "invalid_id", path: "/9999", expectedCode: http.StatusNotFound},
 		{name: "not_a_number", path: "/nan", expectedCode: http.StatusNotFound},
 	}
@@ -237,7 +233,14 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodDelete, tc.path, nil))
+			txQs := testdb.TxQs(t)
+			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructuredsMust()[1].CreateParams())
+			require.NoError(err)
+			if tc.path == "" {
+				tc.path = idPath("", created.ID)
+			}
+
+			resp := test.HTTPDo(t, sourcesServer.NewTxRequest(t, txQs, http.MethodDelete, tc.path, nil))
 			resp.EqualCode(t, tc.expectedCode)
 
 			testModelResponse(t, resp, testName, tc.name, &db.SourceStructured{})
@@ -245,8 +248,7 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 				return
 			}
 
-			txQs := testdb.TxQs(t)
-			_, err := txQs.SourceGet(txQs.Ctx(), created.ID)
+			_, err = txQs.SourceGet(txQs.Ctx(), created.ID)
 			require.Equal(fmt.Errorf("sql: no rows in result set"), err)
 		})
 	}

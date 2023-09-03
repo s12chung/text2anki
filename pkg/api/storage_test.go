@@ -17,7 +17,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
 
-var storageServer test.Server
+var storageServer txServer
 
 func init() {
 	storageServer = server.WithPathPrefix(config.StorageURLPath)

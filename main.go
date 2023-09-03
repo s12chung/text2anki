@@ -7,30 +7,27 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"golang.org/x/exp/slog"
-	"gopkg.in/yaml.v3"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/api"
 	"github.com/s12chung/text2anki/pkg/api/config"
-	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
-
-var routes = api.NewRoutes(configFromEnv())
 
 const host = "http://localhost"
 const port = "3000"
 
 func configFromEnv() config.Config {
 	c := config.Config{}
+
+	c.TxPool = api.TxPool{}
 	if os.Getenv("TOKENIZER") == "komoran" {
 		c.TokenizerType = config.TokenizerKomoran
 	}
@@ -48,16 +45,8 @@ func configFromEnv() config.Config {
 	return c
 }
 
-var cleanSpeaker bool
-var cli bool
-
-func init() {
-	flag.BoolVar(&cli, "cli", false, "use cli")
-	flag.BoolVar(&cleanSpeaker, "clean-speaker", false, "clean 'speaker name:' from text")
-	flag.Parse()
-}
-
 func main() {
+	cli := false
 	if cli {
 		mainAgain()
 		return
@@ -70,6 +59,11 @@ func main() {
 }
 
 func run() error {
+	if err := db.SetDB("db/data.sqlite3"); err != nil {
+		return err
+	}
+	routes := api.NewRoutes(configFromEnv())
+
 	if err := routes.Setup(); err != nil {
 		return err
 	}
@@ -120,52 +114,11 @@ func mainAgain() {
 	}
 }
 
-func runAgain(textStringFilename, exportDir string) error {
-	if err := routes.Setup(); err != nil {
-		return err
-	}
-	defer func() {
-		if err := routes.Cleanup(); err != nil {
-			fmt.Println(err)
-		}
-	}()
-
+func runAgain(_, exportDir string) error {
 	if err := anki.SetupDefaultConfig(); err != nil {
 		return err
 	}
-	_, err := tokenizeFile(textStringFilename)
-	if err != nil {
-		return err
-	}
 	return exportFiles([]anki.Note{}, exportDir)
-}
-
-func tokenizeFile(filename string) ([]db.TokenizedText, error) {
-	//nolint:gosec // required for binary to work
-	fileBytes, err := os.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-
-	split := strings.Split(string(fileBytes), "===")
-	if len(split) == 1 {
-		split = append(split, "")
-	}
-	texts, err := routes.TextTokenizer.Parser.Texts(split[0], split[1])
-	if err != nil {
-		bytes, _ := yaml.Marshal(texts)
-		fmt.Println(string(bytes))
-		return nil, err
-	}
-	if cleanSpeaker {
-		texts = text.CleanSpeaker(texts)
-	}
-
-	tokenizedTexts, err := routes.TextTokenizer.TokenizeTexts(texts)
-	if err != nil {
-		return nil, err
-	}
-	return tokenizedTexts, err
 }
 
 func exportFiles(notes []anki.Note, exportDir string) error {
@@ -182,7 +135,7 @@ func exportFiles(notes []anki.Note, exportDir string) error {
 }
 
 func createAudio(notes []anki.Note) error {
-	synth := routes.Synthesizer
+	synth := config.Synthesizer()
 	for i := range notes {
 		note := &notes[i]
 		speech, err := synth.TextToSpeech(note.Usage)

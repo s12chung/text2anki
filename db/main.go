@@ -2,7 +2,6 @@
 package main
 
 import (
-	"context"
 	_ "embed"
 	"encoding/json"
 	"flag"
@@ -187,8 +186,12 @@ func cmdSearch() error {
 		return fmt.Errorf("config is missing a field: %v", validation)
 	}
 
+	txQs, err := db.NewTxQs()
+	if err != nil {
+		return err
+	}
 	for _, query := range config.Queries {
-		terms, err := db.Qs().TermsSearch(context.Background(), query.Str, query.POS)
+		terms, err := txQs.TermsSearch(txQs.Ctx(), query.Str, query.POS)
 		if err != nil {
 			return err
 		}
@@ -206,5 +209,5 @@ func cmdSearch() error {
 			return err
 		}
 	}
-	return nil
+	return txQs.Commit()
 }

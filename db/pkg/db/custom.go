@@ -34,18 +34,25 @@ type Tx interface {
 
 	Commit() error
 	Rollback() error
+
+	Finalize() error
+	FinalizeError() error
 }
 
-// Transaction represents a transaction that also carries the context
+// Transaction represents a transaction that also carries the context and implements reqtx.Tx
 type Transaction struct {
 	*sql.Tx
 	ctx context.Context //nolint:containedctx //it's very clear what the context is about, the transaction
 }
 
 // Ctx returns the context of the transaction
-func (t Transaction) Ctx() context.Context {
-	return t.ctx
-}
+func (t Transaction) Ctx() context.Context { return t.ctx }
+
+// Finalize commits the Tx
+func (t Transaction) Finalize() error { return t.Commit() }
+
+// FinalizeError rolls back the Tx
+func (t Transaction) FinalizeError() error { return t.Rollback() }
 
 // TxQs is a queries with a transaction attached
 type TxQs struct {

@@ -25,7 +25,7 @@ func (rs Routes) TermsSearch(r *http.Request) (any, *httputil.HTTPError) {
 		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("pos is invalid: '%v'", posQuery))
 	}
 
-	txQs, httpErr := ctxTxQs(r)
+	txQs, httpErr := rs.txQs(r)
 	if httpErr != nil {
 		return nil, httpErr
 	}

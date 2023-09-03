@@ -21,7 +21,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-var prePartListServer test.Server
+var prePartListServer txServer
 
 func init() {
 	prePartListServer = server.WithPathPrefix("/sources/pre_part_lists")

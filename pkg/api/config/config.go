@@ -24,6 +24,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/tokenizer/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizer/komoran"
+	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx"
 )
 
 var appCacheDir string
@@ -39,16 +40,22 @@ func init() {
 
 // Config contains config settings for the API
 type Config struct {
+	TxPool reqtx.Pool
+
 	TokenizerType
 	DictionaryType
+
 	StorageConfig StorageConfig
 	ExtractorMap  extractor.Map
 }
 
-// Parser returns the default Parser
-func Parser() text.Parser {
-	return text.NewParser(text.Korean, text.English)
+// TxIntegrator returns a new TxIntegrator
+func TxIntegrator(txPool reqtx.Pool) reqtx.Integrator {
+	return reqtx.NewIntegrator(txPool)
 }
+
+// Parser returns the default Parser
+func Parser() text.Parser { return text.NewParser(text.Korean, text.English) }
 
 // Synthesizer returns the default Synthesizer
 func Synthesizer() synthesizer.Synthesizer {
@@ -95,11 +102,12 @@ func Dictionary(dictionaryType DictionaryType) dictionary.Dictionary {
 	case DictionaryKrDict:
 		fallthrough
 	default:
-		if err := db.SetDB("db/data.sqlite3"); err != nil {
-			fmt.Println("failure to SetDB()\n", err)
+		txQs, err := db.NewTxQs()
+		if err != nil {
+			fmt.Println("db.NewTxQs() error", err)
 			os.Exit(-1)
 		}
-		return krdict.New(db.Qs())
+		return krdict.New(txQs)
 	}
 }
 

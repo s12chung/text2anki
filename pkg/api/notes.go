@@ -18,7 +18,7 @@ func (rs Routes) NoteCreate(r *http.Request) (any, *httputil.HTTPError) {
 	if httpErr := extractAndValidate(r, &req); httpErr != nil {
 		return nil, httpErr
 	}
-	txQs, httpErr := ctxTxQs(r)
+	txQs, httpErr := rs.txQs(r)
 	if httpErr != nil {
 		return nil, httpErr
 	}

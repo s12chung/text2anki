@@ -2,7 +2,6 @@
 package api
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -12,24 +11,30 @@ import (
 	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/extractor"
-	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/synthesizer"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
+	"github.com/s12chung/text2anki/pkg/util/httputil/httputilchi"
+	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx"
 )
 
 // Routes contains the routes used for the api
 type Routes struct {
+	TxIntegrator reqtx.Integrator
+
 	Dictionary    dictionary.Dictionary
 	Synthesizer   synthesizer.Synthesizer
 	TextTokenizer db.TextTokenizer
-	Storage       config.Storage
-	ExtractorMap  extractor.Map
+
+	Storage      config.Storage
+	ExtractorMap extractor.Map
 }
 
 // NewRoutes is the routes used by the API
 func NewRoutes(c config.Config) Routes {
 	routes := Routes{
+		TxIntegrator: config.TxIntegrator(c.TxPool),
+
 		Dictionary:  config.Dictionary(c.DictionaryType),
 		Synthesizer: config.Synthesizer(),
 		TextTokenizer: db.TextTokenizer{
@@ -37,6 +42,7 @@ func NewRoutes(c config.Config) Routes {
 			Tokenizer:    config.Tokenizer(c.TokenizerType),
 			CleanSpeaker: true,
 		},
+
 		Storage:      config.StorageFromConfig(c.StorageConfig),
 		ExtractorMap: config.ExtractorMap(c.ExtractorMap),
 	}
@@ -45,56 +51,74 @@ func NewRoutes(c config.Config) Routes {
 }
 
 // Setup sets up the routes
-func (rs Routes) Setup() error {
-	return rs.TextTokenizer.Setup()
-}
+func (rs Routes) Setup() error { return rs.TextTokenizer.Setup() }
 
 // Cleanup cleans up the routes
-func (rs Routes) Cleanup() error {
-	return rs.TextTokenizer.Cleanup()
-}
+func (rs Routes) Cleanup() error { return rs.TextTokenizer.Cleanup() }
 
 // Router returns the router with all the routes set
 func (rs Routes) Router() chi.Router {
-	r := chi.NewRouter()
-	r.Use(httputil.RequestWrap(setTxQs))
-	r.Route("/sources", func(r chi.Router) {
-		r.Get("/", responseWrap(rs.SourceIndex))
-		r.Post("/", responseWrap(rs.SourceCreate))
-
-		r.Route("/{sourceID}", func(r chi.Router) {
-			r.Use(httputil.RequestWrap(SourceCtx))
-			r.Get("/", responseWrap(rs.SourceGet))
-			r.Patch("/", responseWrap(rs.SourceUpdate))
-			r.Delete("/", responseWrap(rs.SourceDestroy))
-		})
-
-		r.Route("/pre_part_lists", func(r chi.Router) {
-			r.Post("/", responseWrap(rs.PrePartListCreate))
-			r.Post("/sign", responseWrap(rs.PrePartListSign))
-			r.Post("/verify", responseWrap(rs.PrePartListVerify))
-			r.Route("/{prePartListID}", func(r chi.Router) {
-				r.Get("/", responseWrap(rs.PrePartListGet))
-			})
-		})
-	})
-	r.Route("/terms", func(r chi.Router) {
-		r.Get("/search", responseWrap(rs.TermsSearch))
-	})
-	r.Route("/notes", func(r chi.Router) {
-		r.Post("/", responseWrap(rs.NoteCreate))
-	})
-	r.Route(config.StorageURLPath, func(r chi.Router) {
-		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
-		r.Put("/*", responseWrap(rs.StoragePut))
-	})
+	var r chi.Router = chi.NewRouter()
 	r.NotFound(httputil.RespondJSONWrap(rs.NotFound))
 	r.MethodNotAllowed(httputil.RespondJSONWrap(rs.NotAllowed))
+
+	r.Route(config.StorageURLPath, func(r chi.Router) {
+		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
+		r.Put("/*", responseJSONWrap(rs.StoragePut))
+	})
+
+	r.Mount("/", rs.txRouter())
 	return r
 }
 
-func responseWrap(f httputil.RespondJSONWrapFunc) http.HandlerFunc {
-	return httputil.RespondJSONWrap(txFinalizeWrap(httptyped.TypedWrap(f)))
+func (rs Routes) txRouter() chi.Router {
+	r := httputilchi.NewRouter(chi.NewRouter(), httpWrapper{TxIntegrator: rs.TxIntegrator})
+	r.Router.Use(httputil.RequestWrap(rs.TxIntegrator.SetTxContext))
+
+	r.Route("/sources", func(r httputilchi.Router) {
+		r.Get("/", rs.SourceIndex)
+		r.Post("/", rs.SourceCreate)
+
+		r.Route("/{sourceID}", func(r httputilchi.Router) {
+			r.Use(rs.SourceCtx)
+			r.Get("/", rs.SourceGet)
+			r.Patch("/", rs.SourceUpdate)
+			r.Delete("/", rs.SourceDestroy)
+		})
+
+		r.Route("/pre_part_lists", func(r httputilchi.Router) {
+			r.Post("/", rs.PrePartListCreate)
+			r.Post("/sign", rs.PrePartListSign)
+			r.Post("/verify", rs.PrePartListVerify)
+			r.Route("/{prePartListID}", func(r httputilchi.Router) {
+				r.Get("/", rs.PrePartListGet)
+			})
+		})
+	})
+	r.Route("/terms", func(r httputilchi.Router) {
+		r.Get("/search", rs.TermsSearch)
+	})
+	r.Route("/notes", func(r httputilchi.Router) {
+		r.Post("/", rs.NoteCreate)
+	})
+	return r.Router
+}
+
+func responseJSONWrap(f httputil.RespondJSONWrapFunc) http.HandlerFunc {
+	return httputil.RespondJSONWrap(responseWrap(f))
+}
+
+func responseWrap(f httputil.RespondJSONWrapFunc) httputil.RespondJSONWrapFunc {
+	return httptyped.TypedWrap(f)
+}
+
+type httpWrapper struct{ TxIntegrator reqtx.Integrator }
+
+func (h httpWrapper) WrapRequest(f httputil.RequestWrapFunc) httputil.RequestWrapFunc {
+	return h.TxIntegrator.TxRollbackRequestWrap(f)
+}
+func (h httpWrapper) WrapResponse(f httputil.RespondJSONWrapFunc) httputil.RespondJSONWrapFunc {
+	return h.TxIntegrator.TxFinalizeWrap(responseWrap(f))
 }
 
 // NotFound is the route handler for not matching pattern routes
@@ -106,50 +130,4 @@ func (rs Routes) NotFound(r *http.Request) (any, *httputil.HTTPError) {
 func (rs Routes) NotAllowed(r *http.Request) (any, *httputil.HTTPError) {
 	return nil, httputil.Error(http.StatusMethodNotAllowed,
 		fmt.Errorf("the method, %v (at %v), is not allowed with at this URL", r.Method, r.URL.String()))
-}
-
-func extractAndValidate(r *http.Request, req any) *httputil.HTTPError {
-	if httpError := httputil.ExtractJSON(r, req); httpError != nil {
-		return httpError
-	}
-	result := firm.Validate(req)
-	if !result.IsValid() {
-		return httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf(result.ErrorMap().String()))
-	}
-	return nil
-}
-
-const txQsContextKey httputil.ContextKey = "db.TxQs"
-
-func setTxQs(r *http.Request) (*http.Request, *httputil.HTTPError) {
-	txQs, err := db.NewTxQsWithCtx(r.Context())
-	if err != nil {
-		return nil, httputil.Error(http.StatusInternalServerError, err)
-	}
-	return r.WithContext(context.WithValue(r.Context(), txQsContextKey, txQs)), nil
-}
-
-func ctxTxQs(r *http.Request) (db.TxQs, *httputil.HTTPError) {
-	txQs, ok := r.Context().Value(txQsContextKey).(db.TxQs)
-	if !ok {
-		return db.TxQs{}, httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.Tx fail"))
-	}
-	return txQs, nil
-}
-
-func txFinalizeWrap(f httputil.RespondJSONWrapFunc) httputil.RespondJSONWrapFunc {
-	return func(r *http.Request) (any, *httputil.HTTPError) {
-		resp, httpError := f(r)
-		if httpError != nil {
-			return resp, httpError
-		}
-		txQs, httpErr := ctxTxQs(r)
-		if httpErr != nil {
-			return nil, httpErr
-		}
-		if err := txQs.Commit(); err != nil {
-			return nil, httputil.Error(http.StatusInternalServerError, err)
-		}
-		return resp, nil
-	}
 }

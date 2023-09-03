@@ -2,7 +2,6 @@
 package testdb
 
 import (
-	"context"
 	"crypto/sha256"
 	"fmt"
 	"os"
@@ -31,16 +30,30 @@ func init() {
 	tmpPath = path.Join(callerPath, "..", "..", "..", "tmp")
 }
 
+// Transaction is a wrapper around db.Tx
+type Transaction struct{ db.Tx }
+
+// Finalize does nothing (server does not handle Tx, the tests do)
+func (t Transaction) Finalize() error { return nil }
+
+// FinalizeError does nothing (server does not handle Tx, the tests do)
+func (t Transaction) FinalizeError() error { return nil }
+
+// NewTransaction returns a new Transaction
+func NewTransaction(tx db.Tx) Transaction { return Transaction{Tx: tx} }
+
 // NewTx returns a new transaction
 func NewTx(t *testing.T) db.Tx {
 	require := require.New(t)
 
 	tx, err := db.NewTx()
 	require.NoError(err)
+
+	testTx := NewTransaction(tx)
 	t.Cleanup(func() {
-		require.NoError(tx.Rollback())
+		require.NoError(testTx.Rollback())
 	})
-	return tx
+	return testTx
 }
 
 // TxQs returns a db.NewTxQs used for testing
@@ -49,6 +62,8 @@ func TxQs(t *testing.T) db.TxQs {
 
 	txQs, err := db.NewTxQs()
 	require.NoError(err)
+
+	txQs.Tx = NewTransaction(txQs.Tx)
 	t.Cleanup(func() {
 		require.NoError(txQs.Rollback())
 	})
@@ -122,15 +137,21 @@ func Setup(name string) error {
 	if err := db.SetDB(dbPath); err != nil {
 		return err
 	}
+	txQs, err := db.NewTxQs()
+	if err != nil {
+		return err
+	}
 	if !reuseSchema {
-		if err := db.Qs().Create(context.Background()); err != nil {
+		if err := txQs.Create(txQs.Ctx()); err != nil {
 			return err
 		}
 	}
-	if err := db.Qs().ClearAll(context.Background()); err != nil {
+	if err := txQs.ClearAll(txQs.Ctx()); err != nil {
 		return err
 	}
-
+	if err := txQs.Commit(); err != nil {
+		return err
+	}
 	return os.WriteFile(dbSHAPath, []byte(schemaSHA), ioutil.OwnerRWGroupR)
 }
 
