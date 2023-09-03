@@ -14,6 +14,8 @@ import (
 )
 
 func TestAzure_TextToSpeech(t *testing.T) {
+	t.Parallel()
+
 	synth := New(GetAPIKeyFromEnv(), EastUSRegion)
 	clean := setupVCR(t, "TestAzure_TextToSpeech", synth)
 	defer clean()

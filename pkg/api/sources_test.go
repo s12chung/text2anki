@@ -53,6 +53,7 @@ func TestRoutes_SourceGet(t *testing.T) {
 
 func TestRoutes_SourceUpdate(t *testing.T) {
 	testName := "TestRoutes_SourceUpdate"
+	t.Parallel()
 
 	testCases := []struct {
 		name         string
@@ -68,6 +69,7 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+			t.Parallel()
 
 			txQs := testdb.TxQs(t)
 			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructuredsMust()[1].CreateParams())
@@ -94,15 +96,14 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 func TestRoutes_SourceCreate(t *testing.T) {
 	testName := "TestRoutes_SourceCreate"
 	test.CISkip(t, "can't run C environment in CI")
+	t.Parallel()
 
 	mediaID := "a1234567-3456-9abc-d123-456789abcdef"
 	mediaWithInfoID := "a47ac10b-58cc-4372-a567-0e02b2c3d479"
 	setupSourceCreateMedia(t, mediaID)
 	setupSourceCreateMediaWithInfo(t, mediaWithInfoID)
 	require.NoError(t, routes.Setup())
-	defer func() {
-		require.NoError(t, routes.Cleanup())
-	}()
+	t.Cleanup(func() { require.NoError(t, routes.Cleanup()) })
 
 	testCases := []struct {
 		name           string
@@ -132,6 +133,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+			t.Parallel()
 			txQs := testdb.TxQs(t)
 
 			body := SourceCreateRequest{
@@ -218,6 +220,7 @@ func sourcePartFromFile(t *testing.T, testName, name string) SourceCreateRequest
 
 func TestRoutes_SourceDestroy(t *testing.T) {
 	testName := "TestRoutes_SourceDestroy"
+	t.Parallel()
 
 	testCases := []struct {
 		name         string
@@ -232,6 +235,7 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+			t.Parallel()
 
 			txQs := testdb.TxQs(t)
 			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructuredsMust()[1].CreateParams())

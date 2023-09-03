@@ -51,6 +51,7 @@ func TestSourcePartMedia_MarshalJSON(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			txQs := TxQsT(t)
+
 			source := firstSource(t, txQs).ToSourceStructured()
 			source.Parts = setupParts(t, source.Parts[0], testUUID)
 			if tc.prepareSerialize {
@@ -131,6 +132,7 @@ var textTokenizer = TextTokenizer{
 
 func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 	testName := "TestTextTokenizer_TokenizedTexts"
+	t.Parallel()
 
 	testCases := []struct {
 		name string
@@ -144,6 +146,7 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+			t.Parallel()
 
 			s := string(fixture.Read(t, path.Join(testName, tc.name+".txt")))
 			split := strings.Split(s, "===")
@@ -161,6 +164,7 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 
 func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 	require := require.New(t)
+	t.Parallel()
 
 	texts := []text.Text{
 		{Text: "내가 가는 이길이", Translation: "The road that I’m taking"},
@@ -184,12 +188,12 @@ func TestQueries_SourceCreate(t *testing.T) {
 
 func TestQueries_SourceUpdate(t *testing.T) {
 	require := require.New(t)
-
+	t.Parallel()
 	txQs := TxQsT(t)
 
 	newSource, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t, txQs).ToSourceStructured().CreateParams())
 	require.NoError(err)
-	time.Sleep(1 * time.Second)
+	time.Sleep(time.Second / 10)
 
 	source, err := txQs.SourceUpdate(txQs.Ctx(), newSource.ToSourceStructured().UpdateParams())
 	require.NoError(err)
