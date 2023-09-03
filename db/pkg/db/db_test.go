@@ -24,16 +24,21 @@ func TestMain(m *testing.M) {
 
 // A copy of this constant is in testdb.go
 const testDBFile = "testdb.sqlite3"
+const testUUID = "a1234567-3456-9abc-d123-456789abcdef"
+
+var storageAPI localstore.API
 
 func run(m *testing.M) error {
 	if err := SetDB(path.Join("..", "..", "tmp", testDBFile)); err != nil {
 		return err
 	}
-	api, err := newStorageAPI("db_test")
+	var err error
+	storageAPI, err = newStorageAPI("db_test")
 	if err != nil {
 		return err
 	}
-	SetDBStorage(storage.NewDBStorage(api, nil))
+	SetDBStorage(storage.NewDBStorage(storageAPI, nil))
+
 	if err := textTokenizer.Setup(); err != nil {
 		return err
 	}

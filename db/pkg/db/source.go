@@ -14,6 +14,12 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
+// SourcesTable is the table name for Source
+const SourcesTable = "sources"
+
+// PartsColumn is the column name for Source.Parts
+const PartsColumn = "parts"
+
 // SourceStructured is a copy of Source for with JSON columns structured
 type SourceStructured struct {
 	ID        int64        `json:"id,omitempty"`

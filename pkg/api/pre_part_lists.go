@@ -20,8 +20,8 @@ func init() {
 }
 
 var prePartListPutConfig = storage.SignPutConfig{
-	Table:  sourcesTable,
-	Column: partsColumn,
+	Table:  db.SourcesTable,
+	Column: db.PartsColumn,
 	NameToValidExts: map[string]map[string]bool{
 		"Info": {".json": true},
 		"Image": {
@@ -88,7 +88,7 @@ func (rs Routes) PrePartListGet(r *http.Request) (any, *httputil.HTTPError) {
 		return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("prePartListID not found"))
 	}
 	prePartList := db.PrePartListURL{}
-	err := rs.Storage.DBStorage.SignGetTree(sourcesTable, partsColumn, prePartListID, &prePartList)
+	err := rs.Storage.DBStorage.SignGetTree(db.SourcesTable, db.PartsColumn, prePartListID, &prePartList)
 	if err != nil {
 		if storage.IsNotFoundError(err) {
 			return nil, httputil.Error(http.StatusNotFound, err)

@@ -20,8 +20,6 @@ func init() {
 }
 
 const sourceContextKey httputil.ContextKey = "source"
-const sourcesTable = "sources"
-const partsColumn = "parts"
 
 // SourceCtx sets the source context from the sourceID
 func (rs Routes) SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError) {
@@ -125,7 +123,7 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 	var prePartList *db.PrePartList
 	if req.PrePartListID != "" {
 		prePartList = &db.PrePartList{}
-		if err := rs.Storage.DBStorage.KeyTree(sourcesTable, partsColumn, req.PrePartListID, prePartList); err != nil {
+		if err := rs.Storage.DBStorage.KeyTree(db.SourcesTable, db.PartsColumn, req.PrePartListID, prePartList); err != nil {
 			if storage.IsNotFoundError(err) {
 				return nil, httputil.Error(http.StatusNotFound, err)
 			}

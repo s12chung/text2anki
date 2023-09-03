@@ -172,13 +172,13 @@ func setupSourceCreateMediaWithInfo(t *testing.T, prePartListID string) {
 		Name:      "test name",
 		Reference: "https://www.testref.com",
 	}
-	baseKey := storage.BaseKey(sourcesTable, partsColumn, prePartListID)
+	baseKey := storage.BaseKey(db.SourcesTable, db.PartsColumn, prePartListID)
 	err := routes.Storage.Storer.Store(baseKey+".Info.json", bytes.NewReader(test.JSON(t, info)))
 	require.NoError(t, err)
 }
 
 func setupSourceCreateMedia(t *testing.T, prePartListID string) {
-	baseKey := storage.BaseKey(sourcesTable, partsColumn, prePartListID)
+	baseKey := storage.BaseKey(db.SourcesTable, db.PartsColumn, prePartListID)
 
 	for i := 0; i < 3; i++ {
 		err := routes.Storage.Storer.Store(baseKey+".PreParts["+strconv.Itoa(i)+"].Image.txt", bytes.NewReader([]byte("image"+strconv.Itoa(i))))

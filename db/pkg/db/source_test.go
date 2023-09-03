@@ -1,14 +1,18 @@
 package db
 
 import (
+	"bytes"
 	"context"
+	"path"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/util/test"
@@ -34,7 +38,46 @@ func TestSourceStructured_StaticCopy(t *testing.T) {
 }
 
 func TestSourcePartMedia_MarshalJSON(t *testing.T) {
-	t.Skip("Test later... When this is outside of the db_test package testdb is changed to use transaction")
+	testName := "TestSourcePartMedia_MarshalJSON"
+
+	testCases := []struct {
+		name             string
+		prepareSerialize bool
+	}{
+		{name: "basic"},
+		{name: "prepare_serialize", prepareSerialize: true},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			source := firstSource(t).ToSourceStructured()
+			source.Parts = setupParts(t, source.Parts[0], testUUID)
+			if tc.prepareSerialize {
+				source.PrepareSerialize()
+			}
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, source.StaticCopy()))
+		})
+	}
+}
+
+func setupParts(t *testing.T, part SourcePart, prePartListID string) []SourcePart {
+	require := require.New(t)
+
+	parts := make([]SourcePart, 3)
+	baseKey := storage.BaseKey(SourcesTable, PartsColumn, prePartListID)
+	for i := 0; i < len(parts); i++ {
+		parts[i] = part
+
+		key := baseKey + ".PreParts[" + strconv.Itoa(i) + "].Image.txt"
+		parts[i].Media = &SourcePartMedia{ImageKey: key}
+		require.NoError(storageAPI.Store(key, bytes.NewReader([]byte("image"+strconv.Itoa(i)))))
+	}
+	for i := 0; i < 1; i++ {
+		key := baseKey + ".PreParts[0].Audio.txt"
+		parts[i].Media.AudioKey = key
+		require.NoError(storageAPI.Store(key, bytes.NewReader([]byte("audio"+strconv.Itoa(i)+"!"))))
+	}
+	return parts
 }
 
 func TestSourcePartMedia_UnmarshalJSON(t *testing.T) {
@@ -79,7 +122,7 @@ var textTokenizer = TextTokenizer{
 }
 
 func TestTextTokenizer_TokenizedTexts(t *testing.T) {
-	testNamePath := "TestTextTokenizer_TokenizedTexts/"
+	testName := "TestTextTokenizer_TokenizedTexts"
 
 	testCases := []struct {
 		name string
@@ -94,7 +137,7 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			s := string(fixture.Read(t, testNamePath+tc.name+".txt"))
+			s := string(fixture.Read(t, path.Join(testName, tc.name+".txt")))
 			split := strings.Split(s, "===")
 			if len(split) == 1 {
 				split = append(split, "")
@@ -103,7 +146,7 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 			require.NoError(err)
 
 			nonSpeaker := strings.TrimPrefix(tc.name, "speaker_")
-			fixture.CompareReadOrUpdate(t, testNamePath+nonSpeaker+".json", fixture.JSON(t, tokenizedTexts))
+			fixture.CompareReadOrUpdate(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
 		})
 	}
 }

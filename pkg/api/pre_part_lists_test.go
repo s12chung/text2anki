@@ -96,7 +96,7 @@ func TestRoutes_PrePartListGet(t *testing.T) {
 	testName := "TestRoutes_PrePartListGet"
 
 	id := "my_id"
-	baseKey := storage.BaseKey(sourcesTable, partsColumn, id)
+	baseKey := storage.BaseKey(db.SourcesTable, db.PartsColumn, id)
 	for i := 0; i < 2; i++ {
 		err := routes.Storage.Storer.Store(baseKey+".PreParts["+strconv.Itoa(i)+"].Image.txt", bytes.NewReader([]byte("image"+strconv.Itoa(i))))
 		require.NoError(t, err)
@@ -170,7 +170,7 @@ func TestRoutes_PrePartListCreate(t *testing.T) {
 			}
 
 			keyTree := db.PrePartList{}
-			err := routes.Storage.DBStorage.KeyTree(sourcesTable, partsColumn, prePartListResp.ID, &keyTree)
+			err := routes.Storage.DBStorage.KeyTree(db.SourcesTable, db.PartsColumn, prePartListResp.ID, &keyTree)
 			require.NoError(err)
 			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+"_KeyTree.json"), fixture.JSON(t, keyTree))
 
