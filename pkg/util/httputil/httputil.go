@@ -22,6 +22,11 @@ func (e HTTPError) Error() string {
 	return fmt.Sprintf("%v: %v", e.Code, e.Cause)
 }
 
+// LogError logs the error
+func LogError(r *http.Request, httpErr *HTTPError) {
+	slog.Error(httpErr.Cause.Error(), slog.Int("code", httpErr.Code), slog.String("url", r.URL.Path), slog.String("method", r.Method))
+}
+
 // Error is a safe shorthand to create a new HTTPError
 func Error(code int, cause error) *HTTPError {
 	return &HTTPError{Code: code, Cause: cause}
@@ -50,13 +55,17 @@ func RequestWrap(f RequestWrapFunc) func(http.Handler) http.Handler {
 // RespondJSONWrapFunc is the function format for RespondJSONWrap, used to automatically handle JSON responses
 type RespondJSONWrapFunc func(r *http.Request) (any, *HTTPError)
 
+func (res RespondJSONWrapFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	RespondJSONWrap(res)(w, r)
+}
+
 // RespondJSONWrap wraps a function that handles the request using return statements rather than writing to the response
 func RespondJSONWrap(f RespondJSONWrapFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		resp, httpError := f(r)
-		if httpError != nil {
-			RespondError(w, httpError)
-			slog.Error(httpError.Cause.Error(), slog.Int("code", httpError.Code), slog.String("url", r.URL.Path), slog.String("method", r.Method))
+		resp, httpErr := f(r)
+		if httpErr != nil {
+			RespondError(w, httpErr)
+			LogError(r, httpErr)
 			return
 		}
 		RespondJSON(w, resp)
