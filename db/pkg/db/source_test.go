@@ -2,7 +2,6 @@ package db
 
 import (
 	"bytes"
-	"context"
 	"path"
 	"reflect"
 	"strconv"
@@ -19,22 +18,23 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func firstSource(t *testing.T) Source {
+func firstSource(t *testing.T, txQs TxQs) Source {
 	require := require.New(t)
-	source, err := Qs().SourceGet(context.Background(), 1)
+	source, err := txQs.SourceGet(txQs.Ctx(), 1)
 	require.NoError(err)
 	return source
 }
 
 func TestSourceStructured_StaticCopy(t *testing.T) {
 	require := require.New(t)
-	test.EmptyFieldsMatch(t, firstSource(t))
+	txQs := TxQsT(t)
+	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 
-	sourceCopy := firstSource(t).ToSourceStructured()
+	sourceCopy := firstSource(t, txQs).ToSourceStructured()
 	sourceCopy.ID = 0
 	sourceCopy.UpdatedAt = time.Time{}
 	sourceCopy.CreatedAt = time.Time{}
-	require.Equal(sourceCopy, firstSource(t).ToSourceStructured().StaticCopy())
+	require.Equal(sourceCopy, firstSource(t, txQs).ToSourceStructured().StaticCopy())
 }
 
 func TestSourcePartMedia_MarshalJSON(t *testing.T) {
@@ -50,7 +50,8 @@ func TestSourcePartMedia_MarshalJSON(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			source := firstSource(t).ToSourceStructured()
+			txQs := TxQsT(t)
+			source := firstSource(t, txQs).ToSourceStructured()
 			source.Parts = setupParts(t, source.Parts[0], testUUID)
 			if tc.prepareSerialize {
 				source.PrepareSerialize()
@@ -86,8 +87,9 @@ func TestSourcePartMedia_UnmarshalJSON(t *testing.T) {
 
 func TestSourceStructured_DefaultedName(t *testing.T) {
 	require := require.New(t)
+	txQs := TxQsT(t)
 
-	source := firstSource(t).ToSourceStructured()
+	source := firstSource(t, txQs).ToSourceStructured()
 	require.Equal(source.Name, source.DefaultedName())
 	source.Name = ""
 	require.Equal(source.Parts[0].TokenizedTexts[0].Text.Text, source.DefaultedName())
@@ -95,24 +97,30 @@ func TestSourceStructured_DefaultedName(t *testing.T) {
 
 func TestSourceStructured_UpdateParams(t *testing.T) {
 	testName := "TestSourceStructured_UpdateParams"
-	test.EmptyFieldsMatch(t, firstSource(t))
-	createParams := firstSource(t).ToSourceStructured().UpdateParams()
+	txQs := TxQsT(t)
+
+	test.EmptyFieldsMatch(t, firstSource(t, txQs))
+	createParams := firstSource(t, txQs).ToSourceStructured().UpdateParams()
 	test.EmptyFieldsMatch(t, createParams)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }
 
 func TestSourceStructured_CreateParams(t *testing.T) {
 	testName := "TestSourceStructured_CreateParams"
-	test.EmptyFieldsMatch(t, firstSource(t))
-	createParams := firstSource(t).ToSourceStructured().CreateParams()
+	txQs := TxQsT(t)
+
+	test.EmptyFieldsMatch(t, firstSource(t, txQs))
+	createParams := firstSource(t, txQs).ToSourceStructured().CreateParams()
 	test.EmptyFieldsMatch(t, createParams)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }
 
 func TestSource_ToSource_ToSourceStructured(t *testing.T) {
-	test.EmptyFieldsMatch(t, firstSource(t))
-	test.EmptyFieldsMatch(t, firstSource(t).ToSourceStructured())
-	reflect.DeepEqual(firstSource(t), firstSource(t).ToSourceStructured().ToSource())
+	txQs := TxQsT(t)
+
+	test.EmptyFieldsMatch(t, firstSource(t, txQs))
+	test.EmptyFieldsMatch(t, firstSource(t, txQs).ToSourceStructured())
+	reflect.DeepEqual(firstSource(t, txQs), firstSource(t, txQs).ToSourceStructured().ToSource())
 }
 
 var textTokenizer = TextTokenizer{
@@ -167,9 +175,9 @@ func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 
 func TestQueries_SourceCreate(t *testing.T) {
 	require := require.New(t)
-
 	txQs := TxQsT(t)
-	source, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t).ToSourceStructured().CreateParams())
+
+	source, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t, txQs).ToSourceStructured().CreateParams())
 	require.NoError(err)
 	testRecentTimestamps(t, source.CreatedAt, source.UpdatedAt)
 }
@@ -179,7 +187,7 @@ func TestQueries_SourceUpdate(t *testing.T) {
 
 	txQs := TxQsT(t)
 
-	newSource, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t).ToSourceStructured().CreateParams())
+	newSource, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t, txQs).ToSourceStructured().CreateParams())
 	require.NoError(err)
 	time.Sleep(1 * time.Second)
 
