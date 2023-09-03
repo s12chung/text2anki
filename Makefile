@@ -41,7 +41,7 @@ test.slow:
 	| tail -n 25
 
 lint:
-	golangci-lint run
+	golangci-lint run $(TEST)
 lint.fix:
 	goimports -w .
 
