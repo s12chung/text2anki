@@ -1,29 +1,56 @@
-package db_test
+package db
 
 import (
 	"fmt"
 	"os"
+	"path"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/db/pkg/db/testdb"
+	"github.com/s12chung/text2anki/pkg/storage"
+	"github.com/s12chung/text2anki/pkg/storage/localstore"
+	"github.com/s12chung/text2anki/pkg/util/test"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 func TestMain(m *testing.M) {
-	testdb.MustSetup()
-
-	if err := textTokenizer.Setup(); err != nil {
+	if err := run(m); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
+	}
+}
+
+// A copy of this constant is in testdb.go
+const testDBFile = "testdb.sqlite3"
+
+func run(m *testing.M) error {
+	if err := SetDB(path.Join("..", "..", "tmp", testDBFile)); err != nil {
+		return err
+	}
+	api, err := newStorageAPI("db_test")
+	if err != nil {
+		return err
+	}
+	SetDBStorage(storage.NewDBStorage(api, nil))
+	if err := textTokenizer.Setup(); err != nil {
+		return err
 	}
 	code := m.Run()
 	if err := textTokenizer.Cleanup(); err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
+		return err
 	}
 	os.Exit(code)
+	return nil
+}
+
+func newStorageAPI(dirPrefix string) (localstore.API, error) {
+	encryptor, err := localstore.NewAESEncryptorFromFile(fixture.JoinTestData("localstore.key"))
+	if err != nil {
+		return localstore.API{}, err
+	}
+	return localstore.NewAPI("http://localhost:3000", path.Join(os.TempDir(), test.GenerateName(dirPrefix)), encryptor), nil
 }
 
 func testRecentTimestamps(t *testing.T, timestamps ...time.Time) {
@@ -31,4 +58,23 @@ func testRecentTimestamps(t *testing.T, timestamps ...time.Time) {
 	for _, timestamp := range timestamps {
 		require.Greater(time.Now(), timestamp)
 	}
+}
+
+type TestTransaction struct{ Tx }
+
+func (t TestTransaction) Finalize() error      { return nil }
+func (t TestTransaction) FinalizeError() error { return nil }
+func NewTestTransaction(tx Tx) TestTransaction { return TestTransaction{Tx: tx} }
+
+func TxQsT(t *testing.T) TxQs {
+	require := require.New(t)
+
+	txQs, err := NewTxQs()
+	require.NoError(err)
+
+	txQs.Tx = NewTestTransaction(txQs.Tx)
+	t.Cleanup(func() {
+		require.NoError(txQs.Rollback())
+	})
+	return txQs
 }

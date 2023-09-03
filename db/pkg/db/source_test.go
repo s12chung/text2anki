@@ -1,4 +1,4 @@
-package db_test
+package db
 
 import (
 	"context"
@@ -9,8 +9,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	. "github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/util/test"
@@ -127,7 +125,7 @@ func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 func TestQueries_SourceCreate(t *testing.T) {
 	require := require.New(t)
 
-	txQs := testdb.TxQs(t)
+	txQs := TxQsT(t)
 	source, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t).ToSourceStructured().CreateParams())
 	require.NoError(err)
 	testRecentTimestamps(t, source.CreatedAt, source.UpdatedAt)
@@ -136,7 +134,7 @@ func TestQueries_SourceCreate(t *testing.T) {
 func TestQueries_SourceUpdate(t *testing.T) {
 	require := require.New(t)
 
-	txQs := testdb.TxQs(t)
+	txQs := TxQsT(t)
 
 	newSource, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t).ToSourceStructured().CreateParams())
 	require.NoError(err)

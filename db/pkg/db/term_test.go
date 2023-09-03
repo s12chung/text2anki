@@ -1,4 +1,4 @@
-package db_test
+package db
 
 import (
 	"encoding/json"
@@ -7,8 +7,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	. "github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/test"
@@ -77,25 +75,33 @@ func TestQueries_TermsSearchRaw(t *testing.T) {
 	require := require.New(t)
 	testName := "TestQueries_TermsSearchRaw"
 
-	txQs := testdb.TxQs(t)
-
-	results, err := txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, lang.PartOfSpeechUnknown, testdb.SearchConfig)
+	txQs := TxQsT(t)
+	searchTerm := "마음"
+	searchPOS := lang.PartOfSpeechVerb
+	searchConfig := TermsSearchConfig{
+		PosWeight:    10,
+		PopLog:       20,
+		PopWeight:    40,
+		CommonWeight: 40,
+		LenLog:       2,
+	}
+	results, err := txQs.TermsSearchRaw(txQs.Ctx(), searchTerm, lang.PartOfSpeechUnknown, searchConfig)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, path.Join(testName, "unknown.json"), fixture.JSON(t, results))
 
-	_, err = txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, lang.PartOfSpeechUnknown, TermsSearchConfig{
+	_, err = txQs.TermsSearchRaw(txQs.Ctx(), searchTerm, lang.PartOfSpeechUnknown, TermsSearchConfig{
 		PopWeight:    50,
 		CommonWeight: 51,
 	})
 	require.Error(err)
 
-	results, err = txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
+	results, err = txQs.TermsSearchRaw(txQs.Ctx(), searchTerm, searchPOS, searchConfig)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, path.Join(testName, "verb.json"), fixture.JSON(t, results))
 
-	configCopy := testdb.SearchConfig
+	configCopy := searchConfig
 	configCopy.Limit = 1
-	results, err = txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, testdb.SearchPOS, configCopy)
+	results, err = txQs.TermsSearchRaw(txQs.Ctx(), searchTerm, searchPOS, configCopy)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, path.Join(testName, "limit.json"), fixture.JSON(t, results))
 }

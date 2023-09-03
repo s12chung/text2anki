@@ -17,9 +17,12 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
+// A copy of this constant is in db_test.go
+const testDBFile = "testdb.sqlite3"
+
 var tmpPath string
 
-func dbPathF() string    { return path.Join(tmpPath, "testdb.sqlite3") }
+func dbPathF() string    { return path.Join(tmpPath, testDBFile) }
 func dbSHAPathF() string { return path.Join(tmpPath, "testdb.sha.txt") }
 func init() {
 	_, callerFilePath, _, ok := runtime.Caller(0)
