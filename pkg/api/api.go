@@ -59,8 +59,8 @@ func (rs Routes) Cleanup() error { return rs.TextTokenizer.Cleanup() }
 // Router returns the router with all the routes set
 func (rs Routes) Router() chi.Router {
 	var r chi.Router = chi.NewRouter()
-	r.NotFound(httputil.RespondJSONWrap(rs.NotFound))
-	r.MethodNotAllowed(httputil.RespondJSONWrap(rs.NotAllowed))
+	r.NotFound(httputil.ResponseJSONWrap(rs.NotFound))
+	r.MethodNotAllowed(httputil.ResponseJSONWrap(rs.NotAllowed))
 
 	r.Route(config.StorageURLPath, func(r chi.Router) {
 		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
@@ -104,11 +104,11 @@ func (rs Routes) txRouter() chi.Router {
 	return r.Router
 }
 
-func responseJSONWrap(f httputil.RespondJSONWrapFunc) http.HandlerFunc {
-	return httputil.RespondJSONWrap(responseWrap(f))
+func responseJSONWrap(f httputil.ResponseJSONWrapFunc) http.HandlerFunc {
+	return httputil.ResponseJSONWrap(responseWrap(f))
 }
 
-func responseWrap(f httputil.RespondJSONWrapFunc) httputil.RespondJSONWrapFunc {
+func responseWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
 	return httptyped.TypedWrap(f)
 }
 
@@ -117,7 +117,7 @@ type httpWrapper struct{ TxIntegrator reqtx.Integrator }
 func (h httpWrapper) WrapRequest(f httputil.RequestWrapFunc) httputil.RequestWrapFunc {
 	return h.TxIntegrator.TxRollbackRequestWrap(f)
 }
-func (h httpWrapper) WrapResponse(f httputil.RespondJSONWrapFunc) httputil.RespondJSONWrapFunc {
+func (h httpWrapper) WrapResponse(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
 	return h.TxIntegrator.TxFinalizeWrap(responseWrap(f))
 }
 

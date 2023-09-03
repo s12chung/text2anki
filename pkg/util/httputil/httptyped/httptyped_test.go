@@ -175,7 +175,7 @@ func TestTypedWrap(t *testing.T) {
 	DefaultRegistry.RegisterType(WithSerializedParent{})
 
 	var testVal string
-	handlerFunc := httputil.RespondJSONWrap(TypedWrap(func(r *http.Request) (any, *httputil.HTTPError) {
+	handlerFunc := httputil.ResponseJSONWrap(TypedWrap(func(r *http.Request) (any, *httputil.HTTPError) {
 		if r.Method == http.MethodPost {
 			return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("not a GET"))
 		}

@@ -52,15 +52,15 @@ func RequestWrap(f RequestWrapFunc) func(http.Handler) http.Handler {
 	}
 }
 
-// RespondJSONWrapFunc is the function format for RespondJSONWrap, used to automatically handle JSON responses
-type RespondJSONWrapFunc func(r *http.Request) (any, *HTTPError)
+// ResponseJSONWrapFunc is the function format for ResponseJSONWrap, used to automatically handle JSON responses
+type ResponseJSONWrapFunc func(r *http.Request) (any, *HTTPError)
 
-func (res RespondJSONWrapFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	RespondJSONWrap(res)(w, r)
+func (res ResponseJSONWrapFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ResponseJSONWrap(res)(w, r)
 }
 
-// RespondJSONWrap wraps a function that handles the request using return statements rather than writing to the response
-func RespondJSONWrap(f RespondJSONWrapFunc) http.HandlerFunc {
+// ResponseJSONWrap wraps a function that handles the request using return statements rather than writing to the response
+func ResponseJSONWrap(f ResponseJSONWrapFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		resp, httpErr := f(r)
 		if httpErr != nil {

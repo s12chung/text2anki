@@ -69,10 +69,10 @@ func (i Integrator) TxRollbackRequestWrap(f httputil.RequestWrapFunc) httputil.R
 	}
 }
 
-// TxFinalizeWrap wraps a httputil.RespondJSONWrapFunc to:
+// TxFinalizeWrap wraps a httputil.ResponseJSONWrapFunc to:
 // - call Tx.Finalize() if the request has no error
 // - otherwise, call tx.FinalizeError()
-func (i Integrator) TxFinalizeWrap(f httputil.RespondJSONWrapFunc) httputil.RespondJSONWrapFunc {
+func (i Integrator) TxFinalizeWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
 	return func(r *http.Request) (any, *httputil.HTTPError) {
 		tx, httpErr := i.ContextTx(r)
 		if httpErr != nil {
