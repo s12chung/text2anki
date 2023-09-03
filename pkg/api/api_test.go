@@ -24,36 +24,17 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-var txPool = reqtxtest.NewPool()
-
 const testUUID = "123e4567-e89b-12d3-a456-426614174000"
+const extractorType = "testy"
 
 type UUIDTest struct{}
 
 func (u UUIDTest) Generate() (string, error) { return testUUID, nil }
 
-var extractorCacheDir = path.Join(os.TempDir(), test.GenerateName("Extractor"))
-
 var routes Routes
 var server txServer
-
-func init() {
-	testdb.MustSetup()
-	routes = NewRoutes(routesConfig)
-	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(routes.Router())}}
-	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
-}
-
-func TestMain(m *testing.M) {
-	code := m.Run()
-	server.Close()
-	os.Exit(code)
-}
-
-const extractorType = "testy"
+var txPool = reqtxtest.NewPool()
+var extractorCacheDir = path.Join(os.TempDir(), test.GenerateName("Extractor"))
 
 var routesConfig = config.Config{
 	TxPool: txPool,
@@ -70,6 +51,23 @@ var routesConfig = config.Config{
 	ExtractorMap: extractor.Map{
 		extractorType: extractor.NewExtractor(extractorCacheDir, extractortest.NewFactory("Extractor")),
 	},
+}
+
+// Due to server.WithPathPrefix() calls, some functions must run via. init()
+func init() {
+	testdb.MustSetup()
+	routes = NewRoutes(routesConfig)
+	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(routes.Router())}}
+	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	server.Close()
+	os.Exit(code)
 }
 
 func TestHttpTypedRegistry(t *testing.T) {
