@@ -37,10 +37,8 @@ var extractorCacheDir = path.Join(os.TempDir(), test.GenerateName("Extractor"))
 var routes Routes
 var server txServer
 
-type MustSetupAndSeed struct{}
-
 func init() {
-	testdb.MustSetupAndSeed(MustSetupAndSeed{})
+	testdb.MustSetup()
 	routes = NewRoutes(routesConfig)
 	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(routes.Router())}}
 	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {

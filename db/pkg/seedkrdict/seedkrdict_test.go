@@ -9,9 +9,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func init() {
-	testdb.MustSetupEmpty()
-}
+func init() { testdb.MustSetup() }
 
 const rscPath = "../../" + DefaultRscPath
 

@@ -29,6 +29,9 @@ INSERT INTO terms (
     text, variants, part_of_speech, common_level, translations, popularity
 ) VALUES (?, ?, ?, ?, ?, ?) RETURNING *;
 
+-- name: TermsClearAll :exec
+DELETE FROM terms;
+
 -- name: NoteGet :one
 SELECT * FROM notes WHERE id = ? LIMIT 1;
 

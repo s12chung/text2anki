@@ -23,18 +23,18 @@ build:
 
 TEST ?= ./...
 
-test: test.diff
+test: test.diff db.testdb
 	go test -tags "$(TAGS)" $(TEST)
-test.nocache:
+test.nocache: db.testdb
 	go test -count=1 -tags "$(TAGS)" $(TEST)
 test.diff: db.diff
 
-test.fixtures:
+test.fixtures: db.testdb
 	# generate top level fixtures first
 	UPDATE_FIXTURES=true go test $(TEST) -run TestGen___ | $(FIXTURE_CLEAN_OUTPUT) || true
 	@echo; echo
 	UPDATE_FIXTURES=true make test | $(FIXTURE_CLEAN_OUTPUT)
-test.slow:
+test.slow: db.testdb
 	go test -v -count=1 -json -tags "$(TAGS)" $(TEST) \
 	| jq -r 'select(.Action == "pass" and .Test != null) | (.Package | split("/") | last ) + "," + .Test + "," + (.Elapsed | tostring)' \
 	| sort -k3 -n -t, \
@@ -47,7 +47,7 @@ lint.fix:
 
 ci.build: build
 ci.diff: test.diff
-ci.test:
+ci.test: db.testdb
 	go test -v -tags "$(TAGS)" $(TEST)
 ci.setup:
 	mkdir -p $(CI_BIN)
@@ -59,3 +59,5 @@ db.generate:
 	cd db; make generate
 db.diff:
 	cd db; make diff
+db.testdb:
+	cd db; make testdb

@@ -35,6 +35,8 @@ func testSeed(t *testing.T, testName string, testFunc func(tx db.Tx) error) {
 	require := require.New(t)
 
 	txQs := testdb.TxQs(t)
+	require.NoError(txQs.TermsClearAll(txQs.Ctx()))
+
 	require.NoError(testFunc(txQs))
 
 	count, err := txQs.TermsCount(txQs.Ctx())

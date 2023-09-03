@@ -230,6 +230,15 @@ func (q *Queries) TermCreate(ctx context.Context, arg TermCreateParams) (Term, e
 	return i, err
 }
 
+const termsClearAll = `-- name: TermsClearAll :exec
+DELETE FROM terms
+`
+
+func (q *Queries) TermsClearAll(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, termsClearAll)
+	return err
+}
+
 const termsCount = `-- name: TermsCount :one
 SELECT COUNT(*) FROM terms
 `

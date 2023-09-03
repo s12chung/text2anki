@@ -14,12 +14,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-type MustSetupAndSeed struct{}
-
-func TestMain(m *testing.M) {
-	testdb.MustSetupAndSeed(MustSetupAndSeed{})
-	os.Exit(m.Run())
-}
+func init() { testdb.MustSetup() }
 
 func TestTermsSearchToCSVRows(t *testing.T) {
 	require := require.New(t)
