@@ -72,7 +72,7 @@ func TestRespondJSONWrap(t *testing.T) {
 	var testVal string
 	var testStatus int
 	var testErr error
-	handlerFunc := RespondJSONWrap(func(r *http.Request) (any, *HTTPError) {
+	handlerFunc := ResponseJSONWrap(func(r *http.Request) (any, *HTTPError) {
 		if r.Method != http.MethodGet {
 			return nil, Error(http.StatusInternalServerError, fmt.Errorf("not a GET"))
 		}
@@ -172,6 +172,34 @@ func TestExtractJSON(t *testing.T) {
 				require.Equal(tc.expectedCode, httpError.Code)
 				require.Equal(tc.expectedError, httpError.Cause.Error())
 			}
+		})
+	}
+}
+
+func TestReturnModelOr500(t *testing.T) {
+	httpErr := &HTTPError{Code: http.StatusInternalServerError, Cause: fmt.Errorf("waka")}
+	testCases := []struct {
+		name  string
+		model any
+		err   error
+
+		expectedModel any
+		expectedErr   *HTTPError
+	}{
+		{name: "success", model: "model", expectedModel: "model"},
+		{name: "err", err: httpErr.Cause, expectedErr: httpErr},
+		{name: "http_error", err: httpErr, expectedErr: httpErr},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			model, err := ReturnModelOr500(func() (any, error) {
+				return tc.model, tc.err
+			})
+			require.Equal(tc.expectedModel, model)
+			require.Equal(tc.expectedErr, err)
 		})
 	}
 }

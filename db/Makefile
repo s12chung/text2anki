@@ -12,6 +12,8 @@ build:
 .PHONY: seed
 seed: build
 	$(BIN) seed
+testdb: build
+	$(BIN) testdb
 search: build
 	$(BIN) search
 
@@ -24,10 +26,10 @@ diff:
 	make build; $(BIN) diff
 
 TEST ?= ./...
-test:
+test: testdb
 	go test -tags "$(TAGS)" $(TEST)
 
-test.fixtures:
+test.fixtures: testdb
 	# generate top level fixtures first
 	UPDATE_FIXTURES=true go test $(TEST) -run TestGen___ | $(FIXTURE_CLEAN_OUTPUT) || true
 	@echo; echo

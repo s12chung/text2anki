@@ -1,7 +1,6 @@
 package search
 
 import (
-	"context"
 	"os"
 	"path"
 	"testing"
@@ -15,24 +14,21 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-type MustSetupAndSeed struct{}
-
-func TestMain(m *testing.M) {
-	testdb.MustSetupAndSeed(MustSetupAndSeed{})
-	os.Exit(m.Run())
-}
+func init() { testdb.MustSetup() }
 
 func TestTermsSearchToCSVRows(t *testing.T) {
 	require := require.New(t)
 	testName := "TestTermsSearchToCSVRows"
 
-	terms, err := db.Qs().TermsSearchRaw(context.Background(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
+	txQs := testdb.TxQs(t)
+
+	terms, err := txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
 	require.NoError(err)
 	rows, err := TermsSearchToCSVRows(terms)
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, rows))
 
-	_, err = db.Qs().TermsSearchRaw(context.Background(), testdb.SearchTerm, testdb.SearchPOS, db.TermsSearchConfig{
+	_, err = txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, testdb.SearchPOS, db.TermsSearchConfig{
 		PosWeight:    30,
 		PopWeight:    40,
 		CommonWeight: 40,

@@ -2,12 +2,10 @@
 package testdb
 
 import (
-	"context"
 	"crypto/sha256"
 	"fmt"
 	"os"
 	"path"
-	"reflect"
 	"runtime"
 	"testing"
 
@@ -19,8 +17,13 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
+// A copy of this constant is in db_test.go
+const testDBFile = "testdb.sqlite3"
+
 var tmpPath string
 
+func dbPathF() string    { return path.Join(tmpPath, testDBFile) }
+func dbSHAPathF() string { return path.Join(tmpPath, "testdb.sha.txt") }
 func init() {
 	_, callerFilePath, _, ok := runtime.Caller(0)
 	if !ok {
@@ -31,62 +34,92 @@ func init() {
 	tmpPath = path.Join(callerPath, "..", "..", "..", "tmp")
 }
 
-// MustSetupAndSeed calls Setup() and Seed(), if it fails, it exits
-func MustSetupAndSeed(packageStruct any) {
-	MustSetup(packageStruct)
-	if err := Seed(); err != nil {
+// SearchTerm is a search term used for tests
+const SearchTerm = "마음"
+
+// SearchPOS is the search POS for tests
+const SearchPOS = lang.PartOfSpeechVerb
+
+// SearchConfig is the config used for test searching (so it stays constant)
+var SearchConfig = db.TermsSearchConfig{
+	PosWeight:    10,
+	PopLog:       20,
+	PopWeight:    40,
+	CommonWeight: 40,
+	LenLog:       2,
+}
+
+// Transaction is a wrapper around db.Tx
+type Transaction struct{ db.Tx }
+
+// Finalize does nothing (server does not handle Tx, the tests do)
+func (t Transaction) Finalize() error { return nil }
+
+// FinalizeError does nothing (server does not handle Tx, the tests do)
+func (t Transaction) FinalizeError() error { return nil }
+
+// NewTransaction returns a new Transaction
+func NewTransaction(tx db.Tx) Transaction { return Transaction{Tx: tx} }
+
+// TxQs returns a db.NewTxQs used for testing
+func TxQs(t *testing.T) db.TxQs {
+	require := require.New(t)
+
+	txQs, err := db.NewTxQs()
+	require.NoError(err)
+
+	txQs.Tx = NewTransaction(txQs.Tx)
+	t.Cleanup(func() {
+		require.NoError(txQs.Rollback())
+	})
+	return txQs
+}
+
+// MustSetup sets up the test database
+func MustSetup() {
+	if err := db.SetDB(dbPathF()); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
 }
 
-// MustSetup calls Setup(), if it fails, it exits
-func MustSetup(packageStruct any) {
-	if err := Setup(path.Base(reflect.TypeOf(packageStruct).PkgPath())); err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
+// Create creates the test database
+func Create() error {
+	return runWithSafeSchema(func(txQs db.TxQs) error {
+		if err := txQs.Create(txQs.Ctx()); err != nil {
+			return err
+		}
+		return models.SeedList(txQs, nil)
+	})
 }
 
-// SetupAndSeedT calls Setup() and Seed()
-func SetupAndSeedT(t *testing.T, testName string) {
-	require := require.New(t)
-	SetupT(t, testName)
-	require.NoError(Seed())
-}
+func runWithSafeSchema(f func(txQs db.TxQs) error) error {
+	dbPath := dbPathF()
+	dbSHAPath := dbSHAPathF()
 
-// SetupT setups up an empty db and checks errors
-func SetupT(t *testing.T, testName string) {
-	require := require.New(t)
-	require.NoError(Setup(testName))
-}
-
-// Setup setups up an empty db
-func Setup(name string) error {
-	dbPath := path.Join(tmpPath, "testdb."+name+".sqlite3")
-	dbSHAPath := path.Join(tmpPath, "testdbsha."+name+".txt")
-
-	if err := os.MkdirAll(path.Dir(dbPath), ioutil.OwnerRWXGroupRX); err != nil {
+	if err := os.MkdirAll(tmpPath, ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
-
 	schemaSHA, reuseSchema, err := ensureSafeSchema(dbPath, dbSHAPath)
 	if err != nil {
 		return err
 	}
-
-	if err := db.SetDB(dbPath); err != nil {
-		return err
-	}
 	if !reuseSchema {
-		if err := db.Qs().Create(context.Background()); err != nil {
+		if err := db.SetDB(dbPath); err != nil {
+			return err
+		}
+		txQs, err := db.NewTxQs()
+		if err != nil {
+			return err
+		}
+		defer txQs.Rollback() //nolint:errcheck // rollback can fail if committed
+		if err := f(txQs); err != nil {
+			return err
+		}
+		if err := txQs.Commit(); err != nil {
 			return err
 		}
 	}
-	if err := db.Qs().ClearAll(context.Background()); err != nil {
-		return err
-	}
-
 	return os.WriteFile(dbSHAPath, []byte(schemaSHA), ioutil.OwnerRWGroupR)
 }
 
@@ -107,24 +140,4 @@ func ensureSafeSchema(dbPath, dbSHAPath string) (string, bool, error) {
 		return schemaSHA, true, nil
 	}
 	return schemaSHA, false, os.Remove(dbPath)
-}
-
-// Seed seeds the database with a small amount of data
-func Seed() error {
-	return models.SeedList(nil)
-}
-
-// SearchTerm is a search term used for tests
-const SearchTerm = "마음"
-
-// SearchPOS is the search POS for tests
-const SearchPOS = lang.PartOfSpeechVerb
-
-// SearchConfig is the config used for test searching (so it stays constant)
-var SearchConfig = db.TermsSearchConfig{
-	PosWeight:    10,
-	PopLog:       20,
-	PopWeight:    40,
-	CommonWeight: 40,
-	LenLog:       2,
 }

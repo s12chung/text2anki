@@ -1,7 +1,6 @@
 package seedkrdict
 
 import (
-	"context"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -16,7 +15,7 @@ import (
 )
 
 // Seed seeds the database from the rscPath XML
-func Seed(ctx context.Context, rscPath string) error {
+func Seed(tx db.Tx, rscPath string) error {
 	lexes, err := UnmarshallRscPath(rscPath)
 	if err != nil {
 		return err
@@ -24,7 +23,7 @@ func Seed(ctx context.Context, rscPath string) error {
 
 	basePopularity := 1
 	for _, lex := range lexes {
-		if err := seedLex(ctx, lex, basePopularity); err != nil {
+		if err := seedLex(tx, lex, basePopularity); err != nil {
 			return err
 		}
 		basePopularity += len(lex.LexicalEntries)
@@ -33,20 +32,20 @@ func Seed(ctx context.Context, rscPath string) error {
 }
 
 // SeedFile seeds a rscPath XML file to the database
-func SeedFile(ctx context.Context, file []byte) error {
+func SeedFile(tx db.Tx, file []byte) error {
 	lex, err := UnmarshallRscXML(file)
 	if err != nil {
 		return err
 	}
-	return seedLex(ctx, lex, 1)
+	return seedLex(tx, lex, 1)
 }
 
-func seedLex(ctx context.Context, lex *LexicalResource, basePopularity int) error {
+func seedLex(tx db.Tx, lex *LexicalResource, basePopularity int) error {
 	// default to 1
 	if basePopularity == 0 {
 		basePopularity = 1
 	}
-	queries := db.Qs()
+	qs := db.New(tx)
 	for i, entry := range lex.LexicalEntries {
 		createParams, err := entry.CreateParams(basePopularity + i)
 		if err != nil {
@@ -55,7 +54,7 @@ func seedLex(ctx context.Context, lex *LexicalResource, basePopularity int) erro
 			}
 			return err
 		}
-		if _, err = queries.TermCreate(ctx, createParams); err != nil {
+		if _, err = qs.TermCreate(tx.Ctx(), createParams); err != nil {
 			return err
 		}
 	}

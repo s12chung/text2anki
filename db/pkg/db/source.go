@@ -14,6 +14,12 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
+// SourcesTable is the table name for Source
+const SourcesTable = "sources"
+
+// PartsColumn is the column name for Source.Parts
+const PartsColumn = "parts"
+
 // SourceStructured is a copy of Source for with JSON columns structured
 type SourceStructured struct {
 	ID        int64        `json:"id,omitempty"`
@@ -243,7 +249,7 @@ func (t TextTokenizer) TokenizeTexts(texts []text.Text) (tokenizedTexts []Tokeni
 	return tokenizedTexts, nil
 }
 
-// SourceStructuredIndex returns a SourceStructured from the DB
+// SourceStructuredIndex returns a SourceStructured from the database
 func (q *Queries) SourceStructuredIndex(ctx context.Context) ([]SourceStructured, error) {
 	sources, err := q.SourceIndex(ctx)
 	if err != nil {

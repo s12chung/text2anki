@@ -2,19 +2,20 @@
 package main
 
 import (
-	"context"
 	_ "embed"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 	"reflect"
+	"strings"
 
 	"github.com/pmezard/go-difflib/difflib"
 
 	"github.com/s12chung/text2anki/db/pkg/cli/search"
 	"github.com/s12chung/text2anki/db/pkg/csv"
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/testdbgen"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
@@ -26,14 +27,26 @@ func init() {
 	flag.Parse()
 }
 
+const dbPath = "data.sqlite3"
+
 const cmdStringGenerate = "generate"
 const cmdStringDiff = "diff"
 const cmdStringCreate = "create"
 const cmdStringSeed = "seed"
+const cmdStringTestDB = "testdb"
 const cmdStringSchema = "schema"
 const cmdStringSearch = "search"
-const commands = cmdStringGenerate + "/" + cmdStringDiff + "/" + cmdStringCreate + "/" + cmdStringSeed + "/" + cmdStringSchema + "/" + cmdStringSchema
-const usage = "usage: %v [" + commands + "]"
+
+var commands = strings.Join([]string{
+	cmdStringGenerate,
+	cmdStringDiff,
+	cmdStringCreate,
+	cmdStringSeed,
+	cmdStringTestDB,
+	cmdStringSchema,
+	cmdStringSearch,
+}, "/")
+var usage = "usage: %v [" + commands + "]"
 
 func main() {
 	args := flag.Args()
@@ -60,6 +73,8 @@ func run(cmd string) error {
 		return cmdCreate()
 	case cmdStringSeed:
 		return cmdSeed()
+	case cmdStringTestDB:
+		return cmdTestDB()
 	case cmdStringSchema:
 		return cmdSchema()
 	case cmdStringSearch:
@@ -67,13 +82,6 @@ func run(cmd string) error {
 	default:
 		return fmt.Errorf(usage+" -- %v not found", os.Args[0], cmd)
 	}
-}
-
-func setDB() error {
-	if err := db.SetDB("data.sqlite3"); err != nil {
-		return err
-	}
-	return nil
 }
 
 const generateFile = "pkg/db/testdb/models/models.go"
@@ -110,27 +118,42 @@ func cmdDiff() error {
 	}
 	if text != "" {
 		fmt.Println(text)
-		return fmt.Errorf("diff exists")
+		return fmt.Errorf("diff exists for generated result and %v", generateFile)
 	}
 	return nil
 }
 
 func cmdCreate() error {
-	if err := setDB(); err != nil {
+	txQs, err := setDB(dbPath)
+	if err != nil {
 		return err
 	}
-	return db.Qs().Create(context.Background())
+	defer txQs.Rollback() //nolint:errcheck // rollback can fail if committed
+	if err := txQs.Create(txQs.Ctx()); err != nil {
+		return err
+	}
+	return txQs.Commit()
 }
 
 func cmdSeed() error {
-	if err := cmdCreate(); err != nil {
+	txQs, err := setDB(dbPath)
+	if err != nil {
 		return err
 	}
-	if err := seedkrdict.Seed(context.Background(), seedkrdict.DefaultRscPath); err != nil {
+	defer txQs.Rollback() //nolint:errcheck // rollback can fail if committed
+
+	if err := txQs.Create(txQs.Ctx()); err != nil {
 		return err
 	}
-	return models.SeedList(map[string]bool{"Terms": false})
+	if err := seedkrdict.Seed(txQs, seedkrdict.DefaultRscPath); err != nil {
+		return err
+	}
+	if err := models.SeedList(txQs, map[string]bool{"Terms": false}); err != nil {
+		return err
+	}
+	return txQs.Commit()
 }
+func cmdTestDB() error { return testdb.Create() }
 
 func cmdSchema() error {
 	node, err := seedkrdict.RscSchema(seedkrdict.DefaultRscPath)
@@ -148,9 +171,11 @@ func cmdSchema() error {
 const searchConfigPath = "tmp/search.json"
 
 func cmdSearch() error {
-	if err := setDB(); err != nil {
+	txQs, err := setDB(dbPath)
+	if err != nil {
 		return err
 	}
+	defer txQs.Rollback() //nolint:errcheck // rollback can fail if committed
 
 	config, err := search.GetOrDefaultConfig(searchConfigPath)
 	if err != nil {
@@ -167,7 +192,7 @@ func cmdSearch() error {
 	}
 
 	for _, query := range config.Queries {
-		terms, err := db.Qs().TermsSearch(context.Background(), query.Str, query.POS)
+		terms, err := txQs.TermsSearch(txQs.Ctx(), query.Str, query.POS)
 		if err != nil {
 			return err
 		}
@@ -185,5 +210,12 @@ func cmdSearch() error {
 			return err
 		}
 	}
-	return nil
+	return txQs.Commit()
+}
+
+func setDB(path string) (db.TxQs, error) {
+	if err := db.SetDB(path); err != nil {
+		return db.TxQs{}, err
+	}
+	return db.NewTxQs()
 }

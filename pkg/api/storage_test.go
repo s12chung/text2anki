@@ -12,14 +12,15 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/storage/localstore"
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
 
-var storageServer test.Server
+var storageServer txServer
 
 func init() {
-	storageServer = server.WithPathPrefix(storageURLPath)
+	storageServer = server.WithPathPrefix(config.StorageURLPath)
 }
 
 func TestRoutes_StoragePut(t *testing.T) {
@@ -29,7 +30,7 @@ func TestRoutes_StoragePut(t *testing.T) {
 
 	u, err := url.Parse(req.URL)
 	require.NoError(t, err)
-	key := strings.TrimPrefix(u.Path, storageURLPath)
+	key := strings.TrimPrefix(u.Path, config.StorageURLPath)
 
 	badQuery := localstore.CipherQueryParam + "=" + base64.URLEncoding.EncodeToString([]byte("my_bad"))
 

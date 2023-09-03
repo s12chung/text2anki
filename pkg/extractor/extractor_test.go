@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/pkg/extractor"
+	. "github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/extractor/extractortest"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
@@ -24,7 +24,7 @@ func TestSourceExtraction_InfoFile(t *testing.T) {
 		Name:      "extractor_test_name",
 		Reference: "https://extactor-test.com",
 	}
-	f, err := extractor.SourceExtraction{Info: info}.InfoFile()
+	f, err := SourceExtraction{Info: info}.InfoFile()
 	require.NoError(err)
 	b, err := io.ReadAll(f)
 	require.NoError(err)
@@ -53,7 +53,7 @@ func TestExtractor_Extract(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			source, err := extractor.NewExtractor(cacheDir, extractortest.NewFactory(testName)).Extract(tc.s)
+			source, err := NewExtractor(cacheDir, extractortest.NewFactory(testName)).Extract(tc.s)
 			if tc.err != nil {
 				require.Equal(tc.err, err)
 				return
@@ -82,8 +82,8 @@ func TestVerify(t *testing.T) {
 	cacheDir := path.Join(os.TempDir(), test.GenerateName(testName))
 	test.MkdirAll(t, cacheDir)
 
-	extractorMap := extractor.Map{
-		"test": extractor.NewExtractor(cacheDir, extractortest.NewFactory(testName)),
+	extractorMap := Map{
+		"test": NewExtractor(cacheDir, extractortest.NewFactory(testName)),
 	}
 
 	testCases := []struct {
@@ -98,7 +98,7 @@ func TestVerify(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			require.Equal(tc.expected, extractor.Verify(tc.s, extractorMap))
+			require.Equal(tc.expected, Verify(tc.s, extractorMap))
 		})
 	}
 }

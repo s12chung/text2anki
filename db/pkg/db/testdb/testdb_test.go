@@ -12,7 +12,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
-	"github.com/s12chung/text2anki/pkg/api"
+	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
@@ -79,7 +79,7 @@ func TestGen___SourceStructuredsSeed(t *testing.T) {
 	}
 	require := require.New(t)
 
-	tokenizer := db.TextTokenizer{Parser: api.Parser(), Tokenizer: api.Tokenizer(api.TokenizerKhaiii)}
+	tokenizer := db.TextTokenizer{Parser: config.Parser(), Tokenizer: config.Tokenizer(config.TokenizerKhaiii)}
 	require.NoError(tokenizer.Setup())
 	defer func() {
 		require.NoError(tokenizer.Cleanup())

@@ -85,7 +85,7 @@ func (s *ServerImpl) runWithoutStdin(port int) chan error {
 func (s *ServerImpl) setupServer(port int) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc(server.HealthzPath, handleHeathzfunc)
-	mux.HandleFunc(server.TokenizePath, httputil.RespondJSONWrap(s.handleTokenize))
+	mux.HandleFunc(server.TokenizePath, httputil.ResponseJSONWrap(s.handleTokenize))
 
 	server := &http.Server{
 		Addr:              fmt.Sprintf(":%v", port),

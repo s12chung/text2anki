@@ -1,4 +1,5 @@
-package api
+// Package config contains the config for package api
+package config
 
 import (
 	"fmt"
@@ -23,6 +24,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/tokenizer/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizer/komoran"
+	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx"
 )
 
 var appCacheDir string
@@ -38,33 +40,22 @@ func init() {
 
 // Config contains config settings for the API
 type Config struct {
+	TxPool reqtx.Pool
+
 	TokenizerType
 	DictionaryType
+
 	StorageConfig StorageConfig
 	ExtractorMap  extractor.Map
 }
 
-// NewRoutes is the routes used by the API
-func NewRoutes(config Config) Routes {
-	routes := Routes{
-		Dictionary:  Dictionary(config.DictionaryType),
-		Synthesizer: Synthesizer(),
-		TextTokenizer: db.TextTokenizer{
-			Parser:       Parser(),
-			Tokenizer:    Tokenizer(config.TokenizerType),
-			CleanSpeaker: true,
-		},
-		Storage:      StorageFromConfig(config.StorageConfig),
-		ExtractorMap: ExtractorMap(config.ExtractorMap),
-	}
-	db.SetDBStorage(routes.Storage.DBStorage)
-	return routes
+// TxIntegrator returns a new TxIntegrator
+func TxIntegrator(txPool reqtx.Pool) reqtx.Integrator {
+	return reqtx.NewIntegrator(txPool)
 }
 
 // Parser returns the default Parser
-func Parser() text.Parser {
-	return text.NewParser(text.Korean, text.English)
-}
+func Parser() text.Parser { return text.NewParser(text.Korean, text.English) }
 
 // Synthesizer returns the default Synthesizer
 func Synthesizer() synthesizer.Synthesizer {
@@ -111,11 +102,12 @@ func Dictionary(dictionaryType DictionaryType) dictionary.Dictionary {
 	case DictionaryKrDict:
 		fallthrough
 	default:
-		if err := db.SetDB("db/data.sqlite3"); err != nil {
-			fmt.Println("failure to SetDB()\n", err)
+		txQs, err := db.NewTxQs()
+		if err != nil {
+			fmt.Println("db.NewTxQs() error", err)
 			os.Exit(-1)
 		}
-		return krdict.New(db.DB())
+		return krdict.New(txQs)
 	}
 }
 
@@ -134,9 +126,15 @@ type StorageConfig struct {
 	UUIDGenerator    storage.UUIDGenerator
 }
 
+// Storage contains the Route's storage setup
+type Storage struct {
+	DBStorage storage.DBStorage
+	Storer    storage.Storer
+}
+
 // StorageFromConfig returns a storage from the given config
 func StorageFromConfig(config StorageConfig) Storage {
-	var api storage.API
+	var storageAPI storage.API
 	var storer storage.Storer
 	var err error
 	switch config.StorageType {
@@ -145,14 +143,14 @@ func StorageFromConfig(config StorageConfig) Storage {
 	default:
 		var ls localstore.API
 		ls, err = LocalStoreAPI(config.LocalStoreConfig)
-		api = ls
+		storageAPI = ls
 		storer = ls
 	}
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
-	return Storage{DBStorage: storage.NewDBStorage(api, config.UUIDGenerator), Storer: storer}
+	return Storage{DBStorage: storage.NewDBStorage(storageAPI, config.UUIDGenerator), Storer: storer}
 }
 
 // LocalStoreConfig defines the config for localstore
@@ -169,14 +167,16 @@ var localStoreConfigValidator = firm.NewStructValidator(firm.RuleMap{
 })
 
 const localstoreKey = "localstore.key"
-const storageURLPath = "/storage"
+
+// StorageURLPath is the default storage URL path for the LocalStoreAPI
+const StorageURLPath = "/storage"
 
 // LocalStoreAPI returns a localstore.API
 func LocalStoreAPI(config LocalStoreConfig) (localstore.API, error) {
 	if !strings.HasSuffix(config.Origin, "/") {
 		config.Origin += "/"
 	}
-	config.Origin += storageURLPath[1:]
+	config.Origin += StorageURLPath[1:]
 
 	// LocalStoreAPI is called when declaring package level vars (before init()), this ensures the definition works
 	result := localStoreConfigValidator.Validate(config)

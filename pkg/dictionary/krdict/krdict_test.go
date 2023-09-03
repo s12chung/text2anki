@@ -1,29 +1,22 @@
 package krdict
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-type MustSetupAndSeed struct{}
-
-func TestMain(m *testing.M) {
-	testdb.MustSetupAndSeed(MustSetupAndSeed{})
-	os.Exit(m.Run())
-}
+func init() { testdb.MustSetup() }
 
 func TestKrDict_Search(t *testing.T) {
 	require := require.New(t)
 	testName := "TestKrDict_Search"
-	dict := New(db.DB())
+	dict := New(testdb.TxQs(t))
 
 	// PartOfSpeechOther will convert to PartOfSpeechEmpty
 	for _, pos := range []lang.PartOfSpeech{lang.PartOfSpeechEmpty, lang.PartOfSpeechOther} {

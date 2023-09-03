@@ -3,6 +3,7 @@ package httputil
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,8 +18,13 @@ type HTTPError struct {
 }
 
 // Error returns the string representation of HTTPError
-func (e *HTTPError) Error() string {
+func (e HTTPError) Error() string {
 	return fmt.Sprintf("%v: %v", e.Code, e.Cause)
+}
+
+// LogError logs the error
+func LogError(r *http.Request, httpErr *HTTPError) {
+	slog.Error(httpErr.Cause.Error(), slog.Int("code", httpErr.Code), slog.String("url", r.URL.Path), slog.String("method", r.Method))
 }
 
 // Error is a safe shorthand to create a new HTTPError
@@ -46,16 +52,20 @@ func RequestWrap(f RequestWrapFunc) func(http.Handler) http.Handler {
 	}
 }
 
-// RespondJSONWrapFunc is the function format for RespondJSONWrap, used to automatically handle JSON responses
-type RespondJSONWrapFunc func(r *http.Request) (any, *HTTPError)
+// ResponseJSONWrapFunc is the function format for ResponseJSONWrap, used to automatically handle JSON responses
+type ResponseJSONWrapFunc func(r *http.Request) (any, *HTTPError)
 
-// RespondJSONWrap wraps a function that handles the request using return statements rather than writing to the response
-func RespondJSONWrap(f RespondJSONWrapFunc) http.HandlerFunc {
+func (res ResponseJSONWrapFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ResponseJSONWrap(res)(w, r)
+}
+
+// ResponseJSONWrap wraps a function that handles the request using return statements rather than writing to the response
+func ResponseJSONWrap(f ResponseJSONWrapFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		resp, httpError := f(r)
-		if httpError != nil {
-			RespondError(w, httpError)
-			slog.Error(httpError.Cause.Error(), slog.Int("code", httpError.Code), slog.String("url", r.URL.Path), slog.String("method", r.Method))
+		resp, httpErr := f(r)
+		if httpErr != nil {
+			RespondError(w, httpErr)
+			LogError(r, httpErr)
 			return
 		}
 		RespondJSON(w, resp)
@@ -113,6 +123,10 @@ func ExtractJSON(r *http.Request, o any) *HTTPError {
 func ReturnModelOr500(modelFunc func() (any, error)) (any, *HTTPError) {
 	model, err := modelFunc()
 	if err != nil {
+		var httpErr *HTTPError
+		if errors.As(err, &httpErr) {
+			return nil, httpErr
+		}
 		return nil, Error(http.StatusInternalServerError, err)
 	}
 	return model, nil

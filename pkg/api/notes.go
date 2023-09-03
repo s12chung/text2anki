@@ -15,10 +15,14 @@ func init() {
 // NoteCreate creates a new note
 func (rs Routes) NoteCreate(r *http.Request) (any, *httputil.HTTPError) {
 	req := db.NoteCreateParams{}
-	if httpError := extractAndValidate(r, &req); httpError != nil {
-		return nil, httpError
+	if httpErr := extractAndValidate(r, &req); httpErr != nil {
+		return nil, httpErr
+	}
+	txQs, httpErr := rs.txQs(r)
+	if httpErr != nil {
+		return nil, httpErr
 	}
 	return httputil.ReturnModelOr500(func() (any, error) {
-		return db.Qs().NoteCreate(r.Context(), req)
+		return txQs.NoteCreate(txQs.Ctx(), req)
 	})
 }

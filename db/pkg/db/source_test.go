@@ -1,41 +1,84 @@
-package db_test
+package db
 
 import (
-	"context"
+	"bytes"
+	"path"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func firstSource(t *testing.T) db.Source {
+func firstSource(t *testing.T, txQs TxQs) Source {
 	require := require.New(t)
-	source, err := db.Qs().SourceGet(context.Background(), 1)
+	source, err := txQs.SourceGet(txQs.Ctx(), 1)
 	require.NoError(err)
 	return source
 }
 
 func TestSourceStructured_StaticCopy(t *testing.T) {
 	require := require.New(t)
-	test.EmptyFieldsMatch(t, firstSource(t))
+	txQs := TxQsT(t)
+	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 
-	sourceCopy := firstSource(t).ToSourceStructured()
+	sourceCopy := firstSource(t, txQs).ToSourceStructured()
 	sourceCopy.ID = 0
 	sourceCopy.UpdatedAt = time.Time{}
 	sourceCopy.CreatedAt = time.Time{}
-	require.Equal(sourceCopy, firstSource(t).ToSourceStructured().StaticCopy())
+	require.Equal(sourceCopy, firstSource(t, txQs).ToSourceStructured().StaticCopy())
 }
 
 func TestSourcePartMedia_MarshalJSON(t *testing.T) {
-	t.Skip("Test later... When this is outside of the db_test package testdb is changed to use transaction")
+	testName := "TestSourcePartMedia_MarshalJSON"
+
+	testCases := []struct {
+		name             string
+		prepareSerialize bool
+	}{
+		{name: "basic"},
+		{name: "prepare_serialize", prepareSerialize: true},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			txQs := TxQsT(t)
+			source := firstSource(t, txQs).ToSourceStructured()
+			source.Parts = setupParts(t, source.Parts[0], testUUID)
+			if tc.prepareSerialize {
+				source.PrepareSerialize()
+			}
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, source.StaticCopy()))
+		})
+	}
+}
+
+func setupParts(t *testing.T, part SourcePart, prePartListID string) []SourcePart {
+	require := require.New(t)
+
+	parts := make([]SourcePart, 3)
+	baseKey := storage.BaseKey(SourcesTable, PartsColumn, prePartListID)
+	for i := 0; i < len(parts); i++ {
+		parts[i] = part
+
+		key := baseKey + ".PreParts[" + strconv.Itoa(i) + "].Image.txt"
+		parts[i].Media = &SourcePartMedia{ImageKey: key}
+		require.NoError(storageAPI.Store(key, bytes.NewReader([]byte("image"+strconv.Itoa(i)))))
+	}
+	for i := 0; i < 1; i++ {
+		key := baseKey + ".PreParts[0].Audio.txt"
+		parts[i].Media.AudioKey = key
+		require.NoError(storageAPI.Store(key, bytes.NewReader([]byte("audio"+strconv.Itoa(i)+"!"))))
+	}
+	return parts
 }
 
 func TestSourcePartMedia_UnmarshalJSON(t *testing.T) {
@@ -44,8 +87,9 @@ func TestSourcePartMedia_UnmarshalJSON(t *testing.T) {
 
 func TestSourceStructured_DefaultedName(t *testing.T) {
 	require := require.New(t)
+	txQs := TxQsT(t)
 
-	source := firstSource(t).ToSourceStructured()
+	source := firstSource(t, txQs).ToSourceStructured()
 	require.Equal(source.Name, source.DefaultedName())
 	source.Name = ""
 	require.Equal(source.Parts[0].TokenizedTexts[0].Text.Text, source.DefaultedName())
@@ -53,34 +97,40 @@ func TestSourceStructured_DefaultedName(t *testing.T) {
 
 func TestSourceStructured_UpdateParams(t *testing.T) {
 	testName := "TestSourceStructured_UpdateParams"
-	test.EmptyFieldsMatch(t, firstSource(t))
-	createParams := firstSource(t).ToSourceStructured().UpdateParams()
+	txQs := TxQsT(t)
+
+	test.EmptyFieldsMatch(t, firstSource(t, txQs))
+	createParams := firstSource(t, txQs).ToSourceStructured().UpdateParams()
 	test.EmptyFieldsMatch(t, createParams)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }
 
 func TestSourceStructured_CreateParams(t *testing.T) {
 	testName := "TestSourceStructured_CreateParams"
-	test.EmptyFieldsMatch(t, firstSource(t))
-	createParams := firstSource(t).ToSourceStructured().CreateParams()
+	txQs := TxQsT(t)
+
+	test.EmptyFieldsMatch(t, firstSource(t, txQs))
+	createParams := firstSource(t, txQs).ToSourceStructured().CreateParams()
 	test.EmptyFieldsMatch(t, createParams)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }
 
 func TestSource_ToSource_ToSourceStructured(t *testing.T) {
-	test.EmptyFieldsMatch(t, firstSource(t))
-	test.EmptyFieldsMatch(t, firstSource(t).ToSourceStructured())
-	reflect.DeepEqual(firstSource(t), firstSource(t).ToSourceStructured().ToSource())
+	txQs := TxQsT(t)
+
+	test.EmptyFieldsMatch(t, firstSource(t, txQs))
+	test.EmptyFieldsMatch(t, firstSource(t, txQs).ToSourceStructured())
+	reflect.DeepEqual(firstSource(t, txQs), firstSource(t, txQs).ToSourceStructured().ToSource())
 }
 
-var textTokenizer = db.TextTokenizer{
+var textTokenizer = TextTokenizer{
 	Parser:       text.NewParser(text.Korean, text.English),
 	Tokenizer:    tokenizer.NewSplitTokenizer(),
 	CleanSpeaker: true,
 }
 
 func TestTextTokenizer_TokenizedTexts(t *testing.T) {
-	testNamePath := "TestTextTokenizer_TokenizedTexts/"
+	testName := "TestTextTokenizer_TokenizedTexts"
 
 	testCases := []struct {
 		name string
@@ -95,7 +145,7 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			s := string(fixture.Read(t, testNamePath+tc.name+".txt"))
+			s := string(fixture.Read(t, path.Join(testName, tc.name+".txt")))
 			split := strings.Split(s, "===")
 			if len(split) == 1 {
 				split = append(split, "")
@@ -104,7 +154,7 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 			require.NoError(err)
 
 			nonSpeaker := strings.TrimPrefix(tc.name, "speaker_")
-			fixture.CompareReadOrUpdate(t, testNamePath+nonSpeaker+".json", fixture.JSON(t, tokenizedTexts))
+			fixture.CompareReadOrUpdate(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
 		})
 	}
 }
@@ -125,20 +175,23 @@ func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 
 func TestQueries_SourceCreate(t *testing.T) {
 	require := require.New(t)
-	source, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceStructured().CreateParams())
+	txQs := TxQsT(t)
+
+	source, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t, txQs).ToSourceStructured().CreateParams())
 	require.NoError(err)
 	testRecentTimestamps(t, source.CreatedAt, source.UpdatedAt)
 }
 
 func TestQueries_SourceUpdate(t *testing.T) {
 	require := require.New(t)
-	t.Parallel()
 
-	newSource, err := db.Qs().SourceCreate(context.Background(), firstSource(t).ToSourceStructured().CreateParams())
+	txQs := TxQsT(t)
+
+	newSource, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t, txQs).ToSourceStructured().CreateParams())
 	require.NoError(err)
 	time.Sleep(1 * time.Second)
 
-	source, err := db.Qs().SourceUpdate(context.Background(), newSource.ToSourceStructured().UpdateParams())
+	source, err := txQs.SourceUpdate(txQs.Ctx(), newSource.ToSourceStructured().UpdateParams())
 	require.NoError(err)
 	testRecentTimestamps(t, source.UpdatedAt)
 	require.NotEqual(newSource.UpdatedAt, source.UpdatedAt)

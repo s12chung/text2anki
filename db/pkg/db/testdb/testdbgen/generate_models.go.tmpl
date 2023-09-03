@@ -4,7 +4,6 @@
 package models
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -25,14 +24,14 @@ func init() {
 	callerPath = path.Dir(callerFilePath)
 }
 
-var seedMap = map[string]func() error{
+var seedMap = map[string]func(tx db.Tx) error{
 	{{- range . }}
 	"{{ .Name | pluralize }}":{{ alignPad (.Name | pluralize) 18 }}Seed{{ .Name | pluralize }},
 	{{- end }}
 }
 
 // SeedList seeds the models for the testdb
-func SeedList(list map[string]bool) error {
+func SeedList(tx db.Tx, list map[string]bool) error {
 	isWhiteList, isBlacklist := true, true
 	for k, v := range list {
 		if v {
@@ -45,7 +44,7 @@ func SeedList(list map[string]bool) error {
 		if !exists {
 			return fmt.Errorf("seedFunc for '%v' doesn't exist", k)
 		}
-		if err := seedFunc(); err != nil {
+		if err := seedFunc(tx); err != nil {
 			return err
 		}
 	}
@@ -54,7 +53,7 @@ func SeedList(list map[string]bool) error {
 			(isBlacklist && exists || isWhiteList && !exists) {
 			continue
 		}
-		if err := seedFunc(); err != nil {
+		if err := seedFunc(tx); err != nil {
 			return err
 		}
 	}
@@ -86,12 +85,12 @@ func {{ .Name | pluralize }}Must() []db.{{ .Name }} {
 }
 
 // Seed{{ .Name | pluralize }} seeds the {{ .Name | pluralize }} testdb models
-func Seed{{ .Name | pluralize }}() error {
+func Seed{{ .Name | pluralize }}(tx db.Tx) error {
 	{{ .Name | lower | pluralize }}, err := {{ .Name | pluralize }}()
 	if err != nil {
 		return err
 	}
-	queries := db.Qs()
+	qs := db.New(tx)
 	for _, {{ .Name | lower }} := range {{ .Name | lower | pluralize }} {
 		if _, err := {{ .CreateCode }}; err != nil {
 			return err

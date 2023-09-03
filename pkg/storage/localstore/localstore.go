@@ -145,12 +145,16 @@ type Encryptor interface {
 
 // AESEncryptor is an AES encryptor
 type AESEncryptor struct {
-	key []byte
+	block cipher.Block
 }
 
 // NewAESEncryptor returns a new AESEncryptor from the key
-func NewAESEncryptor(key []byte) AESEncryptor {
-	return AESEncryptor{key: key}
+func NewAESEncryptor(key []byte) (AESEncryptor, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return AESEncryptor{}, err
+	}
+	return AESEncryptor{block: block}, nil
 }
 
 // NewAESEncryptorFromFile returns a new AESEncryptor from the keyFile
@@ -164,25 +168,19 @@ func NewAESEncryptorFromFile(keyFile string) (AESEncryptor, error) {
 	if err != nil {
 		return AESEncryptor{}, err
 	}
-	return AESEncryptor{key: key}, nil
+	return NewAESEncryptor(key)
 }
 
 // Encrypt encrypts the message
 func (a AESEncryptor) Encrypt(message string) (string, error) {
 	byteMessage := []byte(message)
-
-	block, err := aes.NewCipher(a.key)
-	if err != nil {
-		return "", err
-	}
-
 	ciphertext := make([]byte, aes.BlockSize+len(byteMessage))
 	iv := ciphertext[:aes.BlockSize]
-	if _, err = io.ReadFull(rand.Reader, iv); err != nil {
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		return "", err
 	}
 
-	cipher.NewCFBEncrypter(block, iv).XORKeyStream(ciphertext[aes.BlockSize:], byteMessage)
+	cipher.NewCFBEncrypter(a.block, iv).XORKeyStream(ciphertext[aes.BlockSize:], byteMessage)
 	return base64.URLEncoding.EncodeToString(ciphertext), nil
 }
 
@@ -196,13 +194,8 @@ func (a AESEncryptor) Decrypt(ciphertext string) (string, error) {
 		return "", fmt.Errorf("ciphertext too short")
 	}
 
-	block, err := aes.NewCipher(a.key)
-	if err != nil {
-		return "", err
-	}
-
 	iv := cipherDecoded[:aes.BlockSize]
 	cipherDecoded = cipherDecoded[aes.BlockSize:]
-	cipher.NewCFBDecrypter(block, iv).XORKeyStream(cipherDecoded, cipherDecoded)
+	cipher.NewCFBDecrypter(a.block, iv).XORKeyStream(cipherDecoded, cipherDecoded)
 	return string(cipherDecoded), nil
 }

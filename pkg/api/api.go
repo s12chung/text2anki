@@ -8,76 +8,117 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/extractor"
-	"github.com/s12chung/text2anki/pkg/firm"
-	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/synthesizer"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
+	"github.com/s12chung/text2anki/pkg/util/httputil/httputilchi"
+	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx"
 )
 
 // Routes contains the routes used for the api
 type Routes struct {
+	TxIntegrator reqtx.Integrator
+
 	Dictionary    dictionary.Dictionary
 	Synthesizer   synthesizer.Synthesizer
 	TextTokenizer db.TextTokenizer
-	Storage       Storage
-	ExtractorMap  extractor.Map
+
+	Storage      config.Storage
+	ExtractorMap extractor.Map
 }
 
-// Storage contains the Route's storage setup
-type Storage struct {
-	DBStorage storage.DBStorage
-	Storer    storage.Storer
+// NewRoutes is the routes used by the API
+func NewRoutes(c config.Config) Routes {
+	routes := Routes{
+		TxIntegrator: config.TxIntegrator(c.TxPool),
+
+		Dictionary:  config.Dictionary(c.DictionaryType),
+		Synthesizer: config.Synthesizer(),
+		TextTokenizer: db.TextTokenizer{
+			Parser:       config.Parser(),
+			Tokenizer:    config.Tokenizer(c.TokenizerType),
+			CleanSpeaker: true,
+		},
+
+		Storage:      config.StorageFromConfig(c.StorageConfig),
+		ExtractorMap: config.ExtractorMap(c.ExtractorMap),
+	}
+	db.SetDBStorage(routes.Storage.DBStorage)
+	return routes
 }
 
 // Setup sets up the routes
-func (rs Routes) Setup() error {
-	return rs.TextTokenizer.Setup()
-}
+func (rs Routes) Setup() error { return rs.TextTokenizer.Setup() }
 
 // Cleanup cleans up the routes
-func (rs Routes) Cleanup() error {
-	return rs.TextTokenizer.Cleanup()
-}
+func (rs Routes) Cleanup() error { return rs.TextTokenizer.Cleanup() }
 
 // Router returns the router with all the routes set
 func (rs Routes) Router() chi.Router {
-	r := chi.NewRouter()
-	r.Route("/sources", func(r chi.Router) {
-		r.Get("/", httptyped.RespondTypedJSONWrap(rs.SourceIndex))
-		r.Post("/", httptyped.RespondTypedJSONWrap(rs.SourceCreate))
+	var r chi.Router = chi.NewRouter()
+	r.NotFound(httputil.ResponseJSONWrap(rs.NotFound))
+	r.MethodNotAllowed(httputil.ResponseJSONWrap(rs.NotAllowed))
 
-		r.Route("/{sourceID}", func(r chi.Router) {
-			r.Use(httputil.RequestWrap(SourceCtx))
-			r.Get("/", httptyped.RespondTypedJSONWrap(rs.SourceGet))
-			r.Patch("/", httptyped.RespondTypedJSONWrap(rs.SourceUpdate))
-			r.Delete("/", httptyped.RespondTypedJSONWrap(rs.SourceDestroy))
+	r.Route(config.StorageURLPath, func(r chi.Router) {
+		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
+		r.Put("/*", responseJSONWrap(rs.StoragePut))
+	})
+
+	r.Mount("/", rs.txRouter())
+	return r
+}
+
+func (rs Routes) txRouter() chi.Router {
+	r := httputilchi.NewRouter(chi.NewRouter(), httpWrapper{TxIntegrator: rs.TxIntegrator})
+	r.Router.Use(httputil.RequestWrap(rs.TxIntegrator.SetTxContext))
+
+	r.Route("/sources", func(r httputilchi.Router) {
+		r.Get("/", rs.SourceIndex)
+		r.Post("/", rs.SourceCreate)
+
+		r.Route("/{sourceID}", func(r httputilchi.Router) {
+			r.Use(rs.SourceCtx)
+			r.Get("/", rs.SourceGet)
+			r.Patch("/", rs.SourceUpdate)
+			r.Delete("/", rs.SourceDestroy)
 		})
 
-		r.Route("/pre_part_lists", func(r chi.Router) {
-			r.Post("/", httptyped.RespondTypedJSONWrap(rs.PrePartListCreate))
-			r.Post("/sign", httptyped.RespondTypedJSONWrap(rs.PrePartListSign))
-			r.Post("/verify", httptyped.RespondTypedJSONWrap(rs.PrePartListVerify))
-			r.Route("/{prePartListID}", func(r chi.Router) {
-				r.Get("/", httptyped.RespondTypedJSONWrap(rs.PrePartListGet))
+		r.Route("/pre_part_lists", func(r httputilchi.Router) {
+			r.Post("/", rs.PrePartListCreate)
+			r.Post("/sign", rs.PrePartListSign)
+			r.Post("/verify", rs.PrePartListVerify)
+			r.Route("/{prePartListID}", func(r httputilchi.Router) {
+				r.Get("/", rs.PrePartListGet)
 			})
 		})
 	})
-	r.Route("/terms", func(r chi.Router) {
-		r.Get("/search", httptyped.RespondTypedJSONWrap(rs.TermsSearch))
+	r.Route("/terms", func(r httputilchi.Router) {
+		r.Get("/search", rs.TermsSearch)
 	})
-	r.Route("/notes", func(r chi.Router) {
-		r.Post("/", httptyped.RespondTypedJSONWrap(rs.NoteCreate))
+	r.Route("/notes", func(r httputilchi.Router) {
+		r.Post("/", rs.NoteCreate)
 	})
-	r.Route(storageURLPath, func(r chi.Router) {
-		r.Method(http.MethodGet, "/*", http.StripPrefix(storageURLPath, rs.StorageGet()))
-		r.Put("/*", httptyped.RespondTypedJSONWrap(rs.StoragePut))
-	})
-	r.NotFound(httputil.RespondJSONWrap(rs.NotFound))
-	r.MethodNotAllowed(httputil.RespondJSONWrap(rs.NotAllowed))
-	return r
+	return r.Router
+}
+
+func responseJSONWrap(f httputil.ResponseJSONWrapFunc) http.HandlerFunc {
+	return httputil.ResponseJSONWrap(responseWrap(f))
+}
+
+func responseWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
+	return httptyped.TypedWrap(f)
+}
+
+type httpWrapper struct{ TxIntegrator reqtx.Integrator }
+
+func (h httpWrapper) WrapRequest(f httputil.RequestWrapFunc) httputil.RequestWrapFunc {
+	return h.TxIntegrator.TxRollbackRequestWrap(f)
+}
+func (h httpWrapper) WrapResponse(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
+	return h.TxIntegrator.TxFinalizeWrap(responseWrap(f))
 }
 
 // NotFound is the route handler for not matching pattern routes
@@ -89,15 +130,4 @@ func (rs Routes) NotFound(r *http.Request) (any, *httputil.HTTPError) {
 func (rs Routes) NotAllowed(r *http.Request) (any, *httputil.HTTPError) {
 	return nil, httputil.Error(http.StatusMethodNotAllowed,
 		fmt.Errorf("the method, %v (at %v), is not allowed with at this URL", r.Method, r.URL.String()))
-}
-
-func extractAndValidate(r *http.Request, req any) *httputil.HTTPError {
-	if httpError := httputil.ExtractJSON(r, req); httpError != nil {
-		return httpError
-	}
-	result := firm.Validate(req)
-	if !result.IsValid() {
-		return httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf(result.ErrorMap().String()))
-	}
-	return nil
 }

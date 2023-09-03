@@ -12,7 +12,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
 
-var termsServer test.Server
+var termsServer txServer
 
 func init() {
 	termsServer = server.WithPathPrefix("/terms")

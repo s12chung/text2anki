@@ -170,12 +170,12 @@ type invalidTestObj struct {
 	Val string `json:"val,omitempty"`
 }
 
-func TestRespondTypedJSONWrap(t *testing.T) {
+func TestTypedWrap(t *testing.T) {
 	DefaultRegistry.RegisterType(testObj{})
 	DefaultRegistry.RegisterType(WithSerializedParent{})
 
 	var testVal string
-	handlerFunc := RespondTypedJSONWrap(func(r *http.Request) (any, *httputil.HTTPError) {
+	handlerFunc := httputil.ResponseJSONWrap(TypedWrap(func(r *http.Request) (any, *httputil.HTTPError) {
 		if r.Method == http.MethodPost {
 			return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("not a GET"))
 		}
@@ -192,7 +192,7 @@ func TestRespondTypedJSONWrap(t *testing.T) {
 			}, nil
 		}
 		return testObj{Val: testVal}, nil
-	})
+	}))
 
 	testCases := []struct {
 		name         string

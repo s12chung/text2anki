@@ -1,7 +1,6 @@
 package seedkrdict
 
 import (
-	"context"
 	"fmt"
 	"testing"
 
@@ -16,33 +15,35 @@ import (
 
 func TestSeed(t *testing.T) {
 	testName := "TestSeed"
-	// Do not Parallelize with TestSeedFile
 	t.Parallel()
-	testSeed(t, testName, func() error {
-		return Seed(context.Background(), fixture.JoinTestData(testName))
+
+	testSeed(t, testName, func(tx db.Tx) error {
+		return Seed(tx, fixture.JoinTestData(testName))
 	})
 }
 
 func TestSeedFile(t *testing.T) {
 	testName := "TestSeedFile"
-	testSeed(t, testName, func() error {
-		return SeedFile(context.Background(), fixture.Read(t, "TestSeedFile.xml"))
+	t.Parallel()
+
+	testSeed(t, testName, func(tx db.Tx) error {
+		return SeedFile(tx, fixture.Read(t, testName+".xml"))
 	})
 }
 
-func testSeed(t *testing.T, testName string, f func() error) {
+func testSeed(t *testing.T, testName string, testFunc func(tx db.Tx) error) {
 	require := require.New(t)
-	ctx := context.Background()
-	testdb.SetupT(t, testName)
 
-	err := f()
-	require.NoError(err)
+	txQs := testdb.TxQs(t)
+	require.NoError(txQs.TermsClearAll(txQs.Ctx()))
 
-	count, err := db.Qs().TermsCount(ctx)
+	require.NoError(testFunc(txQs))
+
+	count, err := txQs.TermsCount(txQs.Ctx())
 	require.NoError(err)
 	require.Equal(int64(3), count)
 
-	terms, err := db.Qs().TermsPopular(ctx)
+	terms, err := txQs.TermsPopular(txQs.Ctx())
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))
 }

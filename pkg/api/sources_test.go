@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -12,13 +11,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-var sourcesServer test.Server
+var sourcesServer txServer
 
 func init() {
 	sourcesServer = server.WithPathPrefix("/sources")
@@ -64,26 +64,26 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 		{name: "with_reference", newName: "new_name", reference: "new_ref.txt", expectedCode: http.StatusOK},
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 	}
-
-	created, err := db.Qs().SourceCreate(context.Background(), models.SourceStructuredsMust()[1].CreateParams())
-	require.NoError(t, err)
-
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
+			txQs := testdb.TxQs(t)
+			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructuredsMust()[1].CreateParams())
+			require.NoError(err)
+
 			reqBody := test.JSON(t, SourceUpdateRequest{Name: tc.newName, Reference: tc.reference})
-			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPatch, idPath("", created.ID), bytes.NewReader(reqBody)))
+			resp := test.HTTPDo(t, sourcesServer.NewTxRequest(t, txQs, http.MethodPatch, idPath("", created.ID), bytes.NewReader(reqBody)))
 			resp.EqualCode(t, tc.expectedCode)
 
 			sourceStructured := db.SourceStructured{}
 			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
-
 			if resp.Code != http.StatusOK {
 				return
 			}
-			source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
+
+			source, err := txQs.SourceGet(txQs.Ctx(), sourceStructured.ID)
 			require.NoError(err)
 			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, source.ToSourceStructured().StaticCopy()))
 		})
@@ -132,6 +132,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+			txQs := testdb.TxQs(t)
 
 			body := SourceCreateRequest{
 				PrePartListID: tc.prePartListID,
@@ -139,8 +140,8 @@ func TestRoutes_SourceCreate(t *testing.T) {
 				Reference:     tc.reference,
 				Parts:         sourceParts(t, tc.name, testName, tc.partCount),
 			}
-			reqBody := test.JSON(t, body)
-			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodPost, "", bytes.NewReader(reqBody)))
+			req := sourcesServer.NewTxRequest(t, txQs, http.MethodPost, "", bytes.NewReader(test.JSON(t, body)))
+			resp := test.HTTPDo(t, req)
 			resp.EqualCode(t, tc.expectedCode)
 
 			sourceStructured := db.SourceStructured{}
@@ -155,7 +156,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 			}
 			require.Equal(finalPartCount, len(sourceStructured.Parts), "finalPartCount count not matching")
 
-			source, err := db.Qs().SourceGet(context.Background(), sourceStructured.ID)
+			source, err := txQs.SourceGet(txQs.Ctx(), sourceStructured.ID)
 			require.NoError(err)
 			sourceStructured = source.ToSourceStructured()
 			sourceStructured.PrepareSerialize()
@@ -171,13 +172,13 @@ func setupSourceCreateMediaWithInfo(t *testing.T, prePartListID string) {
 		Name:      "test name",
 		Reference: "https://www.testref.com",
 	}
-	baseKey := storage.BaseKey(sourcesTable, partsColumn, prePartListID)
+	baseKey := storage.BaseKey(db.SourcesTable, db.PartsColumn, prePartListID)
 	err := routes.Storage.Storer.Store(baseKey+".Info.json", bytes.NewReader(test.JSON(t, info)))
 	require.NoError(t, err)
 }
 
 func setupSourceCreateMedia(t *testing.T, prePartListID string) {
-	baseKey := storage.BaseKey(sourcesTable, partsColumn, prePartListID)
+	baseKey := storage.BaseKey(db.SourcesTable, db.PartsColumn, prePartListID)
 
 	for i := 0; i < 3; i++ {
 		err := routes.Storage.Storer.Store(baseKey+".PreParts["+strconv.Itoa(i)+"].Image.txt", bytes.NewReader([]byte("image"+strconv.Itoa(i))))
@@ -218,15 +219,12 @@ func sourcePartFromFile(t *testing.T, testName, name string) SourceCreateRequest
 func TestRoutes_SourceDestroy(t *testing.T) {
 	testName := "TestRoutes_SourceDestroy"
 
-	created, err := db.Qs().SourceCreate(context.Background(), models.SourceStructuredsMust()[1].CreateParams())
-	require.NoError(t, err)
-
 	testCases := []struct {
 		name         string
 		path         string
 		expectedCode int
 	}{
-		{name: "normal", path: idPath("", created.ID), expectedCode: http.StatusOK},
+		{name: "normal", expectedCode: http.StatusOK},
 		{name: "invalid_id", path: "/9999", expectedCode: http.StatusNotFound},
 		{name: "not_a_number", path: "/nan", expectedCode: http.StatusNotFound},
 	}
@@ -235,14 +233,22 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodDelete, tc.path, nil))
+			txQs := testdb.TxQs(t)
+			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructuredsMust()[1].CreateParams())
+			require.NoError(err)
+			if tc.path == "" {
+				tc.path = idPath("", created.ID)
+			}
+
+			resp := test.HTTPDo(t, sourcesServer.NewTxRequest(t, txQs, http.MethodDelete, tc.path, nil))
 			resp.EqualCode(t, tc.expectedCode)
 
 			testModelResponse(t, resp, testName, tc.name, &db.SourceStructured{})
 			if resp.Code != http.StatusOK {
 				return
 			}
-			_, err := db.Qs().SourceGet(context.Background(), created.ID)
+
+			_, err = txQs.SourceGet(txQs.Ctx(), created.ID)
 			require.Equal(fmt.Errorf("sql: no rows in result set"), err)
 		})
 	}
