@@ -4,6 +4,7 @@ package reqtxtest
 import (
 	"fmt"
 	"net/http"
+	"sync"
 	"testing"
 
 	"github.com/gofrs/uuid"
@@ -13,10 +14,13 @@ import (
 )
 
 // Pool is a pool that maps transactions to an ID stored as idHeader in request headers
-type Pool struct{ idMap map[string]reqtx.Tx }
+type Pool struct {
+	idMap map[string]reqtx.Tx
+	mutex *sync.RWMutex
+}
 
 // NewPool returns a new Pool
-func NewPool() Pool { return Pool{idMap: map[string]reqtx.Tx{}} }
+func NewPool() Pool { return Pool{idMap: map[string]reqtx.Tx{}, mutex: &sync.RWMutex{}} }
 
 // SetTxT is SetTx with a *testing.T shorthand
 func (p Pool) SetTxT(t *testing.T, r *http.Request, tx reqtx.Tx) *http.Request {
@@ -33,7 +37,10 @@ func (p Pool) SetTx(r *http.Request, tx reqtx.Tx) error {
 	}
 	idString := id.String()
 
+	p.mutex.Lock()
 	p.idMap[idString] = tx
+	p.mutex.Unlock()
+
 	r.Header.Set(idHeader, idString)
 	return nil
 }
@@ -43,7 +50,11 @@ const idHeader = "X-Request-ID"
 // GetTx returns the transaction given the id stored in idHeader
 func (p Pool) GetTx(r *http.Request) (reqtx.Tx, error) {
 	id := r.Header.Get(idHeader)
+
+	p.mutex.RLock()
 	tx, exists := p.idMap[id]
+	p.mutex.RUnlock()
+
 	if !exists {
 		return nil, fmt.Errorf("transaction with id, %v, does not exist", id)
 	}
