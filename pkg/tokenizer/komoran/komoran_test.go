@@ -17,11 +17,9 @@ func TestKomoran_Tokenize(t *testing.T) {
 	require := require.New(t)
 
 	tokenizer := newKomoran(testPort)
-	err := tokenizer.Setup()
-	defer func() {
-		require.NoError(tokenizer.CleanupAndWait())
-	}()
-	require.NoError(err)
+	require.NoError(tokenizer.Setup())
+	defer func() { require.NoError(tokenizer.CleanupAndWait()) }()
+
 	tokens, err := tokenizer.Tokenize("대한민국은 민주공화국이다.")
 	require.NoError(err)
 

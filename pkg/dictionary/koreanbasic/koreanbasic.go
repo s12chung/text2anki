@@ -57,6 +57,7 @@ func (k *KoreanBasic) getSearch(q string, pos lang.PartOfSpeech) ([]byte, error)
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close() //nolint:errcheck // failing is ok
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("response from API is not OK (200), got: %v (%v)", resp.Status, resp.StatusCode)
 	}

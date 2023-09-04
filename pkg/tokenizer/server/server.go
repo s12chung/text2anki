@@ -26,7 +26,7 @@ type TokenizerServer interface {
 	ForceStop() error
 	IsRunning() bool
 
-	Tokenize(str string, resp any) error
+	Tokenize(str string, obj any) error
 }
 
 // CmdTokenizerServer is a server that runs a cmd
@@ -106,18 +106,19 @@ func (s *CmdTokenizerServer) Start() error {
 
 	for i := 1; i <= 15; i++ {
 		time.Sleep(time.Millisecond * 200)
-		response, err := http.Get(s.uriFor(HealthzPath))
+		resp, err := http.Get(s.uriFor(HealthzPath))
 		if err != nil {
 			continue
 		}
-		if response.StatusCode != http.StatusOK {
+		defer resp.Body.Close() //nolint:errcheck // failing is ok
+		if resp.StatusCode != http.StatusOK {
 			continue
 		}
-		resp, err := io.ReadAll(response.Body)
+		respBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			continue
 		}
-		if getFirstLine(string(resp)) == "ok" {
+		if getFirstLine(string(respBytes)) == "ok" {
 			return nil
 		}
 	}
@@ -218,27 +219,28 @@ func (s *CmdTokenizerServer) IsRunning() bool {
 	return s.isRunning
 }
 
-// Tokenize marshalls tokenizes the string into the resp
-func (s *CmdTokenizerServer) Tokenize(str string, resp any) error {
+// Tokenize marshalls tokenizes the string into the obj
+func (s *CmdTokenizerServer) Tokenize(str string, obj any) error {
 	body, err := json.Marshal(&TokenizeRequest{String: str})
 	if err != nil {
 		return err
 	}
 
-	response, err := http.Post(s.uriFor(TokenizePath), mime.TypeByExtension(".json"), bytes.NewBuffer(body))
+	resp, err := http.Post(s.uriFor(TokenizePath), mime.TypeByExtension(".json"), bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}
-	respBytes, err := io.ReadAll(response.Body)
+	defer resp.Body.Close() //nolint:errcheck // failing is ok
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
-	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("java.Server.Tokenize() [%v]: %v", response.StatusCode, string(respBytes))
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("java.Server.Tokenize() [%v]: %v", resp.StatusCode, string(respBytes))
 	}
 
-	if err := json.Unmarshal(respBytes, resp); err != nil {
+	if err := json.Unmarshal(respBytes, obj); err != nil {
 		return err
 	}
 	return nil

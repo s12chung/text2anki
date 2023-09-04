@@ -86,11 +86,12 @@ func (a *Azure) Token() (string, error) {
 	request.Header.Add("Content-type", "application/x-www-form-urlencoded")
 	a.addAPIKey(request.Header)
 
-	response, err := a.client.Do(request)
+	resp, err := a.client.Do(request)
 	if err != nil {
 		return "", err
 	}
-	token, err := io.ReadAll(response.Body)
+	defer resp.Body.Close() //nolint:errcheck // failing is ok
+	token, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -134,20 +135,21 @@ func (a *Azure) TextToSpeech(s string) ([]byte, error) {
 	}
 	a.requestCount++
 
-	response, err := a.client.Do(request)
+	resp, err := a.client.Do(request)
 	if err != nil {
 		return nil, err
 	}
-	if response.StatusCode != http.StatusOK {
+	defer resp.Body.Close() //nolint:errcheck // failing is ok
+	if resp.StatusCode != http.StatusOK {
 		var body []byte
-		body, err = io.ReadAll(response.Body)
+		body, err = io.ReadAll(resp.Body)
 		if err != nil {
 			body = nil
 		}
 		return nil, fmt.Errorf("returns a non-200 status code: %v (%v) with body: %v",
-			response.StatusCode, response.Status, string(body))
+			resp.StatusCode, resp.Status, string(body))
 	}
-	speech, err := io.ReadAll(response.Body)
+	speech, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

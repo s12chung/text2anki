@@ -169,6 +169,7 @@ func (s Server) WithPathPrefix(prefix string) Server {
 func HTTPDo(t *testing.T, req *http.Request) Response {
 	require := require.New(t)
 	resp, err := http.DefaultClient.Do(req)
+	defer func() { require.NoError(resp.Body.Close()) }()
 	require.NoError(err)
 	return NewResponse(t, resp)
 }

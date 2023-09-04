@@ -59,9 +59,7 @@ func TestHealthz(t *testing.T) {
 
 	resp, err := http.Get(getURI(server.HealthzPath))
 	require.NoError(err)
-	defer func() {
-		require.NoError(resp.Body.Close())
-	}()
+	defer func() { require.NoError(resp.Body.Close()) }()
 
 	require.Equal(http.StatusOK, resp.StatusCode)
 
@@ -84,9 +82,7 @@ func TestTokenize(t *testing.T) {
 		httputil.JSONContentType,
 		bytes.NewBuffer(test.JSON(t, input)))
 	require.NoError(err)
-	defer func() {
-		require.NoError(resp.Body.Close())
-	}()
+	defer func() { require.NoError(resp.Body.Close()) }()
 
 	require.Equal(http.StatusOK, resp.StatusCode)
 

@@ -48,6 +48,7 @@ func TestParamID(t *testing.T) {
 
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(err)
+			defer func() { require.NoError(resp.Body.Close()) }()
 			require.Equal(tc.expectedCode, resp.StatusCode)
 
 			body, err := io.ReadAll(resp.Body)

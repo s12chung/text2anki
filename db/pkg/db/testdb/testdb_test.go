@@ -81,9 +81,7 @@ func TestGen___SourceStructuredsSeed(t *testing.T) {
 
 	tokenizer := db.TextTokenizer{Parser: config.Parser(), Tokenizer: config.Tokenizer(config.TokenizerKhaiii)}
 	require.NoError(tokenizer.Setup())
-	defer func() {
-		require.NoError(tokenizer.Cleanup())
-	}()
+	defer func() { require.NoError(tokenizer.Cleanup()) }()
 
 	filepaths := allFilePaths(t, fixture.JoinTestData(testName))
 	sources := make([]db.SourceStructured, len(filepaths))

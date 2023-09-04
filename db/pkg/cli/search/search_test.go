@@ -52,9 +52,7 @@ func TestConfigToCSVRows(t *testing.T) {
 func TestGetOrDefaultConfig(t *testing.T) {
 	oldConfig := defaultConfig
 	defaultConfig = testConfig
-	defer func() {
-		defaultConfig = oldConfig
-	}()
+	t.Cleanup(func() { defaultConfig = oldConfig })
 
 	require := require.New(t)
 	testName := "TestGetOrDefaultConfig"
