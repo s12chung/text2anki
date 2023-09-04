@@ -10,7 +10,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
 )
 
 // Pool is a pool that maps transactions to an ID stored as idHeader in request headers

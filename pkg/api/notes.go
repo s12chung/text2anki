@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/pkg/util/httputil"
-	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/httptyped"
 )
 
 func init() {
@@ -13,7 +13,7 @@ func init() {
 }
 
 // NoteCreate creates a new note
-func (rs Routes) NoteCreate(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) NoteCreate(r *http.Request) (any, *jhttp.HTTPError) {
 	req := db.NoteCreateParams{}
 	if httpErr := extractAndValidate(r, &req); httpErr != nil {
 		return nil, httpErr
@@ -22,7 +22,7 @@ func (rs Routes) NoteCreate(r *http.Request) (any, *httputil.HTTPError) {
 	if httpErr != nil {
 		return nil, httpErr
 	}
-	return httputil.ReturnModelOr500(func() (any, error) {
+	return jhttp.ReturnModelOr500(func() (any, error) {
 		return txQs.NoteCreate(txQs.Ctx(), req)
 	})
 }

@@ -11,8 +11,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/storage"
-	"github.com/s12chung/text2anki/pkg/util/httputil"
-	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/httptyped"
 )
 
 func init() {
@@ -65,7 +65,7 @@ type PrePartSignResponse struct {
 }
 
 // PrePartListSign returns signed requests to generate Source Parts
-func (rs Routes) PrePartListSign(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) PrePartListSign(r *http.Request) (any, *jhttp.HTTPError) {
 	req := PrePartListSignRequest{}
 	if httpError := extractAndValidate(r, &req); httpError != nil {
 		return nil, httpError
@@ -74,26 +74,26 @@ func (rs Routes) PrePartListSign(r *http.Request) (any, *httputil.HTTPError) {
 	resp := PrePartListSignResponse{}
 	if err := rs.Storage.DBStorage.SignPutTree(prePartListPutConfig, req, &resp); err != nil {
 		if storage.IsInvalidInputError(err) {
-			return nil, httputil.Error(http.StatusUnprocessableEntity, err)
+			return nil, jhttp.Error(http.StatusUnprocessableEntity, err)
 		}
-		return nil, httputil.Error(http.StatusInternalServerError, err)
+		return nil, jhttp.Error(http.StatusInternalServerError, err)
 	}
 	return resp, nil
 }
 
 // PrePartListGet returns the PrePartListURL for a given ID
-func (rs Routes) PrePartListGet(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) PrePartListGet(r *http.Request) (any, *jhttp.HTTPError) {
 	prePartListID := chi.URLParam(r, "prePartListID")
 	if prePartListID == "" {
-		return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("prePartListID not found"))
+		return nil, jhttp.Error(http.StatusNotFound, fmt.Errorf("prePartListID not found"))
 	}
 	prePartList := db.PrePartListURL{}
 	err := rs.Storage.DBStorage.SignGetTree(db.SourcesTable, db.PartsColumn, prePartListID, &prePartList)
 	if err != nil {
 		if storage.IsNotFoundError(err) {
-			return nil, httputil.Error(http.StatusNotFound, err)
+			return nil, jhttp.Error(http.StatusNotFound, err)
 		}
-		return nil, httputil.Error(http.StatusInternalServerError, err)
+		return nil, jhttp.Error(http.StatusInternalServerError, err)
 	}
 	return prePartList, nil
 }
@@ -120,7 +120,7 @@ func (p PrePartListVerifyResponse) StaticCopy() any {
 }
 
 // PrePartListVerify verifies the text whether it fits any extractor and returns the extractor type
-func (rs Routes) PrePartListVerify(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) PrePartListVerify(r *http.Request) (any, *jhttp.HTTPError) {
 	req := PrePartListVerifyRequest{}
 	if httpError := extractAndValidate(r, &req); httpError != nil {
 		return nil, httpError
@@ -152,27 +152,27 @@ func (p PrePartListCreateResponse) StaticCopy() any {
 }
 
 // PrePartListCreate creates PrePartList given the type of extractor and text
-func (rs Routes) PrePartListCreate(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) PrePartListCreate(r *http.Request) (any, *jhttp.HTTPError) {
 	req := PrePartListCreateRequest{}
 	if httpError := extractAndValidate(r, &req); httpError != nil {
 		return nil, httpError
 	}
 	ex, exists := rs.ExtractorMap[req.ExtractorType]
 	if !exists {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("given type is not valid: %v", req.ExtractorType))
+		return nil, jhttp.Error(http.StatusUnprocessableEntity, fmt.Errorf("given type is not valid: %v", req.ExtractorType))
 	}
 	extraction, err := ex.Extract(req.Text)
 	if err != nil {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, err)
+		return nil, jhttp.Error(http.StatusUnprocessableEntity, err)
 	}
 	prePartListKey := db.PrePartList{}
 	infoFile, err := extraction.InfoFile()
 	if err != nil {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, err)
+		return nil, jhttp.Error(http.StatusUnprocessableEntity, err)
 	}
 	prePartListFile := db.PrePartListFile{InfoFile: infoFile, PreParts: extraction.Parts}
 	if err := rs.Storage.DBStorage.PutTree(prePartListPutConfig, prePartListFile, &prePartListKey); err != nil {
-		return nil, httputil.Error(http.StatusInternalServerError, err)
+		return nil, jhttp.Error(http.StatusInternalServerError, err)
 	}
 
 	return PrePartListCreateResponse{ID: prePartListKey.ID}, nil

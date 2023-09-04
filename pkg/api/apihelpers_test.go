@@ -9,7 +9,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
-	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx/reqtxtest"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx/reqtxtest"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )

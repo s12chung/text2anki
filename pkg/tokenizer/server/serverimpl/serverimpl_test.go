@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/pkg/tokenizer/server"
-	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
 	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
@@ -81,7 +81,7 @@ func TestTokenize(t *testing.T) {
 	}
 
 	resp, err := http.Post(getURI(server.TokenizePath),
-		httputil.JSONContentType,
+		jhttp.JSONContentType,
 		bytes.NewBuffer(test.JSON(t, input)))
 	require.NoError(err)
 	defer func() { require.NoError(resp.Body.Close()) }()
@@ -89,7 +89,7 @@ func TestTokenize(t *testing.T) {
 	require.Equal(http.StatusOK, resp.StatusCode)
 
 	contentType := resp.Header.Get("Content-Type")
-	require.Equal(httputil.JSONContentType, contentType)
+	require.Equal(jhttp.JSONContentType, contentType)
 
 	data := &tokenizeResponse{}
 	err = json.NewDecoder(resp.Body).Decode(data)

@@ -24,7 +24,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/tokenizer/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizer/komoran"
-	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
 	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 

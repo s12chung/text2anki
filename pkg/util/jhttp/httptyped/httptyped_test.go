@@ -11,7 +11,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
@@ -175,9 +175,9 @@ func TestTypedWrap(t *testing.T) {
 	DefaultRegistry.RegisterType(WithSerializedParent{})
 
 	var testVal string
-	handlerFunc := httputil.ResponseJSONWrap(TypedWrap(func(r *http.Request) (any, *httputil.HTTPError) {
+	handlerFunc := jhttp.ResponseJSONWrap(TypedWrap(func(r *http.Request) (any, *jhttp.HTTPError) {
 		if r.Method == http.MethodPost {
-			return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("not a GET"))
+			return nil, jhttp.Error(http.StatusUnprocessableEntity, fmt.Errorf("not a GET"))
 		}
 		if r.Method == http.MethodPatch {
 			return invalidTestObj{Val: testVal}, nil

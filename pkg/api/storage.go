@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/s12chung/text2anki/pkg/util/httputil"
-	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/httptyped"
 )
 
 func init() {
@@ -24,13 +24,13 @@ func (s StoragePutOk) StaticCopy() any {
 }
 
 // StoragePut stores the file with the route's Storer
-func (rs Routes) StoragePut(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) StoragePut(r *http.Request) (any, *jhttp.HTTPError) {
 	storer := rs.Storage.Storer
 	key := chi.URLParam(r, "*")
 	if err := storer.Validate(key, r.URL.Query()); err != nil {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, err)
+		return nil, jhttp.Error(http.StatusUnprocessableEntity, err)
 	}
-	return httputil.ReturnModelOr500(func() (any, error) {
+	return jhttp.ReturnModelOr500(func() (any, error) {
 		if err := storer.Store(key, r.Body); err != nil {
 			return nil, err
 		}

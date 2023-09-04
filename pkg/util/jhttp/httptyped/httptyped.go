@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"unicode"
 
-	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
 )
 
 // RegisterType registers the type to the DefaultRegistry
@@ -148,15 +148,15 @@ type Preparable interface {
 	PrepareSerialize()
 }
 
-// TypedWrap wraps around httputil.ResponseJSONWrap, but also checks the type of the response beforehand
-func TypedWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
-	return func(r *http.Request) (any, *httputil.HTTPError) {
+// TypedWrap wraps around jhttp.ResponseJSONWrap, but also checks the type of the response beforehand
+func TypedWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+	return func(r *http.Request) (any, *jhttp.HTTPError) {
 		resp, httpError := f(r)
 		if httpError != nil {
 			return resp, httpError
 		}
 		if !HasType(resp) {
-			return nil, httputil.Error(http.StatusInternalServerError,
+			return nil, jhttp.Error(http.StatusInternalServerError,
 				fmt.Errorf("%v is not registered to httptyped", indirectTypeElement(reflect.TypeOf(resp))))
 		}
 		if preparable, ok := resp.(Preparable); ok {

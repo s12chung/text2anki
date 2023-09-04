@@ -6,8 +6,8 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
-	"github.com/s12chung/text2anki/pkg/util/httputil"
-	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/httptyped"
 )
 
 func init() {
@@ -17,19 +17,19 @@ func init() {
 var posTypes = lang.PartOfSpeechTypes()
 
 // TermsSearch searches for the terms
-func (rs Routes) TermsSearch(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) TermsSearch(r *http.Request) (any, *jhttp.HTTPError) {
 	query := r.URL.Query().Get("query")
 	posQuery := r.URL.Query().Get("pos")
 	pos, found := posTypes[posQuery]
 	if !found {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("pos is invalid: '%v'", posQuery))
+		return nil, jhttp.Error(http.StatusUnprocessableEntity, fmt.Errorf("pos is invalid: '%v'", posQuery))
 	}
 
 	txQs, httpErr := rs.txQs(r)
 	if httpErr != nil {
 		return nil, httpErr
 	}
-	return httputil.ReturnModelOr500(func() (any, error) {
+	return jhttp.ReturnModelOr500(func() (any, error) {
 		termsSearchRow, err := txQs.TermsSearch(txQs.Ctx(), query, pos)
 		if err != nil {
 			return nil, err

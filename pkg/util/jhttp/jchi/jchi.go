@@ -1,20 +1,19 @@
-// Package httputilchi provides a light chi.Router wrapper that wraps chi.Router functions and adheres to
-// httputil.ResponseJSONWrapFunc and httputil.RequestWrapFunc
+// Package jchi wraps chi.Router functions to adhere to jhttp.ResponseJSONWrapFunc and jhttp.RequestWrapFunc
 // nolint: revive
-package httputilchi
+package jchi
 
 import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
 )
 
 // HTTPWrapper provides wrapping functions that Router uses
 type HTTPWrapper interface {
-	RequestWrap(f httputil.RequestWrapFunc) httputil.RequestWrapFunc
-	ResponseWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc
+	RequestWrap(f jhttp.RequestWrapFunc) jhttp.RequestWrapFunc
+	ResponseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc
 }
 
 // Router returns a new Router that wraps chi.Router functions
@@ -34,22 +33,22 @@ func (t Router) router(r chi.Router) Router {
 	return dup
 }
 
-func (t Router) requestWrap(f httputil.RequestWrapFunc) func(http.Handler) http.Handler {
-	return httputil.RequestWrap(t.wrapper.RequestWrap(f))
+func (t Router) requestWrap(f jhttp.RequestWrapFunc) func(http.Handler) http.Handler {
+	return jhttp.RequestWrap(t.wrapper.RequestWrap(f))
 }
 
-func (t Router) responseWrap(f httputil.ResponseJSONWrapFunc) http.HandlerFunc {
-	return httputil.ResponseJSONWrap(t.wrapper.ResponseWrap(f))
+func (t Router) responseWrap(f jhttp.ResponseJSONWrapFunc) http.HandlerFunc {
+	return jhttp.ResponseJSONWrap(t.wrapper.ResponseWrap(f))
 }
 
-func (t Router) Use(middlewares ...httputil.RequestWrapFunc) {
+func (t Router) Use(middlewares ...jhttp.RequestWrapFunc) {
 	wrapped := make([]func(http.Handler) http.Handler, len(middlewares))
 	for i, middleware := range middlewares {
 		wrapped[i] = t.requestWrap(middleware)
 	}
 	t.Router.Use(wrapped...)
 }
-func (t Router) With(middlewares ...httputil.RequestWrapFunc) Router {
+func (t Router) With(middlewares ...jhttp.RequestWrapFunc) Router {
 	wrapped := make([]func(http.Handler) http.Handler, len(middlewares))
 	for i, middleware := range middlewares {
 		wrapped[i] = t.requestWrap(middleware)
@@ -70,37 +69,37 @@ func (t Router) Route(pattern string, fn func(r Router)) Router {
 	return t.router(r)
 }
 
-func (t Router) HandleFunc(pattern string, f httputil.ResponseJSONWrapFunc) {
+func (t Router) HandleFunc(pattern string, f jhttp.ResponseJSONWrapFunc) {
 	t.Router.HandleFunc(pattern, t.responseWrap(f))
 }
-func (t Router) MethodFunc(method, pattern string, f httputil.ResponseJSONWrapFunc) {
+func (t Router) MethodFunc(method, pattern string, f jhttp.ResponseJSONWrapFunc) {
 	t.Router.MethodFunc(method, pattern, t.responseWrap(f))
 }
 
-func (t Router) Connect(pattern string, f httputil.ResponseJSONWrapFunc) {
+func (t Router) Connect(pattern string, f jhttp.ResponseJSONWrapFunc) {
 	t.Router.Connect(pattern, t.responseWrap(f))
 }
-func (t Router) Delete(pattern string, f httputil.ResponseJSONWrapFunc) {
+func (t Router) Delete(pattern string, f jhttp.ResponseJSONWrapFunc) {
 	t.Router.Delete(pattern, t.responseWrap(f))
 }
-func (t Router) Get(pattern string, f httputil.ResponseJSONWrapFunc) {
+func (t Router) Get(pattern string, f jhttp.ResponseJSONWrapFunc) {
 	t.Router.Get(pattern, t.responseWrap(f))
 }
-func (t Router) Head(pattern string, f httputil.ResponseJSONWrapFunc) {
+func (t Router) Head(pattern string, f jhttp.ResponseJSONWrapFunc) {
 	t.Router.Head(pattern, t.responseWrap(f))
 }
-func (t Router) Options(pattern string, f httputil.ResponseJSONWrapFunc) {
+func (t Router) Options(pattern string, f jhttp.ResponseJSONWrapFunc) {
 	t.Router.Options(pattern, t.responseWrap(f))
 }
-func (t Router) Patch(pattern string, f httputil.ResponseJSONWrapFunc) {
+func (t Router) Patch(pattern string, f jhttp.ResponseJSONWrapFunc) {
 	t.Router.Patch(pattern, t.responseWrap(f))
 }
-func (t Router) Post(pattern string, f httputil.ResponseJSONWrapFunc) {
+func (t Router) Post(pattern string, f jhttp.ResponseJSONWrapFunc) {
 	t.Router.Post(pattern, t.responseWrap(f))
 }
-func (t Router) Put(pattern string, f httputil.ResponseJSONWrapFunc) {
+func (t Router) Put(pattern string, f jhttp.ResponseJSONWrapFunc) {
 	t.Router.Put(pattern, t.responseWrap(f))
 }
-func (t Router) Trace(pattern string, f httputil.ResponseJSONWrapFunc) {
+func (t Router) Trace(pattern string, f jhttp.ResponseJSONWrapFunc) {
 	t.Router.Trace(pattern, t.responseWrap(f))
 }

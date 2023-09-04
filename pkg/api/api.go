@@ -12,10 +12,10 @@ import (
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/synthesizer"
-	"github.com/s12chung/text2anki/pkg/util/httputil"
-	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
-	"github.com/s12chung/text2anki/pkg/util/httputil/httputilchi"
-	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/httptyped"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/jchi"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
 )
 
 // Routes contains the routes used for the api
@@ -59,8 +59,8 @@ func (rs Routes) Cleanup() error { return rs.TextTokenizer.Cleanup() }
 // Router returns the router with all the routes set
 func (rs Routes) Router() chi.Router {
 	var r chi.Router = chi.NewRouter()
-	r.NotFound(httputil.ResponseJSONWrap(rs.NotFound))
-	r.MethodNotAllowed(httputil.ResponseJSONWrap(rs.NotAllowed))
+	r.NotFound(jhttp.ResponseJSONWrap(rs.NotFound))
+	r.MethodNotAllowed(jhttp.ResponseJSONWrap(rs.NotAllowed))
 
 	r.Route(config.StorageURLPath, func(r chi.Router) {
 		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
@@ -72,62 +72,62 @@ func (rs Routes) Router() chi.Router {
 }
 
 func (rs Routes) txRouter() chi.Router {
-	r := httputilchi.NewRouter(chi.NewRouter(), httpWrapper{})
-	r.Router.Use(httputil.RequestWrap(rs.TxIntegrator.SetTxContext))
+	r := jchi.NewRouter(chi.NewRouter(), httpWrapper{})
+	r.Router.Use(jhttp.RequestWrap(rs.TxIntegrator.SetTxContext))
 
-	r.Route("/sources", func(r httputilchi.Router) {
+	r.Route("/sources", func(r jchi.Router) {
 		r.Get("/", rs.SourceIndex)
 		r.Post("/", rs.SourceCreate)
 
-		r.Route("/{sourceID}", func(r httputilchi.Router) {
+		r.Route("/{sourceID}", func(r jchi.Router) {
 			r.Use(rs.SourceCtx)
 			r.Get("/", rs.SourceGet)
 			r.Patch("/", rs.SourceUpdate)
 			r.Delete("/", rs.SourceDestroy)
 		})
 
-		r.Route("/pre_part_lists", func(r httputilchi.Router) {
+		r.Route("/pre_part_lists", func(r jchi.Router) {
 			r.Post("/", rs.PrePartListCreate)
 			r.Post("/sign", rs.PrePartListSign)
 			r.Post("/verify", rs.PrePartListVerify)
-			r.Route("/{prePartListID}", func(r httputilchi.Router) {
+			r.Route("/{prePartListID}", func(r jchi.Router) {
 				r.Get("/", rs.PrePartListGet)
 			})
 		})
 	})
-	r.Route("/terms", func(r httputilchi.Router) {
+	r.Route("/terms", func(r jchi.Router) {
 		r.Get("/search", rs.TermsSearch)
 	})
-	r.Route("/notes", func(r httputilchi.Router) {
+	r.Route("/notes", func(r jchi.Router) {
 		r.Post("/", rs.NoteCreate)
 	})
 	return r.Router
 }
 
-func responseJSONWrap(f httputil.ResponseJSONWrapFunc) http.HandlerFunc {
-	return httputil.ResponseJSONWrap(responseWrap(f))
+func responseJSONWrap(f jhttp.ResponseJSONWrapFunc) http.HandlerFunc {
+	return jhttp.ResponseJSONWrap(responseWrap(f))
 }
 
-func responseWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
+func responseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
 	return httptyped.TypedWrap(f)
 }
 
 type httpWrapper struct{}
 
-func (h httpWrapper) RequestWrap(f httputil.RequestWrapFunc) httputil.RequestWrapFunc {
+func (h httpWrapper) RequestWrap(f jhttp.RequestWrapFunc) jhttp.RequestWrapFunc {
 	return reqtx.TxRollbackRequestWrap(f)
 }
-func (h httpWrapper) ResponseWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
+func (h httpWrapper) ResponseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
 	return reqtx.TxFinalizeWrap(responseWrap(f))
 }
 
 // NotFound is the route handler for not matching pattern routes
-func (rs Routes) NotFound(r *http.Request) (any, *httputil.HTTPError) {
-	return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("request URL, %v, does not match any route", r.URL.String()))
+func (rs Routes) NotFound(r *http.Request) (any, *jhttp.HTTPError) {
+	return nil, jhttp.Error(http.StatusNotFound, fmt.Errorf("request URL, %v, does not match any route", r.URL.String()))
 }
 
 // NotAllowed is the router handler for method not handled for the pattern
-func (rs Routes) NotAllowed(r *http.Request) (any, *httputil.HTTPError) {
-	return nil, httputil.Error(http.StatusMethodNotAllowed,
+func (rs Routes) NotAllowed(r *http.Request) (any, *jhttp.HTTPError) {
+	return nil, jhttp.Error(http.StatusMethodNotAllowed,
 		fmt.Errorf("the method, %v (at %v), is not allowed with at this URL", r.Method, r.URL.String()))
 }

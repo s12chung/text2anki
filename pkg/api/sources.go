@@ -11,21 +11,21 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/chiutil"
-	"github.com/s12chung/text2anki/pkg/util/httputil"
-	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/httptyped"
 )
 
 func init() {
 	httptyped.RegisterType(db.SourceStructured{})
 }
 
-const sourceContextKey httputil.ContextKey = "source"
+const sourceContextKey jhttp.ContextKey = "source"
 
 // SourceCtx sets the source context from the sourceID
-func (rs Routes) SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError) {
+func (rs Routes) SourceCtx(r *http.Request) (*http.Request, *jhttp.HTTPError) {
 	sourceID, err := chiutil.ParamID(r, "sourceID")
 	if err != nil {
-		return nil, httputil.Error(http.StatusNotFound, err)
+		return nil, jhttp.Error(http.StatusNotFound, err)
 	}
 
 	txQs, httpErr := rs.txQs(r)
@@ -34,7 +34,7 @@ func (rs Routes) SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError)
 	}
 	source, err := txQs.SourceGet(r.Context(), sourceID)
 	if err != nil {
-		return nil, httputil.Error(http.StatusNotFound, err)
+		return nil, jhttp.Error(http.StatusNotFound, err)
 	}
 
 	r = r.WithContext(context.WithValue(r.Context(), sourceContextKey, source.ToSourceStructured()))
@@ -42,18 +42,18 @@ func (rs Routes) SourceCtx(r *http.Request) (*http.Request, *httputil.HTTPError)
 }
 
 // SourceIndex returns a list of sources
-func (rs Routes) SourceIndex(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) SourceIndex(r *http.Request) (any, *jhttp.HTTPError) {
 	txQs, httpErr := rs.txQs(r)
 	if httpErr != nil {
 		return nil, httpErr
 	}
-	return httputil.ReturnModelOr500(func() (any, error) {
+	return jhttp.ReturnModelOr500(func() (any, error) {
 		return txQs.SourceStructuredIndex(txQs.Ctx())
 	})
 }
 
 // SourceGet gets the source
-func (rs Routes) SourceGet(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) SourceGet(r *http.Request) (any, *jhttp.HTTPError) {
 	return ctxSourceStructured(r)
 }
 
@@ -70,7 +70,7 @@ func init() {
 }
 
 // SourceUpdate updates the source
-func (rs Routes) SourceUpdate(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) SourceUpdate(r *http.Request) (any, *jhttp.HTTPError) {
 	sourceStructured, httpErr := ctxSourceStructured(r)
 	if httpErr != nil {
 		return nil, httpErr
@@ -87,7 +87,7 @@ func (rs Routes) SourceUpdate(r *http.Request) (any, *httputil.HTTPError) {
 	if httpErr != nil {
 		return nil, httpErr
 	}
-	return httputil.ReturnModelOr500(func() (any, error) {
+	return jhttp.ReturnModelOr500(func() (any, error) {
 		source, err := txQs.SourceUpdate(txQs.Ctx(), sourceStructured.UpdateParams())
 		return source.ToSourceStructured(), err
 	})
@@ -114,7 +114,7 @@ func init() {
 }
 
 // SourceCreate creates a new source
-func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) SourceCreate(r *http.Request) (any, *jhttp.HTTPError) {
 	req := SourceCreateRequest{}
 	if httpErr := extractAndValidate(r, &req); httpErr != nil {
 		return nil, httpErr
@@ -125,9 +125,9 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 		prePartList = &db.PrePartList{}
 		if err := rs.Storage.DBStorage.KeyTree(db.SourcesTable, db.PartsColumn, req.PrePartListID, prePartList); err != nil {
 			if storage.IsNotFoundError(err) {
-				return nil, httputil.Error(http.StatusNotFound, err)
+				return nil, jhttp.Error(http.StatusNotFound, err)
 			}
-			return nil, httputil.Error(http.StatusInternalServerError, err)
+			return nil, jhttp.Error(http.StatusInternalServerError, err)
 		}
 	}
 
@@ -140,13 +140,13 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *httputil.HTTPError) {
 	if httpErr != nil {
 		return nil, httpErr
 	}
-	return httputil.ReturnModelOr500(func() (any, error) {
+	return jhttp.ReturnModelOr500(func() (any, error) {
 		source, err := txQs.SourceCreate(txQs.Ctx(), source.CreateParams())
 		return source.ToSourceStructured(), err
 	})
 }
 
-func (rs Routes) sourceCreateSource(req SourceCreateRequest, prePartList *db.PrePartList) (*db.SourceStructured, *httputil.HTTPError) {
+func (rs Routes) sourceCreateSource(req SourceCreateRequest, prePartList *db.PrePartList) (*db.SourceStructured, *jhttp.HTTPError) {
 	name, reference, err := rs.sourceCreateSourceNameRef(req.Name, req.Reference, prePartList)
 	if err != nil {
 		return nil, err
@@ -159,7 +159,7 @@ func (rs Routes) sourceCreateSource(req SourceCreateRequest, prePartList *db.Pre
 		}
 		tokenizedTexts, err := rs.TextTokenizer.TokenizedTexts(part.Text, part.Translation)
 		if err != nil {
-			return nil, httputil.Error(http.StatusUnprocessableEntity, err)
+			return nil, jhttp.Error(http.StatusUnprocessableEntity, err)
 		}
 		part := db.SourcePart{TokenizedTexts: tokenizedTexts}
 		if prePartList != nil {
@@ -169,19 +169,19 @@ func (rs Routes) sourceCreateSource(req SourceCreateRequest, prePartList *db.Pre
 	}
 
 	if len(parts) == 0 {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("no parts found with text set"))
+		return nil, jhttp.Error(http.StatusUnprocessableEntity, fmt.Errorf("no parts found with text set"))
 	}
 	return &db.SourceStructured{Name: name, Reference: reference, Parts: parts}, nil
 }
 
-func (rs Routes) sourceCreateSourceNameRef(name, ref string, prePartList *db.PrePartList) (string, string, *httputil.HTTPError) {
+func (rs Routes) sourceCreateSourceNameRef(name, ref string, prePartList *db.PrePartList) (string, string, *jhttp.HTTPError) {
 	if prePartList == nil || (name != "" && ref != "") {
 		return name, ref, nil
 	}
 
 	info, err := prePartList.Info()
 	if err != nil {
-		return "", "", httputil.Error(http.StatusInternalServerError, err)
+		return "", "", jhttp.Error(http.StatusInternalServerError, err)
 	}
 	if name == "" {
 		name = info.Name
@@ -193,7 +193,7 @@ func (rs Routes) sourceCreateSourceNameRef(name, ref string, prePartList *db.Pre
 }
 
 // SourceDestroy destroys the source
-func (rs Routes) SourceDestroy(r *http.Request) (any, *httputil.HTTPError) {
+func (rs Routes) SourceDestroy(r *http.Request) (any, *jhttp.HTTPError) {
 	sourceStructured, httpErr := ctxSourceStructured(r)
 	if httpErr != nil {
 		return nil, httpErr
@@ -202,15 +202,15 @@ func (rs Routes) SourceDestroy(r *http.Request) (any, *httputil.HTTPError) {
 	if httpErr != nil {
 		return nil, httpErr
 	}
-	return httputil.ReturnModelOr500(func() (any, error) {
+	return jhttp.ReturnModelOr500(func() (any, error) {
 		return sourceStructured, txQs.SourceDestroy(txQs.Ctx(), sourceStructured.ID)
 	})
 }
 
-func ctxSourceStructured(r *http.Request) (db.SourceStructured, *httputil.HTTPError) {
+func ctxSourceStructured(r *http.Request) (db.SourceStructured, *jhttp.HTTPError) {
 	sourceStructured, ok := r.Context().Value(sourceContextKey).(db.SourceStructured)
 	if !ok {
-		return db.SourceStructured{}, httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.SourceStructured fail"))
+		return db.SourceStructured{}, jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.SourceStructured fail"))
 	}
 	return sourceStructured, nil
 }

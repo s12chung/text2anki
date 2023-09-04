@@ -1,5 +1,5 @@
-// Package httputil contains utils for http requests
-package httputil
+// Package jhttp reformats http handlers to follow returning error conventions by abstracting to JSON responses
+package jhttp
 
 import (
 	"encoding/json"
@@ -25,7 +25,7 @@ func (e HTTPError) Error() string {
 
 // LogError logs the error
 func LogError(r *http.Request, httpErr *HTTPError) {
-	slog.Error("http response", slog.Int("code", httpErr.Code), slog.String("url", r.URL.Path), slog.String("method", r.Method), logg.Err(httpErr))
+	slog.Error("jhttp response", slog.Int("code", httpErr.Code), slog.String("url", r.URL.Path), slog.String("method", r.Method), logg.Err(httpErr))
 }
 
 // Error is a safe shorthand to create a new HTTPError
