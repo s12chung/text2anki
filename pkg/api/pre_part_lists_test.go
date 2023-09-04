@@ -2,8 +2,8 @@ package api
 
 import (
 	"bytes"
-	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
@@ -17,6 +17,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/extractor/extractortest"
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/storage/localstore"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -38,7 +39,7 @@ func replaceCipherQueryParam(urlString string) string {
 
 	u, err := url.Parse(urlString)
 	if err != nil {
-		fmt.Println(err)
+		slog.Error("api.replaceCipherQueryParam()", logg.Err(err))
 		os.Exit(-1)
 	}
 	u.RawQuery = url.Values{localstore.CipherQueryParam: []string{"testy"}}.Encode()

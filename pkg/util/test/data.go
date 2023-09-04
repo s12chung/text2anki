@@ -3,8 +3,8 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -156,7 +156,7 @@ func (s Server) NewRequest(t *testing.T, method, path string, body io.Reader) *h
 // WithPathPrefix returns a new server with the pathPrefix set for NewRequest
 func (s Server) WithPathPrefix(prefix string) Server {
 	if s.Server == nil {
-		fmt.Println("Server is not set (due to init timing?)")
+		slog.Error("test.Server is not set before calling WithPathPrefix() - due to init timing?")
 		os.Exit(-1)
 	}
 

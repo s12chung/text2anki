@@ -6,11 +6,13 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"runtime"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 var callerPath string
@@ -18,7 +20,7 @@ var callerPath string
 func init() {
 	_, callerFilePath, _, ok := runtime.Caller(0)
 	if !ok {
-		fmt.Println("runtime.Caller not ok for Seed()")
+		slog.Error("runtime.Caller not ok for models package")
 		os.Exit(-1)
 	}
 	callerPath = path.Dir(callerFilePath)
@@ -76,7 +78,7 @@ func Terms() ([]db.Term, error) {
 func TermsMust() []db.Term {
 	terms, err := Terms()
 	if err != nil {
-		fmt.Println("TermsMust failed")
+		slog.Error("TermsMust failed", logg.Err(err))
 		os.Exit(-1)
 	}
 	return terms
@@ -113,7 +115,7 @@ func SourceStructureds() ([]db.SourceStructured, error) {
 func SourceStructuredsMust() []db.SourceStructured {
 	sourceStructureds, err := SourceStructureds()
 	if err != nil {
-		fmt.Println("SourceStructuredsMust failed")
+		slog.Error("SourceStructuredsMust failed", logg.Err(err))
 		os.Exit(-1)
 	}
 	return sourceStructureds
@@ -150,7 +152,7 @@ func Notes() ([]db.Note, error) {
 func NotesMust() []db.Note {
 	notes, err := Notes()
 	if err != nil {
-		fmt.Println("NotesMust failed")
+		slog.Error("NotesMust failed", logg.Err(err))
 		os.Exit(-1)
 	}
 	return notes

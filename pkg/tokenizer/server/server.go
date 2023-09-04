@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 // TokenizerServer provides an interface to call tokenizer servers
@@ -98,7 +100,7 @@ func (s *CmdTokenizerServer) Start() error {
 
 	go func() {
 		if err := s.cmd.Wait(); err != nil {
-			slog.Warn(fmt.Sprintf("Error after waiting for CmdTokenizerServer: %v", err))
+			slog.Warn("CmdTokenizerServer command Wait()", logg.Err(err))
 		}
 		s.isRunning = false
 	}()

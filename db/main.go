@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log/slog"
 	"os"
 	"reflect"
 	"strings"
@@ -23,6 +24,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 func init() {
@@ -53,14 +55,14 @@ var usage = "usage: %v [" + commands + "]"
 func main() {
 	args := flag.Args()
 	if len(args) != 1 {
-		fmt.Printf(usage+"\n", os.Args[0])
+		fmt.Printf(usage+"\n", os.Args[0]) //nolint:forbidigo // usage
 		os.Exit(-1)
 	}
 
 	cmd := args[0]
 
 	if err := run(cmd); err != nil {
-		fmt.Println(err)
+		slog.Error("db/main", logg.Err(err))
 		os.Exit(-1)
 	}
 }
@@ -119,7 +121,7 @@ func cmdDiff() error {
 		return err
 	}
 	if text != "" {
-		fmt.Println(text)
+		fmt.Println(text) //nolint:forbidigo // it's the output of the command
 		return fmt.Errorf("diff exists for generated result and %v", generateFile)
 	}
 	return nil
@@ -166,7 +168,7 @@ func cmdSchema() error {
 	if err != nil {
 		return err
 	}
-	fmt.Print(string(bytes))
+	fmt.Print(string(bytes)) //nolint:forbidigo // it's the output of the command
 	return nil
 }
 
@@ -184,7 +186,7 @@ func cmdSearch() error {
 		return err
 	}
 	if reflect.DeepEqual(config, search.Config{}) {
-		fmt.Println("Wrote search config to " + searchConfigPath + ", edit it and run command again")
+		fmt.Println("Wrote search config to " + searchConfigPath + ", edit it and run command again") //nolint:forbidigo // it's the output of the command
 		return nil
 	}
 

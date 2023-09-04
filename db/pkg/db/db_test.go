@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"testing"
@@ -13,13 +13,14 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/storage/localstore"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 func TestMain(m *testing.M) {
 	if err := run(m); err != nil {
-		fmt.Println(err)
+		slog.Error("db_test.TestMain", logg.Err(err))
 		os.Exit(-1)
 	}
 }

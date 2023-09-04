@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"runtime"
@@ -17,6 +18,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 // A copy of this constant is in db_test.go
@@ -29,7 +31,7 @@ func dbSHAPathF() string { return path.Join(tmpPath, "testdb.sha.txt") }
 func init() {
 	_, callerFilePath, _, ok := runtime.Caller(0)
 	if !ok {
-		fmt.Println("runtime.Caller not ok for Seed()")
+		slog.Error("runtime.Caller not ok for testdb package")
 		os.Exit(-1)
 	}
 	callerPath := path.Dir(callerFilePath)
@@ -80,7 +82,7 @@ func TxQs(t *testing.T, opts *sql.TxOptions) db.TxQs {
 // MustSetup sets up the test database
 func MustSetup() {
 	if err := db.SetDB(dbPathF()); err != nil {
-		fmt.Println(err)
+		slog.Error("testdb.MustSetup()", logg.Err(err))
 		os.Exit(-1)
 	}
 }

@@ -8,6 +8,8 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 // HTTPError represents an http error
@@ -23,7 +25,7 @@ func (e HTTPError) Error() string {
 
 // LogError logs the error
 func LogError(r *http.Request, httpErr *HTTPError) {
-	slog.Error(httpErr.Cause.Error(), slog.Int("code", httpErr.Code), slog.String("url", r.URL.Path), slog.String("method", r.Method))
+	slog.Error("http response", slog.Int("code", httpErr.Code), slog.String("url", r.URL.Path), slog.String("method", r.Method), logg.Err(httpErr))
 }
 
 // Error is a safe shorthand to create a new HTTPError

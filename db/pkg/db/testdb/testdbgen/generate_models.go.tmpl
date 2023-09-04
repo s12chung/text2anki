@@ -6,11 +6,13 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"runtime"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 var callerPath string
@@ -18,7 +20,7 @@ var callerPath string
 func init() {
 	_, callerFilePath, _, ok := runtime.Caller(0)
 	if !ok {
-		fmt.Println("runtime.Caller not ok for Seed()")
+		slog.Error("runtime.Caller not ok for models package")
 		os.Exit(-1)
 	}
 	callerPath = path.Dir(callerFilePath)
@@ -78,7 +80,7 @@ func {{ .Name | pluralize }}() ([]db.{{ .Name }}, error) {
 func {{ .Name | pluralize }}Must() []db.{{ .Name }} {
 	{{ .Name | lower | pluralize }}, err := {{ .Name | pluralize }}()
 	if err != nil {
-		fmt.Println("{{ .Name | pluralize }}Must failed")
+		slog.Error("{{ .Name | pluralize }}Must failed", logg.Err(err))
 		os.Exit(-1)
 	}
 	return {{ .Name | lower | pluralize }}

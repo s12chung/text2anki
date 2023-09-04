@@ -1,7 +1,7 @@
 package api
 
 import (
-	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -20,6 +20,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx/reqtxtest"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -59,7 +60,7 @@ func init() {
 	routes = NewRoutes(routesConfig)
 	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(routes.Router())}}
 	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
-		fmt.Println(err)
+		slog.Error("api_test.init()", logg.Err(err))
 		os.Exit(-1)
 	}
 }

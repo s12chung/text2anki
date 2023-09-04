@@ -2,6 +2,8 @@ package khaiii
 
 import (
 	"log/slog"
+
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 // Tokenizer is a wrapper around the Khaiii
@@ -19,7 +21,7 @@ func NewTokenizer(k *Khaiii) *Tokenizer {
 // Cleanup cleans up the Kahiii instance
 func (k *Tokenizer) Cleanup() {
 	if err := k.kahiii.Close(); err != nil {
-		slog.Error(err.Error())
+		slog.Error("Kahiii.Cleanup()", logg.Err(err))
 	}
 }
 

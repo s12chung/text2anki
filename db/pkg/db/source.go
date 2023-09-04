@@ -10,6 +10,7 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizer"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
@@ -161,7 +162,7 @@ func (s SourceStructured) CreateParams() SourceCreateParams {
 func (s SourceStructured) ToSource() Source {
 	bytes, err := json.Marshal(s.Parts)
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("SourceStructured.ToSource()", logg.Err(err))
 		panic(-1)
 	}
 	return Source{

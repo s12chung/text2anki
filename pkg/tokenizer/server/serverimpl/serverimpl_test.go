@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/tokenizer/server"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
 
@@ -26,16 +28,16 @@ func TestMain(m *testing.M) {
 	go func() {
 		err := <-serverChannel
 		if err != nil {
-			fmt.Println(err)
+			slog.Error("serverimpl serverChannel", logg.Err(err))
 			os.Exit(-1)
 		}
 	}()
 	code := m.Run()
 	if err := server.Stop(); err != nil {
-		fmt.Println(err)
+		slog.Error("serverimpl server.Stop()", logg.Err(err))
 	}
 	if !cleaned {
-		fmt.Println("cleaned = false from Cleanup()")
+		slog.Error("cleaned = false from Cleanup()")
 		os.Exit(-1)
 	}
 	os.Exit(code)

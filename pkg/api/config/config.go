@@ -3,6 +3,7 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
@@ -24,6 +25,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/tokenizer/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizer/komoran"
 	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 var appCacheDir string
@@ -31,7 +33,7 @@ var appCacheDir string
 func init() {
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
-		fmt.Println(err)
+		slog.Error("config.init()", logg.Err(err))
 		os.Exit(-1)
 	}
 	appCacheDir = path.Join(cacheDir, "Text2Anki")
@@ -141,7 +143,7 @@ func StorageFromConfig(config StorageConfig) Storage {
 		storer = ls
 	}
 	if err != nil {
-		fmt.Println(err)
+		slog.Error("config.StorageFromConfig()", logg.Err(err))
 		os.Exit(-1)
 	}
 	return Storage{DBStorage: storage.NewDBStorage(storageAPI, config.UUIDGenerator), Storer: storer}

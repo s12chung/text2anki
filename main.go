@@ -19,6 +19,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/api"
 	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 const host = "http://localhost"
@@ -53,7 +54,7 @@ func main() {
 	}
 
 	if err := run(); err != nil {
-		fmt.Println(err)
+		slog.Error("main", logg.Err(err))
 		os.Exit(-1)
 	}
 }
@@ -69,7 +70,7 @@ func run() error {
 	}
 	defer func() {
 		if err := routes.Cleanup(); err != nil {
-			fmt.Println(err)
+			slog.Error("main routes.Cleanup()", logg.Err(err))
 		}
 	}()
 
@@ -102,14 +103,14 @@ func run() error {
 func mainAgain() {
 	args := flag.Args()
 	if len(args) != 2 {
-		fmt.Printf("usage: %v textStringFilename exportDir\n", os.Args[0])
+		fmt.Printf("usage: %v textStringFilename exportDir\n", os.Args[0]) //nolint:forbidigo // usage
 		os.Exit(-1)
 	}
 
 	textStringFilename, exportDir := args[0], args[1]
 
 	if err := runAgain(textStringFilename, exportDir); err != nil {
-		fmt.Println(err)
+		slog.Error("main", logg.Err(err))
 		os.Exit(-1)
 	}
 }
@@ -138,14 +139,14 @@ func createAudio(notes []anki.Note) error {
 	synth := config.Synthesizer()
 	for i := range notes {
 		note := &notes[i]
+		log := slog.Default().With(slog.String("text", note.Text))
+
 		speech, err := synth.TextToSpeech(note.Usage)
 		if err != nil {
-			slog.Error("error creating audio for note",
-				slog.String("text", note.Text), slog.String("err", err.Error()))
+			log.Error("error creating audio for note", logg.Err(err))
 		}
 		if err = note.SetSound(speech, synth.SourceName()); err != nil {
-			slog.Error("error creating audio for note",
-				slog.String("text", note.Text), slog.String("err", err.Error()))
+			log.Error("error creating audio for note", logg.Err(err))
 		}
 	}
 	return nil

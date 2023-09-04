@@ -37,7 +37,7 @@ linters:
     # - exhaustivestruct [deprecated]
     # - exhaustruct # use constructors to handle empty fields instead of tags
     - exportloopref
-    # - forbidigo # bring this back later
+    - forbidigo
     - forcetypeassert
     - funlen
     - gci
