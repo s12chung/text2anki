@@ -2,20 +2,18 @@
 package krdict
 
 import (
+	"context"
+
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
 )
 
 // New returns a new KrDict
-func New(txQs db.TxQs) KrDict {
-	return KrDict{txQs: txQs}
-}
+func New() KrDict { return KrDict{} }
 
 // KrDict is a Korean dictionary connected to a database
-type KrDict struct {
-	txQs db.TxQs
-}
+type KrDict struct{}
 
 var mergePosMap = map[lang.PartOfSpeech]lang.PartOfSpeech{
 	lang.PartOfSpeechNoun:         lang.PartOfSpeechNoun,
@@ -58,7 +56,11 @@ var mergePosMap = map[lang.PartOfSpeech]lang.PartOfSpeech{
 func (k KrDict) Search(q string, pos lang.PartOfSpeech) ([]dictionary.Term, error) {
 	pos = mergePosMap[pos]
 
-	rows, err := k.txQs.TermsSearch(k.txQs.Ctx(), q, pos)
+	txQs, err := db.NewTxQs(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	rows, err := txQs.TermsSearch(txQs.Ctx(), q, pos)
 	if err != nil {
 		return nil, err
 	}
@@ -70,5 +72,5 @@ func (k KrDict) Search(q string, pos lang.PartOfSpeech) ([]dictionary.Term, erro
 		}
 		terms[i] = term
 	}
-	return terms, nil
+	return terms, txQs.Commit()
 }

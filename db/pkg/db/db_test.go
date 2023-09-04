@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path"
@@ -74,7 +75,7 @@ func NewTestTransaction(tx Tx) TestTransaction { return TestTransaction{Tx: tx} 
 func TxQsT(t *testing.T) TxQs {
 	require := require.New(t)
 
-	txQs, err := NewTxQs()
+	txQs, err := NewTxQs(context.Background())
 	require.NoError(err)
 
 	txQs.Tx = NewTestTransaction(txQs.Tx)

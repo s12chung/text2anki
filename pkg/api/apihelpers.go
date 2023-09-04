@@ -37,4 +37,4 @@ func (rs Routes) txQs(r *http.Request) (db.TxQs, *httputil.HTTPError) {
 type TxPool struct{}
 
 // GetTx returns a new transaction (returned type matches Routes.txQs())
-func (t TxPool) GetTx(r *http.Request) (reqtx.Tx, error) { return db.NewTxQsWithCtx(r.Context()) }
+func (t TxPool) GetTx(r *http.Request) (reqtx.Tx, error) { return db.NewTxQs(r.Context()) }

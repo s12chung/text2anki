@@ -2,6 +2,7 @@
 package testdb
 
 import (
+	"context"
 	"crypto/sha256"
 	"fmt"
 	"os"
@@ -65,7 +66,7 @@ func NewTransaction(tx db.Tx) Transaction { return Transaction{Tx: tx} }
 func TxQs(t *testing.T) db.TxQs {
 	require := require.New(t)
 
-	txQs, err := db.NewTxQs()
+	txQs, err := db.NewTxQs(context.Background())
 	require.NoError(err)
 
 	txQs.Tx = NewTransaction(txQs.Tx)
@@ -108,7 +109,7 @@ func runWithSafeSchema(f func(txQs db.TxQs) error) error {
 		if err := db.SetDB(dbPath); err != nil {
 			return err
 		}
-		txQs, err := db.NewTxQs()
+		txQs, err := db.NewTxQs(context.Background())
 		if err != nil {
 			return err
 		}

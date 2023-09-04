@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
 	"github.com/s12chung/text2anki/pkg/dictionary/krdict"
@@ -102,12 +101,7 @@ func Dictionary(dictionaryType DictionaryType) dictionary.Dictionary {
 	case DictionaryKrDict:
 		fallthrough
 	default:
-		txQs, err := db.NewTxQs()
-		if err != nil {
-			fmt.Println("db.NewTxQs() error", err)
-			os.Exit(-1)
-		}
-		return krdict.New(txQs)
+		return krdict.New()
 	}
 }
 

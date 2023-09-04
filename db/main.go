@@ -2,6 +2,7 @@
 package main
 
 import (
+	"context"
 	_ "embed"
 	"encoding/json"
 	"flag"
@@ -217,5 +218,5 @@ func setDB(path string) (db.TxQs, error) {
 	if err := db.SetDB(path); err != nil {
 		return db.TxQs{}, err
 	}
-	return db.NewTxQs()
+	return db.NewTxQs(context.Background())
 }
