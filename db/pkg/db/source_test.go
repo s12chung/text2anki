@@ -193,7 +193,7 @@ func TestQueries_SourceUpdate(t *testing.T) {
 
 	newSource, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t, txQs).ToSourceStructured().CreateParams())
 	require.NoError(err)
-	time.Sleep(time.Second / 10)
+	time.Sleep(time.Second)
 
 	source, err := txQs.SourceUpdate(txQs.Ctx(), newSource.ToSourceStructured().UpdateParams())
 	require.NoError(err)
