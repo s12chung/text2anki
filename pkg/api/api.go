@@ -114,10 +114,10 @@ func responseWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc
 
 type httpWrapper struct{ TxIntegrator reqtx.Integrator }
 
-func (h httpWrapper) WrapRequest(f httputil.RequestWrapFunc) httputil.RequestWrapFunc {
+func (h httpWrapper) RequestWrap(f httputil.RequestWrapFunc) httputil.RequestWrapFunc {
 	return h.TxIntegrator.TxRollbackRequestWrap(f)
 }
-func (h httpWrapper) WrapResponse(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
+func (h httpWrapper) ResponseWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
 	return h.TxIntegrator.TxFinalizeWrap(responseWrap(f))
 }
 
