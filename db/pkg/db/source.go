@@ -228,15 +228,15 @@ func (t TextTokenizer) TokenizedTexts(s, translation string) ([]TokenizedText, e
 }
 
 // TokenizeTexts takes the texts and tokenizes them
-func (t TextTokenizer) TokenizeTexts(texts []text.Text) (tokenizedTexts []TokenizedText, err error) {
+func (t TextTokenizer) TokenizeTexts(texts []text.Text) ([]TokenizedText, error) {
 	if !t.Tokenizer.IsSetup() {
 		return nil, fmt.Errorf("TextTokenizer not set up")
 	}
 
-	tokenizedTexts = make([]TokenizedText, len(texts))
+	tokenizedTexts := make([]TokenizedText, len(texts))
 	for i, text := range texts {
 		var tokens []tokenizer.Token
-		tokens, err = t.Tokenizer.Tokenize(text.Text)
+		tokens, err := t.Tokenizer.Tokenize(text.Text)
 		if err != nil {
 			return nil, err
 		}
