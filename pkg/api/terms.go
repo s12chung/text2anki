@@ -6,8 +6,8 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
+	"github.com/s12chung/text2anki/pkg/util/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
-	"github.com/s12chung/text2anki/pkg/util/jhttp/httptyped"
 )
 
 func init() {

@@ -43,12 +43,12 @@ type RequestWrapFunc func(r *http.Request) (*http.Request, *HTTPError)
 func RequestWrap(f RequestWrapFunc) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			newReq, httpError := f(r)
+			req, httpError := f(r)
 			if httpError != nil {
 				RespondError(w, httpError)
 				return
 			}
-			next.ServeHTTP(w, newReq)
+			next.ServeHTTP(w, req)
 		})
 	}
 }
@@ -63,13 +63,13 @@ func (res ResponseJSONWrapFunc) ServeHTTP(w http.ResponseWriter, r *http.Request
 // ResponseJSONWrap wraps a function that handles the request using return statements rather than writing to the response
 func ResponseJSONWrap(f ResponseJSONWrapFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		resp, httpErr := f(r)
+		model, httpErr := f(r)
 		if httpErr != nil {
 			RespondError(w, httpErr)
 			LogError(r, httpErr)
 			return
 		}
-		RespondJSON(w, resp)
+		RespondJSON(w, model)
 	}
 }
 

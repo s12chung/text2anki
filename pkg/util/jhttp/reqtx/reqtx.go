@@ -78,15 +78,15 @@ func TxFinalizeWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
 		if httpErr != nil {
 			return nil, httpErr
 		}
-		resp, httpErr := f(r)
+		model, httpErr := f(r)
 		if httpErr != nil {
 			_ = tx.FinalizeError() // only call on failure
-			return resp, httpErr
+			return model, httpErr
 		}
 		if err := tx.Finalize(); err != nil {
 			_ = tx.FinalizeError() // only call on failure
 			return nil, jhttp.Error(http.StatusInternalServerError, err)
 		}
-		return resp, nil
+		return model, nil
 	}
 }

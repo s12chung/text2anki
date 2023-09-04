@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/util/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
-	"github.com/s12chung/text2anki/pkg/util/jhttp/httptyped"
 )
 
 func init() {

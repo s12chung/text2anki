@@ -12,8 +12,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/synthesizer"
+	"github.com/s12chung/text2anki/pkg/util/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
-	"github.com/s12chung/text2anki/pkg/util/jhttp/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/jhttp/jchi"
 	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
 )
@@ -71,6 +71,10 @@ func (rs Routes) Router() chi.Router {
 	return r
 }
 
+func responseJSONWrap(f jhttp.ResponseJSONWrapFunc) http.HandlerFunc {
+	return jhttp.ResponseJSONWrap(responseWrap(f))
+}
+
 func (rs Routes) txRouter() chi.Router {
 	r := jchi.NewRouter(chi.NewRouter(), httpWrapper{})
 	r.Router.Use(jhttp.RequestWrap(rs.TxIntegrator.SetTxContext))
@@ -104,14 +108,6 @@ func (rs Routes) txRouter() chi.Router {
 	return r.Router
 }
 
-func responseJSONWrap(f jhttp.ResponseJSONWrapFunc) http.HandlerFunc {
-	return jhttp.ResponseJSONWrap(responseWrap(f))
-}
-
-func responseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
-	return httptyped.TypedWrap(f)
-}
-
 type httpWrapper struct{}
 
 func (h httpWrapper) RequestWrap(f jhttp.RequestWrapFunc) jhttp.RequestWrapFunc {
@@ -119,6 +115,22 @@ func (h httpWrapper) RequestWrap(f jhttp.RequestWrapFunc) jhttp.RequestWrapFunc 
 }
 func (h httpWrapper) ResponseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
 	return reqtx.TxFinalizeWrap(responseWrap(f))
+}
+
+func responseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+	return prepareModelWrap(f)
+}
+func prepareModelWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+	return func(r *http.Request) (any, *jhttp.HTTPError) {
+		model, httpErr := f(r)
+		if httpErr != nil {
+			return model, httpErr
+		}
+		if err := httptyped.PrepareModel(model); err != nil {
+			return model, jhttp.Error(http.StatusInternalServerError, err)
+		}
+		return model, nil
+	}
 }
 
 // NotFound is the route handler for not matching pattern routes
