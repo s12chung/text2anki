@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"os"
 	"path"
@@ -72,10 +73,10 @@ func (t TestTransaction) Finalize() error      { return nil }
 func (t TestTransaction) FinalizeError() error { return nil }
 func NewTestTransaction(tx Tx) TestTransaction { return TestTransaction{Tx: tx} }
 
-func TxQsT(t *testing.T) TxQs {
+func TxQsT(t *testing.T, opts *sql.TxOptions) TxQs {
 	require := require.New(t)
 
-	txQs, err := NewTxQs(context.Background())
+	txQs, err := NewTxQs(context.Background(), opts)
 	require.NoError(err)
 
 	txQs.Tx = NewTestTransaction(txQs.Tx)

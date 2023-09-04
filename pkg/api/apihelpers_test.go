@@ -49,7 +49,7 @@ type txServer struct {
 }
 
 func (s txServer) NewRequest(t *testing.T, method, path string, body io.Reader) *http.Request {
-	return s.NewTxRequest(t, testdb.TxQs(t), method, path, body)
+	return s.NewTxRequest(t, testdb.TxQs(t, nil), method, path, body)
 }
 
 func (s txServer) NewTxRequest(t *testing.T, tx db.Tx, method, path string, body io.Reader) *http.Request {

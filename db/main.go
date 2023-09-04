@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	_ "embed"
 	"encoding/json"
 	"flag"
@@ -125,7 +126,7 @@ func cmdDiff() error {
 }
 
 func cmdCreate() error {
-	txQs, err := setDB(dbPath)
+	txQs, err := setDB(dbPath, db.WriteOpts())
 	if err != nil {
 		return err
 	}
@@ -137,7 +138,7 @@ func cmdCreate() error {
 }
 
 func cmdSeed() error {
-	txQs, err := setDB(dbPath)
+	txQs, err := setDB(dbPath, db.WriteOpts())
 	if err != nil {
 		return err
 	}
@@ -172,7 +173,7 @@ func cmdSchema() error {
 const searchConfigPath = "tmp/search.json"
 
 func cmdSearch() error {
-	txQs, err := setDB(dbPath)
+	txQs, err := setDB(dbPath, nil)
 	if err != nil {
 		return err
 	}
@@ -214,9 +215,9 @@ func cmdSearch() error {
 	return txQs.Commit()
 }
 
-func setDB(path string) (db.TxQs, error) {
+func setDB(path string, opts *sql.TxOptions) (db.TxQs, error) {
 	if err := db.SetDB(path); err != nil {
 		return db.TxQs{}, err
 	}
-	return db.NewTxQs(context.Background())
+	return db.NewTxQs(context.Background(), opts)
 }

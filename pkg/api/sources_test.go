@@ -71,7 +71,7 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 			require := require.New(t)
 			t.Parallel()
 
-			txQs := testdb.TxQs(t)
+			txQs := testdb.TxQs(t, db.WriteOpts())
 			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructuredsMust()[1].CreateParams())
 			require.NoError(err)
 
@@ -134,7 +134,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			t.Parallel()
-			txQs := testdb.TxQs(t)
+			txQs := testdb.TxQs(t, db.WriteOpts())
 
 			body := SourceCreateRequest{
 				PrePartListID: tc.prePartListID,
@@ -237,7 +237,7 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 			require := require.New(t)
 			t.Parallel()
 
-			txQs := testdb.TxQs(t)
+			txQs := testdb.TxQs(t, db.WriteOpts())
 			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructuredsMust()[1].CreateParams())
 			require.NoError(err)
 			if tc.path == "" {

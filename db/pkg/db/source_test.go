@@ -27,7 +27,7 @@ func firstSource(t *testing.T, txQs TxQs) Source {
 
 func TestSourceStructured_StaticCopy(t *testing.T) {
 	require := require.New(t)
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, nil)
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 
 	sourceCopy := firstSource(t, txQs).ToSourceStructured()
@@ -50,7 +50,7 @@ func TestSourcePartMedia_MarshalJSON(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			txQs := TxQsT(t)
+			txQs := TxQsT(t, nil)
 
 			source := firstSource(t, txQs).ToSourceStructured()
 			source.Parts = setupParts(t, source.Parts[0], testUUID)
@@ -88,7 +88,7 @@ func TestSourcePartMedia_UnmarshalJSON(t *testing.T) {
 
 func TestSourceStructured_DefaultedName(t *testing.T) {
 	require := require.New(t)
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, nil)
 
 	source := firstSource(t, txQs).ToSourceStructured()
 	require.Equal(source.Name, source.DefaultedName())
@@ -98,7 +98,7 @@ func TestSourceStructured_DefaultedName(t *testing.T) {
 
 func TestSourceStructured_UpdateParams(t *testing.T) {
 	testName := "TestSourceStructured_UpdateParams"
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, nil)
 
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 	createParams := firstSource(t, txQs).ToSourceStructured().UpdateParams()
@@ -108,7 +108,7 @@ func TestSourceStructured_UpdateParams(t *testing.T) {
 
 func TestSourceStructured_CreateParams(t *testing.T) {
 	testName := "TestSourceStructured_CreateParams"
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, nil)
 
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 	createParams := firstSource(t, txQs).ToSourceStructured().CreateParams()
@@ -117,7 +117,7 @@ func TestSourceStructured_CreateParams(t *testing.T) {
 }
 
 func TestSource_ToSource_ToSourceStructured(t *testing.T) {
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, nil)
 
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 	test.EmptyFieldsMatch(t, firstSource(t, txQs).ToSourceStructured())
@@ -179,7 +179,7 @@ func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 
 func TestQueries_SourceCreate(t *testing.T) {
 	require := require.New(t)
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, WriteOpts())
 
 	source, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t, txQs).ToSourceStructured().CreateParams())
 	require.NoError(err)
@@ -189,7 +189,7 @@ func TestQueries_SourceCreate(t *testing.T) {
 func TestQueries_SourceUpdate(t *testing.T) {
 	require := require.New(t)
 	t.Parallel()
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, WriteOpts())
 
 	newSource, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t, txQs).ToSourceStructured().CreateParams())
 	require.NoError(err)

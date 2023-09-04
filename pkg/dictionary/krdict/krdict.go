@@ -56,7 +56,7 @@ var mergePosMap = map[lang.PartOfSpeech]lang.PartOfSpeech{
 func (k KrDict) Search(q string, pos lang.PartOfSpeech) ([]dictionary.Term, error) {
 	pos = mergePosMap[pos]
 
-	txQs, err := db.NewTxQs(context.Background())
+	txQs, err := db.NewTxQs(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}

@@ -4,6 +4,7 @@ package testdb
 import (
 	"context"
 	"crypto/sha256"
+	"database/sql"
 	"fmt"
 	"os"
 	"path"
@@ -63,10 +64,10 @@ func (t Transaction) FinalizeError() error { return nil }
 func NewTransaction(tx db.Tx) Transaction { return Transaction{Tx: tx} }
 
 // TxQs returns a db.NewTxQs used for testing
-func TxQs(t *testing.T) db.TxQs {
+func TxQs(t *testing.T, opts *sql.TxOptions) db.TxQs {
 	require := require.New(t)
 
-	txQs, err := db.NewTxQs(context.Background())
+	txQs, err := db.NewTxQs(context.Background(), opts)
 	require.NoError(err)
 
 	txQs.Tx = NewTransaction(txQs.Tx)
@@ -109,7 +110,7 @@ func runWithSafeSchema(f func(txQs db.TxQs) error) error {
 		if err := db.SetDB(dbPath); err != nil {
 			return err
 		}
-		txQs, err := db.NewTxQs(context.Background())
+		txQs, err := db.NewTxQs(context.Background(), db.WriteOpts())
 		if err != nil {
 			return err
 		}

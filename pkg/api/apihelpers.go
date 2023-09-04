@@ -36,5 +36,7 @@ func (rs Routes) txQs(r *http.Request) (db.TxQs, *httputil.HTTPError) {
 // TxPool is the default Pool for transactions
 type TxPool struct{}
 
-// GetTx returns a new transaction (returned type matches Routes.txQs())
-func (t TxPool) GetTx(r *http.Request) (reqtx.Tx, error) { return db.NewTxQs(r.Context()) }
+// GetTx returns a new transaction - returned type matches Routes.txQs()
+func (t TxPool) GetTx(r *http.Request) (reqtx.Tx, error) {
+	return db.NewTxQs(r.Context(), db.WriteOpts())
+}

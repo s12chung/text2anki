@@ -20,7 +20,7 @@ func TestTermsSearchToCSVRows(t *testing.T) {
 	require := require.New(t)
 	testName := "TestTermsSearchToCSVRows"
 
-	txQs := testdb.TxQs(t)
+	txQs := testdb.TxQs(t, nil)
 
 	terms, err := txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
 	require.NoError(err)

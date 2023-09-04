@@ -60,9 +60,15 @@ type TxQs struct {
 	Tx
 }
 
+// WriteOpts returns write *sql.TxOptions
+func WriteOpts() *sql.TxOptions { return &sql.TxOptions{} }
+
 // NewTxQs returns a new TxQs
-func NewTxQs(ctx context.Context) (TxQs, error) {
-	tx, err := database.BeginTx(ctx, nil)
+func NewTxQs(ctx context.Context, opts *sql.TxOptions) (TxQs, error) {
+	if opts == nil {
+		opts = &sql.TxOptions{ReadOnly: true}
+	}
+	tx, err := database.BeginTx(ctx, opts)
 	if err != nil {
 		return TxQs{}, err
 	}

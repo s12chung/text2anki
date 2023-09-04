@@ -34,7 +34,7 @@ func TestSeedFile(t *testing.T) {
 func testSeed(t *testing.T, testName string, testFunc func(tx db.Tx) error) {
 	require := require.New(t)
 
-	txQs := testdb.TxQs(t)
+	txQs := testdb.TxQs(t, db.WriteOpts())
 	require.NoError(txQs.TermsClearAll(txQs.Ctx()))
 
 	require.NoError(testFunc(txQs))
