@@ -1,6 +1,7 @@
 package testdb
 
 import (
+	"context"
 	"os"
 	"path"
 	"path/filepath"
@@ -78,9 +79,10 @@ func TestGen___SourceStructuredsSeed(t *testing.T) {
 		t.Skip("TestGen___ test generates fixtures")
 	}
 	require := require.New(t)
+	ctx := context.Background()
 
-	tokenizer := db.TextTokenizer{Parser: config.Parser(), Tokenizer: config.Tokenizer(config.TokenizerKhaiii)}
-	require.NoError(tokenizer.Setup())
+	tokenizer := db.TextTokenizer{Parser: config.Parser(), Tokenizer: config.Tokenizer(ctx, config.TokenizerKhaiii)}
+	require.NoError(tokenizer.Setup(ctx))
 	defer func() { require.NoError(tokenizer.Cleanup()) }()
 
 	filepaths := allFilePaths(t, fixture.JoinTestData(testName))
@@ -90,7 +92,7 @@ func TestGen___SourceStructuredsSeed(t *testing.T) {
 		if len(split) == 1 {
 			split = append(split, "")
 		}
-		tokenizedTexts, err := tokenizer.TokenizedTexts(split[0], split[1])
+		tokenizedTexts, err := tokenizer.TokenizedTexts(ctx, split[0], split[1])
 		require.NoError(err)
 		sources[i] = db.SourceStructured{Name: path.Base(fp), Parts: []db.SourcePart{{TokenizedTexts: tokenizedTexts}}}
 		test.EmptyFieldsMatch(t, sources[i], "ID", "UpdatedAt", "CreatedAt")

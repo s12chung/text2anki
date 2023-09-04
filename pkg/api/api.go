@@ -2,6 +2,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -31,7 +32,7 @@ type Routes struct {
 }
 
 // NewRoutes is the routes used by the API
-func NewRoutes(c config.Config) Routes {
+func NewRoutes(ctx context.Context, c config.Config) Routes {
 	routes := Routes{
 		TxIntegrator: config.TxIntegrator(c.TxPool),
 
@@ -39,7 +40,7 @@ func NewRoutes(c config.Config) Routes {
 		Synthesizer: config.Synthesizer(),
 		TextTokenizer: db.TextTokenizer{
 			Parser:       config.Parser(),
-			Tokenizer:    config.Tokenizer(c.TokenizerType),
+			Tokenizer:    config.Tokenizer(ctx, c.TokenizerType),
 			CleanSpeaker: true,
 		},
 
@@ -51,7 +52,7 @@ func NewRoutes(c config.Config) Routes {
 }
 
 // Setup sets up the routes
-func (rs Routes) Setup() error { return rs.TextTokenizer.Setup() }
+func (rs Routes) Setup(ctx context.Context) error { return rs.TextTokenizer.Setup(ctx) }
 
 // Cleanup cleans up the routes
 func (rs Routes) Cleanup() error { return rs.TextTokenizer.Cleanup() }

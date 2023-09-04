@@ -82,7 +82,7 @@ linters:
     - nilerr
     - nilnil
     # - nlreturn # don't need newline before return
-    # - noctx # bring this back later
+    - noctx
     # - nolintlint # need this
     - nonamedreturns
     # - nosnakecase [deprecated]

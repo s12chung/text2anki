@@ -2,6 +2,7 @@ package serverimpl
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,6 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/pkg/tokenizer/server"
+	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
 	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
@@ -59,7 +61,7 @@ type tokenizeResponse struct {
 func TestHealthz(t *testing.T) {
 	require := require.New(t)
 
-	resp, err := http.Get(getURI(server.HealthzPath))
+	resp, err := httputil.Get(context.Background(), getURI(server.HealthzPath))
 	require.NoError(err)
 	defer func() { require.NoError(resp.Body.Close()) }()
 
@@ -80,7 +82,7 @@ func TestTokenize(t *testing.T) {
 		String: "my example",
 	}
 
-	resp, err := http.Post(getURI(server.TokenizePath),
+	resp, err := httputil.Post(context.Background(), getURI(server.TokenizePath),
 		jhttp.JSONContentType,
 		bytes.NewBuffer(test.JSON(t, input)))
 	require.NoError(err)

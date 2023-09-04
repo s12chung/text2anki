@@ -2,6 +2,7 @@ package db
 
 import (
 	"bytes"
+	"context"
 	"path"
 	"reflect"
 	"strconv"
@@ -153,7 +154,7 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 			if len(split) == 1 {
 				split = append(split, "")
 			}
-			tokenizedTexts, err := textTokenizer.TokenizedTexts(split[0], split[1])
+			tokenizedTexts, err := textTokenizer.TokenizedTexts(context.Background(), split[0], split[1])
 			require.NoError(err)
 
 			nonSpeaker := strings.TrimPrefix(tc.name, "speaker_")
@@ -171,7 +172,7 @@ func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 		{Text: "어디로 가는지", Translation: "Where it’s leading me to, where it’s taking me"},
 	}
 
-	tokenizedTexts, err := textTokenizer.TokenizeTexts(texts)
+	tokenizedTexts, err := textTokenizer.TokenizeTexts(context.Background(), texts)
 	require.NoError(err)
 
 	fixture.CompareReadOrUpdate(t, "TestTextTokenizer_TokenizeTexts.json", fixture.JSON(t, tokenizedTexts))

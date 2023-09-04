@@ -3,6 +3,7 @@ package azure
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -78,8 +79,8 @@ func (a *Azure) SourceName() string {
 const tokenURL = "https://%v.api.cognitive.microsoft.com/sts/v1.0/issueToken"
 
 // Token returns a API token
-func (a *Azure) Token() (string, error) {
-	request, err := http.NewRequest(http.MethodPost, fmt.Sprintf(tokenURL, a.region), nil)
+func (a *Azure) Token(ctx context.Context) (string, error) {
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf(tokenURL, a.region), nil)
 	if err != nil {
 		return "", err
 	}
@@ -110,18 +111,18 @@ const textToSpeechBody = `
 `
 
 // TextToSpeech returns the speech audio of the given string
-func (a *Azure) TextToSpeech(s string) ([]byte, error) {
+func (a *Azure) TextToSpeech(ctx context.Context, s string) ([]byte, error) {
 	reqBodyString := fmt.Sprintf(textToSpeechBody, s)
 	if bytes, exists := a.cache[reqBodyString]; exists {
 		return bytes, nil
 	}
 
-	if err := a.setupToken(); err != nil {
+	if err := a.setupToken(ctx); err != nil {
 		return nil, err
 	}
 
 	reqBody := bytes.NewBufferString(reqBodyString)
-	request, err := http.NewRequest(http.MethodPost, fmt.Sprintf(textToSpeechURL, a.region), reqBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf(textToSpeechURL, a.region), reqBody)
 	if err != nil {
 		return nil, err
 	}
@@ -165,8 +166,8 @@ func (a *Azure) addAPIKey(header http.Header) {
 	header.Add(apiKeyHeader, a.apiKey)
 }
 
-func (a *Azure) setupToken() error {
-	token, err := a.Token()
+func (a *Azure) setupToken(ctx context.Context) error {
+	token, err := a.Token(ctx)
 	if err != nil {
 		return err
 	}

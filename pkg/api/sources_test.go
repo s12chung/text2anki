@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -102,7 +103,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 	mediaWithInfoID := "a47ac10b-58cc-4372-a567-0e02b2c3d479"
 	setupSourceCreateMedia(t, mediaID)
 	setupSourceCreateMediaWithInfo(t, mediaWithInfoID)
-	require.NoError(t, routes.Setup())
+	require.NoError(t, routes.Setup(context.Background()))
 	t.Cleanup(func() { require.NoError(t, routes.Cleanup()) })
 
 	testCases := []struct {

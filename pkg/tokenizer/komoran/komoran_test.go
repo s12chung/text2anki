@@ -1,6 +1,7 @@
 package komoran
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,12 +16,13 @@ func TestKomoran_Tokenize(t *testing.T) {
 	test.CISkip(t, "can't run java environment in CI")
 	t.Parallel()
 	require := require.New(t)
+	ctx := context.Background()
 
-	tokenizer := newKomoran(testPort)
-	require.NoError(tokenizer.Setup())
+	tokenizer := newKomoran(ctx, testPort)
+	require.NoError(tokenizer.Setup(ctx))
 	defer func() { require.NoError(tokenizer.CleanupAndWait()) }()
 
-	tokens, err := tokenizer.Tokenize("대한민국은 민주공화국이다.")
+	tokens, err := tokenizer.Tokenize(ctx, "대한민국은 민주공화국이다.")
 	require.NoError(err)
 
 	fixture.CompareReadOrUpdate(t, "TestKomoran_Tokenize.json", fixture.JSON(t, tokens))

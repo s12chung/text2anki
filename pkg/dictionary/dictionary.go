@@ -1,12 +1,16 @@
 // Package dictionary contains dictonary related functions
 package dictionary
 
-import "github.com/s12chung/text2anki/pkg/lang"
+import (
+	"context"
+
+	"github.com/s12chung/text2anki/pkg/lang"
+)
 
 // Dictionary is an interface for a dictionary to search with
 type Dictionary interface {
 	// Search returns the dictionary terms for the given query in popularity order
-	Search(q string, pos lang.PartOfSpeech) ([]Term, error)
+	Search(ctx context.Context, q string, pos lang.PartOfSpeech) ([]Term, error)
 }
 
 // Term is a word or phrase

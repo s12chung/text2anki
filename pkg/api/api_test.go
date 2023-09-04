@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -57,7 +58,7 @@ var routesConfig = config.Config{
 // Due to server.WithPathPrefix() calls, some functions must run via. init()
 func init() {
 	testdb.MustSetup()
-	routes = NewRoutes(routesConfig)
+	routes = NewRoutes(context.Background(), routesConfig)
 	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(routes.Router())}}
 	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
 		slog.Error("api_test.init()", logg.Err(err))
@@ -102,14 +103,16 @@ func TestRoutes_Router(t *testing.T) {
 	server := httptest.NewServer(r)
 	defer server.Close()
 
-	req, err := http.NewRequest(http.MethodGet, server.URL+"/sources/1", nil)
+	txQs := testdb.TxQs(t, nil)
+
+	req, err := http.NewRequestWithContext(txQs.Ctx(), http.MethodGet, server.URL+"/sources/1", nil)
 	require.NoError(err)
-	resp := test.HTTPDo(t, txPool.SetTxT(t, req, testdb.TxQs(t, nil)))
+	resp := test.HTTPDo(t, txPool.SetTxT(t, req, txQs))
 	resp.EqualCode(t, http.StatusOK)
 	jsonBody := test.StaticCopy(t, resp.Body.Bytes(), &db.SourceStructured{})
 	fixture.CompareReadOrUpdate(t, testName+".json", jsonBody)
 
-	req, err = http.NewRequest(http.MethodGet, server.URL+"/healthz", nil)
+	req, err = http.NewRequestWithContext(txQs.Ctx(), http.MethodGet, server.URL+"/healthz", nil)
 	require.NoError(err)
 	resp = test.HTTPDo(t, req)
 	resp.EqualCode(t, http.StatusOK)

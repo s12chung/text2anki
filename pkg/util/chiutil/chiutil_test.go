@@ -1,6 +1,7 @@
 package chiutil
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -43,7 +44,7 @@ func TestParamID(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			req, err := http.NewRequest(http.MethodGet, server.URL+tc.path, nil)
+			req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, server.URL+tc.path, nil)
 			require.NoError(err)
 
 			resp, err := http.DefaultClient.Do(req)

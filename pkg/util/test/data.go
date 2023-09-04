@@ -2,6 +2,7 @@ package test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"log/slog"
@@ -145,10 +146,11 @@ type Server struct {
 }
 
 // NewRequest returns a new request for the server
-func (s Server) NewRequest(t *testing.T, method, path string, body io.Reader) *http.Request {
+// nolint: revive // prefer testing.T to be first
+func (s Server) NewRequest(t *testing.T, ctx context.Context, method, path string, body io.Reader) *http.Request {
 	require := require.New(t)
 	require.NotNil(s.Server, "Server is not set (due to init timing?)")
-	req, err := http.NewRequest(method, s.URL+s.pathPrefix+path, body)
+	req, err := http.NewRequestWithContext(ctx, method, s.URL+s.pathPrefix+path, body)
 	require.NoError(err)
 	return req
 }

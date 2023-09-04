@@ -1,6 +1,7 @@
 package azure
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -21,15 +22,16 @@ func TestAzure_TextToSpeech(t *testing.T) {
 	defer clean()
 
 	require := require.New(t)
+	ctx := context.Background()
 
-	speech, err := synth.TextToSpeech("안녕")
+	speech, err := synth.TextToSpeech(ctx, "안녕")
 	require.NoError(err)
 	mtype := mimetype.Detect(speech)
 	require.Equal(".mp3", mtype.Extension())
 	require.Equal("audio/mpeg", mtype.String())
 
 	// use cache
-	_, err = synth.TextToSpeech("안녕")
+	_, err = synth.TextToSpeech(ctx, "안녕")
 	require.NoError(err)
 }
 

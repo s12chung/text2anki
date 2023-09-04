@@ -42,7 +42,7 @@ func run(m *testing.M) error {
 	}
 	SetDBStorage(storage.NewDBStorage(storageAPI, nil))
 
-	if err := textTokenizer.Setup(); err != nil {
+	if err := textTokenizer.Setup(context.Background()); err != nil {
 		return err
 	}
 	code := m.Run()

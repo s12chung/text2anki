@@ -131,7 +131,7 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *jhttp.HTTPError) {
 		}
 	}
 
-	source, err := rs.sourceCreateSource(req, prePartList)
+	source, err := rs.sourceCreateSource(r.Context(), req, prePartList)
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,8 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *jhttp.HTTPError) {
 	})
 }
 
-func (rs Routes) sourceCreateSource(req SourceCreateRequest, prePartList *db.PrePartList) (*db.SourceStructured, *jhttp.HTTPError) {
+func (rs Routes) sourceCreateSource(ctx context.Context, req SourceCreateRequest,
+	prePartList *db.PrePartList) (*db.SourceStructured, *jhttp.HTTPError) {
 	name, reference, err := rs.sourceCreateSourceNameRef(req.Name, req.Reference, prePartList)
 	if err != nil {
 		return nil, err
@@ -157,7 +158,7 @@ func (rs Routes) sourceCreateSource(req SourceCreateRequest, prePartList *db.Pre
 		if strings.TrimSpace(part.Text) == "" {
 			continue
 		}
-		tokenizedTexts, err := rs.TextTokenizer.TokenizedTexts(part.Text, part.Translation)
+		tokenizedTexts, err := rs.TextTokenizer.TokenizedTexts(ctx, part.Text, part.Translation)
 		if err != nil {
 			return nil, jhttp.Error(http.StatusUnprocessableEntity, err)
 		}

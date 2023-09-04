@@ -53,7 +53,7 @@ func (s txServer) NewRequest(t *testing.T, method, path string, body io.Reader) 
 }
 
 func (s txServer) NewTxRequest(t *testing.T, tx db.Tx, method, path string, body io.Reader) *http.Request {
-	req := s.Server.NewRequest(t, method, path, body)
+	req := s.Server.NewRequest(t, tx.Ctx(), method, path, body)
 	s.pool.SetTxT(t, req, tx)
 	return req
 }

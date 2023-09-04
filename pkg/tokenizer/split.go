@@ -1,6 +1,7 @@
 package tokenizer
 
 import (
+	"context"
 	"strings"
 
 	"github.com/s12chung/text2anki/pkg/lang"
@@ -17,7 +18,7 @@ func NewSplitTokenizer() Tokenizer {
 }
 
 // Setup makes setup = true
-func (s *SplitTokenizer) Setup() error {
+func (s *SplitTokenizer) Setup(_ context.Context) error {
 	s.setup = true
 	return nil
 }
@@ -34,7 +35,7 @@ func (s *SplitTokenizer) IsSetup() bool {
 }
 
 // Tokenize returns tokens set as nouns, split by a space
-func (s *SplitTokenizer) Tokenize(str string) ([]Token, error) {
+func (s *SplitTokenizer) Tokenize(_ context.Context, str string) ([]Token, error) {
 	split := strings.Split(str, " ")
 	tokens := make([]Token, len(split))
 	var index uint = 0

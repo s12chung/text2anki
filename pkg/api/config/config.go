@@ -2,6 +2,7 @@
 package config
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -74,14 +75,14 @@ const (
 )
 
 // Tokenizer returns the default Tokenizer
-func Tokenizer(tokenizerType TokenizerType) tokenizer.Tokenizer {
+func Tokenizer(ctx context.Context, tokenizerType TokenizerType) tokenizer.Tokenizer {
 	switch tokenizerType {
 	case TokenizerKomoran:
-		return komoran.New()
+		return komoran.New(ctx)
 	case TokenizerKhaiii:
 		fallthrough
 	default:
-		return khaiii.New()
+		return khaiii.New(ctx)
 	}
 }
 

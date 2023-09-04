@@ -53,14 +53,14 @@ var mergePosMap = map[lang.PartOfSpeech]lang.PartOfSpeech{
 }
 
 // Search searches for the query inside the dictionary
-func (k KrDict) Search(q string, pos lang.PartOfSpeech) ([]dictionary.Term, error) {
+func (k KrDict) Search(ctx context.Context, q string, pos lang.PartOfSpeech) ([]dictionary.Term, error) {
 	pos = mergePosMap[pos]
 
-	txQs, err := db.NewTxQs(context.Background(), nil)
+	txQs, err := db.NewTxQs(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	rows, err := txQs.TermsSearch(txQs.Ctx(), q, pos)
+	rows, err := txQs.TermsSearch(ctx, q, pos)
 	if err != nil {
 		return nil, err
 	}

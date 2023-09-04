@@ -2,6 +2,7 @@
 package koreanbasic
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/xml"
 	"fmt"
@@ -40,8 +41,8 @@ func New(apiKey string) dictionary.Dictionary {
 }
 
 // Search returns the search results of the query
-func (k *KoreanBasic) Search(q string, pos lang.PartOfSpeech) ([]dictionary.Term, error) {
-	bytes, err := k.getSearch(q, pos)
+func (k *KoreanBasic) Search(ctx context.Context, q string, pos lang.PartOfSpeech) ([]dictionary.Term, error) {
+	bytes, err := k.getSearch(ctx, q, pos)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +53,12 @@ func (k *KoreanBasic) Search(q string, pos lang.PartOfSpeech) ([]dictionary.Term
 	return itemsToTerms(channel.Items)
 }
 
-func (k *KoreanBasic) getSearch(q string, pos lang.PartOfSpeech) ([]byte, error) {
-	resp, err := k.client.Get(apiURL(k.apiKey, q, pos))
+func (k *KoreanBasic) getSearch(ctx context.Context, q string, pos lang.PartOfSpeech) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, apiURL(k.apiKey, q, pos), nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := k.client.Do(req)
 	if err != nil {
 		return nil, err
 	}

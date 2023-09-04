@@ -2,6 +2,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -63,9 +64,10 @@ func run() error {
 	if err := db.SetDB("db/data.sqlite3"); err != nil {
 		return err
 	}
-	routes := api.NewRoutes(configFromEnv())
+	ctx := context.Background()
+	routes := api.NewRoutes(ctx, configFromEnv())
 
-	if err := routes.Setup(); err != nil {
+	if err := routes.Setup(ctx); err != nil {
 		return err
 	}
 	defer func() {
@@ -141,7 +143,7 @@ func createAudio(notes []anki.Note) error {
 		note := &notes[i]
 		log := slog.Default().With(slog.String("text", note.Text))
 
-		speech, err := synth.TextToSpeech(note.Usage)
+		speech, err := synth.TextToSpeech(context.Background(), note.Usage)
 		if err != nil {
 			log.Error("error creating audio for note", logg.Err(err))
 		}
