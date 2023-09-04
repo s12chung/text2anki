@@ -5,9 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"log/slog"
 	"time"
-
-	"golang.org/x/exp/slog"
 
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizer"

@@ -1,7 +1,7 @@
 package khaiii
 
 import (
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 // Tokenizer is a wrapper around the Khaiii

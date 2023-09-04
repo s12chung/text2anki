@@ -1,11 +1,11 @@
 package firm
 
 import (
+	"maps"
 	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/maps"
 )
 
 type structValidatorTestCase struct {

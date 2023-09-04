@@ -8,14 +8,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"mime"
 	"net/http"
 	"os/exec"
 	"strconv"
 	"strings"
 	"time"
-
-	"golang.org/x/exp/slog"
 )
 
 // TokenizerServer provides an interface to call tokenizer servers

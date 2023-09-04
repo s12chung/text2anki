@@ -6,9 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
-
-	"golang.org/x/exp/slog"
 )
 
 // HTTPError represents an http error
