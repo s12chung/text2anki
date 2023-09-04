@@ -72,7 +72,7 @@ func (rs Routes) Router() chi.Router {
 }
 
 func (rs Routes) txRouter() chi.Router {
-	r := httputilchi.NewRouter(chi.NewRouter(), httpWrapper{TxIntegrator: rs.TxIntegrator})
+	r := httputilchi.NewRouter(chi.NewRouter(), httpWrapper{})
 	r.Router.Use(httputil.RequestWrap(rs.TxIntegrator.SetTxContext))
 
 	r.Route("/sources", func(r httputilchi.Router) {
@@ -112,13 +112,13 @@ func responseWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc
 	return httptyped.TypedWrap(f)
 }
 
-type httpWrapper struct{ TxIntegrator reqtx.Integrator }
+type httpWrapper struct{}
 
 func (h httpWrapper) RequestWrap(f httputil.RequestWrapFunc) httputil.RequestWrapFunc {
-	return h.TxIntegrator.TxRollbackRequestWrap(f)
+	return reqtx.TxRollbackRequestWrap(f)
 }
 func (h httpWrapper) ResponseWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
-	return h.TxIntegrator.TxFinalizeWrap(responseWrap(f))
+	return reqtx.TxFinalizeWrap(responseWrap(f))
 }
 
 // NotFound is the route handler for not matching pattern routes

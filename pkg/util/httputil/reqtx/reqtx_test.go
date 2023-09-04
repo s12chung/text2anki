@@ -54,12 +54,12 @@ func TestIntegrator_SetTxContext(t *testing.T) {
 	req, err := integrator.SetTxContext(withTx(newRequest()))
 	require.Nil(err)
 
-	tx, err := integrator.ContextTx(req)
+	tx, err := ContextTx(req)
 	require.Nil(err)
 	require.Equal(&txn{id: txID}, tx)
 }
 
-func TestIntegrator_TxRollbackRequestWrap(t *testing.T) {
+func TestTxRollbackRequestWrap(t *testing.T) {
 	testCases := []struct {
 		name    string
 		request *http.Request
@@ -79,11 +79,11 @@ func TestIntegrator_TxRollbackRequestWrap(t *testing.T) {
 			req, err := integrator.SetTxContext(tc.request)
 			require.Nil(err)
 
-			finalReq, err := integrator.TxRollbackRequestWrap(func(r *http.Request) (*http.Request, *httputil.HTTPError) {
+			finalReq, err := TxRollbackRequestWrap(func(r *http.Request) (*http.Request, *httputil.HTTPError) {
 				return r, tc.reqErr
 			})(req)
 
-			tx, ctxErr := integrator.ContextTx(finalReq)
+			tx, ctxErr := ContextTx(finalReq)
 
 			require.Equal(req, finalReq)
 			if tc.err != nil {
@@ -105,7 +105,7 @@ func TestIntegrator_TxRollbackRequestWrap(t *testing.T) {
 	}
 }
 
-func TestIntegrator_TxFinalizeWrap(t *testing.T) {
+func TestTxFinalizeWrap(t *testing.T) {
 	testCases := []struct {
 		name    string
 		request *http.Request
@@ -125,11 +125,11 @@ func TestIntegrator_TxFinalizeWrap(t *testing.T) {
 			req, err := integrator.SetTxContext(tc.request)
 			require.Nil(err)
 
-			model, err := integrator.TxFinalizeWrap(func(r *http.Request) (any, *httputil.HTTPError) {
+			model, err := TxFinalizeWrap(func(r *http.Request) (any, *httputil.HTTPError) {
 				return nil, tc.reqErr
 			})(req)
 
-			tx, ctxErr := integrator.ContextTx(req)
+			tx, ctxErr := ContextTx(req)
 
 			require.Equal(nil, model)
 			if tc.err != nil {

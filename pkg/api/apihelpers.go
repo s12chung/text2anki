@@ -22,7 +22,7 @@ func extractAndValidate(r *http.Request, req any) *httputil.HTTPError {
 }
 
 func (rs Routes) txQs(r *http.Request) (db.TxQs, *httputil.HTTPError) {
-	tx, err := rs.TxIntegrator.ContextTx(r)
+	tx, err := reqtx.ContextTx(r)
 	if err != nil {
 		return db.TxQs{}, err
 	}

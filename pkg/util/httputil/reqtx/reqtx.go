@@ -38,7 +38,7 @@ func (i Integrator) SetTxContext(r *http.Request) (*http.Request, *httputil.HTTP
 }
 
 // ContextTx get the transaction on the request context
-func (i Integrator) ContextTx(r *http.Request) (Tx, *httputil.HTTPError) {
+func ContextTx(r *http.Request) (Tx, *httputil.HTTPError) {
 	tx, ok := r.Context().Value(txContextKey).(Tx)
 	if !ok {
 		if tx == nil {
@@ -50,9 +50,9 @@ func (i Integrator) ContextTx(r *http.Request) (Tx, *httputil.HTTPError) {
 }
 
 // TxRollbackRequestWrap wraps a httputil.RequestWrapFunc call Tx.FinalizeError() when f returns an error
-func (i Integrator) TxRollbackRequestWrap(f httputil.RequestWrapFunc) httputil.RequestWrapFunc {
+func TxRollbackRequestWrap(f httputil.RequestWrapFunc) httputil.RequestWrapFunc {
 	return func(r *http.Request) (*http.Request, *httputil.HTTPError) {
-		tx, httpErr := i.ContextTx(r)
+		tx, httpErr := ContextTx(r)
 		if httpErr != nil {
 			return r, httpErr
 		}
@@ -72,9 +72,9 @@ func (i Integrator) TxRollbackRequestWrap(f httputil.RequestWrapFunc) httputil.R
 // TxFinalizeWrap wraps a httputil.ResponseJSONWrapFunc to:
 // - call Tx.Finalize() if the request has no error
 // - otherwise, call tx.FinalizeError()
-func (i Integrator) TxFinalizeWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
+func TxFinalizeWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
 	return func(r *http.Request) (any, *httputil.HTTPError) {
-		tx, httpErr := i.ContextTx(r)
+		tx, httpErr := ContextTx(r)
 		if httpErr != nil {
 			return nil, httpErr
 		}
