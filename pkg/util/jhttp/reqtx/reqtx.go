@@ -5,11 +5,10 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"reflect"
 
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
 )
-
-const txContextKey jhttp.ContextKey = "reqtx.TxContext"
 
 // Tx represents a transaction
 type Tx interface {
@@ -18,69 +17,57 @@ type Tx interface {
 }
 
 // Pool gets transactions to handle
-type Pool[T Tx] interface {
-	GetTx(r *http.Request) (T, error)
+type Pool[T Tx, Mode ~int] interface {
+	GetTx(r *http.Request, mode Mode) (T, error)
 }
 
 // Integrator integrates Pool to the request via the Router
-type Integrator[T Tx] struct{ pool Pool[T] }
+type Integrator[T Tx, Mode ~int] struct{ Pool[T, Mode] }
 
 // NewIntegrator returns a new Integrator
-func NewIntegrator[T Tx](pool Pool[T]) Integrator[T] { return Integrator[T]{pool: pool} }
-
-// SetTxContext sets the transaction on the request context
-func (i Integrator[T]) SetTxContext(r *http.Request) (*http.Request, *jhttp.HTTPError) {
-	tx, err := i.pool.GetTx(r)
-	if err != nil {
-		return nil, jhttp.Error(http.StatusInternalServerError, err)
-	}
-	return r.WithContext(context.WithValue(r.Context(), txContextKey, tx)), nil
+func NewIntegrator[T Tx, Mode ~int](pool Pool[T, Mode]) Integrator[T, Mode] {
+	return Integrator[T, Mode]{Pool: pool}
 }
 
-// ContextTx get the transaction on the request context
-func ContextTx[T Tx](r *http.Request) (T, *jhttp.HTTPError) {
-	value := r.Context().Value(txContextKey)
-	tx, ok := value.(T)
+const txOptsContextKey jhttp.ContextKey = "reqtx.TxOptsContext"
+
+// SetTxModeContext sets the transaction mode on the request context
+func (i Integrator[T, Mode]) SetTxModeContext(r *http.Request, mode Mode) *http.Request {
+	return r.WithContext(context.WithValue(r.Context(), txOptsContextKey, mode))
+}
+
+// TxMode returns the transaction mode from the request
+func TxMode[Mode ~int](r *http.Request) (Mode, *jhttp.HTTPError) {
+	value := r.Context().Value(txOptsContextKey)
+	if value == nil {
+		return 0, nil
+	}
+	mode, ok := value.(Mode)
 	if !ok {
-		var empty T
-		if value == nil {
-			return empty, jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail, was nil instead"))
-		}
-		return empty, jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail"))
+		return 0, jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to %v fail", reflect.TypeOf(mode).String()))
 	}
-	return tx, nil
+	return mode, nil
 }
 
-// TxRollbackRequestWrap wraps a jhttp.RequestHandler call Tx.FinalizeError() when f returns an error
-func TxRollbackRequestWrap(f jhttp.RequestHandler) jhttp.RequestHandler {
-	return func(r *http.Request) (*http.Request, *jhttp.HTTPError) {
-		tx, httpErr := ContextTx[Tx](r)
-		if httpErr != nil {
-			return r, httpErr
-		}
+// ResponseHandler is the handler for responses with transactions
+type ResponseHandler[T Tx] func(r *http.Request, tx T) (any, *jhttp.HTTPError)
 
-		req, err := f(r)
-		if err == nil {
-			return req, nil
-		}
-
-		if err := tx.FinalizeError(); err != nil {
-			jhttp.LogError(r, jhttp.Error(http.StatusInternalServerError, err))
-		}
-		return req, err
-	}
-}
-
-// TxFinalizeWrap wraps a jhttp.ResponseHandler to:
+// ResponseWrap wraps a ResponseHandler to:
+// - get the Tx and pass to the ResponseHandler
 // - call Tx.Finalize() if the request has no error
 // - otherwise, call tx.FinalizeError()
-func TxFinalizeWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
+func (i Integrator[T, Mode]) ResponseWrap(f ResponseHandler[T]) jhttp.ResponseHandler {
 	return func(r *http.Request) (any, *jhttp.HTTPError) {
-		tx, httpErr := ContextTx[Tx](r)
+		mode, httpErr := TxMode[Mode](r)
 		if httpErr != nil {
 			return nil, httpErr
 		}
-		model, httpErr := f(r)
+		tx, err := i.GetTx(r, mode)
+		if err != nil {
+			return nil, jhttp.Error(http.StatusInternalServerError, err)
+		}
+
+		model, httpErr := f(r, tx)
 		if httpErr != nil {
 			_ = tx.FinalizeError() // only call on failure
 			return model, httpErr

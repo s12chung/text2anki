@@ -43,7 +43,7 @@ func init() {
 
 // Config contains config settings for the API
 type Config struct {
-	TxPool reqtx.Pool[db.TxQs]
+	TxPool reqtx.Pool[db.TxQs, TxMode]
 
 	TokenizerType
 	DictionaryType
@@ -52,8 +52,11 @@ type Config struct {
 	ExtractorMap  extractor.Map
 }
 
+// TxMode identifies the transaction mode
+type TxMode int
+
 // TxIntegrator returns a new TxIntegrator
-func TxIntegrator(txPool reqtx.Pool[db.TxQs]) reqtx.Integrator[db.TxQs] {
+func TxIntegrator(txPool reqtx.Pool[db.TxQs, TxMode]) reqtx.Integrator[db.TxQs, TxMode] {
 	return reqtx.NewIntegrator(txPool)
 }
 

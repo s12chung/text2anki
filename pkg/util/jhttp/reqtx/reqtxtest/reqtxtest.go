@@ -13,51 +13,54 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
 )
 
+type txValue[T reqtx.Tx, Mode ~int] struct {
+	Tx   T
+	Mode Mode
+}
+
 // Pool is a pool that maps transactions to an ID stored as idHeader in request headers
-type Pool[T reqtx.Tx] struct {
-	idMap map[string]T
+type Pool[T reqtx.Tx, Mode ~int] struct {
+	idMap map[string]txValue[T, Mode]
 	mutex *sync.RWMutex
 }
 
 // NewPool returns a new Pool
-func NewPool[T reqtx.Tx]() Pool[T] { return Pool[T]{idMap: map[string]T{}, mutex: &sync.RWMutex{}} }
-
-// SetTxT is SetTx with a *testing.T shorthand
-func (p Pool[T]) SetTxT(t *testing.T, r *http.Request, tx T) *http.Request {
-	require := require.New(t)
-	require.NoError(p.SetTx(r, tx))
-	return r
+func NewPool[T reqtx.Tx, Mode ~int]() Pool[T, Mode] {
+	return Pool[T, Mode]{idMap: map[string]txValue[T, Mode]{}, mutex: &sync.RWMutex{}}
 }
 
-// SetTx maps the transaction with a new ID, the ID is set to the idHeader in the request header
-func (p Pool[T]) SetTx(r *http.Request, tx T) error {
+// SetTx is SetTx with a *testing.T shorthand
+func (p Pool[T, Mode]) SetTx(t *testing.T, r *http.Request, tx T, mode Mode) *http.Request {
+	require := require.New(t)
+
 	id, err := uuid.NewV7()
-	if err != nil {
-		return err
-	}
+	require.NoError(err)
 	idString := id.String()
 
 	p.mutex.Lock()
-	p.idMap[idString] = tx
+	p.idMap[idString] = txValue[T, Mode]{Tx: tx, Mode: mode}
 	p.mutex.Unlock()
 
 	r.Header.Set(idHeader, idString)
-	return nil
+	return r
 }
 
 const idHeader = "X-Request-ID"
 
 // GetTx returns the transaction given the id stored in idHeader
-func (p Pool[T]) GetTx(r *http.Request) (T, error) {
+func (p Pool[T, Mode]) GetTx(r *http.Request, mode Mode) (T, error) {
 	id := r.Header.Get(idHeader)
 
 	p.mutex.RLock()
-	tx, exists := p.idMap[id]
+	val, exists := p.idMap[id]
 	p.mutex.RUnlock()
 
+	var empty T
 	if !exists {
-		var empty T
 		return empty, fmt.Errorf("transaction with id, %v, does not exist", id)
 	}
-	return tx, nil
+	if val.Mode != mode {
+		return empty, fmt.Errorf("stored Tx mode (%v) is not matching passed mode (%v)", val.Mode, mode)
+	}
+	return val.Tx, nil
 }

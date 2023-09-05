@@ -21,7 +21,7 @@ import (
 
 // Routes contains the routes used for the api
 type Routes struct {
-	TxIntegrator reqtx.Integrator[db.TxQs]
+	TxIntegrator reqtx.Integrator[db.TxQs, config.TxMode]
 
 	Dictionary    dictionary.Dictionary
 	Synthesizer   synthesizer.Synthesizer
@@ -77,44 +77,40 @@ func responseJSONWrap(f jhttp.ResponseHandler) http.HandlerFunc {
 }
 
 func (rs Routes) txRouter() chi.Router {
-	r := reqtxchi.NewRouter[db.TxQs](chi.NewRouter(), httpWrapper{})
-	r.Router.Use(jhttp.RequestWrap(rs.TxIntegrator.SetTxContext))
-
-	r.Route("/sources", func(r reqtxchi.Router[db.TxQs]) {
+	r := reqtxchi.NewRouter[db.TxQs, config.TxMode](chi.NewRouter(), rs.TxIntegrator, httpWrapper{})
+	r.Route("/sources", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 		r.Get("/", rs.SourceIndex)
-		r.Post("/", rs.SourceCreate)
+		r.Mode(txWritable).Post("/", rs.SourceCreate)
 
-		r.Route("/{id}", func(r reqtxchi.Router[db.TxQs]) {
+		r.Route("/{id}", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 			r.Get("/", rs.SourceGet)
-			r.Patch("/", rs.SourceUpdate)
-			r.Delete("/", rs.SourceDestroy)
+			r.Mode(txWritable).Patch("/", rs.SourceUpdate)
+			r.Mode(txWritable).Delete("/", rs.SourceDestroy)
 		})
 
-		r.Route("/pre_part_lists", func(r reqtxchi.Router[db.TxQs]) {
+		r.Route("/pre_part_lists", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 			r.Post("/", rs.PrePartListCreate)
 			r.Post("/sign", rs.PrePartListSign)
 			r.Post("/verify", rs.PrePartListVerify)
-			r.Route("/{prePartListID}", func(r reqtxchi.Router[db.TxQs]) {
+			r.Route("/{prePartListID}", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 				r.Get("/", rs.PrePartListGet)
 			})
 		})
 	})
-	r.Route("/terms", func(r reqtxchi.Router[db.TxQs]) {
+	r.Route("/terms", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 		r.Get("/search", rs.TermsSearch)
 	})
-	r.Route("/notes", func(r reqtxchi.Router[db.TxQs]) {
-		r.Post("/", rs.NoteCreate)
+	r.Route("/notes", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
+		r.Mode(txWritable).Post("/", rs.NoteCreate)
 	})
 	return r.Router
 }
 
 type httpWrapper struct{}
 
-func (h httpWrapper) RequestWrap(f jhttp.RequestHandler) jhttp.RequestHandler {
-	return reqtx.TxRollbackRequestWrap(f)
-}
+func (h httpWrapper) RequestWrap(f jhttp.RequestHandler) jhttp.RequestHandler { return f }
 func (h httpWrapper) ResponseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
-	return reqtx.TxFinalizeWrap(responseWrap(f))
+	return responseWrap(f)
 }
 
 func responseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {

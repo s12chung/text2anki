@@ -156,7 +156,7 @@ func PrepareModel(model any) error {
 		return errModelNil
 	}
 	if !HasType(model) {
-		return fmt.Errorf("%v is not registered to httptyped", indirectTypeElement(reflect.TypeOf(model)))
+		return fmt.Errorf("%v is not registered to httptyped", indirectTypeElement(reflect.TypeOf(model)).String())
 	}
 	if preparable, ok := model.(Preparable); ok {
 		preparable.PrepareSerialize()
