@@ -13,13 +13,9 @@ func init() {
 }
 
 // NoteCreate creates a new note
-func (rs Routes) NoteCreate(r *http.Request) (any, *jhttp.HTTPError) {
+func (rs Routes) NoteCreate(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
 	req := db.NoteCreateParams{}
 	if httpErr := extractAndValidate(r, &req); httpErr != nil {
-		return nil, httpErr
-	}
-	txQs, httpErr := rs.txQs(r)
-	if httpErr != nil {
 		return nil, httpErr
 	}
 	return jhttp.ReturnModelOr500(func() (any, error) {

@@ -35,7 +35,7 @@ func (u UUIDTest) Generate() (string, error) { return testUUID, nil }
 
 var routes Routes
 var server txServer
-var txPool = reqtxtest.NewPool()
+var txPool = reqtxtest.NewPool[db.TxQs, config.TxMode]()
 var extractorCacheDir = path.Join(os.TempDir(), test.GenerateName("Extractor"))
 
 var routesConfig = config.Config{
@@ -107,7 +107,7 @@ func TestRoutes_Router(t *testing.T) {
 
 	req, err := http.NewRequestWithContext(txQs.Ctx(), http.MethodGet, server.URL+"/sources/1", nil)
 	require.NoError(err)
-	resp := test.HTTPDo(t, txPool.SetTxT(t, req, txQs))
+	resp := test.HTTPDo(t, txPool.SetTx(t, req, txQs, txReadOnly))
 	resp.EqualCode(t, http.StatusOK)
 	jsonBody := test.StaticCopy(t, resp.Body.Bytes(), &db.SourceStructured{})
 	fixture.CompareReadOrUpdate(t, testName+".json", jsonBody)

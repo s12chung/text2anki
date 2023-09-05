@@ -10,7 +10,6 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/storage"
-	"github.com/s12chung/text2anki/pkg/util/chiutil"
 	"github.com/s12chung/text2anki/pkg/util/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
 )
@@ -19,42 +18,16 @@ func init() {
 	httptyped.RegisterType(db.SourceStructured{})
 }
 
-const sourceContextKey jhttp.ContextKey = "source"
-
-// SourceCtx sets the source context from the sourceID
-func (rs Routes) SourceCtx(r *http.Request) (*http.Request, *jhttp.HTTPError) {
-	sourceID, err := chiutil.ParamID(r, "sourceID")
-	if err != nil {
-		return nil, jhttp.Error(http.StatusNotFound, err)
-	}
-
-	txQs, httpErr := rs.txQs(r)
-	if httpErr != nil {
-		return nil, httpErr
-	}
-	source, err := txQs.SourceGet(r.Context(), sourceID)
-	if err != nil {
-		return nil, jhttp.Error(http.StatusNotFound, err)
-	}
-
-	r = r.WithContext(context.WithValue(r.Context(), sourceContextKey, source.ToSourceStructured()))
-	return r, nil
-}
-
 // SourceIndex returns a list of sources
-func (rs Routes) SourceIndex(r *http.Request) (any, *jhttp.HTTPError) {
-	txQs, httpErr := rs.txQs(r)
-	if httpErr != nil {
-		return nil, httpErr
-	}
+func (rs Routes) SourceIndex(_ *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
 	return jhttp.ReturnModelOr500(func() (any, error) {
 		return txQs.SourceStructuredIndex(txQs.Ctx())
 	})
 }
 
 // SourceGet gets the source
-func (rs Routes) SourceGet(r *http.Request) (any, *jhttp.HTTPError) {
-	return ctxSourceStructured(r)
+func (rs Routes) SourceGet(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
+	return sourceStructuredFromID(r, txQs)
 }
 
 // SourceUpdateRequest represents the SourceUpdate request
@@ -70,8 +43,8 @@ func init() {
 }
 
 // SourceUpdate updates the source
-func (rs Routes) SourceUpdate(r *http.Request) (any, *jhttp.HTTPError) {
-	sourceStructured, httpErr := ctxSourceStructured(r)
+func (rs Routes) SourceUpdate(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
+	sourceStructured, httpErr := sourceStructuredFromID(r, txQs)
 	if httpErr != nil {
 		return nil, httpErr
 	}
@@ -83,10 +56,6 @@ func (rs Routes) SourceUpdate(r *http.Request) (any, *jhttp.HTTPError) {
 	sourceStructured.Name = req.Name
 	sourceStructured.Reference = req.Reference
 
-	txQs, httpErr := rs.txQs(r)
-	if httpErr != nil {
-		return nil, httpErr
-	}
 	return jhttp.ReturnModelOr500(func() (any, error) {
 		source, err := txQs.SourceUpdate(txQs.Ctx(), sourceStructured.UpdateParams())
 		return source.ToSourceStructured(), err
@@ -114,7 +83,7 @@ func init() {
 }
 
 // SourceCreate creates a new source
-func (rs Routes) SourceCreate(r *http.Request) (any, *jhttp.HTTPError) {
+func (rs Routes) SourceCreate(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
 	req := SourceCreateRequest{}
 	if httpErr := extractAndValidate(r, &req); httpErr != nil {
 		return nil, httpErr
@@ -134,11 +103,6 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *jhttp.HTTPError) {
 	source, err := rs.sourceCreateSource(r.Context(), req, prePartList)
 	if err != nil {
 		return nil, err
-	}
-
-	txQs, httpErr := rs.txQs(r)
-	if httpErr != nil {
-		return nil, httpErr
 	}
 	return jhttp.ReturnModelOr500(func() (any, error) {
 		source, err := txQs.SourceCreate(txQs.Ctx(), source.CreateParams())
@@ -194,12 +158,8 @@ func (rs Routes) sourceCreateSourceNameRef(name, ref string, prePartList *db.Pre
 }
 
 // SourceDestroy destroys the source
-func (rs Routes) SourceDestroy(r *http.Request) (any, *jhttp.HTTPError) {
-	sourceStructured, httpErr := ctxSourceStructured(r)
-	if httpErr != nil {
-		return nil, httpErr
-	}
-	txQs, httpErr := rs.txQs(r)
+func (rs Routes) SourceDestroy(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
+	sourceStructured, httpErr := sourceStructuredFromID(r, txQs)
 	if httpErr != nil {
 		return nil, httpErr
 	}
@@ -208,10 +168,14 @@ func (rs Routes) SourceDestroy(r *http.Request) (any, *jhttp.HTTPError) {
 	})
 }
 
-func ctxSourceStructured(r *http.Request) (db.SourceStructured, *jhttp.HTTPError) {
-	sourceStructured, ok := r.Context().Value(sourceContextKey).(db.SourceStructured)
-	if !ok {
-		return db.SourceStructured{}, jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.SourceStructured fail"))
+func sourceStructuredFromID(r *http.Request, txQs db.TxQs) (db.SourceStructured, *jhttp.HTTPError) {
+	id, httpErr := idFromRequest(r)
+	if httpErr != nil {
+		return db.SourceStructured{}, httpErr
 	}
-	return sourceStructured, nil
+	source, err := txQs.SourceGet(r.Context(), id)
+	if err != nil {
+		return db.SourceStructured{}, jhttp.Error(http.StatusNotFound, err)
+	}
+	return source.ToSourceStructured(), nil
 }

@@ -1,6 +1,7 @@
 package reqtxtest
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -8,21 +9,48 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type txn struct{ name string }
+type txMode int
 
-func (t *txn) Finalize() error      { return nil }
-func (t *txn) FinalizeError() error { return nil }
+type Txn struct{ name string }
+
+func (t Txn) Finalize() error      { return nil }
+func (t Txn) FinalizeError() error { return nil }
 
 func newRequest() *http.Request { return httptest.NewRequest(http.MethodGet, "https://fake.com", nil) }
 
 func TestPool_SetTxGetTx(t *testing.T) {
-	require := require.New(t)
+	expectedTx := Txn{name: "my_name"}
+	pool := NewPool[Txn, txMode]()
+	mode := txMode(1)
+	txReq := pool.SetTx(t, newRequest(), expectedTx, mode)
 
-	expectedTx := &txn{name: "my_name"}
-	pool := NewPool()
-	req := pool.SetTxT(t, newRequest(), expectedTx)
+	testCases := []struct {
+		name string
+		req  *http.Request
+		mode txMode
+		err  error
+	}{
+		{name: "normal", mode: mode},
+		{name: "diff_request", req: newRequest(), mode: mode, err: fmt.Errorf("transaction with id, , does not exist")},
+		{name: "diff_mode", mode: -9, err: fmt.Errorf("stored Tx mode (1) is not matching passed mode (-9)")},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
 
-	tx, err := pool.GetTx(req)
-	require.NoError(err)
-	require.Equal(expectedTx, tx)
+			req := tc.req
+			if req == nil {
+				req = txReq
+			}
+
+			tx, err := pool.GetTx(req, tc.mode)
+			if tc.err != nil {
+				require.Equal(tc.err, err)
+				return
+			}
+			require.NoError(err)
+			require.Equal(expectedTx, tx)
+		})
+	}
 }

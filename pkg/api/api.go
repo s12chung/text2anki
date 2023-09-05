@@ -15,13 +15,13 @@ import (
 	"github.com/s12chung/text2anki/pkg/synthesizer"
 	"github.com/s12chung/text2anki/pkg/util/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
-	"github.com/s12chung/text2anki/pkg/util/jhttp/jchi"
 	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx/reqtxchi"
 )
 
 // Routes contains the routes used for the api
 type Routes struct {
-	TxIntegrator reqtx.Integrator
+	TxIntegrator reqtx.Integrator[db.TxQs, config.TxMode]
 
 	Dictionary    dictionary.Dictionary
 	Synthesizer   synthesizer.Synthesizer
@@ -60,8 +60,8 @@ func (rs Routes) Cleanup() error { return rs.TextTokenizer.Cleanup() }
 // Router returns the router with all the routes set
 func (rs Routes) Router() chi.Router {
 	var r chi.Router = chi.NewRouter()
-	r.NotFound(jhttp.ResponseJSONWrap(rs.NotFound))
-	r.MethodNotAllowed(jhttp.ResponseJSONWrap(rs.NotAllowed))
+	r.NotFound(jhttp.ResponseWrap(rs.NotFound))
+	r.MethodNotAllowed(jhttp.ResponseWrap(rs.NotAllowed))
 
 	r.Route(config.StorageURLPath, func(r chi.Router) {
 		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
@@ -72,56 +72,51 @@ func (rs Routes) Router() chi.Router {
 	return r
 }
 
-func responseJSONWrap(f jhttp.ResponseJSONWrapFunc) http.HandlerFunc {
-	return jhttp.ResponseJSONWrap(responseWrap(f))
+func responseJSONWrap(f jhttp.ResponseHandler) http.HandlerFunc {
+	return jhttp.ResponseWrap(responseWrap(f))
 }
 
 func (rs Routes) txRouter() chi.Router {
-	r := jchi.NewRouter(chi.NewRouter(), httpWrapper{})
-	r.Router.Use(jhttp.RequestWrap(rs.TxIntegrator.SetTxContext))
-
-	r.Route("/sources", func(r jchi.Router) {
+	r := reqtxchi.NewRouter[db.TxQs, config.TxMode](chi.NewRouter(), rs.TxIntegrator, httpWrapper{})
+	r.Route("/sources", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 		r.Get("/", rs.SourceIndex)
-		r.Post("/", rs.SourceCreate)
+		r.Mode(txWritable).Post("/", rs.SourceCreate)
 
-		r.Route("/{sourceID}", func(r jchi.Router) {
-			r.Use(rs.SourceCtx)
+		r.Route("/{id}", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 			r.Get("/", rs.SourceGet)
-			r.Patch("/", rs.SourceUpdate)
-			r.Delete("/", rs.SourceDestroy)
+			r.Mode(txWritable).Patch("/", rs.SourceUpdate)
+			r.Mode(txWritable).Delete("/", rs.SourceDestroy)
 		})
 
-		r.Route("/pre_part_lists", func(r jchi.Router) {
+		r.Route("/pre_part_lists", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 			r.Post("/", rs.PrePartListCreate)
 			r.Post("/sign", rs.PrePartListSign)
 			r.Post("/verify", rs.PrePartListVerify)
-			r.Route("/{prePartListID}", func(r jchi.Router) {
+			r.Route("/{prePartListID}", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 				r.Get("/", rs.PrePartListGet)
 			})
 		})
 	})
-	r.Route("/terms", func(r jchi.Router) {
+	r.Route("/terms", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 		r.Get("/search", rs.TermsSearch)
 	})
-	r.Route("/notes", func(r jchi.Router) {
-		r.Post("/", rs.NoteCreate)
+	r.Route("/notes", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
+		r.Mode(txWritable).Post("/", rs.NoteCreate)
 	})
 	return r.Router
 }
 
 type httpWrapper struct{}
 
-func (h httpWrapper) RequestWrap(f jhttp.RequestWrapFunc) jhttp.RequestWrapFunc {
-	return reqtx.TxRollbackRequestWrap(f)
-}
-func (h httpWrapper) ResponseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
-	return reqtx.TxFinalizeWrap(responseWrap(f))
+func (h httpWrapper) RequestWrap(f jhttp.RequestHandler) jhttp.RequestHandler { return f }
+func (h httpWrapper) ResponseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
+	return responseWrap(f)
 }
 
-func responseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+func responseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
 	return prepareModelWrap(f)
 }
-func prepareModelWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+func prepareModelWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
 	return func(r *http.Request) (any, *jhttp.HTTPError) {
 		model, httpErr := f(r)
 		if httpErr != nil {

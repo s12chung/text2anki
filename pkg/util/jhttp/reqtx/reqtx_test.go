@@ -1,6 +1,7 @@
 package reqtx
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -14,10 +15,16 @@ import (
 type txn struct {
 	finalizeCount      int
 	finalizeErrorCount int
-	id                 string
+
+	ctx  context.Context //nolint:containedctx // for testing
+	mode txMode
 }
 
 func (t *txn) Finalize() error {
+	if t.mode == finalizeErrorMode {
+		return fmt.Errorf("test: finalizeErrorMode")
+	}
+
 	t.finalizeCount++
 	return nil
 }
@@ -26,95 +33,93 @@ func (t *txn) FinalizeError() error {
 	return nil
 }
 
-const txNameKey = "Tx-ID"
-const txID = "12345"
+type txMode int
 
-type pool struct{}
+const okMode txMode = 0
+const finalizeErrorMode txMode = -1
 
-func (p pool) GetTx(r *http.Request) (Tx, error) {
-	id := r.Header.Get(txNameKey)
-	if id == "" {
-		return nil, nil //nolint:nilnil // for testing
+type pool struct{ txn *txn }
+
+func (p *pool) GetTx(r *http.Request, mode txMode) (Tx, error) {
+	if mode != okMode && mode != finalizeErrorMode {
+		return nil, fmt.Errorf("test: !okMode")
 	}
-	return &txn{id: id}, nil
+	if p.txn == nil {
+		p.txn = &txn{ctx: r.Context(), mode: mode}
+	}
+	return p.txn, nil
 }
 
-func newIntegrator() Integrator { return NewIntegrator(pool{}) }
-func newRequest() *http.Request { return httptest.NewRequest(http.MethodGet, "https://fake.com", nil) }
-func withTx(r *http.Request) *http.Request {
-	r.Header.Set(txNameKey, txID)
-	return r
-}
+func newIntegrator() Integrator[Tx, txMode] { return NewIntegrator[Tx, txMode](&pool{}) }
+func newRequest() *http.Request             { return httptest.NewRequest(http.MethodGet, "https://fake.com", nil) }
 
-func TestIntegrator_SetTxContext(t *testing.T) {
+func TestIntegrator_SetTxModeContext(t *testing.T) {
 	require := require.New(t)
 
 	integrator := newIntegrator()
+	req := newRequest()
 
-	req, err := integrator.SetTxContext(withTx(newRequest()))
-	require.Nil(err)
+	expectedMode := txMode(1)
+	req = integrator.SetTxModeContext(req, expectedMode)
 
-	tx, err := ContextTx(req)
+	mode, err := TxMode[txMode](req)
 	require.Nil(err)
-	require.Equal(&txn{id: txID}, tx)
+	require.Equal(expectedMode, mode)
 }
 
-func TestTxRollbackRequestWrap(t *testing.T) {
+func TestTxMode(t *testing.T) {
 	testCases := []struct {
-		name    string
-		request *http.Request
-		err     *jhttp.HTTPError
-		reqErr  *jhttp.HTTPError
+		name         string
+		mode         any
+		expectedMode txMode
+		err          error
 	}{
-		{name: "normal", request: withTx(newRequest())},
-		{name: "no_id", request: newRequest(), err: jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail, was nil instead"))},
-		{name: "req_error", request: withTx(newRequest()), reqErr: jhttp.Error(http.StatusBadRequest, fmt.Errorf("test_induced"))},
+		{name: "normal", expectedMode: 1},
+		{name: "nil", mode: nil},
+		{name: "string", mode: "fail", err: jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to reqtx.txMode fail"))},
 	}
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			integrator := newIntegrator()
-			req, err := integrator.SetTxContext(tc.request)
-			require.Nil(err)
+			m := tc.mode
+			if tc.expectedMode != 0 {
+				m = tc.expectedMode
+			}
+			req := newRequest()
+			req = req.WithContext(context.WithValue(req.Context(), txOptsContextKey, m))
 
-			finalReq, err := TxRollbackRequestWrap(func(r *http.Request) (*http.Request, *jhttp.HTTPError) {
-				return r, tc.reqErr
-			})(req)
-
-			tx, ctxErr := ContextTx(finalReq)
-
-			require.Equal(req, finalReq)
+			mode, err := TxMode[txMode](req)
 			if tc.err != nil {
 				require.Equal(tc.err, err)
-				require.Equal(tc.err, ctxErr)
-				require.Nil(tx)
-				return
-			}
-			if tc.reqErr != nil {
-				require.Equal(tc.reqErr, err)
-				require.Nil(ctxErr)
-				require.Equal(&txn{id: txID, finalizeErrorCount: 1}, tx)
 				return
 			}
 			require.Nil(err)
-			require.Nil(ctxErr)
-			require.Equal(&txn{id: txID}, tx)
+			require.Equal(tc.expectedMode, mode)
 		})
 	}
 }
 
-func TestTxFinalizeWrap(t *testing.T) {
+func TestIntegrator_ResponseWrap(t *testing.T) {
 	testCases := []struct {
-		name    string
-		request *http.Request
-		err     *jhttp.HTTPError
-		reqErr  *jhttp.HTTPError
+		name string
+		req  *http.Request
+		mode txMode
+
+		reqErr *jhttp.HTTPError
+
+		err                   *jhttp.HTTPError
+		errMode               txMode
+		errFinalizeErrorCount int
 	}{
-		{name: "normal", request: withTx(newRequest())},
-		{name: "no_id", request: newRequest(), err: jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail, was nil instead"))},
-		{name: "req_error", request: withTx(newRequest()), reqErr: jhttp.Error(http.StatusBadRequest, fmt.Errorf("test_induced"))},
+		{name: "normal"},
+		{name: "req_error", reqErr: jhttp.Error(http.StatusBadRequest, fmt.Errorf("test_induced"))},
+		{name: "bad_mode", mode: -9, err: jhttp.Error(http.StatusInternalServerError, fmt.Errorf("test: !okMode"))},
+		{name: "finalize_fail", mode: finalizeErrorMode,
+			errMode:               finalizeErrorMode,
+			errFinalizeErrorCount: 1,
+			err:                   jhttp.Error(http.StatusInternalServerError, fmt.Errorf("test: finalizeErrorMode"))},
 	}
 	for _, tc := range testCases {
 		tc := tc
@@ -122,31 +127,32 @@ func TestTxFinalizeWrap(t *testing.T) {
 			require := require.New(t)
 
 			integrator := newIntegrator()
-			req, err := integrator.SetTxContext(tc.request)
-			require.Nil(err)
+			req := tc.req
+			if req == nil {
+				req = newRequest()
+			}
+			req = integrator.SetTxModeContext(req, tc.mode)
 
-			model, err := TxFinalizeWrap(func(r *http.Request) (any, *jhttp.HTTPError) {
+			model, httpErr := integrator.ResponseWrap(func(r *http.Request, tx Tx) (any, *jhttp.HTTPError) {
 				return nil, tc.reqErr
 			})(req)
 
-			tx, ctxErr := ContextTx(req)
+			tx, err := integrator.GetTx(req, okMode)
+			require.NoError(err)
 
 			require.Equal(nil, model)
 			if tc.err != nil {
-				require.Equal(tc.err, err)
-				require.Equal(tc.err, ctxErr)
-				require.Nil(tx)
+				require.Equal(tc.err, httpErr)
+				require.Equal(&txn{ctx: req.Context(), mode: tc.errMode, finalizeErrorCount: tc.errFinalizeErrorCount}, tx)
 				return
 			}
 			if tc.reqErr != nil {
-				require.Equal(tc.reqErr, err)
-				require.Nil(ctxErr)
-				require.Equal(&txn{id: txID, finalizeErrorCount: 1}, tx)
+				require.Equal(tc.reqErr, httpErr)
+				require.Equal(&txn{ctx: req.Context(), finalizeErrorCount: 1}, tx)
 				return
 			}
-			require.Nil(err)
-			require.Nil(ctxErr)
-			require.Equal(&txn{id: txID, finalizeCount: 1}, tx)
+			require.Nil(httpErr)
+			require.Equal(&txn{ctx: req.Context(), finalizeCount: 1}, tx)
 		})
 	}
 }

@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
 	"github.com/s12chung/text2anki/pkg/dictionary/krdict"
@@ -42,7 +43,7 @@ func init() {
 
 // Config contains config settings for the API
 type Config struct {
-	TxPool reqtx.Pool
+	TxPool reqtx.Pool[db.TxQs, TxMode]
 
 	TokenizerType
 	DictionaryType
@@ -51,8 +52,11 @@ type Config struct {
 	ExtractorMap  extractor.Map
 }
 
+// TxMode identifies the transaction mode
+type TxMode int
+
 // TxIntegrator returns a new TxIntegrator
-func TxIntegrator(txPool reqtx.Pool) reqtx.Integrator {
+func TxIntegrator(txPool reqtx.Pool[db.TxQs, TxMode]) reqtx.Integrator[db.TxQs, TxMode] {
 	return reqtx.NewIntegrator(txPool)
 }
 
