@@ -14,23 +14,23 @@ import (
 )
 
 // Pool is a pool that maps transactions to an ID stored as idHeader in request headers
-type Pool struct {
-	idMap map[string]reqtx.Tx
+type Pool[T reqtx.Tx] struct {
+	idMap map[string]T
 	mutex *sync.RWMutex
 }
 
 // NewPool returns a new Pool
-func NewPool() Pool { return Pool{idMap: map[string]reqtx.Tx{}, mutex: &sync.RWMutex{}} }
+func NewPool[T reqtx.Tx]() Pool[T] { return Pool[T]{idMap: map[string]T{}, mutex: &sync.RWMutex{}} }
 
 // SetTxT is SetTx with a *testing.T shorthand
-func (p Pool) SetTxT(t *testing.T, r *http.Request, tx reqtx.Tx) *http.Request {
+func (p Pool[T]) SetTxT(t *testing.T, r *http.Request, tx T) *http.Request {
 	require := require.New(t)
 	require.NoError(p.SetTx(r, tx))
 	return r
 }
 
 // SetTx maps the transaction with a new ID, the ID is set to the idHeader in the request header
-func (p Pool) SetTx(r *http.Request, tx reqtx.Tx) error {
+func (p Pool[T]) SetTx(r *http.Request, tx T) error {
 	id, err := uuid.NewV7()
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func (p Pool) SetTx(r *http.Request, tx reqtx.Tx) error {
 const idHeader = "X-Request-ID"
 
 // GetTx returns the transaction given the id stored in idHeader
-func (p Pool) GetTx(r *http.Request) (reqtx.Tx, error) {
+func (p Pool[T]) GetTx(r *http.Request) (T, error) {
 	id := r.Header.Get(idHeader)
 
 	p.mutex.RLock()
@@ -56,7 +56,8 @@ func (p Pool) GetTx(r *http.Request) (reqtx.Tx, error) {
 	p.mutex.RUnlock()
 
 	if !exists {
-		return nil, fmt.Errorf("transaction with id, %v, does not exist", id)
+		var empty T
+		return empty, fmt.Errorf("transaction with id, %v, does not exist", id)
 	}
 	return tx, nil
 }

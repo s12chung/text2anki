@@ -44,7 +44,7 @@ func fixtureFileName(testName, name string) string {
 }
 
 type txServer struct {
-	pool reqtxtest.Pool
+	pool reqtxtest.Pool[db.TxQs]
 	test.Server
 }
 
@@ -52,7 +52,7 @@ func (s txServer) NewRequest(t *testing.T, method, path string, body io.Reader) 
 	return s.NewTxRequest(t, testdb.TxQs(t, nil), method, path, body)
 }
 
-func (s txServer) NewTxRequest(t *testing.T, tx db.Tx, method, path string, body io.Reader) *http.Request {
+func (s txServer) NewTxRequest(t *testing.T, tx db.TxQs, method, path string, body io.Reader) *http.Request {
 	req := s.Server.NewRequest(t, tx.Ctx(), method, path, body)
 	s.pool.SetTxT(t, req, tx)
 	return req

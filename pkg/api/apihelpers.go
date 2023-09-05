@@ -20,15 +20,7 @@ func idFromRequest(r *http.Request) (int64, *jhttp.HTTPError) {
 }
 
 func txQsFromRequest(r *http.Request) (db.TxQs, *jhttp.HTTPError) {
-	tx, err := reqtx.ContextTx(r)
-	if err != nil {
-		return db.TxQs{}, err
-	}
-	txQs, ok := tx.(db.TxQs) // type matches TxPool.GetTx
-	if !ok {
-		return db.TxQs{}, jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.TxQs fail"))
-	}
-	return txQs, nil
+	return reqtx.ContextTx[db.TxQs](r)
 }
 
 func extractAndValidate(r *http.Request, req any) *jhttp.HTTPError {
@@ -45,7 +37,7 @@ func extractAndValidate(r *http.Request, req any) *jhttp.HTTPError {
 // TxPool is the default Pool for transactions
 type TxPool struct{}
 
-// GetTx returns a new transaction - returned type matches Routes.txQs()
-func (t TxPool) GetTx(r *http.Request) (reqtx.Tx, error) {
+// GetTx returns a new transaction
+func (t TxPool) GetTx(r *http.Request) (db.TxQs, error) {
 	return db.NewTxQs(r.Context(), db.WriteOpts())
 }

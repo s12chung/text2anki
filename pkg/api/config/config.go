@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
 	"github.com/s12chung/text2anki/pkg/dictionary/krdict"
@@ -42,7 +43,7 @@ func init() {
 
 // Config contains config settings for the API
 type Config struct {
-	TxPool reqtx.Pool
+	TxPool reqtx.Pool[db.TxQs]
 
 	TokenizerType
 	DictionaryType
@@ -52,7 +53,7 @@ type Config struct {
 }
 
 // TxIntegrator returns a new TxIntegrator
-func TxIntegrator(txPool reqtx.Pool) reqtx.Integrator {
+func TxIntegrator(txPool reqtx.Pool[db.TxQs]) reqtx.Integrator[db.TxQs] {
 	return reqtx.NewIntegrator(txPool)
 }
 

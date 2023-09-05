@@ -39,8 +39,8 @@ func (p pool) GetTx(r *http.Request) (Tx, error) {
 	return &txn{id: id}, nil
 }
 
-func newIntegrator() Integrator { return NewIntegrator(pool{}) }
-func newRequest() *http.Request { return httptest.NewRequest(http.MethodGet, "https://fake.com", nil) }
+func newIntegrator() Integrator[Tx] { return NewIntegrator[Tx](pool{}) }
+func newRequest() *http.Request     { return httptest.NewRequest(http.MethodGet, "https://fake.com", nil) }
 func withTx(r *http.Request) *http.Request {
 	r.Header.Set(txNameKey, txID)
 	return r
@@ -54,7 +54,7 @@ func TestIntegrator_SetTxContext(t *testing.T) {
 	req, err := integrator.SetTxContext(withTx(newRequest()))
 	require.Nil(err)
 
-	tx, err := ContextTx(req)
+	tx, err := ContextTx[Tx](req)
 	require.Nil(err)
 	require.Equal(&txn{id: txID}, tx)
 }
@@ -83,7 +83,7 @@ func TestTxRollbackRequestWrap(t *testing.T) {
 				return r, tc.reqErr
 			})(req)
 
-			tx, ctxErr := ContextTx(finalReq)
+			tx, ctxErr := ContextTx[Tx](finalReq)
 
 			require.Equal(req, finalReq)
 			if tc.err != nil {
@@ -129,7 +129,7 @@ func TestTxFinalizeWrap(t *testing.T) {
 				return nil, tc.reqErr
 			})(req)
 
-			tx, ctxErr := ContextTx(req)
+			tx, ctxErr := ContextTx[Tx](req)
 
 			require.Equal(nil, model)
 			if tc.err != nil {

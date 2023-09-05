@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
 )
 
 type txn struct{ name string }
@@ -19,7 +21,7 @@ func TestPool_SetTxGetTx(t *testing.T) {
 	require := require.New(t)
 
 	expectedTx := &txn{name: "my_name"}
-	pool := NewPool()
+	pool := NewPool[reqtx.Tx]()
 	req := pool.SetTxT(t, newRequest(), expectedTx)
 
 	tx, err := pool.GetTx(req)

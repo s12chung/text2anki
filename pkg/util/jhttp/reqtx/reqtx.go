@@ -17,19 +17,19 @@ type Tx interface {
 	FinalizeError() error
 }
 
-// Pool gets tranactions to handle
-type Pool interface {
-	GetTx(r *http.Request) (Tx, error)
+// Pool gets transactions to handle
+type Pool[T Tx] interface {
+	GetTx(r *http.Request) (T, error)
 }
 
 // Integrator integrates Pool to the request via the Router
-type Integrator struct{ pool Pool }
+type Integrator[T Tx] struct{ pool Pool[T] }
 
 // NewIntegrator returns a new Integrator
-func NewIntegrator(pool Pool) Integrator { return Integrator{pool: pool} }
+func NewIntegrator[T Tx](pool Pool[T]) Integrator[T] { return Integrator[T]{pool: pool} }
 
 // SetTxContext sets the transaction on the request context
-func (i Integrator) SetTxContext(r *http.Request) (*http.Request, *jhttp.HTTPError) {
+func (i Integrator[T]) SetTxContext(r *http.Request) (*http.Request, *jhttp.HTTPError) {
 	tx, err := i.pool.GetTx(r)
 	if err != nil {
 		return nil, jhttp.Error(http.StatusInternalServerError, err)
@@ -38,13 +38,15 @@ func (i Integrator) SetTxContext(r *http.Request) (*http.Request, *jhttp.HTTPErr
 }
 
 // ContextTx get the transaction on the request context
-func ContextTx(r *http.Request) (Tx, *jhttp.HTTPError) {
-	tx, ok := r.Context().Value(txContextKey).(Tx)
+func ContextTx[T Tx](r *http.Request) (T, *jhttp.HTTPError) {
+	value := r.Context().Value(txContextKey)
+	tx, ok := value.(T)
 	if !ok {
-		if tx == nil {
-			return nil, jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail, was nil instead"))
+		var empty T
+		if value == nil {
+			return empty, jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail, was nil instead"))
 		}
-		return nil, jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail"))
+		return empty, jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail"))
 	}
 	return tx, nil
 }
@@ -52,7 +54,7 @@ func ContextTx(r *http.Request) (Tx, *jhttp.HTTPError) {
 // TxRollbackRequestWrap wraps a jhttp.RequestWrapFunc call Tx.FinalizeError() when f returns an error
 func TxRollbackRequestWrap(f jhttp.RequestWrapFunc) jhttp.RequestWrapFunc {
 	return func(r *http.Request) (*http.Request, *jhttp.HTTPError) {
-		tx, httpErr := ContextTx(r)
+		tx, httpErr := ContextTx[Tx](r)
 		if httpErr != nil {
 			return r, httpErr
 		}
@@ -74,7 +76,7 @@ func TxRollbackRequestWrap(f jhttp.RequestWrapFunc) jhttp.RequestWrapFunc {
 // - otherwise, call tx.FinalizeError()
 func TxFinalizeWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
 	return func(r *http.Request) (any, *jhttp.HTTPError) {
-		tx, httpErr := ContextTx(r)
+		tx, httpErr := ContextTx[Tx](r)
 		if httpErr != nil {
 			return nil, httpErr
 		}

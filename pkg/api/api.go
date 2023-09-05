@@ -21,7 +21,7 @@ import (
 
 // Routes contains the routes used for the api
 type Routes struct {
-	TxIntegrator reqtx.Integrator
+	TxIntegrator reqtx.Integrator[db.TxQs]
 
 	Dictionary    dictionary.Dictionary
 	Synthesizer   synthesizer.Synthesizer

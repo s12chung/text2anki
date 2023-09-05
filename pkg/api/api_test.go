@@ -35,7 +35,7 @@ func (u UUIDTest) Generate() (string, error) { return testUUID, nil }
 
 var routes Routes
 var server txServer
-var txPool = reqtxtest.NewPool()
+var txPool = reqtxtest.NewPool[db.TxQs]()
 var extractorCacheDir = path.Join(os.TempDir(), test.GenerateName("Extractor"))
 
 var routesConfig = config.Config{
