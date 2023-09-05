@@ -72,7 +72,7 @@ func TestRespondJSONWrap(t *testing.T) {
 	var testVal string
 	var testStatus int
 	var testErr error
-	handlerFunc := ResponseJSONWrap(func(r *http.Request) (any, *HTTPError) {
+	handlerFunc := ResponseWrap(func(r *http.Request) (any, *HTTPError) {
 		if r.Method != http.MethodGet {
 			return nil, Error(http.StatusInternalServerError, fmt.Errorf("not a GET"))
 		}

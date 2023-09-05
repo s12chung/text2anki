@@ -51,8 +51,8 @@ func ContextTx[T Tx](r *http.Request) (T, *jhttp.HTTPError) {
 	return tx, nil
 }
 
-// TxRollbackRequestWrap wraps a jhttp.RequestWrapFunc call Tx.FinalizeError() when f returns an error
-func TxRollbackRequestWrap(f jhttp.RequestWrapFunc) jhttp.RequestWrapFunc {
+// TxRollbackRequestWrap wraps a jhttp.RequestHandler call Tx.FinalizeError() when f returns an error
+func TxRollbackRequestWrap(f jhttp.RequestHandler) jhttp.RequestHandler {
 	return func(r *http.Request) (*http.Request, *jhttp.HTTPError) {
 		tx, httpErr := ContextTx[Tx](r)
 		if httpErr != nil {
@@ -71,10 +71,10 @@ func TxRollbackRequestWrap(f jhttp.RequestWrapFunc) jhttp.RequestWrapFunc {
 	}
 }
 
-// TxFinalizeWrap wraps a jhttp.ResponseJSONWrapFunc to:
+// TxFinalizeWrap wraps a jhttp.ResponseHandler to:
 // - call Tx.Finalize() if the request has no error
 // - otherwise, call tx.FinalizeError()
-func TxFinalizeWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+func TxFinalizeWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
 	return func(r *http.Request) (any, *jhttp.HTTPError) {
 		tx, httpErr := ContextTx[Tx](r)
 		if httpErr != nil {

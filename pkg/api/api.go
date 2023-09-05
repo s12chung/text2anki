@@ -60,8 +60,8 @@ func (rs Routes) Cleanup() error { return rs.TextTokenizer.Cleanup() }
 // Router returns the router with all the routes set
 func (rs Routes) Router() chi.Router {
 	var r chi.Router = chi.NewRouter()
-	r.NotFound(jhttp.ResponseJSONWrap(rs.NotFound))
-	r.MethodNotAllowed(jhttp.ResponseJSONWrap(rs.NotAllowed))
+	r.NotFound(jhttp.ResponseWrap(rs.NotFound))
+	r.MethodNotAllowed(jhttp.ResponseWrap(rs.NotAllowed))
 
 	r.Route(config.StorageURLPath, func(r chi.Router) {
 		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
@@ -72,8 +72,8 @@ func (rs Routes) Router() chi.Router {
 	return r
 }
 
-func responseJSONWrap(f jhttp.ResponseJSONWrapFunc) http.HandlerFunc {
-	return jhttp.ResponseJSONWrap(responseWrap(f))
+func responseJSONWrap(f jhttp.ResponseHandler) http.HandlerFunc {
+	return jhttp.ResponseWrap(responseWrap(f))
 }
 
 func (rs Routes) txRouter() chi.Router {
@@ -110,17 +110,17 @@ func (rs Routes) txRouter() chi.Router {
 
 type httpWrapper struct{}
 
-func (h httpWrapper) RequestWrap(f jhttp.RequestWrapFunc) jhttp.RequestWrapFunc {
+func (h httpWrapper) RequestWrap(f jhttp.RequestHandler) jhttp.RequestHandler {
 	return reqtx.TxRollbackRequestWrap(f)
 }
-func (h httpWrapper) ResponseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+func (h httpWrapper) ResponseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
 	return reqtx.TxFinalizeWrap(responseWrap(f))
 }
 
-func responseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+func responseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
 	return prepareModelWrap(f)
 }
-func prepareModelWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+func prepareModelWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
 	return func(r *http.Request) (any, *jhttp.HTTPError) {
 		model, httpErr := f(r)
 		if httpErr != nil {

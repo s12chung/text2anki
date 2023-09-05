@@ -36,11 +36,11 @@ func Error(code int, cause error) *HTTPError {
 // ContextKey is a type used for Context Keys
 type ContextKey string
 
-// RequestWrapFunc is the function format for RequestWrap, used to set the request (for setting the context)
-type RequestWrapFunc func(r *http.Request) (*http.Request, *HTTPError)
+// RequestHandler is the function format for RequestWrap, used to set the request (for setting the context)
+type RequestHandler func(r *http.Request) (*http.Request, *HTTPError)
 
 // RequestWrap wraps a function that sets the request (for setting the context)
-func RequestWrap(f RequestWrapFunc) func(http.Handler) http.Handler {
+func RequestWrap(f RequestHandler) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			req, httpError := f(r)
@@ -53,15 +53,15 @@ func RequestWrap(f RequestWrapFunc) func(http.Handler) http.Handler {
 	}
 }
 
-// ResponseJSONWrapFunc is the function format for ResponseJSONWrap, used to automatically handle JSON responses
-type ResponseJSONWrapFunc func(r *http.Request) (any, *HTTPError)
+// ResponseHandler is the function format for ResponseWrap, used to automatically handle JSON responses
+type ResponseHandler func(r *http.Request) (any, *HTTPError)
 
-func (res ResponseJSONWrapFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ResponseJSONWrap(res)(w, r)
+func (res ResponseHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ResponseWrap(res)(w, r)
 }
 
-// ResponseJSONWrap wraps a function that handles the request using return statements rather than writing to the response
-func ResponseJSONWrap(f ResponseJSONWrapFunc) http.HandlerFunc {
+// ResponseWrap wraps a function that handles the request using return statements rather than writing to the response
+func ResponseWrap(f ResponseHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		model, httpErr := f(r)
 		if httpErr != nil {
