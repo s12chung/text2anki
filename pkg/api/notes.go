@@ -18,7 +18,7 @@ func (rs Routes) NoteCreate(r *http.Request) (any, *jhttp.HTTPError) {
 	if httpErr := extractAndValidate(r, &req); httpErr != nil {
 		return nil, httpErr
 	}
-	txQs, httpErr := rs.txQs(r)
+	txQs, httpErr := txQsFromRequest(r)
 	if httpErr != nil {
 		return nil, httpErr
 	}

@@ -84,8 +84,7 @@ func (rs Routes) txRouter() chi.Router {
 		r.Get("/", rs.SourceIndex)
 		r.Post("/", rs.SourceCreate)
 
-		r.Route("/{sourceID}", func(r jchi.Router) {
-			r.Use(rs.SourceCtx)
+		r.Route("/{id}", func(r jchi.Router) {
 			r.Get("/", rs.SourceGet)
 			r.Patch("/", rs.SourceUpdate)
 			r.Delete("/", rs.SourceDestroy)
