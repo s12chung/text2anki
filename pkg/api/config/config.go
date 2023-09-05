@@ -2,13 +2,14 @@
 package config
 
 import (
+	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
-	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
 	"github.com/s12chung/text2anki/pkg/dictionary/krdict"
@@ -24,7 +25,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/tokenizer/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizer/komoran"
-	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 var appCacheDir string
@@ -32,7 +34,7 @@ var appCacheDir string
 func init() {
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
-		fmt.Println(err)
+		slog.Error("config.init()", logg.Err(err))
 		os.Exit(-1)
 	}
 	appCacheDir = path.Join(cacheDir, "Text2Anki")
@@ -73,14 +75,14 @@ const (
 )
 
 // Tokenizer returns the default Tokenizer
-func Tokenizer(tokenizerType TokenizerType) tokenizer.Tokenizer {
+func Tokenizer(ctx context.Context, tokenizerType TokenizerType) tokenizer.Tokenizer {
 	switch tokenizerType {
 	case TokenizerKomoran:
-		return komoran.New()
+		return komoran.New(ctx)
 	case TokenizerKhaiii:
 		fallthrough
 	default:
-		return khaiii.New()
+		return khaiii.New(ctx)
 	}
 }
 
@@ -102,12 +104,7 @@ func Dictionary(dictionaryType DictionaryType) dictionary.Dictionary {
 	case DictionaryKrDict:
 		fallthrough
 	default:
-		txQs, err := db.NewTxQs()
-		if err != nil {
-			fmt.Println("db.NewTxQs() error", err)
-			os.Exit(-1)
-		}
-		return krdict.New(txQs)
+		return krdict.New()
 	}
 }
 
@@ -147,7 +144,7 @@ func StorageFromConfig(config StorageConfig) Storage {
 		storer = ls
 	}
 	if err != nil {
-		fmt.Println(err)
+		slog.Error("config.StorageFromConfig()", logg.Err(err))
 		os.Exit(-1)
 	}
 	return Storage{DBStorage: storage.NewDBStorage(storageAPI, config.UUIDGenerator), Storer: storer}

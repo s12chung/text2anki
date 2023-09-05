@@ -6,29 +6,29 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/firm"
-	"github.com/s12chung/text2anki/pkg/util/httputil"
-	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
 )
 
-func extractAndValidate(r *http.Request, req any) *httputil.HTTPError {
-	if httpError := httputil.ExtractJSON(r, req); httpError != nil {
+func extractAndValidate(r *http.Request, req any) *jhttp.HTTPError {
+	if httpError := jhttp.ExtractJSON(r, req); httpError != nil {
 		return httpError
 	}
 	result := firm.Validate(req)
 	if !result.IsValid() {
-		return httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf(result.ErrorMap().String()))
+		return jhttp.Error(http.StatusUnprocessableEntity, fmt.Errorf(result.ErrorMap().String()))
 	}
 	return nil
 }
 
-func (rs Routes) txQs(r *http.Request) (db.TxQs, *httputil.HTTPError) {
-	tx, err := rs.TxIntegrator.ContextTx(r)
+func (rs Routes) txQs(r *http.Request) (db.TxQs, *jhttp.HTTPError) {
+	tx, err := reqtx.ContextTx(r)
 	if err != nil {
 		return db.TxQs{}, err
 	}
 	txQs, ok := tx.(db.TxQs) // type matches TxPool.GetTx
 	if !ok {
-		return db.TxQs{}, httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.TxQs fail"))
+		return db.TxQs{}, jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to db.TxQs fail"))
 	}
 	return txQs, nil
 }
@@ -36,5 +36,7 @@ func (rs Routes) txQs(r *http.Request) (db.TxQs, *httputil.HTTPError) {
 // TxPool is the default Pool for transactions
 type TxPool struct{}
 
-// GetTx returns a new transaction (returned type matches Routes.txQs())
-func (t TxPool) GetTx(r *http.Request) (reqtx.Tx, error) { return db.NewTxQsWithCtx(r.Context()) }
+// GetTx returns a new transaction - returned type matches Routes.txQs()
+func (t TxPool) GetTx(r *http.Request) (reqtx.Tx, error) {
+	return db.NewTxQs(r.Context(), db.WriteOpts())
+}

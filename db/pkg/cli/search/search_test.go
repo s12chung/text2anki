@@ -20,7 +20,7 @@ func TestTermsSearchToCSVRows(t *testing.T) {
 	require := require.New(t)
 	testName := "TestTermsSearchToCSVRows"
 
-	txQs := testdb.TxQs(t)
+	txQs := testdb.TxQs(t, nil)
 
 	terms, err := txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, testdb.SearchPOS, testdb.SearchConfig)
 	require.NoError(err)
@@ -52,9 +52,7 @@ func TestConfigToCSVRows(t *testing.T) {
 func TestGetOrDefaultConfig(t *testing.T) {
 	oldConfig := defaultConfig
 	defaultConfig = testConfig
-	defer func() {
-		defaultConfig = oldConfig
-	}()
+	t.Cleanup(func() { defaultConfig = oldConfig })
 
 	require := require.New(t)
 	testName := "TestGetOrDefaultConfig"

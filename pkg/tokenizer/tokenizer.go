@@ -2,6 +2,7 @@
 package tokenizer
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/s12chung/text2anki/pkg/lang"
@@ -10,11 +11,11 @@ import (
 
 // Tokenizer takes a string and gets it's part of speech tokens
 type Tokenizer interface {
-	Setup() error
+	Setup(ctx context.Context) error
 	Cleanup() error
 	IsSetup() bool
 
-	Tokenize(str string) ([]Token, error)
+	Tokenize(ctx context.Context, str string) ([]Token, error)
 }
 
 // Token is a part of speech token
@@ -46,12 +47,12 @@ func NewServerTokenizer(name string, server server.TokenizerServer) ServerTokeni
 }
 
 // Setup setups up the JVM for Komoran to run
-func (s *ServerTokenizer) Setup() error {
+func (s *ServerTokenizer) Setup(ctx context.Context) error {
 	if s.started {
 		return fmt.Errorf("%v already started before, make a new instance", s.name)
 	}
 	s.started = true
-	return s.server.Start()
+	return s.server.Start(ctx)
 }
 
 // Cleanup cleans Komoran's resources
@@ -70,10 +71,10 @@ func (s *ServerTokenizer) IsSetup() bool {
 }
 
 // ServerTokenize returns the part of speech tokens of the given string from the server
-func (s *ServerTokenizer) ServerTokenize(str string, resp any) error {
+func (s *ServerTokenizer) ServerTokenize(ctx context.Context, str string, resp any) error {
 	if !s.IsSetup() {
 		return &NotSetupError{}
 	}
 
-	return s.server.Tokenize(str, resp)
+	return s.server.Tokenize(ctx, str, resp)
 }

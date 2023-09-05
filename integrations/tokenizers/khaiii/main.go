@@ -3,11 +3,12 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/s12chung/text2anki/integrations/tokenizers/khaiii/pkg/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizer/server/serverimpl"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 var port int
@@ -19,7 +20,7 @@ func init() {
 
 func main() {
 	if err := run(port); err != nil {
-		fmt.Println(err)
+		slog.Error("khaiii/main", logg.Err(err))
 		os.Exit(-1)
 	}
 }

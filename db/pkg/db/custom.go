@@ -60,33 +60,19 @@ type TxQs struct {
 	Tx
 }
 
-// NewTx returns a new Transaction
-func NewTx() (Tx, error) {
-	ctx := context.Background()
-	tx, err := database.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	return &Transaction{Tx: tx, ctx: ctx}, err
-}
+// WriteOpts returns write *sql.TxOptions
+func WriteOpts() *sql.TxOptions { return &sql.TxOptions{} }
 
 // NewTxQs returns a new TxQs
-func NewTxQs() (TxQs, error) {
-	return NewTxQsWithCtx(context.Background())
-}
-
-// NewTxQsWithCtx returns a new TxQs with the context
-func NewTxQsWithCtx(ctx context.Context) (TxQs, error) {
-	tx, err := database.BeginTx(ctx, nil)
+func NewTxQs(ctx context.Context, opts *sql.TxOptions) (TxQs, error) {
+	if opts == nil {
+		opts = &sql.TxOptions{ReadOnly: true}
+	}
+	tx, err := database.BeginTx(ctx, opts)
 	if err != nil {
 		return TxQs{}, err
 	}
 	return TxQs{Tx: &Transaction{Tx: tx, ctx: ctx}, Queries: New(tx)}, nil
-}
-
-// Qs returns the Queries for the global database
-func Qs() *Queries {
-	return &Queries{db: database}
 }
 
 //go:embed schema.sql

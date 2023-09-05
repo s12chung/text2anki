@@ -2,8 +2,11 @@
 package testdb
 
 import (
+	"context"
 	"crypto/sha256"
+	"database/sql"
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"runtime"
@@ -15,6 +18,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 // A copy of this constant is in db_test.go
@@ -27,7 +31,7 @@ func dbSHAPathF() string { return path.Join(tmpPath, "testdb.sha.txt") }
 func init() {
 	_, callerFilePath, _, ok := runtime.Caller(0)
 	if !ok {
-		fmt.Println("runtime.Caller not ok for Seed()")
+		slog.Error("runtime.Caller not ok for testdb package")
 		os.Exit(-1)
 	}
 	callerPath := path.Dir(callerFilePath)
@@ -62,10 +66,10 @@ func (t Transaction) FinalizeError() error { return nil }
 func NewTransaction(tx db.Tx) Transaction { return Transaction{Tx: tx} }
 
 // TxQs returns a db.NewTxQs used for testing
-func TxQs(t *testing.T) db.TxQs {
+func TxQs(t *testing.T, opts *sql.TxOptions) db.TxQs {
 	require := require.New(t)
 
-	txQs, err := db.NewTxQs()
+	txQs, err := db.NewTxQs(context.Background(), opts)
 	require.NoError(err)
 
 	txQs.Tx = NewTransaction(txQs.Tx)
@@ -78,7 +82,7 @@ func TxQs(t *testing.T) db.TxQs {
 // MustSetup sets up the test database
 func MustSetup() {
 	if err := db.SetDB(dbPathF()); err != nil {
-		fmt.Println(err)
+		slog.Error("testdb.MustSetup()", logg.Err(err))
 		os.Exit(-1)
 	}
 }
@@ -108,7 +112,7 @@ func runWithSafeSchema(f func(txQs db.TxQs) error) error {
 		if err := db.SetDB(dbPath); err != nil {
 			return err
 		}
-		txQs, err := db.NewTxQs()
+		txQs, err := db.NewTxQs(context.Background(), db.WriteOpts())
 		if err != nil {
 			return err
 		}

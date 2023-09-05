@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"mime"
 	"net/http"
 	"os/exec"
@@ -15,18 +16,19 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/exp/slog"
+	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
 // TokenizerServer provides an interface to call tokenizer servers
 type TokenizerServer interface {
-	Start() error
+	Start(ctx context.Context) error
 	Stop() error
 	StopAndWait() error
 	ForceStop() error
 	IsRunning() bool
 
-	Tokenize(str string, resp any) error
+	Tokenize(ctx context.Context, str string, obj any) error
 }
 
 // CmdTokenizerServer is a server that runs a cmd
@@ -53,21 +55,22 @@ func NewCmdOptions(name string) CmdOptions {
 }
 
 // Cmd returns the cmd given the options
-func (c *CmdOptions) Cmd() (*exec.Cmd, context.CancelFunc) {
-	ctx, cancel := context.WithCancel(context.Background())
+func (c *CmdOptions) Cmd(ctx context.Context) (*exec.Cmd, context.CancelFunc) {
+	ctx, cancel := context.WithCancel(ctx)
 	cmd := exec.CommandContext(ctx, c.name, c.Args...) //nolint:gosec //pretty sure not called often
 	cmd.Dir = c.Dir
 	return cmd, cancel
 }
 
 // NewCmdTokenizerServer returns a new CmdServer
-func NewCmdTokenizerServer(cmdOpts CmdOptions, port int, stopWarningDuration time.Duration) *CmdTokenizerServer {
-	cmd, cancel := cmdOpts.Cmd()
+func NewCmdTokenizerServer(ctx context.Context, cmdOpts CmdOptions, port int, stopWarningDuration time.Duration) *CmdTokenizerServer {
+	cmd, cancel := cmdOpts.Cmd(ctx)
 	return &CmdTokenizerServer{
 		cmd:                 cmd,
 		port:                port,
 		stopWarningDuration: stopWarningDuration,
-		cancel:              cancel,
+
+		cancel: cancel,
 	}
 }
 
@@ -83,7 +86,7 @@ type TokenizeRequest struct {
 }
 
 // Start starts the CmdServer
-func (s *CmdTokenizerServer) Start() error {
+func (s *CmdTokenizerServer) Start(ctx context.Context) error {
 	var err error
 
 	s.stdIn, err = s.cmd.StdinPipe()
@@ -99,25 +102,26 @@ func (s *CmdTokenizerServer) Start() error {
 
 	go func() {
 		if err := s.cmd.Wait(); err != nil {
-			slog.Warn(fmt.Sprintf("Error after waiting for CmdTokenizerServer: %v", err))
+			slog.Warn("CmdTokenizerServer command Wait()", logg.Err(err))
 		}
 		s.isRunning = false
 	}()
 
 	for i := 1; i <= 15; i++ {
 		time.Sleep(time.Millisecond * 200)
-		response, err := http.Get(s.uriFor(HealthzPath))
+		resp, err := httputil.Get(ctx, s.uriFor(HealthzPath))
 		if err != nil {
 			continue
 		}
-		if response.StatusCode != http.StatusOK {
+		defer resp.Body.Close() //nolint:errcheck // failing is ok
+		if resp.StatusCode != http.StatusOK {
 			continue
 		}
-		resp, err := io.ReadAll(response.Body)
+		respBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			continue
 		}
-		if getFirstLine(string(resp)) == "ok" {
+		if getFirstLine(string(respBytes)) == "ok" {
 			return nil
 		}
 	}
@@ -218,27 +222,28 @@ func (s *CmdTokenizerServer) IsRunning() bool {
 	return s.isRunning
 }
 
-// Tokenize marshalls tokenizes the string into the resp
-func (s *CmdTokenizerServer) Tokenize(str string, resp any) error {
+// Tokenize marshalls tokenizes the string into the obj
+func (s *CmdTokenizerServer) Tokenize(ctx context.Context, str string, obj any) error {
 	body, err := json.Marshal(&TokenizeRequest{String: str})
 	if err != nil {
 		return err
 	}
 
-	response, err := http.Post(s.uriFor(TokenizePath), mime.TypeByExtension(".json"), bytes.NewBuffer(body))
+	resp, err := httputil.Post(ctx, s.uriFor(TokenizePath), mime.TypeByExtension(".json"), bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}
-	respBytes, err := io.ReadAll(response.Body)
+	defer resp.Body.Close() //nolint:errcheck // failing is ok
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
-	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("java.Server.Tokenize() [%v]: %v", response.StatusCode, string(respBytes))
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("java.Server.Tokenize() [%v]: %v", resp.StatusCode, string(respBytes))
 	}
 
-	if err := json.Unmarshal(respBytes, resp); err != nil {
+	if err := json.Unmarshal(respBytes, obj); err != nil {
 		return err
 	}
 	return nil

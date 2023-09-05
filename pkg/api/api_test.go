@@ -1,7 +1,8 @@
 package api
 
 import (
-	"fmt"
+	"context"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -17,9 +18,10 @@ import (
 	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/extractor/extractortest"
-	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
-	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx/reqtxtest"
+	"github.com/s12chung/text2anki/pkg/util/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx/reqtxtest"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -56,10 +58,10 @@ var routesConfig = config.Config{
 // Due to server.WithPathPrefix() calls, some functions must run via. init()
 func init() {
 	testdb.MustSetup()
-	routes = NewRoutes(routesConfig)
+	routes = NewRoutes(context.Background(), routesConfig)
 	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(routes.Router())}}
 	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
-		fmt.Println(err)
+		slog.Error("api_test.init()", logg.Err(err))
 		os.Exit(-1)
 	}
 }
@@ -101,14 +103,16 @@ func TestRoutes_Router(t *testing.T) {
 	server := httptest.NewServer(r)
 	defer server.Close()
 
-	req, err := http.NewRequest(http.MethodGet, server.URL+"/sources/1", nil)
+	txQs := testdb.TxQs(t, nil)
+
+	req, err := http.NewRequestWithContext(txQs.Ctx(), http.MethodGet, server.URL+"/sources/1", nil)
 	require.NoError(err)
-	resp := test.HTTPDo(t, txPool.SetTxT(t, req, testdb.TxQs(t)))
+	resp := test.HTTPDo(t, txPool.SetTxT(t, req, txQs))
 	resp.EqualCode(t, http.StatusOK)
 	jsonBody := test.StaticCopy(t, resp.Body.Bytes(), &db.SourceStructured{})
 	fixture.CompareReadOrUpdate(t, testName+".json", jsonBody)
 
-	req, err = http.NewRequest(http.MethodGet, server.URL+"/healthz", nil)
+	req, err = http.NewRequestWithContext(txQs.Ctx(), http.MethodGet, server.URL+"/healthz", nil)
 	require.NoError(err)
 	resp = test.HTTPDo(t, req)
 	resp.EqualCode(t, http.StatusOK)

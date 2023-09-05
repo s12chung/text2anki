@@ -28,9 +28,7 @@ func TestKhaiii_Analyze(t *testing.T) {
 	var err error
 	k := newKhaiii(t)
 	require.NoError(k.Open(rscPath))
-	defer func() {
-		require.NoError(k.Close())
-	}()
+	defer func() { require.NoError(k.Close()) }()
 
 	var words []Word
 	words, err = k.Analyze("안녕! 반가워!")

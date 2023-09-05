@@ -43,7 +43,7 @@ test.slow: db.testdb
 lint:
 	golangci-lint run $(TEST)
 lint.fix:
-	goimports -w .
+	golangci-lint run --fix $(TEST)
 
 ci.build: build
 ci.diff: test.diff

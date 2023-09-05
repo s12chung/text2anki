@@ -1,6 +1,7 @@
 package koreanbasic
 
 import (
+	"context"
 	"net/http"
 	"path"
 	"strings"
@@ -54,7 +55,7 @@ func TestKoreanBasic_Search(t *testing.T) {
 			})
 			t.Cleanup(clean)
 
-			terms, err := dict.Search(tc.searchTerm, tc.pos)
+			terms, err := dict.Search(context.Background(), tc.searchTerm, tc.pos)
 			require.NoError(err)
 			fixture.CompareReadOrUpdate(t, path.Join(testName, filenameName)+".json", fixture.JSON(t, terms))
 		})

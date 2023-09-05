@@ -11,7 +11,7 @@ import (
 
 // SchemaNode represents a type node in the XML file in the schema
 type SchemaNode struct {
-	Many         bool                   `json:"many,"`
+	Many         bool                   `json:"many"`
 	Attrs        Attrs                  `json:"attrs,omitempty"`
 	NodeAttrs    Attrs                  `json:"node_attrs,omitempty"`
 	Children     map[string]*SchemaNode `json:"children,omitempty"`

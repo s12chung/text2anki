@@ -22,7 +22,7 @@ const testKey = testKeyPrefix + "/" + testKeyFile
 
 const storagePrefix = "localstore_test"
 const apiOrigin = "http://localhost:3000"
-const encryptorKey = "4b04fcad4d66da4cb441901cd91e5f508aef00328017ed83f4b0c70fa269a51d"
+const encryptorKey = "4b04fcad4d66da4cb441901cd91e5f508aef00328017ed83f4b0c70fa269a51d" //nolint:gosec // a fake key
 
 func newAPIWithT(t *testing.T) API {
 	return NewAPI(apiOrigin, path.Join(os.TempDir(), test.GenerateName(storagePrefix)), newEncryptorT(t))

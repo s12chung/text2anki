@@ -2,6 +2,7 @@
 package komoran
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strconv"
@@ -24,15 +25,15 @@ func init() {
 }
 
 // New returns a Komoran Korean tokenizer
-func New() tokenizer.Tokenizer {
-	return newKomoran(port)
+func New(ctx context.Context) tokenizer.Tokenizer {
+	return newKomoran(ctx, port)
 }
 
-func newKomoran(port int) *Komoran {
+func newKomoran(ctx context.Context, port int) *Komoran {
 	opts := server.NewCmdOptions("java")
 	opts.Args = []string{"-jar", jarName, strconv.Itoa(port), strconv.Itoa(backlog)}
 	opts.Dir = jarPath
-	server := server.NewCmdTokenizerServer(opts, port, stopWarningDuration)
+	server := server.NewCmdTokenizerServer(ctx, opts, port, stopWarningDuration)
 
 	name := "Komoran"
 	return &Komoran{
@@ -59,9 +60,9 @@ type token struct {
 }
 
 // Tokenize returns the part of speech tokens of the given string
-func (k *Komoran) Tokenize(str string) ([]tokenizer.Token, error) {
+func (k *Komoran) Tokenize(ctx context.Context, str string) ([]tokenizer.Token, error) {
 	resp := &response{}
-	err := k.ServerTokenize(str, resp)
+	err := k.ServerTokenize(ctx, str, resp)
 	if err != nil {
 		return nil, err
 	}

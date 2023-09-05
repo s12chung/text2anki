@@ -75,7 +75,7 @@ func TestQueries_TermsSearchRaw(t *testing.T) {
 	require := require.New(t)
 	testName := "TestQueries_TermsSearchRaw"
 
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, nil)
 	searchTerm := "마음"
 	searchPOS := lang.PartOfSpeechVerb
 	searchConfig := TermsSearchConfig{

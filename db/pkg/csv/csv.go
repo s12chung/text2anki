@@ -15,8 +15,7 @@ func File(path string, rows [][]string) error {
 	if err != nil {
 		return err
 	}
-	//nolint:errcheck,gosec // just closing file
-	defer file.Close()
+	defer file.Close() //nolint:errcheck,gosec // just closing file
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()

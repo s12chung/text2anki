@@ -2,9 +2,10 @@ package test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
-	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -145,10 +146,11 @@ type Server struct {
 }
 
 // NewRequest returns a new request for the server
-func (s Server) NewRequest(t *testing.T, method, path string, body io.Reader) *http.Request {
+// nolint: revive // prefer testing.T to be first
+func (s Server) NewRequest(t *testing.T, ctx context.Context, method, path string, body io.Reader) *http.Request {
 	require := require.New(t)
 	require.NotNil(s.Server, "Server is not set (due to init timing?)")
-	req, err := http.NewRequest(method, s.URL+s.pathPrefix+path, body)
+	req, err := http.NewRequestWithContext(ctx, method, s.URL+s.pathPrefix+path, body)
 	require.NoError(err)
 	return req
 }
@@ -156,7 +158,7 @@ func (s Server) NewRequest(t *testing.T, method, path string, body io.Reader) *h
 // WithPathPrefix returns a new server with the pathPrefix set for NewRequest
 func (s Server) WithPathPrefix(prefix string) Server {
 	if s.Server == nil {
-		fmt.Println("Server is not set (due to init timing?)")
+		slog.Error("test.Server is not set before calling WithPathPrefix() - due to init timing?")
 		os.Exit(-1)
 	}
 
@@ -169,6 +171,7 @@ func (s Server) WithPathPrefix(prefix string) Server {
 func HTTPDo(t *testing.T, req *http.Request) Response {
 	require := require.New(t)
 	resp, err := http.DefaultClient.Do(req)
+	defer func() { require.NoError(resp.Body.Close()) }()
 	require.NoError(err)
 	return NewResponse(t, resp)
 }

@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"log/slog"
 	"time"
-
-	"golang.org/x/exp/slog"
 
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizer"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
@@ -162,7 +162,7 @@ func (s SourceStructured) CreateParams() SourceCreateParams {
 func (s SourceStructured) ToSource() Source {
 	bytes, err := json.Marshal(s.Parts)
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("SourceStructured.ToSource()", logg.Err(err))
 		panic(-1)
 	}
 	return Source{
@@ -206,17 +206,13 @@ type TokenizedText struct {
 }
 
 // Setup sets up the TextTokenizer
-func (t TextTokenizer) Setup() error {
-	return t.Tokenizer.Setup()
-}
+func (t TextTokenizer) Setup(ctx context.Context) error { return t.Tokenizer.Setup(ctx) }
 
 // Cleanup cleans up the TextTokenizer
-func (t TextTokenizer) Cleanup() error {
-	return t.Tokenizer.Cleanup()
-}
+func (t TextTokenizer) Cleanup() error { return t.Tokenizer.Cleanup() }
 
 // TokenizedTexts converts a string to TokenizedText
-func (t TextTokenizer) TokenizedTexts(s, translation string) ([]TokenizedText, error) {
+func (t TextTokenizer) TokenizedTexts(ctx context.Context, s, translation string) ([]TokenizedText, error) {
 	texts, err := t.Parser.Texts(s, translation)
 	if err != nil {
 		return nil, err
@@ -224,19 +220,19 @@ func (t TextTokenizer) TokenizedTexts(s, translation string) ([]TokenizedText, e
 	if t.CleanSpeaker {
 		texts = text.CleanSpeaker(texts)
 	}
-	return t.TokenizeTexts(texts)
+	return t.TokenizeTexts(ctx, texts)
 }
 
 // TokenizeTexts takes the texts and tokenizes them
-func (t TextTokenizer) TokenizeTexts(texts []text.Text) (tokenizedTexts []TokenizedText, err error) {
+func (t TextTokenizer) TokenizeTexts(ctx context.Context, texts []text.Text) ([]TokenizedText, error) {
 	if !t.Tokenizer.IsSetup() {
 		return nil, fmt.Errorf("TextTokenizer not set up")
 	}
 
-	tokenizedTexts = make([]TokenizedText, len(texts))
+	tokenizedTexts := make([]TokenizedText, len(texts))
 	for i, text := range texts {
 		var tokens []tokenizer.Token
-		tokens, err = t.Tokenizer.Tokenize(text.Text)
+		tokens, err := t.Tokenizer.Tokenize(ctx, text.Text)
 		if err != nil {
 			return nil, err
 		}

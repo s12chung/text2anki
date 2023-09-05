@@ -2,6 +2,7 @@
 package khaiii
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strconv"
@@ -25,15 +26,15 @@ func init() {
 }
 
 // New returns a Khaiii Korean tokenizer
-func New() tokenizer.Tokenizer {
-	return newKhaiii(port)
+func New(ctx context.Context) tokenizer.Tokenizer {
+	return newKhaiii(ctx, port)
 }
 
-func newKhaiii(port int) *Khaiii {
+func newKhaiii(ctx context.Context, port int) *Khaiii {
 	opts := server.NewCmdOptions(binName)
 	opts.Args = []string{"--port", strconv.Itoa(port)}
 	opts.Dir = binPath
-	server := server.NewCmdTokenizerServer(opts, port, stopWarningDuration)
+	server := server.NewCmdTokenizerServer(ctx, opts, port, stopWarningDuration)
 
 	name := "Khaiii"
 	return &Khaiii{
@@ -49,9 +50,9 @@ type Khaiii struct {
 }
 
 // Tokenize returns the part of speech tokens of the given string
-func (k *Khaiii) Tokenize(str string) ([]tokenizer.Token, error) {
+func (k *Khaiii) Tokenize(ctx context.Context, str string) ([]tokenizer.Token, error) {
 	resp := &api.TokenizeResponse{}
-	err := k.ServerTokenize(str, resp)
+	err := k.ServerTokenize(ctx, str, resp)
 	if err != nil {
 		return nil, err
 	}

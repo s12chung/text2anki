@@ -3,15 +3,12 @@ package httptyped
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"path"
 	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/util/httputil"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
@@ -170,58 +167,29 @@ type invalidTestObj struct {
 	Val string `json:"val,omitempty"`
 }
 
-func TestTypedWrap(t *testing.T) {
+func TestPrepareModel(t *testing.T) {
 	DefaultRegistry.RegisterType(testObj{})
 	DefaultRegistry.RegisterType(WithSerializedParent{})
-
-	var testVal string
-	handlerFunc := httputil.ResponseJSONWrap(TypedWrap(func(r *http.Request) (any, *httputil.HTTPError) {
-		if r.Method == http.MethodPost {
-			return nil, httputil.Error(http.StatusUnprocessableEntity, fmt.Errorf("not a GET"))
-		}
-		if r.Method == http.MethodPatch {
-			return invalidTestObj{Val: testVal}, nil
-		}
-		if r.Method == http.MethodPut {
-			return []invalidTestObj{{Val: testVal}}, nil
-		}
-		if testVal == "toSerialize" {
-			return WithSerializedParent{
-				Basic: WithSerializedChild{NonSerialized: "Basic"},
-				Pt:    &WithSerializedChild{NonSerialized: "Pt"},
-			}, nil
-		}
-		return testObj{Val: testVal}, nil
-	}))
+	notRegisteredErr := fmt.Errorf("httptyped.invalidTestObj is not registered to httptyped")
 
 	testCases := []struct {
-		name         string
-		method       string
-		val          string
-		status       int
-		expectedBody string
+		name  string
+		model any
+		err   error
 	}{
-		{name: "normal", val: "123", status: http.StatusOK, expectedBody: "{\"val\":\"123\"}\n"},
-		{name: "toSerialize", val: "toSerialize", status: http.StatusOK,
-			expectedBody: "{\"basic\":{\"non_serialized\":\"Basic\"},\"pt\":{\"serialized\":\"PtCEREAL\"}}\n"},
-		{name: "err", method: http.MethodPost, status: http.StatusUnprocessableEntity,
-			expectedBody: "{\"error\":\"not a GET\",\"code\":422,\"status_text\":\"Unprocessable Entity\"}\n"},
-		{name: "not_registered", method: http.MethodPatch, status: http.StatusInternalServerError,
-			expectedBody: "{\"error\":\"httptyped.invalidTestObj is not registered to httptyped\",\"code\":500,\"status_text\":\"Internal Server Error\"}\n"},
-		{name: "slice_not_registered", method: http.MethodPut, status: http.StatusInternalServerError,
-			expectedBody: "{\"error\":\"httptyped.invalidTestObj is not registered to httptyped\",\"code\":500,\"status_text\":\"Internal Server Error\"}\n"},
+		{name: "toSerialize", model: WithSerializedParent{
+			Basic: WithSerializedChild{NonSerialized: "Basic"},
+			Pt:    &WithSerializedChild{NonSerialized: "Pt"},
+		}},
+		{name: "not_registered", model: invalidTestObj{Val: "123"}, err: notRegisteredErr},
+		{name: "slice_not_registered", model: []invalidTestObj{{Val: "123"}}, err: notRegisteredErr},
+		{name: "nil", err: errModelNil},
 	}
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			testVal = tc.val
-
-			resp := httptest.NewRecorder()
-			handlerFunc(resp, httptest.NewRequest(tc.method, "/", nil))
-
-			require.Equal(tc.status, resp.Code)
-			require.Equal(tc.expectedBody, resp.Body.String())
+			require.Equal(tc.err, PrepareModel(tc.model))
 		})
 	}
 }

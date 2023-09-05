@@ -9,7 +9,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
-	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx/reqtxtest"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx/reqtxtest"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -49,11 +49,11 @@ type txServer struct {
 }
 
 func (s txServer) NewRequest(t *testing.T, method, path string, body io.Reader) *http.Request {
-	return s.NewTxRequest(t, testdb.TxQs(t), method, path, body)
+	return s.NewTxRequest(t, testdb.TxQs(t, nil), method, path, body)
 }
 
 func (s txServer) NewTxRequest(t *testing.T, tx db.Tx, method, path string, body io.Reader) *http.Request {
-	req := s.Server.NewRequest(t, method, path, body)
+	req := s.Server.NewRequest(t, tx.Ctx(), method, path, body)
 	s.pool.SetTxT(t, req, tx)
 	return req
 }

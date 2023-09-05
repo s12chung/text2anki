@@ -18,10 +18,13 @@ linters:
     - asasalint
     - asciicheck
     - bidichk
+    - bodyclose
     - containedctx
     - contextcheck
     - cyclop
+    # - deadcode [deprecated]
     - decorder
+    # - depguard # not using whitelist of external packages
     - dogsled
     - dupl
     - dupword
@@ -31,52 +34,87 @@ linters:
     - errorlint
     - execinquery
     - exhaustive
+    # - exhaustivestruct [deprecated]
+    # - exhaustruct # use constructors to handle empty fields instead of tags
     - exportloopref
+    - forbidigo
     - forcetypeassert
     - funlen
     - gci
-    - ginkgolinter
+    # - ginkgolinter # not using ginkgo
     - gocheckcompilerdirectives
+    # - gochecknoglobals # globals are ok
+    # - gochecknoinits # init() is ok
     - gocognit
     - goconst
     - gocritic
     - gocyclo
+    # - godot # comments without periods are fine
     - godox
+    # - goerr113 # want non-stick errors
     - gofmt
-    - goheader
+    # - gofumpt # too strict formatting
+    # - goheader # not using a header
     - goimports
+    # - golint [deprecated]
+    # - gomnd # magic numbers are ok
     - gomoddirectives
-    - gomodguard
+    # - gomodguard # not using whitelist of external packages
     - goprintffuncname
     - gosec
+    # - gosmopolitan # not using i18n, using it on front end
     - grouper
+    # - ifshort [deprecated]
     - importas
     - interfacebloat
+    # - interfacer [deprecated]
+    # - ireturn # return interfaces are fine
     - lll
-    - loggercheck
+    # - loggercheck # not using these logs
     - maintidx
     - makezero
+    # - maligned [deprecated]
+    - mirror
     - misspell
     - musttag
     - nakedret
     - nestif
     - nilerr
     - nilnil
+    # - nlreturn # don't need newline before return
+    - noctx
+    # - nolintlint # need this
+    - nonamedreturns
+    # - nosnakecase [deprecated]
     - nosprintfhostport
+    # - paralleltest # not making every test parallel
     - prealloc
-    - promlinter
+    - predeclared
+    # - promlinter # not using prometheus
     - reassign
     - revive
+    - rowserrcheck
+    # - scopelint [deprecated]
     - sqlclosecheck
+    # - structcheck [deprecated]
     - stylecheck
+    - tagalign
     - tagliatelle
     - tenv
-    - testableexamples
+    # - testableexamples # no output comments are ok
+    # - testpackage # _test packages are not preferred
+    # - thelper # no need to clean up call stack for tests
     - tparallel
     - unconvert
     - unparam
     - usestdlibvars
+    # - varcheck [deprecated]
+    # - varnamelen # short names are fine
+    - wastedassign
     - whitespace
+    # - wrapcheck # don't want to always wrap errors
+    # - wsl # too strict whitespace stuff
+    # - zerologlint # not using zerolog
 
 # all available settings of specific linters
 linters-settings:

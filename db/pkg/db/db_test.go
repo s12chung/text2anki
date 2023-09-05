@@ -1,7 +1,9 @@
 package db
 
 import (
-	"fmt"
+	"context"
+	"database/sql"
+	"log/slog"
 	"os"
 	"path"
 	"testing"
@@ -11,13 +13,14 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/storage/localstore"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 func TestMain(m *testing.M) {
 	if err := run(m); err != nil {
-		fmt.Println(err)
+		slog.Error("db_test.TestMain", logg.Err(err))
 		os.Exit(-1)
 	}
 }
@@ -39,7 +42,7 @@ func run(m *testing.M) error {
 	}
 	SetDBStorage(storage.NewDBStorage(storageAPI, nil))
 
-	if err := textTokenizer.Setup(); err != nil {
+	if err := textTokenizer.Setup(context.Background()); err != nil {
 		return err
 	}
 	code := m.Run()
@@ -71,10 +74,10 @@ func (t TestTransaction) Finalize() error      { return nil }
 func (t TestTransaction) FinalizeError() error { return nil }
 func NewTestTransaction(tx Tx) TestTransaction { return TestTransaction{Tx: tx} }
 
-func TxQsT(t *testing.T) TxQs {
+func TxQsT(t *testing.T, opts *sql.TxOptions) TxQs {
 	require := require.New(t)
 
-	txQs, err := NewTxQs()
+	txQs, err := NewTxQs(context.Background(), opts)
 	require.NoError(err)
 
 	txQs.Tx = NewTestTransaction(txQs.Tx)

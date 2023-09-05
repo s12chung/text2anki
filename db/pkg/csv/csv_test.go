@@ -13,9 +13,7 @@ func TestFile(t *testing.T) {
 	require := require.New(t)
 	file, err := os.CreateTemp("", "text2ankiTestFile-*.csv")
 	require.NoError(err)
-	defer func() {
-		require.NoError(os.Remove(file.Name()))
-	}()
+	defer func() { require.NoError(os.Remove(file.Name())) }()
 
 	err = File(file.Name(), [][]string{
 		{"test", "me"},

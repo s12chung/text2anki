@@ -3,11 +3,8 @@ package httptyped
 
 import (
 	"fmt"
-	"net/http"
 	"reflect"
 	"unicode"
-
-	"github.com/s12chung/text2anki/pkg/util/httputil"
 )
 
 // RegisterType registers the type to the DefaultRegistry
@@ -44,6 +41,9 @@ func (r *Registry) RegisterType(values ...any) {
 
 // HasType returns true if the type exists in the registry, also gives the name of the type
 func (r *Registry) HasType(value any) bool {
+	if value == nil {
+		return false
+	}
 	return r.registeredTypes[indirectTypeElement(reflect.TypeOf(value))]
 }
 
@@ -148,20 +148,18 @@ type Preparable interface {
 	PrepareSerialize()
 }
 
-// TypedWrap wraps around httputil.ResponseJSONWrap, but also checks the type of the response beforehand
-func TypedWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
-	return func(r *http.Request) (any, *httputil.HTTPError) {
-		resp, httpError := f(r)
-		if httpError != nil {
-			return resp, httpError
-		}
-		if !HasType(resp) {
-			return nil, httputil.Error(http.StatusInternalServerError,
-				fmt.Errorf("%v is not registered to httptyped", indirectTypeElement(reflect.TypeOf(resp))))
-		}
-		if preparable, ok := resp.(Preparable); ok {
-			preparable.PrepareSerialize()
-		}
-		return resp, nil
+var errModelNil = fmt.Errorf("httptyped model is nil")
+
+// PrepareModel checks if the type exists and prepares the model for serializing
+func PrepareModel(model any) error {
+	if model == nil {
+		return errModelNil
 	}
+	if !HasType(model) {
+		return fmt.Errorf("%v is not registered to httptyped", indirectTypeElement(reflect.TypeOf(model)))
+	}
+	if preparable, ok := model.(Preparable); ok {
+		preparable.PrepareSerialize()
+	}
+	return nil
 }

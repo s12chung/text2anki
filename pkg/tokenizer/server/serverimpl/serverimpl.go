@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"github.com/s12chung/text2anki/pkg/tokenizer/server"
-	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
 )
 
 // Tokenizer is the interface for the Tokenizer that the Server works with
@@ -85,7 +85,7 @@ func (s *ServerImpl) runWithoutStdin(port int) chan error {
 func (s *ServerImpl) setupServer(port int) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc(server.HealthzPath, handleHeathzfunc)
-	mux.HandleFunc(server.TokenizePath, httputil.ResponseJSONWrap(s.handleTokenize))
+	mux.HandleFunc(server.TokenizePath, jhttp.ResponseJSONWrap(s.handleTokenize))
 
 	server := &http.Server{
 		Addr:              fmt.Sprintf(":%v", port),
@@ -152,19 +152,19 @@ func handleHeathzfunc(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "ok\n%s", time.Now().Format(time.RFC3339))
 }
 
-func (s *ServerImpl) handleTokenize(r *http.Request) (any, *httputil.HTTPError) {
+func (s *ServerImpl) handleTokenize(r *http.Request) (any, *jhttp.HTTPError) {
 	if r.Method != http.MethodPost {
-		return nil, httputil.Error(http.StatusMethodNotAllowed, fmt.Errorf("405 Method Not Allowed"))
+		return nil, jhttp.Error(http.StatusMethodNotAllowed, fmt.Errorf("405 Method Not Allowed"))
 	}
 
 	req := &server.TokenizeRequest{}
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, err)
+		return nil, jhttp.Error(http.StatusUnprocessableEntity, err)
 	}
 
 	tokens, err := s.tokenizer.Tokenize(req.String)
 	if err != nil {
-		return nil, httputil.Error(http.StatusUnprocessableEntity, err)
+		return nil, jhttp.Error(http.StatusUnprocessableEntity, err)
 	}
 	return tokens, nil
 }

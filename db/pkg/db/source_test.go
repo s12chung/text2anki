@@ -2,6 +2,7 @@ package db
 
 import (
 	"bytes"
+	"context"
 	"path"
 	"reflect"
 	"strconv"
@@ -27,7 +28,7 @@ func firstSource(t *testing.T, txQs TxQs) Source {
 
 func TestSourceStructured_StaticCopy(t *testing.T) {
 	require := require.New(t)
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, nil)
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 
 	sourceCopy := firstSource(t, txQs).ToSourceStructured()
@@ -50,7 +51,8 @@ func TestSourcePartMedia_MarshalJSON(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			txQs := TxQsT(t)
+			txQs := TxQsT(t, nil)
+
 			source := firstSource(t, txQs).ToSourceStructured()
 			source.Parts = setupParts(t, source.Parts[0], testUUID)
 			if tc.prepareSerialize {
@@ -87,7 +89,7 @@ func TestSourcePartMedia_UnmarshalJSON(t *testing.T) {
 
 func TestSourceStructured_DefaultedName(t *testing.T) {
 	require := require.New(t)
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, nil)
 
 	source := firstSource(t, txQs).ToSourceStructured()
 	require.Equal(source.Name, source.DefaultedName())
@@ -97,7 +99,7 @@ func TestSourceStructured_DefaultedName(t *testing.T) {
 
 func TestSourceStructured_UpdateParams(t *testing.T) {
 	testName := "TestSourceStructured_UpdateParams"
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, nil)
 
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 	createParams := firstSource(t, txQs).ToSourceStructured().UpdateParams()
@@ -107,7 +109,7 @@ func TestSourceStructured_UpdateParams(t *testing.T) {
 
 func TestSourceStructured_CreateParams(t *testing.T) {
 	testName := "TestSourceStructured_CreateParams"
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, nil)
 
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 	createParams := firstSource(t, txQs).ToSourceStructured().CreateParams()
@@ -116,7 +118,7 @@ func TestSourceStructured_CreateParams(t *testing.T) {
 }
 
 func TestSource_ToSource_ToSourceStructured(t *testing.T) {
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, nil)
 
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 	test.EmptyFieldsMatch(t, firstSource(t, txQs).ToSourceStructured())
@@ -131,6 +133,7 @@ var textTokenizer = TextTokenizer{
 
 func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 	testName := "TestTextTokenizer_TokenizedTexts"
+	t.Parallel()
 
 	testCases := []struct {
 		name string
@@ -144,13 +147,14 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+			t.Parallel()
 
 			s := string(fixture.Read(t, path.Join(testName, tc.name+".txt")))
 			split := strings.Split(s, "===")
 			if len(split) == 1 {
 				split = append(split, "")
 			}
-			tokenizedTexts, err := textTokenizer.TokenizedTexts(split[0], split[1])
+			tokenizedTexts, err := textTokenizer.TokenizedTexts(context.Background(), split[0], split[1])
 			require.NoError(err)
 
 			nonSpeaker := strings.TrimPrefix(tc.name, "speaker_")
@@ -161,13 +165,14 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 
 func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 	require := require.New(t)
+	t.Parallel()
 
 	texts := []text.Text{
 		{Text: "내가 가는 이길이", Translation: "The road that I’m taking"},
 		{Text: "어디로 가는지", Translation: "Where it’s leading me to, where it’s taking me"},
 	}
 
-	tokenizedTexts, err := textTokenizer.TokenizeTexts(texts)
+	tokenizedTexts, err := textTokenizer.TokenizeTexts(context.Background(), texts)
 	require.NoError(err)
 
 	fixture.CompareReadOrUpdate(t, "TestTextTokenizer_TokenizeTexts.json", fixture.JSON(t, tokenizedTexts))
@@ -175,7 +180,7 @@ func TestTextTokenizer_TokenizeTexts(t *testing.T) {
 
 func TestQueries_SourceCreate(t *testing.T) {
 	require := require.New(t)
-	txQs := TxQsT(t)
+	txQs := TxQsT(t, WriteOpts())
 
 	source, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t, txQs).ToSourceStructured().CreateParams())
 	require.NoError(err)
@@ -184,12 +189,12 @@ func TestQueries_SourceCreate(t *testing.T) {
 
 func TestQueries_SourceUpdate(t *testing.T) {
 	require := require.New(t)
-
-	txQs := TxQsT(t)
+	t.Parallel()
+	txQs := TxQsT(t, WriteOpts())
 
 	newSource, err := txQs.SourceCreate(txQs.Ctx(), firstSource(t, txQs).ToSourceStructured().CreateParams())
 	require.NoError(err)
-	time.Sleep(1 * time.Second)
+	time.Sleep(time.Second)
 
 	source, err := txQs.SourceUpdate(txQs.Ctx(), newSource.ToSourceStructured().UpdateParams())
 	require.NoError(err)

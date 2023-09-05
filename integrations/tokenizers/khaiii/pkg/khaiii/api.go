@@ -156,7 +156,7 @@ func goMorph(morphC C.khaiii_morph_t) Morph {
 	return morph
 }
 
-func strndup(i any, len int) string {
+func strndup(i any, sLen int) string {
 	cs := (*C.char)(unsafe.Pointer(&i))
-	return C.GoStringN(cs, C.int(C.strnlen(cs, C.size_t(len))))
+	return C.GoStringN(cs, C.int(C.strnlen(cs, C.size_t(sLen))))
 }

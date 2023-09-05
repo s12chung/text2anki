@@ -35,7 +35,7 @@ func TestRoutes_NoteCreate(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			txQs := testdb.TxQs(t)
+			txQs := testdb.TxQs(t, db.WriteOpts())
 
 			reqBody := fixture.Read(t, path.Join(testName, tc.name+".json"))
 			req := notesServer.NewTxRequest(t, txQs, http.MethodPost, "", bytes.NewReader(reqBody))

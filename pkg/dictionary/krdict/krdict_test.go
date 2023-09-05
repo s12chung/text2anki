@@ -1,6 +1,7 @@
 package krdict
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,11 +17,11 @@ func init() { testdb.MustSetup() }
 func TestKrDict_Search(t *testing.T) {
 	require := require.New(t)
 	testName := "TestKrDict_Search"
-	dict := New(testdb.TxQs(t))
+	dict := New()
 
 	// PartOfSpeechOther will convert to PartOfSpeechEmpty
 	for _, pos := range []lang.PartOfSpeech{lang.PartOfSpeechEmpty, lang.PartOfSpeechOther} {
-		terms, err := dict.Search("마음", pos)
+		terms, err := dict.Search(context.Background(), "마음", pos)
 		require.NoError(err)
 		fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))
 	}

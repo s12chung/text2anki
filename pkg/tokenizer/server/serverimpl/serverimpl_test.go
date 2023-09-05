@@ -2,9 +2,11 @@ package serverimpl
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -14,6 +16,8 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/tokenizer/server"
 	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
 
@@ -26,16 +30,16 @@ func TestMain(m *testing.M) {
 	go func() {
 		err := <-serverChannel
 		if err != nil {
-			fmt.Println(err)
+			slog.Error("serverimpl serverChannel", logg.Err(err))
 			os.Exit(-1)
 		}
 	}()
 	code := m.Run()
 	if err := server.Stop(); err != nil {
-		fmt.Println(err)
+		slog.Error("serverimpl server.Stop()", logg.Err(err))
 	}
 	if !cleaned {
-		fmt.Println("cleaned = false from Cleanup()")
+		slog.Error("cleaned = false from Cleanup()")
 		os.Exit(-1)
 	}
 	os.Exit(code)
@@ -57,11 +61,9 @@ type tokenizeResponse struct {
 func TestHealthz(t *testing.T) {
 	require := require.New(t)
 
-	resp, err := http.Get(getURI(server.HealthzPath))
+	resp, err := httputil.Get(context.Background(), getURI(server.HealthzPath))
 	require.NoError(err)
-	defer func() {
-		require.NoError(resp.Body.Close())
-	}()
+	defer func() { require.NoError(resp.Body.Close()) }()
 
 	require.Equal(http.StatusOK, resp.StatusCode)
 
@@ -80,18 +82,16 @@ func TestTokenize(t *testing.T) {
 		String: "my example",
 	}
 
-	resp, err := http.Post(getURI(server.TokenizePath),
-		httputil.JSONContentType,
+	resp, err := httputil.Post(context.Background(), getURI(server.TokenizePath),
+		jhttp.JSONContentType,
 		bytes.NewBuffer(test.JSON(t, input)))
 	require.NoError(err)
-	defer func() {
-		require.NoError(resp.Body.Close())
-	}()
+	defer func() { require.NoError(resp.Body.Close()) }()
 
 	require.Equal(http.StatusOK, resp.StatusCode)
 
 	contentType := resp.Header.Get("Content-Type")
-	require.Equal(httputil.JSONContentType, contentType)
+	require.Equal(jhttp.JSONContentType, contentType)
 
 	data := &tokenizeResponse{}
 	err = json.NewDecoder(resp.Body).Decode(data)

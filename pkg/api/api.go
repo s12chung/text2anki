@@ -2,6 +2,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -12,10 +13,10 @@ import (
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/synthesizer"
-	"github.com/s12chung/text2anki/pkg/util/httputil"
-	"github.com/s12chung/text2anki/pkg/util/httputil/httptyped"
-	"github.com/s12chung/text2anki/pkg/util/httputil/httputilchi"
-	"github.com/s12chung/text2anki/pkg/util/httputil/reqtx"
+	"github.com/s12chung/text2anki/pkg/util/httptyped"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/jchi"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
 )
 
 // Routes contains the routes used for the api
@@ -31,7 +32,7 @@ type Routes struct {
 }
 
 // NewRoutes is the routes used by the API
-func NewRoutes(c config.Config) Routes {
+func NewRoutes(ctx context.Context, c config.Config) Routes {
 	routes := Routes{
 		TxIntegrator: config.TxIntegrator(c.TxPool),
 
@@ -39,7 +40,7 @@ func NewRoutes(c config.Config) Routes {
 		Synthesizer: config.Synthesizer(),
 		TextTokenizer: db.TextTokenizer{
 			Parser:       config.Parser(),
-			Tokenizer:    config.Tokenizer(c.TokenizerType),
+			Tokenizer:    config.Tokenizer(ctx, c.TokenizerType),
 			CleanSpeaker: true,
 		},
 
@@ -51,7 +52,7 @@ func NewRoutes(c config.Config) Routes {
 }
 
 // Setup sets up the routes
-func (rs Routes) Setup() error { return rs.TextTokenizer.Setup() }
+func (rs Routes) Setup(ctx context.Context) error { return rs.TextTokenizer.Setup(ctx) }
 
 // Cleanup cleans up the routes
 func (rs Routes) Cleanup() error { return rs.TextTokenizer.Cleanup() }
@@ -59,8 +60,8 @@ func (rs Routes) Cleanup() error { return rs.TextTokenizer.Cleanup() }
 // Router returns the router with all the routes set
 func (rs Routes) Router() chi.Router {
 	var r chi.Router = chi.NewRouter()
-	r.NotFound(httputil.ResponseJSONWrap(rs.NotFound))
-	r.MethodNotAllowed(httputil.ResponseJSONWrap(rs.NotAllowed))
+	r.NotFound(jhttp.ResponseJSONWrap(rs.NotFound))
+	r.MethodNotAllowed(jhttp.ResponseJSONWrap(rs.NotAllowed))
 
 	r.Route(config.StorageURLPath, func(r chi.Router) {
 		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
@@ -71,63 +72,75 @@ func (rs Routes) Router() chi.Router {
 	return r
 }
 
-func (rs Routes) txRouter() chi.Router {
-	r := httputilchi.NewRouter(chi.NewRouter(), httpWrapper{TxIntegrator: rs.TxIntegrator})
-	r.Router.Use(httputil.RequestWrap(rs.TxIntegrator.SetTxContext))
+func responseJSONWrap(f jhttp.ResponseJSONWrapFunc) http.HandlerFunc {
+	return jhttp.ResponseJSONWrap(responseWrap(f))
+}
 
-	r.Route("/sources", func(r httputilchi.Router) {
+func (rs Routes) txRouter() chi.Router {
+	r := jchi.NewRouter(chi.NewRouter(), httpWrapper{})
+	r.Router.Use(jhttp.RequestWrap(rs.TxIntegrator.SetTxContext))
+
+	r.Route("/sources", func(r jchi.Router) {
 		r.Get("/", rs.SourceIndex)
 		r.Post("/", rs.SourceCreate)
 
-		r.Route("/{sourceID}", func(r httputilchi.Router) {
+		r.Route("/{sourceID}", func(r jchi.Router) {
 			r.Use(rs.SourceCtx)
 			r.Get("/", rs.SourceGet)
 			r.Patch("/", rs.SourceUpdate)
 			r.Delete("/", rs.SourceDestroy)
 		})
 
-		r.Route("/pre_part_lists", func(r httputilchi.Router) {
+		r.Route("/pre_part_lists", func(r jchi.Router) {
 			r.Post("/", rs.PrePartListCreate)
 			r.Post("/sign", rs.PrePartListSign)
 			r.Post("/verify", rs.PrePartListVerify)
-			r.Route("/{prePartListID}", func(r httputilchi.Router) {
+			r.Route("/{prePartListID}", func(r jchi.Router) {
 				r.Get("/", rs.PrePartListGet)
 			})
 		})
 	})
-	r.Route("/terms", func(r httputilchi.Router) {
+	r.Route("/terms", func(r jchi.Router) {
 		r.Get("/search", rs.TermsSearch)
 	})
-	r.Route("/notes", func(r httputilchi.Router) {
+	r.Route("/notes", func(r jchi.Router) {
 		r.Post("/", rs.NoteCreate)
 	})
 	return r.Router
 }
 
-func responseJSONWrap(f httputil.ResponseJSONWrapFunc) http.HandlerFunc {
-	return httputil.ResponseJSONWrap(responseWrap(f))
+type httpWrapper struct{}
+
+func (h httpWrapper) RequestWrap(f jhttp.RequestWrapFunc) jhttp.RequestWrapFunc {
+	return reqtx.TxRollbackRequestWrap(f)
+}
+func (h httpWrapper) ResponseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+	return reqtx.TxFinalizeWrap(responseWrap(f))
 }
 
-func responseWrap(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
-	return httptyped.TypedWrap(f)
+func responseWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+	return prepareModelWrap(f)
 }
-
-type httpWrapper struct{ TxIntegrator reqtx.Integrator }
-
-func (h httpWrapper) WrapRequest(f httputil.RequestWrapFunc) httputil.RequestWrapFunc {
-	return h.TxIntegrator.TxRollbackRequestWrap(f)
-}
-func (h httpWrapper) WrapResponse(f httputil.ResponseJSONWrapFunc) httputil.ResponseJSONWrapFunc {
-	return h.TxIntegrator.TxFinalizeWrap(responseWrap(f))
+func prepareModelWrap(f jhttp.ResponseJSONWrapFunc) jhttp.ResponseJSONWrapFunc {
+	return func(r *http.Request) (any, *jhttp.HTTPError) {
+		model, httpErr := f(r)
+		if httpErr != nil {
+			return model, httpErr
+		}
+		if err := httptyped.PrepareModel(model); err != nil {
+			return model, jhttp.Error(http.StatusInternalServerError, err)
+		}
+		return model, nil
+	}
 }
 
 // NotFound is the route handler for not matching pattern routes
-func (rs Routes) NotFound(r *http.Request) (any, *httputil.HTTPError) {
-	return nil, httputil.Error(http.StatusNotFound, fmt.Errorf("request URL, %v, does not match any route", r.URL.String()))
+func (rs Routes) NotFound(r *http.Request) (any, *jhttp.HTTPError) {
+	return nil, jhttp.Error(http.StatusNotFound, fmt.Errorf("request URL, %v, does not match any route", r.URL.String()))
 }
 
 // NotAllowed is the router handler for method not handled for the pattern
-func (rs Routes) NotAllowed(r *http.Request) (any, *httputil.HTTPError) {
-	return nil, httputil.Error(http.StatusMethodNotAllowed,
+func (rs Routes) NotAllowed(r *http.Request) (any, *jhttp.HTTPError) {
+	return nil, jhttp.Error(http.StatusMethodNotAllowed,
 		fmt.Errorf("the method, %v (at %v), is not allowed with at this URL", r.Method, r.URL.String()))
 }

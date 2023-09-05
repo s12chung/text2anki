@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/util/httputil"
+	"github.com/s12chung/text2anki/pkg/util/jhttp"
 )
 
 type txn struct {
@@ -54,21 +54,21 @@ func TestIntegrator_SetTxContext(t *testing.T) {
 	req, err := integrator.SetTxContext(withTx(newRequest()))
 	require.Nil(err)
 
-	tx, err := integrator.ContextTx(req)
+	tx, err := ContextTx(req)
 	require.Nil(err)
 	require.Equal(&txn{id: txID}, tx)
 }
 
-func TestIntegrator_TxRollbackRequestWrap(t *testing.T) {
+func TestTxRollbackRequestWrap(t *testing.T) {
 	testCases := []struct {
 		name    string
 		request *http.Request
-		err     *httputil.HTTPError
-		reqErr  *httputil.HTTPError
+		err     *jhttp.HTTPError
+		reqErr  *jhttp.HTTPError
 	}{
 		{name: "normal", request: withTx(newRequest())},
-		{name: "no_id", request: newRequest(), err: httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail, was nil instead"))},
-		{name: "req_error", request: withTx(newRequest()), reqErr: httputil.Error(http.StatusBadRequest, fmt.Errorf("test_induced"))},
+		{name: "no_id", request: newRequest(), err: jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail, was nil instead"))},
+		{name: "req_error", request: withTx(newRequest()), reqErr: jhttp.Error(http.StatusBadRequest, fmt.Errorf("test_induced"))},
 	}
 	for _, tc := range testCases {
 		tc := tc
@@ -79,11 +79,11 @@ func TestIntegrator_TxRollbackRequestWrap(t *testing.T) {
 			req, err := integrator.SetTxContext(tc.request)
 			require.Nil(err)
 
-			finalReq, err := integrator.TxRollbackRequestWrap(func(r *http.Request) (*http.Request, *httputil.HTTPError) {
+			finalReq, err := TxRollbackRequestWrap(func(r *http.Request) (*http.Request, *jhttp.HTTPError) {
 				return r, tc.reqErr
 			})(req)
 
-			tx, ctxErr := integrator.ContextTx(finalReq)
+			tx, ctxErr := ContextTx(finalReq)
 
 			require.Equal(req, finalReq)
 			if tc.err != nil {
@@ -105,16 +105,16 @@ func TestIntegrator_TxRollbackRequestWrap(t *testing.T) {
 	}
 }
 
-func TestIntegrator_TxFinalizeWrap(t *testing.T) {
+func TestTxFinalizeWrap(t *testing.T) {
 	testCases := []struct {
 		name    string
 		request *http.Request
-		err     *httputil.HTTPError
-		reqErr  *httputil.HTTPError
+		err     *jhttp.HTTPError
+		reqErr  *jhttp.HTTPError
 	}{
 		{name: "normal", request: withTx(newRequest())},
-		{name: "no_id", request: newRequest(), err: httputil.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail, was nil instead"))},
-		{name: "req_error", request: withTx(newRequest()), reqErr: httputil.Error(http.StatusBadRequest, fmt.Errorf("test_induced"))},
+		{name: "no_id", request: newRequest(), err: jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to httpdb.Tx fail, was nil instead"))},
+		{name: "req_error", request: withTx(newRequest()), reqErr: jhttp.Error(http.StatusBadRequest, fmt.Errorf("test_induced"))},
 	}
 	for _, tc := range testCases {
 		tc := tc
@@ -125,11 +125,11 @@ func TestIntegrator_TxFinalizeWrap(t *testing.T) {
 			req, err := integrator.SetTxContext(tc.request)
 			require.Nil(err)
 
-			model, err := integrator.TxFinalizeWrap(func(r *http.Request) (any, *httputil.HTTPError) {
+			model, err := TxFinalizeWrap(func(r *http.Request) (any, *jhttp.HTTPError) {
 				return nil, tc.reqErr
 			})(req)
 
-			tx, ctxErr := integrator.ContextTx(req)
+			tx, ctxErr := ContextTx(req)
 
 			require.Equal(nil, model)
 			if tc.err != nil {
