@@ -65,7 +65,7 @@ type PrePartSignResponse struct {
 }
 
 // PrePartListSign returns signed requests to generate Source Parts
-func (rs Routes) PrePartListSign(r *http.Request) (any, *jhttp.HTTPError) {
+func (rs Routes) PrePartListSign(r *http.Request, _ db.TxQs) (any, *jhttp.HTTPError) {
 	req := PrePartListSignRequest{}
 	if httpError := extractAndValidate(r, &req); httpError != nil {
 		return nil, httpError
@@ -82,7 +82,7 @@ func (rs Routes) PrePartListSign(r *http.Request) (any, *jhttp.HTTPError) {
 }
 
 // PrePartListGet returns the PrePartListURL for a given ID
-func (rs Routes) PrePartListGet(r *http.Request) (any, *jhttp.HTTPError) {
+func (rs Routes) PrePartListGet(r *http.Request, _ db.TxQs) (any, *jhttp.HTTPError) {
 	prePartListID := chi.URLParam(r, "prePartListID")
 	if prePartListID == "" {
 		return nil, jhttp.Error(http.StatusNotFound, fmt.Errorf("prePartListID not found"))
@@ -120,7 +120,7 @@ func (p PrePartListVerifyResponse) StaticCopy() any {
 }
 
 // PrePartListVerify verifies the text whether it fits any extractor and returns the extractor type
-func (rs Routes) PrePartListVerify(r *http.Request) (any, *jhttp.HTTPError) {
+func (rs Routes) PrePartListVerify(r *http.Request, _ db.TxQs) (any, *jhttp.HTTPError) {
 	req := PrePartListVerifyRequest{}
 	if httpError := extractAndValidate(r, &req); httpError != nil {
 		return nil, httpError
@@ -152,7 +152,7 @@ func (p PrePartListCreateResponse) StaticCopy() any {
 }
 
 // PrePartListCreate creates PrePartList given the type of extractor and text
-func (rs Routes) PrePartListCreate(r *http.Request) (any, *jhttp.HTTPError) {
+func (rs Routes) PrePartListCreate(r *http.Request, _ db.TxQs) (any, *jhttp.HTTPError) {
 	req := PrePartListCreateRequest{}
 	if httpError := extractAndValidate(r, &req); httpError != nil {
 		return nil, httpError

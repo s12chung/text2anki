@@ -8,7 +8,6 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/util/chiutil"
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
-	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
 )
 
 func idFromRequest(r *http.Request) (int64, *jhttp.HTTPError) {
@@ -17,10 +16,6 @@ func idFromRequest(r *http.Request) (int64, *jhttp.HTTPError) {
 		return 0, jhttp.Error(http.StatusNotFound, err)
 	}
 	return id, nil
-}
-
-func txQsFromRequest(r *http.Request) (db.TxQs, *jhttp.HTTPError) {
-	return reqtx.ContextTx[db.TxQs](r)
 }
 
 func extractAndValidate(r *http.Request, req any) *jhttp.HTTPError {

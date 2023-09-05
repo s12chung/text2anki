@@ -19,22 +19,14 @@ func init() {
 }
 
 // SourceIndex returns a list of sources
-func (rs Routes) SourceIndex(r *http.Request) (any, *jhttp.HTTPError) {
-	txQs, httpErr := txQsFromRequest(r)
-	if httpErr != nil {
-		return nil, httpErr
-	}
+func (rs Routes) SourceIndex(_ *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
 	return jhttp.ReturnModelOr500(func() (any, error) {
 		return txQs.SourceStructuredIndex(txQs.Ctx())
 	})
 }
 
 // SourceGet gets the source
-func (rs Routes) SourceGet(r *http.Request) (any, *jhttp.HTTPError) {
-	txQs, httpErr := txQsFromRequest(r)
-	if httpErr != nil {
-		return nil, httpErr
-	}
+func (rs Routes) SourceGet(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
 	return sourceStructuredFromID(r, txQs)
 }
 
@@ -51,11 +43,7 @@ func init() {
 }
 
 // SourceUpdate updates the source
-func (rs Routes) SourceUpdate(r *http.Request) (any, *jhttp.HTTPError) {
-	txQs, httpErr := txQsFromRequest(r)
-	if httpErr != nil {
-		return nil, httpErr
-	}
+func (rs Routes) SourceUpdate(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
 	sourceStructured, httpErr := sourceStructuredFromID(r, txQs)
 	if httpErr != nil {
 		return nil, httpErr
@@ -95,7 +83,7 @@ func init() {
 }
 
 // SourceCreate creates a new source
-func (rs Routes) SourceCreate(r *http.Request) (any, *jhttp.HTTPError) {
+func (rs Routes) SourceCreate(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
 	req := SourceCreateRequest{}
 	if httpErr := extractAndValidate(r, &req); httpErr != nil {
 		return nil, httpErr
@@ -115,11 +103,6 @@ func (rs Routes) SourceCreate(r *http.Request) (any, *jhttp.HTTPError) {
 	source, err := rs.sourceCreateSource(r.Context(), req, prePartList)
 	if err != nil {
 		return nil, err
-	}
-
-	txQs, httpErr := txQsFromRequest(r)
-	if httpErr != nil {
-		return nil, httpErr
 	}
 	return jhttp.ReturnModelOr500(func() (any, error) {
 		source, err := txQs.SourceCreate(txQs.Ctx(), source.CreateParams())
@@ -175,11 +158,7 @@ func (rs Routes) sourceCreateSourceNameRef(name, ref string, prePartList *db.Pre
 }
 
 // SourceDestroy destroys the source
-func (rs Routes) SourceDestroy(r *http.Request) (any, *jhttp.HTTPError) {
-	txQs, httpErr := txQsFromRequest(r)
-	if httpErr != nil {
-		return nil, httpErr
-	}
+func (rs Routes) SourceDestroy(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
 	sourceStructured, httpErr := sourceStructuredFromID(r, txQs)
 	if httpErr != nil {
 		return nil, httpErr

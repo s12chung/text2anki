@@ -15,8 +15,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/synthesizer"
 	"github.com/s12chung/text2anki/pkg/util/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
-	"github.com/s12chung/text2anki/pkg/util/jhttp/jchi"
 	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
+	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx/reqtxchi"
 )
 
 // Routes contains the routes used for the api
@@ -77,32 +77,32 @@ func responseJSONWrap(f jhttp.ResponseHandler) http.HandlerFunc {
 }
 
 func (rs Routes) txRouter() chi.Router {
-	r := jchi.NewRouter(chi.NewRouter(), httpWrapper{})
+	r := reqtxchi.NewRouter[db.TxQs](chi.NewRouter(), httpWrapper{})
 	r.Router.Use(jhttp.RequestWrap(rs.TxIntegrator.SetTxContext))
 
-	r.Route("/sources", func(r jchi.Router) {
+	r.Route("/sources", func(r reqtxchi.Router[db.TxQs]) {
 		r.Get("/", rs.SourceIndex)
 		r.Post("/", rs.SourceCreate)
 
-		r.Route("/{id}", func(r jchi.Router) {
+		r.Route("/{id}", func(r reqtxchi.Router[db.TxQs]) {
 			r.Get("/", rs.SourceGet)
 			r.Patch("/", rs.SourceUpdate)
 			r.Delete("/", rs.SourceDestroy)
 		})
 
-		r.Route("/pre_part_lists", func(r jchi.Router) {
+		r.Route("/pre_part_lists", func(r reqtxchi.Router[db.TxQs]) {
 			r.Post("/", rs.PrePartListCreate)
 			r.Post("/sign", rs.PrePartListSign)
 			r.Post("/verify", rs.PrePartListVerify)
-			r.Route("/{prePartListID}", func(r jchi.Router) {
+			r.Route("/{prePartListID}", func(r reqtxchi.Router[db.TxQs]) {
 				r.Get("/", rs.PrePartListGet)
 			})
 		})
 	})
-	r.Route("/terms", func(r jchi.Router) {
+	r.Route("/terms", func(r reqtxchi.Router[db.TxQs]) {
 		r.Get("/search", rs.TermsSearch)
 	})
-	r.Route("/notes", func(r jchi.Router) {
+	r.Route("/notes", func(r reqtxchi.Router[db.TxQs]) {
 		r.Post("/", rs.NoteCreate)
 	})
 	return r.Router
