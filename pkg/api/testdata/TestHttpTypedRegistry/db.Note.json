@@ -7,6 +7,8 @@
     "id": "int64",
     "notes": "string",
     "part_of_speech": "string",
+    "source_name": "string",
+    "source_reference": "string",
     "text": "string",
     "translation": "string",
     "usage": "string",

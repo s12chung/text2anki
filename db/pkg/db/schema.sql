@@ -36,8 +36,10 @@ CREATE TABLE notes (
     common_level INTEGER NOT NULL,
     usage TEXT NOT NULL,
     usage_translation TEXT NOT NULL,
-    dictionary_source TEXT NOT NULL,
 
+    source_name TEXT NOT NULL,
+    source_reference TEXT NOT NULL,
+    dictionary_source TEXT NOT NULL,
     notes TEXT NOT NULL,
 
     downloaded BOOLEAN DEFAULT false NOT NULL

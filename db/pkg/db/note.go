@@ -13,6 +13,7 @@ func init() {
 		"Explanation":      {rule.Presence{}},
 		"Usage":            {rule.Presence{}},
 		"UsageTranslation": {rule.Presence{}},
+
 		"DictionarySource": {rule.Presence{}},
 	}))
 }
@@ -35,8 +36,10 @@ func (n Note) CreateParams() NoteCreateParams {
 		Explanation:      n.Explanation,
 		Usage:            n.Usage,
 		UsageTranslation: n.UsageTranslation,
-		DictionarySource: n.DictionarySource,
 
-		Notes: n.Notes,
+		SourceName:       n.SourceName,
+		SourceReference:  n.SourceReference,
+		DictionarySource: n.DictionarySource,
+		Notes:            n.Notes,
 	}
 }

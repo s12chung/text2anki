@@ -17,6 +17,8 @@ type Note struct {
 	CommonLevel      int64  `json:"common_level"`
 	Usage            string `json:"usage"`
 	UsageTranslation string `json:"usage_translation"`
+	SourceName       string `json:"source_name"`
+	SourceReference  string `json:"source_reference"`
 	DictionarySource string `json:"dictionary_source"`
 	Notes            string `json:"notes"`
 	Downloaded       bool   `json:"downloaded"`
