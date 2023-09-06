@@ -25,7 +25,7 @@ func (e HTTPError) Error() string {
 
 // LogError logs the error
 func LogError(r *http.Request, httpErr *HTTPError) {
-	slog.Error("jhttp response", slog.Int("code", httpErr.Code), slog.String("url", r.URL.Path), slog.String("method", r.Method), logg.Err(httpErr))
+	slog.Error("jhttp response", slog.String("method", r.Method), slog.String("url", r.URL.Path), slog.Int("code", httpErr.Code), logg.Err(httpErr))
 }
 
 // Error is a safe shorthand to create a new HTTPError
