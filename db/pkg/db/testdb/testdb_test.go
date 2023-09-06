@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
@@ -18,16 +19,9 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func writeModelFile(t *testing.T, filename string, fileBytes []byte) {
-	require := require.New(t)
-	require.NoError(os.WriteFile(filepath.Join(modelsDir, filename), fileBytes, ioutil.OwnerRWGroupR))
-}
-
 func TestGen___NotesSeed(t *testing.T) {
 	require := require.New(t)
-	if !fixture.WillUpdate() {
-		t.Skip("TestGen___ test generates fixtures")
-	}
+
 	notes, err := Notes().Models()
 	require.NoError(err)
 	for _, note := range notes {
@@ -41,9 +35,6 @@ func TestGen___NotesSeed(t *testing.T) {
 
 func TestGen___TermsSeed(t *testing.T) {
 	testName := "TestGen___TermsSeed"
-	if !fixture.WillUpdate() {
-		t.Skip("TestGen___ test generates fixtures")
-	}
 	require := require.New(t)
 	lexes, err := seedkrdict.UnmarshallRscPath(fixture.JoinTestData(testName))
 	require.NoError(err)
@@ -67,14 +58,13 @@ func TestGen___TermsSeed(t *testing.T) {
 		}
 		basePopularity += len(lex.LexicalEntries)
 	}
-	writeModelFile(t, Terms().Filename(), fixture.JSON(t, terms))
+	compareReadOrUpdate(t, Terms().Filename(), fixture.JSON(t, terms))
 }
 
 func TestGen___SourceStructuredsSeed(t *testing.T) {
+	test.CISkip(t, "can't run tokenizer.TokenizedTexts in CI")
+
 	testName := "TestGen___SourceStructuredsSeed"
-	if !fixture.WillUpdate() {
-		t.Skip("TestGen___ test generates fixtures")
-	}
 	require := require.New(t)
 	ctx := context.Background()
 
@@ -97,7 +87,7 @@ func TestGen___SourceStructuredsSeed(t *testing.T) {
 		sources[i] = db.SourceStructured{Name: name, Reference: reference, Parts: []db.SourcePart{{TokenizedTexts: tokenizedTexts}}}
 		test.EmptyFieldsMatch(t, sources[i], "ID", "UpdatedAt", "CreatedAt")
 	}
-	writeModelFile(t, SourceStructureds().Filename(), fixture.JSON(t, sources))
+	compareReadOrUpdate(t, SourceStructureds().Filename(), fixture.JSON(t, sources))
 }
 
 func allFilePaths(t *testing.T, p string) []string {
@@ -114,4 +104,18 @@ func allFilePaths(t *testing.T, p string) []string {
 		paths = append(paths, path.Join(p, path.Join(file.Name())))
 	}
 	return paths
+}
+
+func compareReadOrUpdate(t *testing.T, filename string, resultBytes []byte) {
+	require := require.New(t)
+	p := path.Join(modelsDir, filename)
+
+	if fixture.WillUpdate() {
+		assert := assert.New(t)
+		assert.NoError(os.WriteFile(p, resultBytes, ioutil.OwnerRWGroupR))
+		assert.Fail(fixture.UpdateFailMessage)
+	}
+	expected, err := os.ReadFile(p) //nolint:gosec // for tests
+	require.NoError(err)
+	require.Equal(strings.TrimSpace(string(expected)), strings.TrimSpace(string(resultBytes)))
 }

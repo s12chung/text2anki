@@ -9,6 +9,8 @@ BIN ?= dist/db
 build:
 	go build -tags "$(TAGS)" -v -o $(BIN) .
 
+create: build
+	$(BIN) create
 .PHONY: seed
 seed: build
 	$(BIN) seed
