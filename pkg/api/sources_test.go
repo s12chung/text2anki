@@ -73,7 +73,7 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 			t.Parallel()
 
 			txQs := testdb.TxQs(t, db.WriteOpts())
-			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructuredsMust()[1].CreateParams())
+			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructureds().ModelsT(t)[1].CreateParams())
 			require.NoError(err)
 
 			reqBody := test.JSON(t, SourceUpdateRequest{Name: tc.newName, Reference: tc.reference})
@@ -239,7 +239,7 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 			t.Parallel()
 
 			txQs := testdb.TxQs(t, db.WriteOpts())
-			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructuredsMust()[1].CreateParams())
+			created, err := txQs.SourceCreate(txQs.Ctx(), models.SourceStructureds().ModelsT(t)[1].CreateParams())
 			require.NoError(err)
 			if tc.path == "" {
 				tc.path = idPath("", created.ID)

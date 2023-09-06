@@ -13,17 +13,13 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/pmezard/go-difflib/difflib"
-
 	"github.com/s12chung/text2anki/db/pkg/cli/search"
 	"github.com/s12chung/text2anki/db/pkg/csv"
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
-	"github.com/s12chung/text2anki/db/pkg/db/testdb/testdbgen"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 	"github.com/s12chung/text2anki/pkg/firm"
-	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
@@ -33,8 +29,6 @@ func init() {
 
 const dbPath = "data.sqlite3"
 
-const cmdStringGenerate = "generate"
-const cmdStringDiff = "diff"
 const cmdStringCreate = "create"
 const cmdStringSeed = "seed"
 const cmdStringTestDB = "testdb"
@@ -42,8 +36,6 @@ const cmdStringSchema = "schema"
 const cmdStringSearch = "search"
 
 var commands = strings.Join([]string{
-	cmdStringGenerate,
-	cmdStringDiff,
 	cmdStringCreate,
 	cmdStringSeed,
 	cmdStringTestDB,
@@ -69,10 +61,6 @@ func main() {
 
 func run(cmd string) error {
 	switch cmd {
-	case cmdStringGenerate:
-		return cmdGenerate()
-	case cmdStringDiff:
-		return cmdDiff()
 	case cmdStringCreate:
 		return cmdCreate()
 	case cmdStringSeed:
@@ -86,45 +74,6 @@ func run(cmd string) error {
 	default:
 		return fmt.Errorf(usage+" -- %v not found", os.Args[0], cmd)
 	}
-}
-
-const generateFile = "pkg/db/testdb/models/models.go"
-
-func cmdGenerate() error {
-	code, err := testdbgen.GenerateModelsCode()
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(generateFile, code, ioutil.OwnerRWGroupR)
-}
-
-func cmdDiff() error {
-	existingCode, err := os.ReadFile(generateFile)
-	if err != nil {
-		return err
-	}
-
-	code, err := testdbgen.GenerateModelsCode()
-	if err != nil {
-		return err
-	}
-
-	diff := difflib.UnifiedDiff{
-		A:        difflib.SplitLines(string(existingCode)),
-		B:        difflib.SplitLines(string(code)),
-		FromFile: "Original",
-		ToFile:   "Generated",
-		Context:  3,
-	}
-	text, err := difflib.GetUnifiedDiffString(diff)
-	if err != nil {
-		return err
-	}
-	if text != "" {
-		fmt.Println(text) //nolint:forbidigo // it's the output of the command
-		return fmt.Errorf("diff exists for generated result and %v", generateFile)
-	}
-	return nil
 }
 
 func cmdCreate() error {

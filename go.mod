@@ -11,7 +11,6 @@ require (
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/pemistahl/lingua-go v1.3.4
-	github.com/pmezard/go-difflib v1.0.0
 	github.com/stretchr/testify v1.8.4
 	gopkg.in/dnaeon/go-vcr.v3 v3.1.2
 )
@@ -20,6 +19,7 @@ require (
 	github.com/asticode/go-astikit v0.40.0 // indirect
 	github.com/asticode/go-astits v1.13.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63 // indirect
 	golang.org/x/net v0.14.0 // indirect

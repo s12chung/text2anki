@@ -31,7 +31,7 @@ func TestGen___NotesSeed(t *testing.T) {
 	if !fixture.WillUpdate() {
 		t.Skip("TestGen___ test generates fixtures")
 	}
-	notes, err := models.Notes()
+	notes, err := models.Notes().Models()
 	require.NoError(err)
 	for _, note := range notes {
 		emptyFields := []string{"ID", "Downloaded"}
@@ -70,7 +70,7 @@ func TestGen___TermsSeed(t *testing.T) {
 		}
 		basePopularity += len(lex.LexicalEntries)
 	}
-	writeModelFile(t, models.TermsSeedFilename, fixture.JSON(t, terms))
+	writeModelFile(t, models.Terms().Filename(), fixture.JSON(t, terms))
 }
 
 func TestGen___SourceStructuredsSeed(t *testing.T) {
@@ -97,7 +97,7 @@ func TestGen___SourceStructuredsSeed(t *testing.T) {
 		sources[i] = db.SourceStructured{Name: path.Base(fp), Parts: []db.SourcePart{{TokenizedTexts: tokenizedTexts}}}
 		test.EmptyFieldsMatch(t, sources[i], "ID", "UpdatedAt", "CreatedAt")
 	}
-	writeModelFile(t, models.SourceStructuredsSeedFilename, fixture.JSON(t, sources))
+	writeModelFile(t, models.SourceStructureds().Filename(), fixture.JSON(t, sources))
 }
 
 func allFilePaths(t *testing.T, p string) []string {
