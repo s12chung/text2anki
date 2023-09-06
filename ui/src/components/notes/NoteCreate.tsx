@@ -9,7 +9,7 @@ interface INoteFormData {
   note: Promise<Note>
 }
 
-const NoteForm: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ data, onClose }) => {
+const NoteCreate: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ data, onClose }) => {
   const fetcher = useFetcher<INoteFormData>()
   const commonLevelIndex = 3
   const createNoteDataKeys = Object.keys(CreateNoteDataEmpty) as (keyof CreateNoteData)[]
@@ -84,4 +84,4 @@ const TextFormField: React.FC<{ data: CreateNoteData; dataKey: keyof CreateNoteD
   )
 }
 
-export default NoteForm
+export default NoteCreate

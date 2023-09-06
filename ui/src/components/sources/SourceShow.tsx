@@ -9,7 +9,7 @@ import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitError from "../AwaitError.tsx"
 import SlideOver from "../SlideOver.tsx"
-import NoteForm from "../notes/NoteForm.tsx"
+import NoteCreate from "../notes/NoteCreate.tsx"
 import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Await, Form, Link, useFetcher } from "react-router-dom"
 
@@ -504,7 +504,7 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
       {createNoteData !== null && (
         <SlideOver.Dialog show onClose={onCloseCreateNote}>
           <SlideOver.Header title="Create Note" onClose={onCloseCreateNote} />
-          <NoteForm data={createNoteData} onClose={onCloseCreateNote} />
+          <NoteCreate data={createNoteData} onClose={onCloseCreateNote} />
         </SlideOver.Dialog>
       )}
     </div>
