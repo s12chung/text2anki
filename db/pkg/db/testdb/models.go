@@ -1,5 +1,4 @@
-// Package models contains the models used by testdb
-package models
+package testdb
 
 import (
 	"encoding/json"
@@ -15,7 +14,7 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 )
 
-const modelsDir = "modeldata"
+const modelsDir = "models"
 
 var seederMap = map[string]seeder{}
 var callerPath string

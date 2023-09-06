@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
@@ -19,11 +18,9 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-const modelsPath = "models/modeldata"
-
 func writeModelFile(t *testing.T, filename string, fileBytes []byte) {
 	require := require.New(t)
-	require.NoError(os.WriteFile(filepath.Join(modelsPath, filename), fileBytes, ioutil.OwnerRWGroupR))
+	require.NoError(os.WriteFile(filepath.Join(modelsDir, filename), fileBytes, ioutil.OwnerRWGroupR))
 }
 
 func TestGen___NotesSeed(t *testing.T) {
@@ -31,7 +28,7 @@ func TestGen___NotesSeed(t *testing.T) {
 	if !fixture.WillUpdate() {
 		t.Skip("TestGen___ test generates fixtures")
 	}
-	notes, err := models.Notes().Models()
+	notes, err := Notes().Models()
 	require.NoError(err)
 	for _, note := range notes {
 		emptyFields := []string{"ID", "Downloaded"}
@@ -70,7 +67,7 @@ func TestGen___TermsSeed(t *testing.T) {
 		}
 		basePopularity += len(lex.LexicalEntries)
 	}
-	writeModelFile(t, models.Terms().Filename(), fixture.JSON(t, terms))
+	writeModelFile(t, Terms().Filename(), fixture.JSON(t, terms))
 }
 
 func TestGen___SourceStructuredsSeed(t *testing.T) {
@@ -94,10 +91,13 @@ func TestGen___SourceStructuredsSeed(t *testing.T) {
 		}
 		tokenizedTexts, err := tokenizer.TokenizedTexts(ctx, split[0], split[1])
 		require.NoError(err)
-		sources[i] = db.SourceStructured{Name: path.Base(fp), Parts: []db.SourcePart{{TokenizedTexts: tokenizedTexts}}}
+
+		reference := path.Base(fp)
+		name := reference[0 : len(reference)-len(filepath.Ext(reference))]
+		sources[i] = db.SourceStructured{Name: name, Reference: reference, Parts: []db.SourcePart{{TokenizedTexts: tokenizedTexts}}}
 		test.EmptyFieldsMatch(t, sources[i], "ID", "UpdatedAt", "CreatedAt")
 	}
-	writeModelFile(t, models.SourceStructureds().Filename(), fixture.JSON(t, sources))
+	writeModelFile(t, SourceStructureds().Filename(), fixture.JSON(t, sources))
 }
 
 func allFilePaths(t *testing.T, p string) []string {

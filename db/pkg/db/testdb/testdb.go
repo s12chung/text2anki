@@ -15,7 +15,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/logg"
@@ -93,7 +92,7 @@ func Create() error {
 		if err := txQs.Create(txQs.Ctx()); err != nil {
 			return err
 		}
-		return models.SeedList(txQs, nil)
+		return SeedList(txQs, nil)
 	})
 }
 

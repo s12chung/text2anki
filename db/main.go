@@ -17,7 +17,6 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/csv"
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
-	"github.com/s12chung/text2anki/db/pkg/db/testdb/models"
 	"github.com/s12chung/text2anki/db/pkg/seedkrdict"
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/util/logg"
@@ -101,7 +100,7 @@ func cmdSeed() error {
 	if err := seedkrdict.Seed(txQs, seedkrdict.DefaultRscPath); err != nil {
 		return err
 	}
-	if err := models.SeedList(txQs, map[string]bool{"Terms": false}); err != nil {
+	if err := testdb.SeedList(txQs, map[string]bool{"Terms": false}); err != nil {
 		return err
 	}
 	return txQs.Commit()
