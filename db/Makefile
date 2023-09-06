@@ -19,11 +19,9 @@ search: build
 
 generate:
 	sqlc generate
-	make build; $(BIN) generate
 
 diff:
 	sqlc diff
-	make build; $(BIN) diff
 
 TEST ?= ./...
 test: testdb
