@@ -158,7 +158,11 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 			require.NoError(err)
 
 			nonSpeaker := strings.TrimPrefix(tc.name, "speaker_")
-			fixture.CompareReadOrUpdate(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
+			if tc.name == nonSpeaker {
+				fixture.CompareReadOrUpdate(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
+			} else {
+				fixture.CompareRead(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
+			}
 		})
 	}
 }
