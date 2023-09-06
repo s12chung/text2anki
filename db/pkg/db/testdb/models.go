@@ -31,26 +31,33 @@ func init() {
 
 // SeedList seeds the models for the testdb
 func SeedList(txQs db.TxQs, list map[string]bool) error {
-	isWhiteList, isBlacklist := true, true
+	return seedList(txQs, list, seederMap)
+}
+
+func seedList(txQs db.TxQs, list map[string]bool, sMap map[string]seeder) error {
+	isWhiteList, isBlacklist := false, false
 	for k, v := range list {
 		if v {
-			isBlacklist = false
+			isWhiteList = true
 		} else {
-			isWhiteList = false
+			isBlacklist = true
 			continue
 		}
-		s, exists := seederMap[k]
-		if !exists {
+		if _, exists := sMap[k]; !exists {
 			return fmt.Errorf("seedFunc for '%v' doesn't exist", k)
 		}
-		if err := s.Seed(txQs); err != nil {
-			return err
-		}
 	}
-	for k, s := range seederMap {
-		if _, exists := list[k]; !(isBlacklist && isWhiteList) &&
-			(isBlacklist && exists || isWhiteList && !exists) {
-			continue
+	mixed := isWhiteList && isBlacklist
+	for k, s := range sMap {
+		v, exists := list[k]
+		if mixed {
+			if !v {
+				continue
+			}
+		} else {
+			if isBlacklist && exists || isWhiteList && !exists {
+				continue
+			}
 		}
 		if err := s.Seed(txQs); err != nil {
 			return err
