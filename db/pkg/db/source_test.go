@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -134,6 +135,7 @@ var textTokenizer = TextTokenizer{
 func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 	testName := "TestTextTokenizer_TokenizedTexts"
 	t.Parallel()
+	mutex := &sync.Mutex{}
 
 	testCases := []struct {
 		name string
@@ -158,11 +160,9 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 			require.NoError(err)
 
 			nonSpeaker := strings.TrimPrefix(tc.name, "speaker_")
-			if tc.name == nonSpeaker {
-				fixture.CompareReadOrUpdate(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
-			} else {
-				fixture.CompareRead(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
-			}
+			mutex.Lock()
+			fixture.CompareReadOrUpdate(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
+			mutex.Unlock()
 		})
 	}
 }
