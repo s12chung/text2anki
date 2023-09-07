@@ -1,6 +1,6 @@
 import { queryString } from "../utils/RequestUtil.ts"
 import ApplicationService from "./ApplicationService.ts"
-import { CommonLevel } from "./LangService.ts"
+import { CommonLevel } from "./Lang.ts"
 
 export interface Term {
   id: number

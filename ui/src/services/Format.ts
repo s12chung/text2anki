@@ -1,4 +1,4 @@
-import { convertKeys, snakeToCamel } from "./StringUtil.ts"
+import { convertKeys, snakeToCamel } from "../utils/StringUtil.ts"
 
 export class ResponseError {
   public headers: Headers

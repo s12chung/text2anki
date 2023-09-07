@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { CommonLevel } from "../../services/LangService.ts"
+import { CommonLevel } from "../../services/Lang.ts"
 import {
   CreateNoteData,
   createNoteDataFromSourceTerm,

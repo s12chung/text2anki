@@ -1,5 +1,5 @@
-import { responseError } from "../utils/ErrorUtil.ts"
 import { camelToSnake, convertKeys, snakeToCamel } from "../utils/StringUtil.ts"
+import { responseError } from "./Format.ts"
 
 abstract class ApplicationService {
   protected apiUrl = "http://localhost:3000"

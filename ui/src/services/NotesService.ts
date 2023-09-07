@@ -1,5 +1,5 @@
 import ApplicationService, { Http, requestInit } from "./ApplicationService.ts"
-import { CommonLevel } from "./LangService.ts"
+import { CommonLevel } from "./Lang.ts"
 import { Term, Translation } from "./TermsService.ts"
 
 export interface Note extends CreateNoteData {
