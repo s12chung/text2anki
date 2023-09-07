@@ -1,4 +1,28 @@
-import { convertKeys, snakeToCamel } from "../utils/StringUtil.ts"
+import { printError as _printError } from "../utils/ErrorUtil.ts"
+import { camelToSnake, convertKeys, snakeToCamel } from "../utils/StringUtil.ts"
+
+export function requestInit<T extends { [K in keyof T]: unknown }>(
+  method: Http,
+  data?: T
+): RequestInit {
+  return {
+    method,
+    ...(data
+      ? {
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(convertKeys(data, camelToSnake)),
+        }
+      : {}),
+  }
+}
+
+export async function convertResponse(response: Response): Promise<unknown> {
+  return convertKeys(await response.json(), snakeToCamel)
+}
+
+export async function responseError(response: Response): Promise<ResponseError> {
+  return new ResponseError(response, (await convertResponse(response)) as ResponseErrorBody)
+}
 
 export class ResponseError {
   public headers: Headers
@@ -25,39 +49,28 @@ export interface ResponseErrorBody {
   statusText: string
 }
 
-export async function responseError(response: Response): Promise<ResponseError> {
-  const body = convertKeys(await response.json(), snakeToCamel) as ResponseErrorBody
-  return new ResponseError(response, body)
-}
-
 export function printError(err: unknown): Error {
-  let error: Error
-
-  if (err instanceof Error) {
-    error = err
-  } else {
-    let errorString: string
-    switch (typeof err) {
-      case "string":
-      case "object":
-        if (err instanceof ResponseError) {
-          console.error(err) // eslint-disable-line no-console
-          return new Error(err.userMessage())
-        }
-        errorString = JSON.stringify(err)
-        break
-      default:
-        errorString = String(err)
-    }
-    error = new Error(errorString)
+  if (err instanceof ResponseError) {
+    console.error(err) // eslint-disable-line no-console
+    return new Error(err.userMessage())
   }
-
-  console.error(error) // eslint-disable-line no-console
-  return error
+  return _printError(err)
 }
 
 export function printAndAlertError(err: unknown): Error {
   const error = printError(err)
   window.alert(error.message) // eslint-disable-line no-alert
   return error
+}
+
+export enum Http {
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  DELETE = "DELETE",
+  PATCH = "PATCH",
+  HEAD = "HEAD",
+  OPTIONS = "OPTIONS",
+  CONNECT = "CONNECT",
+  TRACE = "TRACE",
 }

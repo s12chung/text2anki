@@ -1,4 +1,5 @@
-import ApplicationService, { Http, requestInit } from "./ApplicationService.ts"
+import ApplicationService from "./ApplicationService.ts"
+import { Http, requestInit } from "./Format.ts"
 
 export interface PrePartListSignData {
   preParts: PrePartSignData[]

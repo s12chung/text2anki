@@ -1,4 +1,5 @@
-import ApplicationService, { Http, requestInit } from "./ApplicationService.ts"
+import ApplicationService from "./ApplicationService.ts"
+import { Http, requestInit } from "./Format.ts"
 import { CommonLevel } from "./Lang.ts"
 import { Term, Translation } from "./TermsService.ts"
 

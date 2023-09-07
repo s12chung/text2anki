@@ -1,4 +1,5 @@
-import ApplicationService, { Http, requestInit } from "./ApplicationService"
+import ApplicationService from "./ApplicationService"
+import { Http, requestInit } from "./Format.ts"
 
 export interface Token {
   text: string
