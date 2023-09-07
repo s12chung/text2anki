@@ -94,7 +94,7 @@ const SourceWrapper: React.FC<{
               {children(tokenizedText, partIndex, textIndex)}
             </div>
           ))}
-          {part.media?.imageUrl ? (
+          {part.media.imageUrl ? (
             <div className="grid-std">
               <img src={part.media.imageUrl} alt="Part Image" />
             </div>

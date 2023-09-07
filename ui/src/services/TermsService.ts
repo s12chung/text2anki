@@ -2,6 +2,16 @@ import { queryString } from "../utils/RequestUtil.ts"
 import ApplicationService from "./ApplicationService.ts"
 import { CommonLevel } from "./Lang.ts"
 
+export interface Translation {
+  text: string
+  explanation: string
+}
+
+const TranslationEmpty = Object.freeze<Translation>({
+  text: "",
+  explanation: "",
+})
+
 export interface Term {
   id: number
   text: string
@@ -12,10 +22,15 @@ export interface Term {
   dictionarySource: string
 }
 
-export interface Translation {
-  text: string
-  explanation: string
-}
+const TermEmpty = Object.freeze<Term>({
+  id: 0,
+  text: "",
+  variants: [],
+  partOfSpeech: "",
+  commonLevel: 0,
+  translations: [TranslationEmpty],
+  dictionarySource: "",
+})
 
 export interface TermsSearchData {
   query: string
@@ -31,7 +46,7 @@ class TermsService extends ApplicationService {
   protected pathPrefix = "/terms"
 
   async search(data: TermsSearchData): Promise<Term[]> {
-    return (await this.fetch(`/search?${queryString(data)}`)) as Term[]
+    return this.fetch(`/search?${queryString(data)}`, [TermEmpty])
   }
 }
 

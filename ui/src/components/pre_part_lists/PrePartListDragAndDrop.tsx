@@ -1,9 +1,5 @@
 import { printError } from "../../services/Format.ts"
-import {
-  prePartListService,
-  PrePartSignData,
-  PreSignedHTTPRequest,
-} from "../../services/PrePartListsService.ts"
+import { prePartListService, PrePartSignData } from "../../services/PrePartListsService.ts"
 import { Source } from "../../services/SourcesService.ts"
 import { headers } from "../../utils/RequestUtil.ts"
 import { removeExtension } from "../../utils/StringUtil.ts"
@@ -117,7 +113,7 @@ async function uploadFiles(files: File[]): Promise<string> {
   return Promise.all<Response>(
     signedResponse.preParts
       .map((part) => part.imageRequest)
-      .filter((imageRequest): imageRequest is PreSignedHTTPRequest => Boolean(imageRequest))
+      .filter((imageRequest) => Boolean(imageRequest))
       .map((imageRequest, index) =>
         fetch(imageRequest.url, {
           method: imageRequest.method,

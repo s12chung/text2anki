@@ -1,6 +1,8 @@
 import ApplicationService from "./ApplicationService"
 import { Http, requestInit } from "./Format.ts"
 
+export const PosPunctuation = "Punctuation"
+
 export interface Token {
   text: string
   partOfSpeech: string
@@ -8,7 +10,12 @@ export interface Token {
   length: number
 }
 
-export const PosPunctuation = "Punctuation"
+const TokenEmpty = Object.freeze<Token>({
+  text: "",
+  partOfSpeech: "",
+  startIndex: 0,
+  length: 0,
+})
 
 export interface Text {
   text: string
@@ -16,19 +23,40 @@ export interface Text {
   previousBreak: boolean
 }
 
+const TextEmpty = Object.freeze<Text>({
+  text: "",
+  translation: "",
+  previousBreak: false,
+})
+
 export interface TokenizedText extends Text {
   tokens: Token[]
 }
 
+const TokenizedTextEmpty = Object.freeze<TokenizedText>({
+  ...TextEmpty,
+  tokens: [TokenEmpty],
+})
+
+export interface SourcePartMedia {
+  imageUrl: string
+  audioUrl: string
+}
+
+const SourcePartMediaEmpty = Object.freeze<SourcePartMedia>({
+  imageUrl: "",
+  audioUrl: "",
+})
+
 export interface SourcePart {
-  media?: SourcePartMedia
+  media: SourcePartMedia
   tokenizedTexts: TokenizedText[]
 }
 
-export interface SourcePartMedia {
-  imageUrl?: string
-  audioUrl?: string
-}
+const SourcePartEmpty = Object.freeze<SourcePart>({
+  media: SourcePartMediaEmpty,
+  tokenizedTexts: [TokenizedTextEmpty],
+})
 
 export interface Source {
   id: number
@@ -39,28 +67,42 @@ export interface Source {
   createdAt: Date
 }
 
+export const SourceEmpty = Object.freeze<Source>({
+  id: 0,
+  name: "",
+  reference: "",
+  parts: [SourcePartEmpty],
+  updatedAt: new Date(0),
+  createdAt: new Date(0),
+})
+
+export interface CreateSourcePartData {
+  text: string
+  translation: string
+}
+
+export const CreateSourcePartDataEmpty = Object.freeze<CreateSourcePartData>({
+  text: "",
+  translation: "",
+})
+
+export interface CreateSourceData {
+  prePartListId: string
+  name: string
+  reference: string
+  parts: CreateSourcePartData[]
+}
+
 export const CreateSourceDataEmpty = Object.freeze<CreateSourceData>({
   prePartListId: "",
   name: "",
   reference: "",
-  parts: [
-    Object.freeze({
-      text: "",
-      translation: "",
-    }),
-  ],
+  parts: [CreateSourcePartDataEmpty],
 })
 
-export interface CreateSourceData {
-  prePartListId?: string
-  name?: string
-  reference?: string
-  parts: CreateSourcePartData[]
-}
-
-export interface CreateSourcePartData {
-  text: string
-  translation?: string
+export interface UpdateSourceData {
+  name: string
+  reference: string
 }
 
 export const UpdateSourceDataEmpty = Object.freeze<UpdateSourceData>({
@@ -68,32 +110,27 @@ export const UpdateSourceDataEmpty = Object.freeze<UpdateSourceData>({
   reference: "",
 })
 
-export interface UpdateSourceData {
-  name: string
-  reference?: string
-}
-
 class SourcesService extends ApplicationService {
   protected pathPrefix = "/sources"
 
   async index(): Promise<Source[]> {
-    return (await this.fetch()) as Source[]
+    return this.fetch("", [SourceEmpty])
   }
 
   async get(id: string | number): Promise<Source> {
-    return (await this.fetch(`/${id}`)) as Source
+    return this.fetch(`/${id}`, SourceEmpty)
   }
 
   async create(data: CreateSourceData): Promise<Source> {
-    return (await this.fetch("", requestInit(Http.POST, data))) as Source
+    return this.fetch("", SourceEmpty, requestInit(Http.POST, data))
   }
 
   async update(id: string | number, data: UpdateSourceData): Promise<Source> {
-    return (await this.fetch(`/${id}`, requestInit(Http.PATCH, data))) as Source
+    return this.fetch(`/${id}`, SourceEmpty, requestInit(Http.PATCH, data))
   }
 
   async destroy(id: string | number): Promise<Source> {
-    return (await this.fetch(`/${id}`, requestInit(Http.DELETE))) as Source
+    return this.fetch(`/${id}`, SourceEmpty, requestInit(Http.DELETE))
   }
 }
 

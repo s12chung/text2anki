@@ -16,7 +16,7 @@ export function camelToTitle(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-type ConvertKeyFunc = (str: string) => string
+export type ConvertKeyFunc = (str: string) => string
 
 export function convertKeys(data: unknown, convertKey: ConvertKeyFunc): unknown {
   if (typeof data !== "object" || data === null) {

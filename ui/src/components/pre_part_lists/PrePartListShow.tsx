@@ -90,9 +90,7 @@ const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) =
   return (
     <SlideOver.Dialog
       show
-      leftNode={
-        <PrePartLeft image={preParts[currentIndex].imageUrl ?? ""} prev={prev} next={next} />
-      }
+      leftNode={<PrePartLeft image={preParts[currentIndex].imageUrl} prev={prev} next={next} />}
     >
       <SlideOver.Header title="Create Source from Parts" />
       <Form action="/sources" method="post" className="m-std space-y-std">
