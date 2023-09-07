@@ -132,7 +132,7 @@ func (s SourceStructured) DefaultedName() string {
 }
 
 // StaticCopy returns a copy without fields that variate
-func (s SourceStructured) StaticCopy() any {
+func (s SourceStructured) StaticCopy() SourceStructured {
 	c := s
 	c.ID = 0
 	c.UpdatedAt = time.Time{}

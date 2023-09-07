@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,29 +9,35 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestNote_StaticCopy(t *testing.T) {
+func firstNote(t *testing.T, txQs TxQs) Note {
 	require := require.New(t)
-
-	note := Note{}
-	err := json.Unmarshal(fixture.Read(t, "NoteSrc.json"), &note)
+	note, err := txQs.NoteGet(txQs.Ctx(), 1)
 	require.NoError(err)
-	test.EmptyFieldsMatch(t, note, "Downloaded")
+	return note
+}
 
-	noteCopy := note
-	noteCopy.ID = 0
-	require.Equal(noteCopy, note.StaticCopy())
+func TestNote_StaticCopy(t *testing.T) {
+	txQs := TxQsT(t, nil)
+
+	note := firstNote(t, txQs)
+	test.EmptyFieldsMatch(t, note, "Downloaded")
+	test.EmptyFieldsMatch(t, note.StaticCopy(), "Downloaded", "ID", "UpdatedAt", "CreatedAt")
 }
 
 func TestNote_CreateParams(t *testing.T) {
-	require := require.New(t)
 	testName := "TestNote_CreateParams"
+	txQs := TxQsT(t, nil)
 
-	note := Note{}
-	err := json.Unmarshal(fixture.Read(t, "NoteSrc.json"), &note)
-	require.NoError(err)
-	test.EmptyFieldsMatch(t, note, "Downloaded")
-
-	createParams := note.CreateParams()
+	createParams := firstNote(t, txQs).CreateParams()
 	test.EmptyFieldsMatch(t, createParams)
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
+}
+
+func TestQueries_NoteCreate(t *testing.T) {
+	require := require.New(t)
+	txQs := TxQsT(t, WriteOpts())
+
+	note, err := txQs.NoteCreate(txQs.Ctx(), firstNote(t, txQs).CreateParams())
+	require.NoError(err)
+	testRecentTimestamps(t, note.CreatedAt, note.UpdatedAt)
 }

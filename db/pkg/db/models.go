@@ -9,17 +9,21 @@ import (
 )
 
 type Note struct {
-	ID               int64  `json:"id"`
-	Text             string `json:"text"`
-	PartOfSpeech     string `json:"part_of_speech"`
-	Translation      string `json:"translation"`
-	Explanation      string `json:"explanation"`
-	CommonLevel      int64  `json:"common_level"`
-	Usage            string `json:"usage"`
-	UsageTranslation string `json:"usage_translation"`
-	DictionarySource string `json:"dictionary_source"`
-	Notes            string `json:"notes"`
-	Downloaded       bool   `json:"downloaded"`
+	ID               int64     `json:"id"`
+	Text             string    `json:"text"`
+	PartOfSpeech     string    `json:"part_of_speech"`
+	Translation      string    `json:"translation"`
+	Explanation      string    `json:"explanation"`
+	CommonLevel      int64     `json:"common_level"`
+	Usage            string    `json:"usage"`
+	UsageTranslation string    `json:"usage_translation"`
+	SourceName       string    `json:"source_name"`
+	SourceReference  string    `json:"source_reference"`
+	DictionarySource string    `json:"dictionary_source"`
+	Notes            string    `json:"notes"`
+	Downloaded       bool      `json:"downloaded"`
+	UpdatedAt        time.Time `json:"updated_at"`
+	CreatedAt        time.Time `json:"created_at"`
 }
 
 type Source struct {

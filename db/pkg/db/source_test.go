@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -27,15 +28,10 @@ func firstSource(t *testing.T, txQs TxQs) Source {
 }
 
 func TestSourceStructured_StaticCopy(t *testing.T) {
-	require := require.New(t)
 	txQs := TxQsT(t, nil)
-	test.EmptyFieldsMatch(t, firstSource(t, txQs))
-
-	sourceCopy := firstSource(t, txQs).ToSourceStructured()
-	sourceCopy.ID = 0
-	sourceCopy.UpdatedAt = time.Time{}
-	sourceCopy.CreatedAt = time.Time{}
-	require.Equal(sourceCopy, firstSource(t, txQs).ToSourceStructured().StaticCopy())
+	source := firstSource(t, txQs)
+	test.EmptyFieldsMatch(t, source)
+	test.EmptyFieldsMatch(t, source.ToSourceStructured().StaticCopy(), "ID", "UpdatedAt", "CreatedAt")
 }
 
 func TestSourcePartMedia_MarshalJSON(t *testing.T) {
@@ -134,6 +130,7 @@ var textTokenizer = TextTokenizer{
 func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 	testName := "TestTextTokenizer_TokenizedTexts"
 	t.Parallel()
+	mutex := &sync.Mutex{}
 
 	testCases := []struct {
 		name string
@@ -158,11 +155,9 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 			require.NoError(err)
 
 			nonSpeaker := strings.TrimPrefix(tc.name, "speaker_")
-			if tc.name == nonSpeaker {
-				fixture.CompareReadOrUpdate(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
-			} else {
-				fixture.CompareRead(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
-			}
+			mutex.Lock()
+			fixture.CompareReadOrUpdate(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
+			mutex.Unlock()
 		})
 	}
 }

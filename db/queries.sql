@@ -37,5 +37,9 @@ SELECT * FROM notes WHERE id = ? LIMIT 1;
 
 -- name: NoteCreate :one
 INSERT INTO notes (
-    text, part_of_speech, translation, common_level, explanation, usage, usage_translation, dictionary_source, notes
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *;
+    text, part_of_speech, translation, explanation, common_level,
+                   usage, usage_translation,
+                   source_name, source_reference, dictionary_source, notes
+) VALUES (?, ?, ?, ?, ?,
+          ?, ?,
+          ?, ?, ?, ?) RETURNING *;

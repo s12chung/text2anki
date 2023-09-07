@@ -18,8 +18,5 @@ func TestTerm_StaticCopy(t *testing.T) {
 	err := json.Unmarshal(fixture.Read(t, testName+".json"), &term)
 	require.NoError(err)
 	test.EmptyFieldsMatch(t, term)
-
-	termCopy := term
-	termCopy.ID = 0
-	require.Equal(termCopy, term.StaticCopy())
+	test.EmptyFieldsMatch(t, term.StaticCopy(), "ID")
 }

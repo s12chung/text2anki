@@ -24,15 +24,15 @@ func testIndent(t *testing.T, resp test.Response, testName, name string) {
 	fixture.CompareReadOrUpdate(t, fixtureFileName(testName, name), jsonBody)
 }
 
-func testModelResponse(t *testing.T, resp test.Response, testName, name string, model test.StaticCopyable) string {
-	jsonBody := test.StaticCopyOrIndent(t, resp.Code, resp.Body.Bytes(), model)
+func testModelResponse[T test.StaticCopyable[T]](t *testing.T, resp test.Response, testName, name string, model *T) string {
+	jsonBody := test.StaticCopyOrIndent[T](t, resp.Code, resp.Body.Bytes(), model)
 	fixtureFile := fixtureFileName(testName, name)
 	fixture.CompareReadOrUpdate(t, fixtureFile, jsonBody)
 	return fixtureFile
 }
 
-func testModelsResponse(t *testing.T, resp test.Response, testName, name string, models any) {
-	jsonBody := test.StaticCopyOrIndentSlice(t, resp.Code, resp.Body.Bytes(), models)
+func testModelsResponse[T test.StaticCopyable[T]](t *testing.T, resp test.Response, testName, name string, models *[]T) {
+	jsonBody := test.StaticCopyOrIndentSlice[T](t, resp.Code, resp.Body.Bytes(), models)
 	fixture.CompareReadOrUpdate(t, fixtureFileName(testName, name), jsonBody)
 }
 

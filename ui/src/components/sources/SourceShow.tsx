@@ -1,6 +1,10 @@
 /* eslint-disable max-lines */
 import { CommonLevel } from "../../services/LangService.ts"
-import { CreateNoteData, createNoteDataFromTerm, NoteUsage } from "../../services/NotesService.ts"
+import {
+  CreateNoteData,
+  createNoteDataFromSourceTerm,
+  NoteUsage,
+} from "../../services/NotesService.ts"
 import { PosPunctuation, Source, Token, TokenizedText } from "../../services/SourcesService.ts"
 import { Term } from "../../services/TermsService.ts"
 import { unique } from "../../utils/ArrayUntil.ts"
@@ -9,7 +13,7 @@ import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitError from "../AwaitError.tsx"
 import SlideOver from "../SlideOver.tsx"
-import NoteForm from "../notes/NoteForm.tsx"
+import NoteCreate from "../notes/NoteCreate.tsx"
 import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Await, Form, Link, useFetcher } from "react-router-dom"
 
@@ -118,12 +122,16 @@ const SourceShowComponent: React.FC<{ source: Source }> = ({ source }) => {
 }
 
 function getTermsComponentProps(
+  source: Source,
   tokenizedText: TokenizedText,
   tokenFocusIndex: number
 ): ITermsComponentProps {
   return {
     token: tokenizedText.tokens[tokenFocusIndex],
     usage: {
+      sourceName: source.name,
+      sourceReference: source.reference,
+
       usage: tokenizedText.text,
       usageTranslation: tokenizedText.translation,
     },
@@ -147,7 +155,7 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
   const termsFocus = termsComponentProps !== null
   const setTermsFocus = (tokenFocusIndex: number) => {
     setTermsComponentProps(
-      getTermsComponentProps(currentTokenizedTexts[textFocusIndex], tokenFocusIndex)
+      getTermsComponentProps(source, currentTokenizedTexts[textFocusIndex], tokenFocusIndex)
     )
   }
 
@@ -440,7 +448,7 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
           break
         case "Enter":
         case "Space":
-          setCreateNoteData(createNoteDataFromTerm(terms[termFocusIndex], usage))
+          setCreateNoteData(createNoteDataFromSourceTerm(terms[termFocusIndex], usage))
           break
         default:
           return
@@ -481,14 +489,14 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
                 )}
                 : {term.translations[0].text} &mdash; {term.translations[0].explanation}
               </div>
-              <div className="ml-8">
+              <div className="ml-std2">
                 {unique(term.translations.map((translation) => translation.text))
                   .slice(1, 6)
                   .join("; ")}
               </div>
             </div>
           ))}
-          <div className="text-center space-x-2">
+          <div className="text-center space-x-half">
             {Array(pagesLen)
               .fill(null)
               .map((_, index) => (
@@ -504,7 +512,7 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
       {createNoteData !== null && (
         <SlideOver.Dialog show onClose={onCloseCreateNote}>
           <SlideOver.Header title="Create Note" onClose={onCloseCreateNote} />
-          <NoteForm data={createNoteData} onClose={onCloseCreateNote} />
+          <NoteCreate data={createNoteData} onClose={onCloseCreateNote} />
         </SlideOver.Dialog>
       )}
     </div>

@@ -26,7 +26,7 @@ type Term struct {
 }
 
 // StaticCopy returns a copy without fields that variate
-func (t Term) StaticCopy() any {
+func (t Term) StaticCopy() Term {
 	c := t
 	c.ID = 0
 	return c

@@ -27,7 +27,7 @@ func init() {
 func TestRoutes_SourceIndex(t *testing.T) {
 	testName := "TestRoutes_SourceIndex"
 	resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "", nil))
-	testModelsResponse(t, resp, testName, "", &[]db.SourceStructured{})
+	testModelsResponse[db.SourceStructured](t, resp, testName, "", nil)
 }
 
 func TestRoutes_SourceGet(t *testing.T) {
@@ -147,7 +147,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 			resp.EqualCode(t, tc.expectedCode)
 
 			sourceStructured := db.SourceStructured{}
-			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
+			fixtureFile := testModelResponse[db.SourceStructured](t, resp, testName, tc.name, &sourceStructured)
 
 			if resp.Code != http.StatusOK {
 				return

@@ -22,6 +22,11 @@ import (
 // TestDataDir returns the testdata dir
 const TestDataDir = "testdata"
 
+// UpdateFailMessage is a standard message to identify if the test is failed via. updating fixtures
+//
+// Wording may be used to clean up test message output
+const UpdateFailMessage = updateFixturesEnv + "=true, fixtures are updated, turn off ENV var to run test"
+
 // JoinTestData joins the elem path to the testdata dir
 func JoinTestData(elem ...string) string {
 	dirs := append([]string{TestDataDir}, elem...)
@@ -50,7 +55,7 @@ func Update(t *testing.T, fixturePath string, resultBytes []byte) {
 	assert.NoError(err)
 
 	if WillUpdate() {
-		assert.Fail(fmt.Sprintf("%v=true, fixtures are updated, turn off ENV var to run test", updateFixturesEnv))
+		assert.Fail(UpdateFailMessage)
 	}
 }
 
@@ -115,7 +120,7 @@ func CompareOrUpdateDir(t *testing.T, fixtureDir, resultDir string) {
 	})
 	require.NoError(err)
 	if WillUpdate() {
-		require.Fail(fmt.Sprintf("%v=true, fixtures are updated, turn off ENV var to run test", updateFixturesEnv))
+		require.Fail(UpdateFailMessage)
 	}
 }
 

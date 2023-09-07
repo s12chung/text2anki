@@ -27,7 +27,7 @@ func TestRoutes_NoteCreate(t *testing.T) {
 		name         string
 		expectedCode int
 	}{
-		{name: "basic", expectedCode: http.StatusOK},
+		{name: "full", expectedCode: http.StatusOK},
 		{name: "valid", expectedCode: http.StatusOK},
 		{name: "invalid", expectedCode: http.StatusUnprocessableEntity},
 	}

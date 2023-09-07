@@ -19,9 +19,7 @@ type StoragePutOk struct {
 }
 
 // StaticCopy returns a copy without fields that variate
-func (s StoragePutOk) StaticCopy() any {
-	return s
-}
+func (s StoragePutOk) StaticCopy() StoragePutOk { return s }
 
 // StoragePut stores the file with the route's Storer
 func (rs Routes) StoragePut(r *http.Request) (any, *jhttp.HTTPError) {

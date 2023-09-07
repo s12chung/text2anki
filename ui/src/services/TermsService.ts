@@ -17,15 +17,15 @@ export interface Translation {
   explanation: string
 }
 
-export const TermsSearchDataEmpty = Object.freeze<TermsSearchData>({
-  query: "",
-  pos: [],
-})
-
 export interface TermsSearchData {
   query: string
   pos: string | string[]
 }
+
+export const TermsSearchDataEmpty = Object.freeze<TermsSearchData>({
+  query: "",
+  pos: [],
+})
 
 class TermsService extends ApplicationService {
   protected pathPrefix = "/terms"

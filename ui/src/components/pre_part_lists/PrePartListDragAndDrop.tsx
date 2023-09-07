@@ -173,7 +173,7 @@ const PrePartListDrop: React.FC<{ files: File[] }> = ({ files }) => {
           </li>
         ))}
       </ul>
-      <div className="mt-8">
+      <div className="mt-std2">
         {errorMessage ? (
           <>
             <p>Error: {errorMessage}</p>

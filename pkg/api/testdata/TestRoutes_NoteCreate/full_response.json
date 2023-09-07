@@ -1,11 +1,17 @@
 {
+  "id": 0,
   "text": "행복",
   "part_of_speech": "Noun",
   "translation": "blessing; luck; fortune",
-  "common_level": 3,
   "explanation": "A blessing or good luck.",
+  "common_level": 3,
   "usage": "여길 봐 행복만 남았으니까",
   "usage_translation": "Look here, there’s only happiness that remains",
+  "source_name": "Flower Road",
+  "source_reference": "Flower Road.md",
   "dictionary_source": "Korean Basic Dictionary (23-03)",
-  "notes": "happiness is all that matters, right?"
+  "notes": "happiness is all that matters, right?",
+  "downloaded": false,
+  "updated_at": "0001-01-01T00:00:00Z",
+  "created_at": "0001-01-01T00:00:00Z"
 }

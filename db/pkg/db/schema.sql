@@ -32,13 +32,24 @@ CREATE TABLE notes (
     part_of_speech TEXT NOT NULL,
     translation TEXT NOT NULL,
     explanation TEXT NOT NULL,
-
     common_level INTEGER NOT NULL,
+
     usage TEXT NOT NULL,
     usage_translation TEXT NOT NULL,
-    dictionary_source TEXT NOT NULL,
 
+    source_name TEXT NOT NULL,
+    source_reference TEXT NOT NULL,
+    dictionary_source TEXT NOT NULL,
     notes TEXT NOT NULL,
 
-    downloaded BOOLEAN DEFAULT false NOT NULL
+    downloaded BOOLEAN DEFAULT false NOT NULL,
+
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+CREATE TRIGGER notes_updated_at
+    BEFORE UPDATE ON notes FOR EACH ROW
+BEGIN
+    UPDATE notes SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
+END;

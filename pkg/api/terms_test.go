@@ -35,7 +35,7 @@ func TestRoutes_TermsSearch(t *testing.T) {
 			db.WithTermsSearchConfig(testdb.SearchConfig, func() {
 				resp = test.HTTPDo(t, termsServer.NewRequest(t, http.MethodGet, "/search?"+tc.values.Encode(), nil))
 			})
-			testModelsResponse(t, resp, testName, tc.name, &[]dictionary.Term{})
+			testModelsResponse[dictionary.Term](t, resp, testName, tc.name, nil)
 		})
 	}
 }
