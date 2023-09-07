@@ -7,38 +7,48 @@ export interface Note extends CreateNoteData {
   downloaded: boolean
 }
 
-export const NotUsageEmpty = Object.freeze<NoteUsage>({
+export interface NoteUsage {
+  usage: string
+  usageTranslation: string
+
+  sourceName: string
+  sourceReference: string
+}
+
+export const NoteUsageEmpty = Object.freeze<NoteUsage>({
   usage: "",
   usageTranslation: "",
-})
 
-export const CreateNoteDataEmpty = Object.freeze<CreateNoteData>({
-  text: "",
-  partOfSpeech: "",
-  translation: "",
-  commonLevel: CommonLevel.Unique,
-  explanation: "",
-  ...NotUsageEmpty,
-  dictionarySource: "",
-  notes: "",
+  sourceName: "",
+  sourceReference: "",
 })
 
 export interface CreateNoteData extends NoteUsage {
   text: string
   partOfSpeech: string
   translation: string
+
   commonLevel: CommonLevel
   explanation: string
   dictionarySource: string
   notes: string
 }
 
-export interface NoteUsage {
-  usage: string
-  usageTranslation: string
-}
+export const CreateNoteDataEmpty = Object.freeze<CreateNoteData>({
+  text: "",
+  partOfSpeech: "",
+  translation: "",
 
-export function createNoteDataFromTerm(
+  commonLevel: CommonLevel.Unique,
+  explanation: "",
+
+  ...NoteUsageEmpty,
+  dictionarySource: "",
+  notes: "",
+})
+
+// eslint-disable-next-line max-params
+export function createNoteDataFromSourceTerm(
   term: Term,
   usage: NoteUsage,
   translationIndex?: number
@@ -49,10 +59,14 @@ export function createNoteDataFromTerm(
     text: term.text,
     partOfSpeech: term.partOfSpeech,
     translation: translation.text,
+
     commonLevel: term.commonLevel,
     explanation: translation.explanation,
     usage: usage.usage,
     usageTranslation: usage.usageTranslation,
+
+    sourceName: usage.sourceName,
+    sourceReference: usage.sourceReference,
     dictionarySource: term.dictionarySource,
     notes: "",
   }
