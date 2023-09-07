@@ -128,8 +128,11 @@ func (s SourceStructured) DefaultedName() string {
 	if len(s.Parts) == 0 && len(s.Parts[0].TokenizedTexts) == 0 {
 		return ""
 	}
-	return stringutil.FirstUnbrokenSubstring(s.Parts[0].TokenizedTexts[0].Text.Text, 30)
+	return SourceDefaultedName(s.Parts[0].TokenizedTexts[0].Text.Text)
 }
+
+// SourceDefaultedName returns the defaulted name
+func SourceDefaultedName(name string) string { return stringutil.FirstUnbrokenSubstring(name, 25) }
 
 // StaticCopy returns a copy without fields that variate
 func (s SourceStructured) StaticCopy() SourceStructured {
