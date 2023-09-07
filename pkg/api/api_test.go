@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	"log/slog"
 	"net/http"
@@ -28,6 +29,7 @@ import (
 
 const testUUID = "123e4567-e89b-12d3-a456-426614174000"
 const extractorType = "testy"
+const sourcePartMediaImageContents = "api_test.init() image"
 
 type UUIDTest struct{}
 
@@ -57,13 +59,23 @@ var routesConfig = config.Config{
 
 // Due to server.WithPathPrefix() calls, some functions must run via. init()
 func init() {
-	testdb.MustSetup()
-	routes = NewRoutes(context.Background(), routesConfig)
-	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(routes.Router())}}
-	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
+	if err := runInit(); err != nil {
 		slog.Error("api_test.init()", logg.Err(err))
 		os.Exit(-1)
 	}
+}
+
+func runInit() error {
+	testdb.MustSetup()
+	routes = NewRoutes(context.Background(), routesConfig)
+	if err := routes.Storage.Storer.Store(testdb.SourcePartMediaImageKey, bytes.NewReader([]byte(sourcePartMediaImageContents))); err != nil {
+		return err
+	}
+	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(routes.Router())}}
+	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
+		return err
+	}
+	return nil
 }
 
 func TestMain(m *testing.M) {

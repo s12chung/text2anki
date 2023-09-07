@@ -52,6 +52,9 @@ var SearchConfig = db.TermsSearchConfig{
 	LenLog:       2,
 }
 
+// SourcePartMediaImageKey is SourcePartMedia.ImageKey used
+const SourcePartMediaImageKey = "testdb.SourcePartMediaImageKey.png"
+
 // Transaction is a wrapper around db.Tx
 type Transaction struct{ db.Tx }
 

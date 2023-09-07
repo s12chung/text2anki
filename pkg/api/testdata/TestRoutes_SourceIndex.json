@@ -88,6 +88,9 @@
     "reference": "weave.txt",
     "parts": [
       {
+        "media": {
+          "image_url": "https://test.com/storage/testdb.SourcePartMediaImageKey.png"
+        },
         "tokenized_texts": [
           {
             "text": "이것은 샘플 파일입니다. tmp/in.txt에 자신의 텍스트를 입력합니다.",

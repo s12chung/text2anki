@@ -86,6 +86,13 @@ func TestGen___SourceStructuredsSeed(t *testing.T) {
 		name := reference[0 : len(reference)-len(filepath.Ext(reference))]
 		sources[i] = db.SourceStructured{Name: name, Reference: reference, Parts: []db.SourcePart{{TokenizedTexts: tokenizedTexts}}}
 		test.EmptyFieldsMatch(t, sources[i], "ID", "UpdatedAt", "CreatedAt")
+
+		if i == len(filepaths)-1 {
+			sources[i].Parts[0].Media = &db.SourcePartMedia{ImageKey: SourcePartMediaImageKey}
+			test.EmptyFieldsMatch(t, sources[i].Parts[0])
+		} else {
+			test.EmptyFieldsMatch(t, sources[i].Parts[0], "Media")
+		}
 	}
 	compareReadOrUpdate(t, SourceStructureds().Filename(), fixture.JSON(t, sources))
 }
