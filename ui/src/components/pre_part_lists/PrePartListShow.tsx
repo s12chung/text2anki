@@ -1,6 +1,6 @@
+import { printAndAlertError } from "../../services/Format.ts"
 import { PrePartList } from "../../services/PrePartListsService.ts"
 import { imageToClipboard } from "../../utils/ClipboardUtils.ts"
-import { printAndAlertError } from "../../utils/ErrorUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import AwaitError from "../AwaitError.tsx"
 import Header from "../Header.tsx"
@@ -32,17 +32,23 @@ const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) =
   const [currentIndex, setCurrentIndex] = useState<number>(0)
   const [partTextsMap, setPartTextsMap] = useState<Record<number, string>>({})
 
-  const setCurrentIndexWithClipboard = useCallback(
-    (changeFunction: (index: number, length: number) => number) => {
-      const index = changeFunction(currentIndex, preParts.length)
-      setCurrentIndex(index)
+  const setImageToClipboard = useCallback(
+    (index: number) => {
       const { imageUrl } = preParts[index]
       if (!imageUrl) return
       imageToClipboard(imageUrl).catch((error) => {
         printAndAlertError(error)
       })
     },
-    [currentIndex, preParts]
+    [preParts]
+  )
+  const setCurrentIndexWithClipboard = useCallback(
+    (changeFunction: (index: number, length: number) => number) => {
+      const index = changeFunction(currentIndex, preParts.length)
+      setCurrentIndex(index)
+      setImageToClipboard(index)
+    },
+    [currentIndex, preParts.length, setImageToClipboard]
   )
   const next = useCallback(
     () => setCurrentIndexWithClipboard(increment),
@@ -60,10 +66,12 @@ const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) =
 
   const textAreaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
   useEffect(() => {
+    setImageToClipboard(currentIndex)
+
     const textArea = textAreaRefs.current[currentIndex]
     if (!textArea) return
     textArea.focus()
-  }, [currentIndex])
+  }, [currentIndex, setImageToClipboard])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -90,9 +98,7 @@ const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) =
   return (
     <SlideOver.Dialog
       show
-      leftNode={
-        <PrePartLeft image={preParts[currentIndex].imageUrl ?? ""} prev={prev} next={next} />
-      }
+      leftNode={<PrePartLeft image={preParts[currentIndex].imageUrl} prev={prev} next={next} />}
     >
       <SlideOver.Header title="Create Source from Parts" />
       <Form action="/sources" method="post" className="m-std space-y-std">

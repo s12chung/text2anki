@@ -1,5 +1,5 @@
 import NotificationsContext from "../../contexts/NotificationsContext.ts"
-import { CommonLevel } from "../../services/LangService.ts"
+import { CommonLevel } from "../../services/Lang.ts"
 import { CreateNoteData, Note } from "../../services/NotesService.ts"
 import { filterKeys } from "../../utils/ArrayUntil.ts"
 import { camelToTitle } from "../../utils/StringUtil.ts"

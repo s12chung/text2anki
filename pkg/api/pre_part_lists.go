@@ -83,9 +83,9 @@ func (rs Routes) PrePartListSign(r *http.Request, _ db.TxQs) (any, *jhttp.HTTPEr
 
 // PrePartListGet returns the PrePartListURL for a given ID
 func (rs Routes) PrePartListGet(r *http.Request, _ db.TxQs) (any, *jhttp.HTTPError) {
-	prePartListID := chi.URLParam(r, "prePartListID")
+	prePartListID := chi.URLParam(r, "id")
 	if prePartListID == "" {
-		return nil, jhttp.Error(http.StatusNotFound, fmt.Errorf("prePartListID not found"))
+		return nil, jhttp.Error(http.StatusNotFound, fmt.Errorf("id not found"))
 	}
 	prePartList := db.PrePartListURL{}
 	err := rs.Storage.DBStorage.SignGetTree(db.SourcesTable, db.PartsColumn, prePartListID, &prePartList)

@@ -1,4 +1,4 @@
-import { printError } from "../utils/ErrorUtil.ts"
+import { printError } from "../services/Format.ts"
 import { useRouteError } from "react-router-dom"
 
 const ErrorPage: React.FC = () => {

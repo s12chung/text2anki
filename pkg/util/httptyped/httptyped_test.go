@@ -43,9 +43,7 @@ type WithSerializedParent struct {
 	Pt    *WithSerializedChild `json:"pt,omitempty"`
 }
 
-func (w WithSerializedParent) PrepareSerialize() {
-	w.Pt.toSerialize = true
-}
+func (w WithSerializedParent) PrepareSerialize() { w.Pt.toSerialize = true }
 
 type WithSerializedChild struct {
 	toSerialize   bool
@@ -58,14 +56,10 @@ type SerializedChild struct {
 	Serialized string `json:"serialized,omitempty"`
 }
 
-func (w WithSerializedChild) SerializedEmpty() any {
-	return SerializedChild{}
-}
-
+func (w WithSerializedChild) SerializedEmpty() any { return SerializedChild{} }
 func (w WithSerializedChild) ToSerialized() (any, error) {
-	return SerializedChild{Serialized: w.NonSerialized + "CEREAL"}, nil
+	return SerializedChild{Serialized: w.NonSerialized + "_CEREAL"}, nil
 }
-
 func (w WithSerializedChild) MarshalJSON() ([]byte, error) {
 	if !w.toSerialize {
 		return json.Marshal(withSerializedChildAlias(w))
@@ -82,9 +76,7 @@ type WithSerializedParentPt struct {
 	Pt    *WithSerializedChildPt `json:"pt,omitempty"`
 }
 
-func (w WithSerializedParentPt) PrepareSerialize() {
-	w.Pt.toSerialize = true
-}
+func (w WithSerializedParentPt) PrepareSerialize() { w.Pt.toSerialize = true }
 
 type WithSerializedChildPt struct {
 	toSerialize   bool
@@ -95,9 +87,7 @@ type SerializedChildPt struct {
 	Serialized string `json:"serialized,omitempty"`
 }
 
-func (w *WithSerializedChildPt) SerializedEmpty() any {
-	return SerializedChildPt{}
-}
+func (w *WithSerializedChildPt) SerializedEmpty() any { return SerializedChildPt{} }
 
 func TestRegistry_RegisterType(t *testing.T) {
 	require := require.New(t)
@@ -168,6 +158,7 @@ type invalidTestObj struct {
 }
 
 func TestPrepareModel(t *testing.T) {
+	testName := "TestPrepareModel"
 	DefaultRegistry.RegisterType(testObj{})
 	DefaultRegistry.RegisterType(WithSerializedParent{})
 	notRegisteredErr := fmt.Errorf("httptyped.invalidTestObj is not registered to httptyped")
@@ -177,10 +168,8 @@ func TestPrepareModel(t *testing.T) {
 		model any
 		err   error
 	}{
-		{name: "toSerialize", model: WithSerializedParent{
-			Basic: WithSerializedChild{NonSerialized: "Basic"},
-			Pt:    &WithSerializedChild{NonSerialized: "Pt"},
-		}},
+		{name: "toSerialize", model: newPrepareModel()},
+		{name: "toSerialize_slice", model: []WithSerializedParent{newPrepareModel(), newPrepareModel()}},
 		{name: "not_registered", model: invalidTestObj{Val: "123"}, err: notRegisteredErr},
 		{name: "slice_not_registered", model: []invalidTestObj{{Val: "123"}}, err: notRegisteredErr},
 		{name: "nil", err: errModelNil},
@@ -189,7 +178,21 @@ func TestPrepareModel(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			require.Equal(tc.err, PrepareModel(tc.model))
+
+			err := PrepareModel(tc.model)
+			if tc.err != nil {
+				require.Equal(tc.err, err)
+				return
+			}
+			require.NoError(err)
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, tc.model))
 		})
+	}
+}
+
+func newPrepareModel() WithSerializedParent {
+	return WithSerializedParent{
+		Basic: WithSerializedChild{NonSerialized: "Basic"},
+		Pt:    &WithSerializedChild{NonSerialized: "Pt"},
 	}
 }

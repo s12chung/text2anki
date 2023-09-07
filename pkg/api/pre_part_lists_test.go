@@ -96,21 +96,18 @@ func TestRoutes_PrePartListSign(t *testing.T) {
 func TestRoutes_PrePartListGet(t *testing.T) {
 	testName := "TestRoutes_PrePartListGet"
 
-	id := "my_id"
-	baseKey := storage.BaseKey(db.SourcesTable, db.PartsColumn, id)
-	for i := 0; i < 2; i++ {
-		err := routes.Storage.Storer.Store(baseKey+".PreParts["+strconv.Itoa(i)+"].Image.txt", bytes.NewReader([]byte("image"+strconv.Itoa(i))))
-		require.NoError(t, err)
-	}
-	err := routes.Storage.Storer.Store(baseKey+".PreParts[0].Audio.txt", bytes.NewReader([]byte("audio0!")))
-	require.NoError(t, err)
+	manyID := "my_id"
+	setupPreParts(t, manyID)
+	infoID := "info_id"
+	setupPrePartsWithInfo(t, infoID)
 
 	testCases := []struct {
 		name         string
 		id           string
 		expectedCode int
 	}{
-		{name: "many", id: id, expectedCode: http.StatusOK},
+		{name: "many", id: manyID, expectedCode: http.StatusOK},
+		{name: "with_info", id: infoID, expectedCode: http.StatusOK},
 		{name: "none", id: "does_not_exist", expectedCode: http.StatusNotFound},
 	}
 	for _, tc := range testCases {
@@ -121,6 +118,23 @@ func TestRoutes_PrePartListGet(t *testing.T) {
 			testModelResponse(t, resp, testName, tc.name, &db.PrePartListURL{})
 		})
 	}
+}
+
+func setupPreParts(t *testing.T, id string) {
+	baseKey := storage.BaseKey(db.SourcesTable, db.PartsColumn, id)
+	for i := 0; i < 2; i++ {
+		err := routes.Storage.Storer.Store(baseKey+".PreParts["+strconv.Itoa(i)+"].Image.txt", bytes.NewReader([]byte("image"+strconv.Itoa(i))))
+		require.NoError(t, err)
+	}
+	err := routes.Storage.Storer.Store(baseKey+".PreParts[0].Audio.txt", bytes.NewReader([]byte("audio0!")))
+	require.NoError(t, err)
+}
+
+func setupPrePartsWithInfo(t *testing.T, id string) {
+	baseKey := storage.BaseKey(db.SourcesTable, db.PartsColumn, id)
+	setupPreParts(t, id)
+	err := routes.Storage.Storer.Store(baseKey+".Info.json", bytes.NewReader([]byte(`{ "info": "test" }`)))
+	require.NoError(t, err)
 }
 
 func TestRoutes_PrePartListVerify(t *testing.T) {
@@ -175,13 +189,18 @@ func TestRoutes_PrePartListCreate(t *testing.T) {
 			require.NoError(err)
 			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+"_KeyTree.json"), fixture.JSON(t, keyTree))
 
+			readKey(t, keyTree.InfoKey, `{"name":"extractortest","reference":"extractortest.go source code"}`)
 			for _, prePart := range keyTree.PreParts {
-				file, err := routes.Storage.DBStorage.Get(prePart.ImageKey)
-				require.NoError(err)
-				fileBytes, err := io.ReadAll(file)
-				require.NoError(err)
-				require.Equal("image_content", string(fileBytes))
+				readKey(t, prePart.ImageKey, "image_content")
 			}
 		})
 	}
+}
+
+func readKey(t *testing.T, key, contents string) {
+	file, err := routes.Storage.DBStorage.Get(key)
+	require.NoError(t, err)
+	fileBytes, err := io.ReadAll(file)
+	require.NoError(t, err)
+	require.Equal(t, contents, string(fileBytes))
 }

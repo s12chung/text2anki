@@ -1,0 +1,8 @@
+{
+  "basic": {
+    "non_serialized": "Basic"
+  },
+  "pt": {
+    "serialized": "Pt_CEREAL"
+  }
+}

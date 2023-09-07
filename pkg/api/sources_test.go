@@ -87,7 +87,9 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 
 			source, err := txQs.SourceGet(txQs.Ctx(), sourceStructured.ID)
 			require.NoError(err)
-			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, source.ToSourceStructured().StaticCopy()))
+			sourceStructured = source.ToSourceStructured()
+			sourceStructured.PrepareSerialize()
+			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, sourceStructured.StaticCopy()))
 		})
 	}
 }

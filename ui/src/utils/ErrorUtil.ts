@@ -1,35 +1,3 @@
-import { convertKeys, snakeToCamel } from "./StringUtil.ts"
-
-export class ResponseError {
-  public headers: Headers
-  public status: number
-  public statusText: string
-  public url: string
-  public body: ResponseErrorBody
-  constructor(response: Response, body: ResponseErrorBody) {
-    this.headers = response.headers
-    this.status = response.status
-    this.statusText = response.statusText
-    this.url = response.url
-    this.body = body
-  }
-
-  userMessage(): string {
-    return this.body.error
-  }
-}
-
-export interface ResponseErrorBody {
-  error: string
-  code: number
-  statusText: string
-}
-
-export async function responseError(response: Response): Promise<ResponseError> {
-  const body = convertKeys(await response.json(), snakeToCamel) as ResponseErrorBody
-  return new ResponseError(response, body)
-}
-
 export function printError(err: unknown): Error {
   let error: Error
 
@@ -40,10 +8,6 @@ export function printError(err: unknown): Error {
     switch (typeof err) {
       case "string":
       case "object":
-        if (err instanceof ResponseError) {
-          console.error(err) // eslint-disable-line no-console
-          return new Error(err.userMessage())
-        }
         errorString = JSON.stringify(err)
         break
       default:

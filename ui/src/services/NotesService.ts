@@ -1,11 +1,7 @@
-import ApplicationService, { Http, requestInit } from "./ApplicationService.ts"
-import { CommonLevel } from "./LangService.ts"
+import ApplicationService from "./ApplicationService.ts"
+import { Http, requestInit } from "./Format.ts"
+import { CommonLevel } from "./Lang.ts"
 import { Term, Translation } from "./TermsService.ts"
-
-export interface Note extends CreateNoteData {
-  id: number
-  downloaded: boolean
-}
 
 export interface NoteUsage {
   usage: string
@@ -46,6 +42,17 @@ export const CreateNoteDataEmpty = Object.freeze<CreateNoteData>({
   notes: "",
 })
 
+export interface Note extends CreateNoteData {
+  id: number
+  downloaded: boolean
+}
+
+const NoteEmpty = Object.freeze<Note>({
+  id: 0,
+  ...CreateNoteDataEmpty,
+  downloaded: false,
+})
+
 // eslint-disable-next-line max-params
 export function createNoteDataFromSourceTerm(
   term: Term,
@@ -75,7 +82,7 @@ class NotesService extends ApplicationService {
   protected pathPrefix = "/notes"
 
   async create(data: CreateNoteData): Promise<Note> {
-    return (await this.fetch("", requestInit(Http.POST, data))) as Note
+    return this.fetch("", NoteEmpty, requestInit(Http.POST, data))
   }
 }
 

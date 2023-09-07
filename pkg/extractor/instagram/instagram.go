@@ -12,7 +12,6 @@ import (
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/util/archive"
-	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
 // Factory generates Sources
@@ -110,7 +109,7 @@ func (s *Post) Info(cacheDir string) (db.PrePartInfo, error) {
 		return db.PrePartInfo{}, err
 	}
 	username := info.Node.Owner.Username
-	title := stringutil.FirstUnbrokenSubstring(info.Node.EdgeMediaToCaption.Edges[0].Node.Text, 30)
+	title := db.SourceDefaultedName(info.Node.EdgeMediaToCaption.Edges[0].Node.Text)
 	return db.PrePartInfo{
 		Name:      fmt.Sprintf("%v - %v", username, title),
 		Reference: s.url,

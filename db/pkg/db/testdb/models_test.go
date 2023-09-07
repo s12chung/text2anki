@@ -12,7 +12,9 @@ import (
 
 type testSeeder struct{ seedCount int }
 
-func (t *testSeeder) Name() string { return "" }
+func (t *testSeeder) Name() string              { return "" }
+func (t *testSeeder) Filename() string          { return "" }
+func (t *testSeeder) ReadFile() ([]byte, error) { return nil, nil }
 func (t *testSeeder) Seed(_ db.TxQs) error {
 	t.seedCount++
 	return nil

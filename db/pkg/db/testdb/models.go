@@ -104,10 +104,15 @@ func (f Fixture[T]) Name() string { return f.name }
 // Filename returns the filename of the fixture
 func (f Fixture[T]) Filename() string { return f.name + "Seed.json" }
 
+// ReadFile reads the fixtures file at the right directory
+func (f Fixture[T]) ReadFile() ([]byte, error) {
+	return os.ReadFile(path.Join(callerPath, modelsDir, f.Filename())) //nolint:gosec // for testing
+}
+
 // Models returns the models of the fixture
 func (f Fixture[T]) Models() ([]T, error) {
 	var models []T
-	if err := unmarshall(f.Filename(), &models); err != nil {
+	if err := unmarshall(f, &models); err != nil {
 		return nil, err
 	}
 	return models, nil
@@ -136,6 +141,8 @@ func (f Fixture[T]) Seed(txQs db.TxQs) error {
 
 type seeder interface {
 	Name() string
+	Filename() string
+	ReadFile() ([]byte, error)
 	Seed(txQs db.TxQs) error
 }
 
@@ -145,8 +152,8 @@ func setSeederMap(seeders ...seeder) {
 	}
 }
 
-func unmarshall(filename string, models any) error {
-	bytes, err := os.ReadFile(path.Join(callerPath, modelsDir, filename)) //nolint:gosec // for testing
+func unmarshall(s seeder, models any) error {
+	bytes, err := s.ReadFile()
 	if err != nil {
 		return err
 	}

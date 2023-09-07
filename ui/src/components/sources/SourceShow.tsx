@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { CommonLevel } from "../../services/LangService.ts"
+import { CommonLevel } from "../../services/Lang.ts"
 import {
   CreateNoteData,
   createNoteDataFromSourceTerm,
@@ -52,7 +52,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
         <Form
           action={`/sources/${source.id}`}
           method="delete"
-          className="space-x-basic"
+          className="space-x-basic flex items-start"
           onSubmit={(event) => {
             // eslint-disable-next-line no-alert
             if (!window.confirm("Delete Source?")) event.preventDefault()
@@ -67,7 +67,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
         </Form>
       </div>
 
-      <div className="flex justify-center mb-10">
+      <div className="flex justify-center mt-std mb-10">
         <a href="#" className="btn" onClick={onReadKorean}>
           Read Korean
         </a>
@@ -94,7 +94,7 @@ const SourceWrapper: React.FC<{
               {children(tokenizedText, partIndex, textIndex)}
             </div>
           ))}
-          {part.media?.imageUrl ? (
+          {part.media.imageUrl ? (
             <div className="grid-std">
               <img src={part.media.imageUrl} alt="Part Image" />
             </div>

@@ -92,7 +92,7 @@ func (rs Routes) txRouter() chi.Router {
 			r.Post("/", rs.PrePartListCreate)
 			r.Post("/sign", rs.PrePartListSign)
 			r.Post("/verify", rs.PrePartListVerify)
-			r.Route("/{prePartListID}", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
+			r.Route("/{id}", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 				r.Get("/", rs.PrePartListGet)
 			})
 		})

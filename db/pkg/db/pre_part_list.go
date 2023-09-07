@@ -49,6 +49,7 @@ func (p PrePartList) Info() (PrePartInfo, error) {
 // PrePartListURL represents all the Source parts together for a given id
 type PrePartListURL struct {
 	ID       string            `json:"id"`
+	InfoURL  string            `json:"-"`
 	PreParts []PrePartMediaURL `json:"pre_parts"`
 }
 
