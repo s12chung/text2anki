@@ -10,6 +10,8 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"sort"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -91,7 +93,7 @@ func MustSetup() {
 
 // Create creates the test database
 func Create() error {
-	return runWithSafeSchema(func(txQs db.TxQs) error {
+	return runWithMatchingDB(func(txQs db.TxQs) error {
 		if err := txQs.Create(txQs.Ctx()); err != nil {
 			return err
 		}
@@ -99,18 +101,18 @@ func Create() error {
 	})
 }
 
-func runWithSafeSchema(f func(txQs db.TxQs) error) error {
+func runWithMatchingDB(f func(txQs db.TxQs) error) error {
 	dbPath := dbPathF()
 	dbSHAPath := dbSHAPathF()
 
 	if err := os.MkdirAll(tmpPath, ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
-	schemaSHA, reuseSchema, err := ensureSafeSchema(dbPath, dbSHAPath)
+	dbSHA, reuseDB, err := ensureMatchingDB(dbPath, dbSHAPath)
 	if err != nil {
 		return err
 	}
-	if !reuseSchema {
+	if !reuseDB {
 		if err := db.SetDB(dbPath); err != nil {
 			return err
 		}
@@ -126,24 +128,36 @@ func runWithSafeSchema(f func(txQs db.TxQs) error) error {
 			return err
 		}
 	}
-	return os.WriteFile(dbSHAPath, []byte(schemaSHA), ioutil.OwnerRWGroupR)
+	return os.WriteFile(dbSHAPath, []byte(dbSHA), ioutil.OwnerRWGroupR)
 }
 
-func ensureSafeSchema(dbPath, dbSHAPath string) (string, bool, error) {
-	schemaSHA := fmt.Sprintf("%x", sha256.Sum256(db.SchemaBytes()))
+func ensureMatchingDB(dbPath, dbSHAPath string) (string, bool, error) {
+	shaSlice := make([]string, len(seederMap)+1)
+	shaSlice[0] = fmt.Sprintf("%x", sha256.Sum256(db.SchemaBytes()))
+	i := 1
+	for _, s := range seederMap {
+		bytes, err := s.ReadFile()
+		if err != nil {
+			return "", false, err
+		}
+		shaSlice[i] = fmt.Sprintf("%x", sha256.Sum256(bytes))
+		i++
+	}
+	sort.Strings(shaSlice)
+	sha := strings.Join(shaSlice, "\n")
 
 	if _, err := os.Stat(dbPath); err != nil {
 		//nolint:nilerr // skip if dbPath it doesn't exist
-		return schemaSHA, false, nil
+		return sha, false, nil
 	}
 
 	//nolint:gosec // for tests, constant path
 	shaBytes, err := os.ReadFile(dbSHAPath)
 	if err != nil {
-		return schemaSHA, false, err
+		return sha, false, os.Remove(dbPath)
 	}
-	if string(shaBytes) == schemaSHA {
-		return schemaSHA, true, nil
+	if string(shaBytes) == sha {
+		return sha, true, nil
 	}
-	return schemaSHA, false, os.Remove(dbPath)
+	return sha, false, os.Remove(dbPath)
 }
