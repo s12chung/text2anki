@@ -158,8 +158,21 @@ func PrepareModel(model any) error {
 	if !HasType(model) {
 		return fmt.Errorf("%v is not registered to httptyped", indirectTypeElement(reflect.TypeOf(model)).String())
 	}
+
 	if preparable, ok := model.(Preparable); ok {
 		preparable.PrepareSerialize()
+		return nil
+	}
+	val := reflect.ValueOf(model)
+	if val.Kind() == reflect.Slice || val.Kind() == reflect.Array {
+		for i := 0; i < val.Len(); i++ {
+			elem := val.Index(i).Interface()
+			preparable, ok := elem.(Preparable)
+			if !ok {
+				return nil
+			}
+			preparable.PrepareSerialize()
+		}
 	}
 	return nil
 }
