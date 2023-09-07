@@ -38,9 +38,8 @@ export const CreateNoteDataEmpty = Object.freeze<CreateNoteData>({
   text: "",
   partOfSpeech: "",
   translation: "",
-
-  commonLevel: CommonLevel.Unique,
   explanation: "",
+  commonLevel: CommonLevel.Unique,
 
   ...NoteUsageEmpty,
   dictionarySource: "",
@@ -59,9 +58,9 @@ export function createNoteDataFromSourceTerm(
     text: term.text,
     partOfSpeech: term.partOfSpeech,
     translation: translation.text,
-
-    commonLevel: term.commonLevel,
     explanation: translation.explanation,
+    commonLevel: term.commonLevel,
+
     usage: usage.usage,
     usageTranslation: usage.usageTranslation,
 

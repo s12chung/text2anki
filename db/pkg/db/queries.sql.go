@@ -11,20 +11,20 @@ import (
 
 const noteCreate = `-- name: NoteCreate :one
 INSERT INTO notes (
-    text, part_of_speech, translation,
-                   common_level, explanation, usage, usage_translation,
+    text, part_of_speech, translation, explanation, common_level,
+                   usage, usage_translation,
                    source_name, source_reference, dictionary_source, notes
-) VALUES (?, ?, ?,
-          ?, ?, ?, ?,
-          ?, ?, ?, ?) RETURNING id, text, part_of_speech, translation, explanation, common_level, usage, usage_translation, source_name, source_reference, dictionary_source, notes, downloaded
+) VALUES (?, ?, ?, ?, ?,
+          ?, ?,
+          ?, ?, ?, ?) RETURNING id, text, part_of_speech, translation, explanation, common_level, usage, usage_translation, source_name, source_reference, dictionary_source, notes, downloaded, updated_at, created_at
 `
 
 type NoteCreateParams struct {
 	Text             string `json:"text"`
 	PartOfSpeech     string `json:"part_of_speech"`
 	Translation      string `json:"translation"`
-	CommonLevel      int64  `json:"common_level"`
 	Explanation      string `json:"explanation"`
+	CommonLevel      int64  `json:"common_level"`
 	Usage            string `json:"usage"`
 	UsageTranslation string `json:"usage_translation"`
 	SourceName       string `json:"source_name"`
@@ -38,8 +38,8 @@ func (q *Queries) NoteCreate(ctx context.Context, arg NoteCreateParams) (Note, e
 		arg.Text,
 		arg.PartOfSpeech,
 		arg.Translation,
-		arg.CommonLevel,
 		arg.Explanation,
+		arg.CommonLevel,
 		arg.Usage,
 		arg.UsageTranslation,
 		arg.SourceName,
@@ -62,12 +62,14 @@ func (q *Queries) NoteCreate(ctx context.Context, arg NoteCreateParams) (Note, e
 		&i.DictionarySource,
 		&i.Notes,
 		&i.Downloaded,
+		&i.UpdatedAt,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const noteGet = `-- name: NoteGet :one
-SELECT id, text, part_of_speech, translation, explanation, common_level, usage, usage_translation, source_name, source_reference, dictionary_source, notes, downloaded FROM notes WHERE id = ? LIMIT 1
+SELECT id, text, part_of_speech, translation, explanation, common_level, usage, usage_translation, source_name, source_reference, dictionary_source, notes, downloaded, updated_at, created_at FROM notes WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) NoteGet(ctx context.Context, id int64) (Note, error) {
@@ -87,6 +89,8 @@ func (q *Queries) NoteGet(ctx context.Context, id int64) (Note, error) {
 		&i.DictionarySource,
 		&i.Notes,
 		&i.Downloaded,
+		&i.UpdatedAt,
+		&i.CreatedAt,
 	)
 	return i, err
 }

@@ -53,9 +53,7 @@ type PrePartListURL struct {
 }
 
 // StaticCopy returns a copy without fields that variate
-func (p PrePartListURL) StaticCopy() any {
-	return p
-}
+func (p PrePartListURL) StaticCopy() PrePartListURL { return p }
 
 // PrePartMediaURL represents a SourcePartMedia before it is created, only stored via. Routes.Storage.Storer
 type PrePartMediaURL struct {

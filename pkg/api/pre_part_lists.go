@@ -115,9 +115,7 @@ type PrePartListVerifyResponse struct {
 }
 
 // StaticCopy returns a copy without fields that variate
-func (p PrePartListVerifyResponse) StaticCopy() any {
-	return p
-}
+func (p PrePartListVerifyResponse) StaticCopy() PrePartListVerifyResponse { return p }
 
 // PrePartListVerify verifies the text whether it fits any extractor and returns the extractor type
 func (rs Routes) PrePartListVerify(r *http.Request, _ db.TxQs) (any, *jhttp.HTTPError) {
@@ -147,9 +145,7 @@ type PrePartListCreateResponse struct {
 }
 
 // StaticCopy returns a copy without fields that variate
-func (p PrePartListCreateResponse) StaticCopy() any {
-	return p
-}
+func (p PrePartListCreateResponse) StaticCopy() PrePartListCreateResponse { return p }
 
 // PrePartListCreate creates PrePartList given the type of extractor and text
 func (rs Routes) PrePartListCreate(r *http.Request, _ db.TxQs) (any, *jhttp.HTTPError) {

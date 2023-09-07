@@ -1,6 +1,8 @@
 package db
 
 import (
+	"time"
+
 	"github.com/s12chung/text2anki/pkg/firm"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 )
@@ -9,8 +11,8 @@ func init() {
 	firm.RegisterType(firm.NewDefinition(NoteCreateParams{}).Validates(firm.RuleMap{
 		"Text":        {rule.Presence{}},
 		"Translation": {rule.Presence{}},
+		"Explanation": {rule.Presence{}},
 
-		"Explanation":      {rule.Presence{}},
 		"Usage":            {rule.Presence{}},
 		"UsageTranslation": {rule.Presence{}},
 
@@ -19,9 +21,11 @@ func init() {
 }
 
 // StaticCopy returns a copy without fields that variate
-func (n Note) StaticCopy() any {
+func (n Note) StaticCopy() Note {
 	c := n
 	c.ID = 0
+	c.UpdatedAt = time.Time{}
+	c.CreatedAt = time.Time{}
 	return c
 }
 
@@ -31,9 +35,9 @@ func (n Note) CreateParams() NoteCreateParams {
 		Text:         n.Text,
 		PartOfSpeech: n.PartOfSpeech,
 		Translation:  n.Translation,
+		Explanation:  n.Explanation,
+		CommonLevel:  n.CommonLevel,
 
-		CommonLevel:      n.CommonLevel,
-		Explanation:      n.Explanation,
 		Usage:            n.Usage,
 		UsageTranslation: n.UsageTranslation,
 

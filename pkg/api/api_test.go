@@ -109,8 +109,7 @@ func TestRoutes_Router(t *testing.T) {
 	require.NoError(err)
 	resp := test.HTTPDo(t, txPool.SetTx(t, req, txQs, txReadOnly))
 	resp.EqualCode(t, http.StatusOK)
-	jsonBody := test.StaticCopy(t, resp.Body.Bytes(), &db.SourceStructured{})
-	fixture.CompareReadOrUpdate(t, testName+".json", jsonBody)
+	fixture.CompareReadOrUpdate(t, testName+".json", test.StaticCopy(t, resp.Body.Bytes(), &db.SourceStructured{}))
 
 	req, err = http.NewRequestWithContext(txQs.Ctx(), http.MethodGet, server.URL+"/healthz", nil)
 	require.NoError(err)

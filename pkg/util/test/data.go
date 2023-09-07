@@ -56,55 +56,42 @@ func Unmarshall(t *testing.T, b []byte, data any) {
 }
 
 // StaticCopyable returns a TestCopy of a struct
-type StaticCopyable interface {
-	StaticCopy() any
+type StaticCopyable[T any] interface {
+	StaticCopy() T
 }
 
 // StaticCopy returns a static JSON copy
-func StaticCopy(t *testing.T, b []byte, data StaticCopyable) []byte {
-	Unmarshall(t, b, data)
-	return JSON(t, data.StaticCopy())
+func StaticCopy[T StaticCopyable[T]](t *testing.T, b []byte, model *T) []byte {
+	Unmarshall(t, b, model)
+	return JSON(t, (*model).StaticCopy())
 }
 
 // StaticCopyOrIndent returns a static JSON copy when http.StatusOK or indented JSON copy
-func StaticCopyOrIndent(t *testing.T, code int, b []byte, data StaticCopyable) []byte {
+func StaticCopyOrIndent[T StaticCopyable[T]](t *testing.T, code int, b []byte, model *T) []byte {
 	if code == http.StatusOK {
-		return StaticCopy(t, b, data)
+		return StaticCopy[T](t, b, model)
 	}
 	return IndentJSON(t, b)
 }
 
 // StaticCopySlice returns a static JSON copy of a datas slice
-func StaticCopySlice(t *testing.T, b []byte, datas any) []byte {
-	require := require.New(t)
+func StaticCopySlice[T StaticCopyable[T]](t *testing.T, b []byte, models *[]T) []byte {
+	if models == nil {
+		models = &[]T{}
+	}
+	Unmarshall(t, b, models)
 
-	value := reflect.ValueOf(datas)
-	typ := value.Type()
-
-	require.True(typ.Kind() == reflect.Ptr, "Type should be a pointer")
-	require.True(typ.Elem().Kind() == reflect.Slice, "Elem Type should be slice")
-	require.True(typ.Elem().Elem().Implements(reflect.TypeOf((*StaticCopyable)(nil)).Elem()), "Element should be StaticCopyable")
-
-	Unmarshall(t, b, datas)
-
-	sliceValue := value.Elem()
-	length := sliceValue.Len()
-	staticCopies := make([]any, length)
-	for i := 0; i < length; i++ {
-		element := sliceValue.Index(i)
-		copyable, ok := element.Interface().(StaticCopyable)
-		if !ok {
-			require.Fail("Element is not StaticCopyable (should never happen due to check above)")
-		}
-		staticCopies[i] = copyable.StaticCopy()
+	staticCopies := make([]any, len(*models))
+	for i, model := range *models {
+		staticCopies[i] = model.StaticCopy()
 	}
 	return JSON(t, staticCopies)
 }
 
 // StaticCopyOrIndentSlice returns a static JSON copy when http.StatusOK or indented JSON copy
-func StaticCopyOrIndentSlice(t *testing.T, code int, b []byte, datas any) []byte {
+func StaticCopyOrIndentSlice[T StaticCopyable[T]](t *testing.T, code int, b []byte, models *[]T) []byte {
 	if code == http.StatusOK {
-		return StaticCopySlice(t, b, datas)
+		return StaticCopySlice[T](t, b, models)
 	}
 	return IndentJSON(t, b)
 }

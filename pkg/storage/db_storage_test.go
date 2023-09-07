@@ -260,10 +260,6 @@ type PrePartList struct {
 	PreParts []PrePart `json:"pre_parts"`
 }
 
-func (p PrePartList) StaticCopy() any {
-	return p
-}
-
 type PrePart struct {
 	ImageURL string `json:"image_url,omitempty"`
 	AudioURL string `json:"audio_url,omitempty"`

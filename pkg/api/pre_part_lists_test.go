@@ -46,7 +46,7 @@ func replaceCipherQueryParam(urlString string) string {
 	return u.String()
 }
 
-func (s signPrePartListResponse) StaticCopy() any {
+func (s signPrePartListResponse) StaticCopy() signPrePartListResponse {
 	a := s
 	a.ID = testUUID
 	for i, prePart := range s.PreParts {

@@ -28,15 +28,10 @@ func firstSource(t *testing.T, txQs TxQs) Source {
 }
 
 func TestSourceStructured_StaticCopy(t *testing.T) {
-	require := require.New(t)
 	txQs := TxQsT(t, nil)
-	test.EmptyFieldsMatch(t, firstSource(t, txQs))
-
-	sourceCopy := firstSource(t, txQs).ToSourceStructured()
-	sourceCopy.ID = 0
-	sourceCopy.UpdatedAt = time.Time{}
-	sourceCopy.CreatedAt = time.Time{}
-	require.Equal(sourceCopy, firstSource(t, txQs).ToSourceStructured().StaticCopy())
+	source := firstSource(t, txQs)
+	test.EmptyFieldsMatch(t, source)
+	test.EmptyFieldsMatch(t, source.ToSourceStructured().StaticCopy(), "ID", "UpdatedAt", "CreatedAt")
 }
 
 func TestSourcePartMedia_MarshalJSON(t *testing.T) {

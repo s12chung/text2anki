@@ -1,6 +1,7 @@
 {
   "db.Note": {
     "common_level": "int64",
+    "created_at": "time.Time",
     "dictionary_source": "string",
     "downloaded": "bool",
     "explanation": "string",
@@ -11,7 +12,9 @@
     "source_reference": "string",
     "text": "string",
     "translation": "string",
+    "updated_at": "time.Time",
     "usage": "string",
     "usage_translation": "string"
-  }
+  },
+  "time.Time": {}
 }

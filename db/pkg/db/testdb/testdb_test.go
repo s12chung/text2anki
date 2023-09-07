@@ -25,7 +25,7 @@ func TestGen___NotesSeed(t *testing.T) {
 	notes, err := Notes().Models()
 	require.NoError(err)
 	for _, note := range notes {
-		emptyFields := []string{"ID", "Downloaded"}
+		emptyFields := []string{"ID", "Downloaded", "UpdatedAt", "CreatedAt"}
 		if note.CommonLevel == 0 {
 			emptyFields = append(emptyFields, "CommonLevel")
 		}
