@@ -52,7 +52,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
         <Form
           action={`/sources/${source.id}`}
           method="delete"
-          className="space-x-basic"
+          className="space-x-basic flex items-start"
           onSubmit={(event) => {
             // eslint-disable-next-line no-alert
             if (!window.confirm("Delete Source?")) event.preventDefault()
@@ -67,7 +67,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
         </Form>
       </div>
 
-      <div className="flex justify-center mb-10">
+      <div className="flex justify-center mt-std mb-10">
         <a href="#" className="btn" onClick={onReadKorean}>
           Read Korean
         </a>
