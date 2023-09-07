@@ -1,0 +1,12 @@
+{
+  "id": "info_id",
+  "pre_parts": [
+    {
+      "image_url": "https://test.com/storage/sources/parts/info_id/parts.PreParts[0].Image.txt",
+      "audio_url": "https://test.com/storage/sources/parts/info_id/parts.PreParts[0].Audio.txt"
+    },
+    {
+      "image_url": "https://test.com/storage/sources/parts/info_id/parts.PreParts[1].Image.txt"
+    }
+  ]
+}
