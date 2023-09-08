@@ -16,67 +16,85 @@ export function requestInit<T extends { [K in keyof T]: unknown }>(
   }
 }
 
-export type RecursiveObj<T> = {
-  [K in keyof T]: RecursiveObj<T[K]> | RecursiveObj<T[K]>[]
-}
+type JSONTypes = string | number | boolean | null | EmptyObj | JSONTypes[]
+type EmptyTypes = JSONTypes | Date | Date[]
 
-export async function convertResponse<U extends RecursiveObj<unknown>>(
+type JSONObj = { [K in keyof unknown]: JSONTypes }
+export type EmptyObj = { [K in keyof unknown]: EmptyTypes }
+
+export async function convertResponse<T extends EmptyObj>(
   response: Response,
-  empty: U
-): Promise<U> {
+  empty: T
+): Promise<T> {
   const data = await response.json()
   if (typeof data !== "object" || data === null) {
     throw new Error("convertResponse data is not an object or null")
   }
-  return convertData(data, empty, snakeToCamel) as U
+  return convertData(data as JSONObj | JSONObj[], empty, snakeToCamel)
 }
 
-export function convertData(data: unknown, empty: unknown, convertKey: ConvertKeyFunc): unknown {
-  if (typeof data !== "object" || data === null) {
-    return data
-  }
+export function convertData<T extends EmptyObj | EmptyObj[]>(
+  data: JSONObj | JSONObj[],
+  empty: T,
+  convertKey: ConvertKeyFunc
+): T {
   if (Array.isArray(data)) {
     if (!Array.isArray(empty)) throw new Error(`data is array, but empty is not: ${String(empty)}`)
-    return convertArray(data, empty[0] as RecursiveObj<unknown>, convertKey)
+    return convertArray(data, empty[0], convertKey) as T // T = EmptyObj[] => empty[0] = EmptyObj => returns EmptyObj[]
   }
-  return convertObject(data, empty as RecursiveObj<unknown>, convertKey)
+  return convertObject(data, empty, convertKey)
 }
 
-export function convertArray<T extends RecursiveObj<unknown>, U extends RecursiveObj<unknown>>(
-  data: T[],
-  empty: U,
+export function convertArray<T extends EmptyObj>(
+  data: JSONObj[],
+  empty: T,
   convertKey: ConvertKeyFunc
-): U[] {
-  return data.map((item) => convertObject(item, empty, convertKey))
+): T[] {
+  return data.map((item) => handleValue(item, empty, convertKey))
 }
 
-export function convertObject<T extends RecursiveObj<unknown>, U extends RecursiveObj<unknown>>(
-  data: T,
-  empty: U,
+export function convertObject<T extends EmptyObj>(
+  data: JSONObj,
+  empty: T,
   convertKey: ConvertKeyFunc
-): U {
+): T {
   const obj = { ...empty }
   for (const key in data) {
     if (!Object.hasOwn(data, key)) continue
 
-    const convertedKey = convertKey(key) as keyof U
+    const convertedKey = convertKey(key) as keyof T // always a key
     if (!Object.hasOwn(obj, convertedKey)) {
       throw new Error(`converted key not matching object: ${String(convertedKey)}`)
     }
-    obj[convertedKey] = convertData(
-      data[key],
-      empty[convertedKey] as RecursiveObj<unknown>,
+    obj[convertedKey] = handleValue(
+      data[key as keyof EmptyObj], // always a key
+      empty[convertedKey] as JSONTypes, // T = EmptyObj => T[keyof T] => JSONTypes
       convertKey
-    ) as U[keyof U]
+    ) as T[keyof T] // empty[convertedKey] = T[keyof T]
   }
   return obj
 }
 
+function handleValue<T extends EmptyTypes>(
+  data: JSONTypes,
+  empty: T,
+  convertKey: ConvertKeyFunc
+): T {
+  if (data === null) return empty
+  if (empty === null) throw new Error("empty is null")
+
+  if (typeof data !== "object") {
+    if (empty instanceof Date && typeof data === "string") return new Date(data) as unknown as T // T = empty = Date via guard
+    if (typeof data !== typeof empty)
+      throw new Error(`data (${String(data)}) type not matching empty {${String(empty)})`)
+    return data as T // `typeof data !== typeof empty` ensures same
+  }
+  if (typeof empty !== "object") throw new Error(`empty is not an object: ${String(empty)}`)
+  return convertData(data, empty, convertKey)
+}
+
 export async function responseError(response: Response): Promise<ResponseError> {
-  return new ResponseError(
-    response,
-    (await convertResponse(response, ResponseErrorBodyEmpty)) as ResponseErrorBody
-  )
+  return new ResponseError(response, await convertResponse(response, ResponseErrorBodyEmpty))
 }
 
 export class ResponseError {
