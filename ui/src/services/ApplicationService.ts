@@ -1,14 +1,14 @@
-import { convertResponse, RecursiveObj, responseError } from "./Format.ts"
+import { convertResponse, EmptyObj, responseError } from "./Format.ts"
 
 abstract class ApplicationService {
   protected apiUrl = "http://localhost:3000"
   protected pathPrefix = "/"
 
-  protected async fetch<U extends RecursiveObj<unknown>>(
+  protected async fetch<T extends EmptyObj>(
     path: string,
-    empty: U,
+    empty: T,
     init?: RequestInit
-  ): Promise<U> {
+  ): Promise<T> {
     const response = await fetch(this.apiUrl + this.pathPrefix + path, init)
     if (!response.ok) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal

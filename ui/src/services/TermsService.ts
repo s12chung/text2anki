@@ -25,7 +25,7 @@ export interface Term {
 const TermEmpty = Object.freeze<Term>({
   id: 0,
   text: "",
-  variants: [],
+  variants: [""],
   partOfSpeech: "",
   commonLevel: 0,
   translations: [TranslationEmpty],
