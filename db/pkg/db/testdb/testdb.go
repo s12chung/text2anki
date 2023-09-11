@@ -19,13 +19,14 @@ import (
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/logg"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture/flog"
 )
 
 // A copy of this constant is in db_test.go
 const testDBFile = "testdb.sqlite3"
 
 var tmpPath string
-var plog = logg.Default()
+var plog = flog.FixtureUpdateNoWrite()
 
 func dbPathF() string    { return path.Join(tmpPath, testDBFile) }
 func dbSHAPathF() string { return path.Join(tmpPath, "testdb.sha.txt") }

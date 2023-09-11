@@ -24,6 +24,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture/flog"
 )
 
 const testUUID = "123e4567-e89b-12d3-a456-426614174000"
@@ -38,7 +39,7 @@ var routes Routes
 var server txServer
 var txPool = reqtxtest.NewPool[db.TxQs, config.TxMode]()
 var extractorCacheDir = path.Join(os.TempDir(), test.GenerateName("Extractor"))
-var plog = logg.Default()
+var plog = flog.FixtureUpdateNoWrite()
 
 var routesConfig = config.Config{
 	Log:    plog,

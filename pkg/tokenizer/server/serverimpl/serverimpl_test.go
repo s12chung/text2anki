@@ -18,12 +18,13 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
 	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture/flog"
 )
 
 const host = "http://localhost"
 const testPort = 9000
 
-var plog = logg.Default()
+var plog = flog.FixtureUpdateNoWrite()
 
 func TestMain(m *testing.M) {
 	server := NewServerImpl(&SplitTokenizer{})

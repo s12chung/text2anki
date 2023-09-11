@@ -15,6 +15,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture/flog"
 )
 
 func TestMain(m *testing.M) {
@@ -31,7 +32,7 @@ const testUUID = "a1234567-3456-9abc-d123-456789abcdef"
 var storageAPI localstore.API
 
 func run(m *testing.M) error {
-	SetLog(logg.Default())
+	SetLog(flog.FixtureUpdateNoWrite())
 
 	if err := SetDB(path.Join("..", "..", "tmp", testDBFile)); err != nil {
 		return err
