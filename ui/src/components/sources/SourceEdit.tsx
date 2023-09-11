@@ -1,7 +1,7 @@
 import { Source } from "../../services/SourcesService.ts"
-import AwaitError from "../AwaitError.tsx"
+import AwaitWithFallback from "../AwaitWithFallback.tsx"
 import React from "react"
-import { Await, Form, Link } from "react-router-dom"
+import { Form, Link } from "react-router-dom"
 
 export interface ISourceEditData {
   source: Promise<Source>
@@ -12,11 +12,9 @@ interface ISourceEditProps {
 
 const SourceEdit: React.FC<ISourceEditProps> = ({ data }) => {
   return (
-    <React.Suspense fallback={<div>Loading....</div>}>
-      <Await resolve={data.source} errorElement={<AwaitError />}>
-        {(source: Source) => <SourceComponent source={source} />}
-      </Await>
-    </React.Suspense>
+    <AwaitWithFallback resolve={data.source}>
+      {(source: Source) => <SourceComponent source={source} />}
+    </AwaitWithFallback>
   )
 }
 

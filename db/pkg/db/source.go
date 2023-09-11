@@ -250,7 +250,7 @@ func (t TextTokenizer) TokenizeTexts(ctx context.Context, texts []text.Text) ([]
 
 // SourceStructuredIndex returns a SourceStructured from the database
 func (q *Queries) SourceStructuredIndex(ctx context.Context) ([]SourceStructured, error) {
-	sources, err := q.SourceIndex(ctx)
+	sources, err := q.SourcesIndex(ctx)
 	if err != nil {
 		return nil, err
 	}

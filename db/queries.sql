@@ -1,5 +1,5 @@
--- name: SourceIndex :many
-SELECT * FROM sources ORDER BY created_at DESC;
+-- name: SourcesIndex :many
+SELECT * FROM sources ORDER BY updated_at DESC;
 
 -- name: SourceGet :one
 SELECT * FROM sources WHERE id = ? LIMIT 1;
@@ -31,6 +31,9 @@ INSERT INTO terms (
 
 -- name: TermsClearAll :exec
 DELETE FROM terms;
+
+-- name: NotesIndex :many
+SELECT * FROM notes ORDER BY updated_at DESC;
 
 -- name: NoteGet :one
 SELECT * FROM notes WHERE id = ? LIMIT 1;

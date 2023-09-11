@@ -45,12 +45,16 @@ export const CreateNoteDataEmpty = Object.freeze<CreateNoteData>({
 export interface Note extends CreateNoteData {
   id: number
   downloaded: boolean
+  updatedAt: Date
+  createdAt: Date
 }
 
 const NoteEmpty = Object.freeze<Note>({
   id: 0,
   ...CreateNoteDataEmpty,
   downloaded: false,
+  updatedAt: new Date(0),
+  createdAt: new Date(0),
 })
 
 // eslint-disable-next-line max-params
@@ -80,6 +84,10 @@ export function createNoteDataFromSourceTerm(
 
 class NotesService extends ApplicationService {
   protected pathPrefix = "/notes"
+
+  async index(): Promise<Note[]> {
+    return this.fetch("", [NoteEmpty])
+  }
 
   async create(data: CreateNoteData): Promise<Note> {
     return this.fetch("", NoteEmpty, requestInit(Http.POST, data))

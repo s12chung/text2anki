@@ -20,6 +20,12 @@ func init() {
 	notesServer = server.WithPathPrefix("/notes")
 }
 
+func TestRoutes_NotesIndex(t *testing.T) {
+	testName := "TestRoutes_NotesIndex"
+	resp := test.HTTPDo(t, notesServer.NewRequest(t, http.MethodGet, "", nil))
+	testModelsResponse[db.Note](t, resp, testName, "", nil)
+}
+
 func TestRoutes_NoteCreate(t *testing.T) {
 	testName := "TestRoutes_NoteCreate"
 
