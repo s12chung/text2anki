@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -14,7 +13,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/s12chung/text2anki/pkg/util/logg"
 )
+
+var plog = logg.Default()
 
 // JSON returns indented json
 func JSON(t *testing.T, v any) []byte {
@@ -145,7 +148,7 @@ func (s Server) NewRequest(t *testing.T, ctx context.Context, method, path strin
 // WithPathPrefix returns a new server with the pathPrefix set for NewRequest
 func (s Server) WithPathPrefix(prefix string) Server {
 	if s.Server == nil {
-		slog.Error("test.Server is not set before calling WithPathPrefix() - due to init timing?")
+		plog.Error("test.Server is not set before calling WithPathPrefix() - due to init timing?")
 		os.Exit(-1)
 	}
 

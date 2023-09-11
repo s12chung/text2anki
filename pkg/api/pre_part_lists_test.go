@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"io"
-	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
@@ -39,7 +38,7 @@ func replaceCipherQueryParam(urlString string) string {
 
 	u, err := url.Parse(urlString)
 	if err != nil {
-		slog.Error("api.replaceCipherQueryParam()", logg.Err(err))
+		plog.Error("api.replaceCipherQueryParam()", logg.Err(err))
 		os.Exit(-1)
 	}
 	u.RawQuery = url.Values{localstore.CipherQueryParam: []string{"testy"}}.Encode()

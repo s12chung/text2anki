@@ -3,7 +3,6 @@ package main
 
 import (
 	"flag"
-	"log/slog"
 	"os"
 
 	"github.com/s12chung/text2anki/integrations/tokenizers/khaiii/pkg/khaiii"
@@ -12,6 +11,7 @@ import (
 )
 
 var port int
+var plog = logg.Default()
 
 func init() {
 	serverimpl.FsPort(&port, flag.CommandLine)
@@ -20,7 +20,7 @@ func init() {
 
 func main() {
 	if err := run(port); err != nil {
-		slog.Error("khaiii/main", logg.Err(err))
+		plog.Error("khaiii/main", logg.Err(err))
 		os.Exit(-1)
 	}
 }
@@ -34,6 +34,6 @@ func run(port int) error {
 	if err = k.Open(khaiii.DefaultRscPath); err != nil {
 		return err
 	}
-	server := serverimpl.NewServerImpl(khaiii.NewTokenizer(k))
+	server := serverimpl.NewServerImpl(khaiii.NewTokenizer(k, plog))
 	return server.Run(port)
 }

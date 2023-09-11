@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"log/slog"
 	"os"
 	"path"
 	"testing"
@@ -20,7 +19,7 @@ import (
 
 func TestMain(m *testing.M) {
 	if err := run(m); err != nil {
-		slog.Error("db_test.TestMain", logg.Err(err))
+		plog.Error("db_test.TestMain", logg.Err(err))
 		os.Exit(-1)
 	}
 }
@@ -32,6 +31,8 @@ const testUUID = "a1234567-3456-9abc-d123-456789abcdef"
 var storageAPI localstore.API
 
 func run(m *testing.M) error {
+	SetLog(logg.Default())
+
 	if err := SetDB(path.Join("..", "..", "tmp", testDBFile)); err != nil {
 		return err
 	}

@@ -40,6 +40,8 @@ type CmdTokenizerServer struct {
 
 	stopWarningDuration time.Duration
 	cancel              context.CancelFunc
+
+	log *slog.Logger
 }
 
 // CmdOptions is the set of options for the Cmd
@@ -63,7 +65,8 @@ func (c *CmdOptions) Cmd(ctx context.Context) (*exec.Cmd, context.CancelFunc) {
 }
 
 // NewCmdTokenizerServer returns a new CmdServer
-func NewCmdTokenizerServer(ctx context.Context, cmdOpts CmdOptions, port int, stopWarningDuration time.Duration) *CmdTokenizerServer {
+func NewCmdTokenizerServer(ctx context.Context, cmdOpts CmdOptions,
+	port int, stopWarningDuration time.Duration, log *slog.Logger) *CmdTokenizerServer {
 	cmd, cancel := cmdOpts.Cmd(ctx)
 	return &CmdTokenizerServer{
 		cmd:                 cmd,
@@ -71,6 +74,7 @@ func NewCmdTokenizerServer(ctx context.Context, cmdOpts CmdOptions, port int, st
 		stopWarningDuration: stopWarningDuration,
 
 		cancel: cancel,
+		log:    log,
 	}
 }
 
@@ -102,7 +106,7 @@ func (s *CmdTokenizerServer) Start(ctx context.Context) error {
 
 	go func() {
 		if err := s.cmd.Wait(); err != nil {
-			slog.Warn("CmdTokenizerServer command Wait()", logg.Err(err))
+			s.log.Warn("CmdTokenizerServer command Wait()", logg.Err(err))
 		}
 		s.isRunning = false
 	}()
@@ -146,10 +150,10 @@ func (s *CmdTokenizerServer) Stop() error {
 		for {
 			select {
 			case <-stopped:
-				slog.Info("CmdServer stopped")
+				s.log.Info("CmdServer stopped")
 				return
 			default:
-				slog.Warn(fmt.Sprintf("CmdServer server is still running after %v",
+				s.log.Warn(fmt.Sprintf("CmdServer server is still running after %v",
 					time.Duration(i)*s.stopWarningDuration+initialSleep))
 			}
 			i++
@@ -162,9 +166,9 @@ func (s *CmdTokenizerServer) Stop() error {
 		if !s.IsRunning() {
 			return
 		}
-		slog.Warn(fmt.Sprintf("Komoran Server still running after %v, calling ForceStop()", forceStopDuration))
+		s.log.Warn(fmt.Sprintf("Komoran Server still running after %v, calling ForceStop()", forceStopDuration))
 		if err2 := s.ForceStop(); err != nil {
-			slog.Warn(fmt.Sprintf("error calling ForceStop(): %v", err2))
+			s.log.Warn(fmt.Sprintf("error calling ForceStop(): %v", err2))
 		}
 	}()
 	return err

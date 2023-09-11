@@ -6,11 +6,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
 const testPort = 9001
+
+var plog = logg.Default()
 
 func TestKhaiii_Tokenize(t *testing.T) {
 	test.CISkip(t, "can't run C environment in CI")
@@ -18,7 +21,7 @@ func TestKhaiii_Tokenize(t *testing.T) {
 	require := require.New(t)
 	ctx := context.Background()
 
-	tokenizer := newKhaiii(ctx, testPort)
+	tokenizer := newKhaiii(ctx, testPort, plog)
 	require.NoError(tokenizer.Setup(ctx))
 	defer func() { require.NoError(tokenizer.CleanupAndWait()) }()
 

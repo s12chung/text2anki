@@ -4,6 +4,7 @@ package komoran
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"strconv"
 	"time"
@@ -25,15 +26,15 @@ func init() {
 }
 
 // New returns a Komoran Korean tokenizer
-func New(ctx context.Context) tokenizer.Tokenizer {
-	return newKomoran(ctx, port)
+func New(ctx context.Context, log *slog.Logger) tokenizer.Tokenizer {
+	return newKomoran(ctx, port, log)
 }
 
-func newKomoran(ctx context.Context, port int) *Komoran {
+func newKomoran(ctx context.Context, port int, log *slog.Logger) *Komoran {
 	opts := server.NewCmdOptions("java")
 	opts.Args = []string{"-jar", jarName, strconv.Itoa(port), strconv.Itoa(backlog)}
 	opts.Dir = jarPath
-	server := server.NewCmdTokenizerServer(ctx, opts, port, stopWarningDuration)
+	server := server.NewCmdTokenizerServer(ctx, opts, port, stopWarningDuration, log)
 
 	name := "Komoran"
 	return &Komoran{

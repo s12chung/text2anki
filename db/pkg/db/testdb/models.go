@@ -3,7 +3,6 @@ package testdb
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"os"
 	"path"
 	"runtime"
@@ -22,7 +21,7 @@ var callerPath string
 func init() {
 	_, callerFilePath, _, ok := runtime.Caller(0)
 	if !ok {
-		slog.Error("runtime.Caller not ok for models package")
+		plog.Error("runtime.Caller not ok for models package")
 		os.Exit(-1)
 	}
 	callerPath = path.Dir(callerFilePath)

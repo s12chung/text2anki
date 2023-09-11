@@ -12,6 +12,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
+var plog = logg.Default()
+
 // HTTPError represents an http error
 type HTTPError struct {
 	Code  int
@@ -25,7 +27,7 @@ func (e HTTPError) Error() string {
 
 // LogError logs the error
 func LogError(r *http.Request, httpErr *HTTPError) {
-	slog.Error("jhttp response", slog.String("method", r.Method), slog.String("url", r.URL.Path), slog.Int("code", httpErr.Code), logg.Err(httpErr))
+	plog.Error("jhttp response", slog.String("method", r.Method), slog.String("url", r.URL.Path), slog.Int("code", httpErr.Code), logg.Err(httpErr))
 }
 
 // Error is a safe shorthand to create a new HTTPError

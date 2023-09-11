@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"log/slog"
 	"os"
 	"reflect"
 	"strings"
@@ -25,6 +24,8 @@ import (
 func init() {
 	flag.Parse()
 }
+
+var plog = logg.Default()
 
 const dbPath = "data.sqlite3"
 
@@ -53,7 +54,7 @@ func main() {
 	cmd := args[0]
 
 	if err := run(cmd); err != nil {
-		slog.Error("db/main", logg.Err(err))
+		plog.Error("db/main", logg.Err(err))
 		os.Exit(-1)
 	}
 }

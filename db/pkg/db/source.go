@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
-	"log/slog"
 	"time"
 
 	"github.com/s12chung/text2anki/pkg/text"
@@ -165,7 +164,7 @@ func (s SourceStructured) CreateParams() SourceCreateParams {
 func (s SourceStructured) ToSource() Source {
 	bytes, err := json.Marshal(s.Parts)
 	if err != nil {
-		slog.Error("SourceStructured.ToSource()", logg.Err(err))
+		plog.Error("SourceStructured.ToSource()", logg.Err(err))
 		panic(-1)
 	}
 	return Source{
@@ -182,7 +181,7 @@ func (s SourceStructured) ToSource() Source {
 func (s Source) ToSourceStructured() SourceStructured {
 	var parts []SourcePart
 	if err := json.Unmarshal([]byte(s.Parts), &parts); err != nil {
-		slog.Error(err.Error())
+		plog.Error(err.Error())
 		panic(-1)
 	}
 	return SourceStructured{

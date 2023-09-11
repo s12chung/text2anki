@@ -9,19 +9,21 @@ import (
 // Tokenizer is a wrapper around the Khaiii
 type Tokenizer struct {
 	kahiii *Khaiii
+	log    *slog.Logger
 }
 
 // NewTokenizer returns a new Tokenizer
-func NewTokenizer(k *Khaiii) *Tokenizer {
+func NewTokenizer(k *Khaiii, log *slog.Logger) *Tokenizer {
 	return &Tokenizer{
 		kahiii: k,
+		log:    log,
 	}
 }
 
 // Cleanup cleans up the Kahiii instance
 func (k *Tokenizer) Cleanup() {
 	if err := k.kahiii.Close(); err != nil {
-		slog.Error("Kahiii.Cleanup()", logg.Err(err))
+		k.log.Error("Kahiii.Cleanup()", logg.Err(err))
 	}
 }
 

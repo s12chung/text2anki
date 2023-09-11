@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -24,22 +23,24 @@ import (
 const host = "http://localhost"
 const testPort = 9000
 
+var plog = logg.Default()
+
 func TestMain(m *testing.M) {
 	server := NewServerImpl(&SplitTokenizer{})
 	serverChannel := server.runWithoutStdin(testPort)
 	go func() {
 		err := <-serverChannel
 		if err != nil {
-			slog.Error("serverimpl serverChannel", logg.Err(err))
+			plog.Error("serverimpl serverChannel", logg.Err(err))
 			os.Exit(-1)
 		}
 	}()
 	code := m.Run()
 	if err := server.Stop(); err != nil {
-		slog.Error("serverimpl server.Stop()", logg.Err(err))
+		plog.Error("serverimpl server.Stop()", logg.Err(err))
 	}
 	if !cleaned {
-		slog.Error("cleaned = false from Cleanup()")
+		plog.Error("cleaned = false from Cleanup()")
 		os.Exit(-1)
 	}
 	os.Exit(code)

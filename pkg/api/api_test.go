@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"context"
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -39,8 +38,10 @@ var routes Routes
 var server txServer
 var txPool = reqtxtest.NewPool[db.TxQs, config.TxMode]()
 var extractorCacheDir = path.Join(os.TempDir(), test.GenerateName("Extractor"))
+var plog = logg.Default()
 
 var routesConfig = config.Config{
+	Log:    plog,
 	TxPool: txPool,
 
 	StorageConfig: config.StorageConfig{
@@ -60,7 +61,7 @@ var routesConfig = config.Config{
 // Due to server.WithPathPrefix() calls, some functions must run via. init()
 func init() {
 	if err := runInit(); err != nil {
-		slog.Error("api_test.init()", logg.Err(err))
+		plog.Error("api_test.init()", logg.Err(err))
 		os.Exit(-1)
 	}
 }
