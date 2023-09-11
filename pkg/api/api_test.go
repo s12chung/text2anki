@@ -73,7 +73,12 @@ func runInit() error {
 	if err := routes.Storage.Storer.Store(testdb.SourcePartMediaImageKey, bytes.NewReader([]byte(sourcePartMediaImageContents))); err != nil {
 		return err
 	}
-	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(routes.Router())}}
+
+	r := chi.NewRouter()
+	r.Use(middleware.Heartbeat("/healthz"))
+	r.Mount("/", routes.Router())
+	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(r)}}
+
 	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
@@ -109,13 +114,6 @@ func TestHttpTypedRegistry(t *testing.T) {
 func TestRoutes_Router(t *testing.T) {
 	require := require.New(t)
 	testName := "TestRoutes_Router"
-
-	r := chi.NewRouter()
-	r.Use(middleware.Heartbeat("/healthz"))
-	r.Mount("/", routes.Router())
-
-	server := httptest.NewServer(r)
-	defer server.Close()
 
 	txQs := testdb.TxQs(t, nil)
 
