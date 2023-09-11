@@ -101,6 +101,7 @@ func (rs Routes) txRouter() chi.Router {
 		r.Get("/search", rs.TermsSearch)
 	})
 	r.Route("/notes", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
+		r.Get("/", rs.NotesIndex)
 		r.Mode(txWritable).Post("/", rs.NoteCreate)
 	})
 	return r.Router

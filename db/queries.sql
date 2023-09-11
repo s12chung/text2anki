@@ -32,6 +32,9 @@ INSERT INTO terms (
 -- name: TermsClearAll :exec
 DELETE FROM terms;
 
+-- name: NotesIndex :many
+SELECT * FROM notes ORDER BY updated_at DESC;
+
 -- name: NoteGet :one
 SELECT * FROM notes WHERE id = ? LIMIT 1;
 
