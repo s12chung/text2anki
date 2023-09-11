@@ -1,3 +1,4 @@
+import NoteList, { INoteListData } from "./components/notes/NoteList.tsx"
 import PrePartListShow, {
   IPrePartListShowData,
 } from "./components/pre_part_lists/PrePartListShow.tsx"
@@ -35,7 +36,9 @@ const routes = route("/", null, rootOptions, [
       edit: el(LoaderPage<ISourceEditData>, { Component: SourceEdit }),
     }),
     route("terms/search", null, { loader: TermsController.search }),
-    resources("notes", NotesController, {}),
+    resources("notes", NotesController, {
+      index: el(LoaderPage<INoteListData>, { Component: NoteList }),
+    }),
   ]),
 
   withLayout(el(FullLayout), [
