@@ -1,8 +1,6 @@
 run:
   # timeout for analysis, e.g. 30s, 5m, default is 1m
   timeout: 2m
-  skip-files:
-    - "cmd/survey/*"
 linters:
   disable-all: true
   enable:
