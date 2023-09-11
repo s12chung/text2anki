@@ -143,9 +143,9 @@ func (s Server) NewRequest(t *testing.T, ctx context.Context, method, path strin
 }
 
 // WithPathPrefix returns a new server with the pathPrefix set for NewRequest
-func (s Server) WithPathPrefix(prefix string) Server {
+func (s Server) WithPathPrefix(prefix string, log *slog.Logger) Server {
 	if s.Server == nil {
-		slog.Error("test.Server is not set before calling WithPathPrefix() - due to init timing?")
+		log.Error("test.Server is not set before calling WithPathPrefix() - due to init timing?")
 		os.Exit(-1)
 	}
 

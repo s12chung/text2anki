@@ -68,7 +68,7 @@ func TestGen___SourceStructuredsSeed(t *testing.T) {
 	require := require.New(t)
 	ctx := context.Background()
 
-	tokenizer := db.TextTokenizer{Parser: config.Parser(), Tokenizer: config.Tokenizer(ctx, config.TokenizerKhaiii)}
+	tokenizer := db.TextTokenizer{Parser: config.Parser(), Tokenizer: config.Tokenizer(ctx, config.TokenizerKhaiii, plog)}
 	require.NoError(tokenizer.Setup(ctx))
 	defer func() { require.NoError(tokenizer.Cleanup()) }()
 

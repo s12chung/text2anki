@@ -11,7 +11,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/pkg/util/test"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture/flog"
 )
+
+func init() {
+	SetLog(flog.FixtureUpdateNoWrite())
+}
 
 type testContextKey string
 

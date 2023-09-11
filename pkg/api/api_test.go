@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"context"
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -25,6 +24,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture/flog"
 )
 
 const testUUID = "123e4567-e89b-12d3-a456-426614174000"
@@ -39,8 +39,10 @@ var routes Routes
 var server txServer
 var txPool = reqtxtest.NewPool[db.TxQs, config.TxMode]()
 var extractorCacheDir = path.Join(os.TempDir(), test.GenerateName("Extractor"))
+var plog = flog.FixtureUpdateNoWrite()
 
 var routesConfig = config.Config{
+	Log:    plog,
 	TxPool: txPool,
 
 	StorageConfig: config.StorageConfig{
@@ -60,7 +62,7 @@ var routesConfig = config.Config{
 // Due to server.WithPathPrefix() calls, some functions must run via. init()
 func init() {
 	if err := runInit(); err != nil {
-		slog.Error("api_test.init()", logg.Err(err))
+		plog.Error("api_test.init()", logg.Err(err))
 		os.Exit(-1)
 	}
 }
@@ -71,7 +73,12 @@ func runInit() error {
 	if err := routes.Storage.Storer.Store(testdb.SourcePartMediaImageKey, bytes.NewReader([]byte(sourcePartMediaImageContents))); err != nil {
 		return err
 	}
-	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(routes.Router())}}
+
+	r := chi.NewRouter()
+	r.Use(middleware.Heartbeat("/healthz"))
+	r.Mount("/", routes.Router())
+	server = txServer{pool: txPool, Server: test.Server{Server: httptest.NewServer(r)}}
+
 	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
@@ -107,13 +114,6 @@ func TestHttpTypedRegistry(t *testing.T) {
 func TestRoutes_Router(t *testing.T) {
 	require := require.New(t)
 	testName := "TestRoutes_Router"
-
-	r := chi.NewRouter()
-	r.Use(middleware.Heartbeat("/healthz"))
-	r.Mount("/", routes.Router())
-
-	server := httptest.NewServer(r)
-	defer server.Close()
 
 	txQs := testdb.TxQs(t, nil)
 

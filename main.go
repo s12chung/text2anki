@@ -26,9 +26,12 @@ import (
 const host = "http://localhost"
 const port = "3000"
 
+var plog = logg.Default()
+
 func configFromEnv() config.Config {
 	c := config.Config{}
 
+	c.Log = plog
 	c.TxPool = api.TxPool{}
 	if os.Getenv("TOKENIZER") == "komoran" {
 		c.TokenizerType = config.TokenizerKomoran
@@ -55,7 +58,7 @@ func main() {
 	}
 
 	if err := run(); err != nil {
-		slog.Error("main", logg.Err(err))
+		plog.Error("main", logg.Err(err))
 		os.Exit(-1)
 	}
 }
@@ -72,7 +75,7 @@ func run() error {
 	}
 	defer func() {
 		if err := routes.Cleanup(); err != nil {
-			slog.Error("main routes.Cleanup()", logg.Err(err))
+			plog.Error("main routes.Cleanup()", logg.Err(err))
 		}
 	}()
 
@@ -98,7 +101,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	slog.Info("Server running on " + host + server.Addr)
+	plog.Info("Server running on " + host + server.Addr)
 	return server.Serve(ln)
 }
 
@@ -112,7 +115,7 @@ func mainAgain() {
 	textStringFilename, exportDir := args[0], args[1]
 
 	if err := runAgain(textStringFilename, exportDir); err != nil {
-		slog.Error("main", logg.Err(err))
+		plog.Error("main", logg.Err(err))
 		os.Exit(-1)
 	}
 }
@@ -141,7 +144,7 @@ func createAudio(notes []anki.Note) error {
 	synth := config.Synthesizer()
 	for i := range notes {
 		note := &notes[i]
-		log := slog.Default().With(slog.String("text", note.Text))
+		log := plog.With(slog.String("text", note.Text))
 
 		speech, err := synth.TextToSpeech(context.Background(), note.Usage)
 		if err != nil {

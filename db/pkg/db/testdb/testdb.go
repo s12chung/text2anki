@@ -6,7 +6,6 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"fmt"
-	"log/slog"
 	"os"
 	"path"
 	"runtime"
@@ -20,19 +19,21 @@ import (
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/logg"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture/flog"
 )
 
 // A copy of this constant is in db_test.go
 const testDBFile = "testdb.sqlite3"
 
 var tmpPath string
+var plog = flog.FixtureUpdateNoWrite()
 
 func dbPathF() string    { return path.Join(tmpPath, testDBFile) }
 func dbSHAPathF() string { return path.Join(tmpPath, "testdb.sha.txt") }
 func init() {
 	_, callerFilePath, _, ok := runtime.Caller(0)
 	if !ok {
-		slog.Error("runtime.Caller not ok for testdb package")
+		plog.Error("runtime.Caller not ok for testdb package")
 		os.Exit(-1)
 	}
 	callerPath := path.Dir(callerFilePath)
@@ -86,7 +87,7 @@ func TxQs(t *testing.T, opts *sql.TxOptions) db.TxQs {
 // MustSetup sets up the test database
 func MustSetup() {
 	if err := db.SetDB(dbPathF()); err != nil {
-		slog.Error("testdb.MustSetup()", logg.Err(err))
+		plog.Error("testdb.MustSetup()", logg.Err(err))
 		os.Exit(-1)
 	}
 }

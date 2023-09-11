@@ -64,6 +64,6 @@ func (s txServer) newTxRequest(t *testing.T, tx db.TxQs, mode config.TxMode, met
 
 func (s txServer) WithPathPrefix(prefix string) txServer {
 	dup := s
-	dup.Server = s.Server.WithPathPrefix(prefix)
+	dup.Server = s.Server.WithPathPrefix(prefix, plog)
 	return dup
 }

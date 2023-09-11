@@ -8,9 +8,12 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture/flog"
 )
 
 const testPort = 9002
+
+var plog = flog.FixtureUpdateNoWrite()
 
 func TestKomoran_Tokenize(t *testing.T) {
 	test.CISkip(t, "can't run java environment in CI")
@@ -18,7 +21,7 @@ func TestKomoran_Tokenize(t *testing.T) {
 	require := require.New(t)
 	ctx := context.Background()
 
-	tokenizer := newKomoran(ctx, testPort)
+	tokenizer := newKomoran(ctx, testPort, plog)
 	require.NoError(tokenizer.Setup(ctx))
 	defer func() { require.NoError(tokenizer.CleanupAndWait()) }()
 

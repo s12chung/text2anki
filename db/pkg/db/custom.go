@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	_ "embed"
 	"fmt"
+	"log/slog"
 
 	_ "github.com/mattn/go-sqlite3" // sql.Open needs it from init()
 
@@ -145,6 +146,9 @@ func (q *Queries) ClearAll(ctx context.Context) error {
 var dbStorage storage.DBStorage
 
 // SetDBStorage sets the storage.DBStorage used in model JSON marshall/unmarshall
-func SetDBStorage(d storage.DBStorage) {
-	dbStorage = d
-}
+func SetDBStorage(d storage.DBStorage) { dbStorage = d }
+
+var plog *slog.Logger
+
+// SetLog setts the log for the package
+func SetLog(log *slog.Logger) { plog = log }

@@ -4,6 +4,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -21,6 +22,7 @@ import (
 
 // Routes contains the routes used for the api
 type Routes struct {
+	Log          *slog.Logger
 	TxIntegrator reqtx.Integrator[db.TxQs, config.TxMode]
 
 	Dictionary    dictionary.Dictionary
@@ -34,19 +36,22 @@ type Routes struct {
 // NewRoutes is the routes used by the API
 func NewRoutes(ctx context.Context, c config.Config) Routes {
 	routes := Routes{
+		Log:          c.Log,
 		TxIntegrator: config.TxIntegrator(c.TxPool),
 
 		Dictionary:  config.Dictionary(c.DictionaryType),
 		Synthesizer: config.Synthesizer(),
 		TextTokenizer: db.TextTokenizer{
 			Parser:       config.Parser(),
-			Tokenizer:    config.Tokenizer(ctx, c.TokenizerType),
+			Tokenizer:    config.Tokenizer(ctx, c.TokenizerType, c.Log),
 			CleanSpeaker: true,
 		},
 
-		Storage:      config.StorageFromConfig(c.StorageConfig),
+		Storage:      config.StorageFromConfig(c.StorageConfig, c.Log),
 		ExtractorMap: config.ExtractorMap(c.ExtractorMap),
 	}
+	db.SetLog(c.Log)
+	jhttp.SetLog(c.Log)
 	db.SetDBStorage(routes.Storage.DBStorage)
 	return routes
 }

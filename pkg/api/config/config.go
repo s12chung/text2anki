@@ -31,11 +31,12 @@ import (
 )
 
 var appCacheDir string
+var plog = logg.Default()
 
 func init() {
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
-		slog.Error("config.init()", logg.Err(err))
+		plog.Error("config.init()", logg.Err(err))
 		os.Exit(-1)
 	}
 	appCacheDir = path.Join(cacheDir, "Text2Anki")
@@ -43,6 +44,7 @@ func init() {
 
 // Config contains config settings for the API
 type Config struct {
+	Log    *slog.Logger
 	TxPool reqtx.Pool[db.TxQs, TxMode]
 
 	TokenizerType
@@ -79,14 +81,14 @@ const (
 )
 
 // Tokenizer returns the default Tokenizer
-func Tokenizer(ctx context.Context, tokenizerType TokenizerType) tokenizer.Tokenizer {
+func Tokenizer(ctx context.Context, tokenizerType TokenizerType, log *slog.Logger) tokenizer.Tokenizer {
 	switch tokenizerType {
 	case TokenizerKomoran:
-		return komoran.New(ctx)
+		return komoran.New(ctx, log)
 	case TokenizerKhaiii:
 		fallthrough
 	default:
-		return khaiii.New(ctx)
+		return khaiii.New(ctx, log)
 	}
 }
 
@@ -134,7 +136,7 @@ type Storage struct {
 }
 
 // StorageFromConfig returns a storage from the given config
-func StorageFromConfig(config StorageConfig) Storage {
+func StorageFromConfig(config StorageConfig, log *slog.Logger) Storage {
 	var storageAPI storage.API
 	var storer storage.Storer
 	var err error
@@ -148,7 +150,7 @@ func StorageFromConfig(config StorageConfig) Storage {
 		storer = ls
 	}
 	if err != nil {
-		slog.Error("config.StorageFromConfig()", logg.Err(err))
+		log.Error("config.StorageFromConfig()", logg.Err(err))
 		os.Exit(-1)
 	}
 	return Storage{DBStorage: storage.NewDBStorage(storageAPI, config.UUIDGenerator), Storer: storer}

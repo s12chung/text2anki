@@ -4,6 +4,7 @@ package khaiii
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"strconv"
 	"time"
@@ -26,15 +27,15 @@ func init() {
 }
 
 // New returns a Khaiii Korean tokenizer
-func New(ctx context.Context) tokenizer.Tokenizer {
-	return newKhaiii(ctx, port)
+func New(ctx context.Context, log *slog.Logger) tokenizer.Tokenizer {
+	return newKhaiii(ctx, port, log)
 }
 
-func newKhaiii(ctx context.Context, port int) *Khaiii {
+func newKhaiii(ctx context.Context, port int, log *slog.Logger) *Khaiii {
 	opts := server.NewCmdOptions(binName)
 	opts.Args = []string{"--port", strconv.Itoa(port)}
 	opts.Dir = binPath
-	server := server.NewCmdTokenizerServer(ctx, opts, port, stopWarningDuration)
+	server := server.NewCmdTokenizerServer(ctx, opts, port, stopWarningDuration, log)
 
 	name := "Khaiii"
 	return &Khaiii{

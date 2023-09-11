@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -19,10 +18,13 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
 	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture/flog"
 )
 
 const host = "http://localhost"
 const testPort = 9000
+
+var plog = flog.FixtureUpdateNoWrite()
 
 func TestMain(m *testing.M) {
 	server := NewServerImpl(&SplitTokenizer{})
@@ -30,16 +32,16 @@ func TestMain(m *testing.M) {
 	go func() {
 		err := <-serverChannel
 		if err != nil {
-			slog.Error("serverimpl serverChannel", logg.Err(err))
+			plog.Error("serverimpl serverChannel", logg.Err(err))
 			os.Exit(-1)
 		}
 	}()
 	code := m.Run()
 	if err := server.Stop(); err != nil {
-		slog.Error("serverimpl server.Stop()", logg.Err(err))
+		plog.Error("serverimpl server.Stop()", logg.Err(err))
 	}
 	if !cleaned {
-		slog.Error("cleaned = false from Cleanup()")
+		plog.Error("cleaned = false from Cleanup()")
 		os.Exit(-1)
 	}
 	os.Exit(code)
