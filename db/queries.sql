@@ -1,5 +1,5 @@
--- name: SourceIndex :many
-SELECT * FROM sources ORDER BY created_at DESC;
+-- name: SourcesIndex :many
+SELECT * FROM sources ORDER BY updated_at DESC;
 
 -- name: SourceGet :one
 SELECT * FROM sources WHERE id = ? LIMIT 1;

@@ -79,7 +79,7 @@ func responseJSONWrap(f jhttp.ResponseHandler) http.HandlerFunc {
 func (rs Routes) txRouter() chi.Router {
 	r := reqtxchi.NewRouter[db.TxQs, config.TxMode](chi.NewRouter(), rs.TxIntegrator, httpWrapper{})
 	r.Route("/sources", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
-		r.Get("/", rs.SourceIndex)
+		r.Get("/", rs.SourcesIndex)
 		r.Mode(txWritable).Post("/", rs.SourceCreate)
 
 		r.Route("/{id}", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
