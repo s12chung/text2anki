@@ -16,5 +16,5 @@ func FixtureUpdateNoWrite() *slog.Logger {
 	if fixture.WillUpdate() {
 		return slog.New(slog.NewTextHandler(noWriter{}, nil))
 	}
-	return slog.Default()
+	return slog.Default() //nolint:forbidigo // this package abstracts slog
 }

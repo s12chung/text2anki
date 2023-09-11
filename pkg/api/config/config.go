@@ -31,12 +31,11 @@ import (
 )
 
 var appCacheDir string
-var plog = logg.Default()
 
 func init() {
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
-		plog.Error("config.init()", logg.Err(err))
+		slog.Error("config.init()", logg.Err(err)) //nolint:forbidigo // used in init only
 		os.Exit(-1)
 	}
 	appCacheDir = path.Join(cacheDir, "Text2Anki")

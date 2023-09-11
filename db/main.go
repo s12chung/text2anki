@@ -25,7 +25,7 @@ func init() {
 	flag.Parse()
 }
 
-var plog = logg.Default()
+var plog = logg.Default() //nolint:forbidigo // main package
 
 const dbPath = "data.sqlite3"
 

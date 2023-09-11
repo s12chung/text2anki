@@ -134,6 +134,14 @@ linters-settings:
     # Check for plain error comparisons.
     # Default: true
     comparison: false
+  forbidigo:
+    # Forbid the following identifiers (list of regexp).
+    # Default: ["^(fmt\\.Print(|f|ln)|print|println)$"]
+    forbid:
+      - "^(fmt\\.Print(|f|ln)|print|println)$"
+      - "^(slog\\.(Debug|Info|Warn|Error)(Context)?)$"
+      - "^(slog\\.Default)$"
+      - "^(logg\\.Default)$"
   gci:
     # Section configuration to compare against.
     # Section names are case-insensitive and may contain parameters in ().
