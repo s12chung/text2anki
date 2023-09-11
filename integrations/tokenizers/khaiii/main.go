@@ -11,7 +11,7 @@ import (
 )
 
 var port int
-var plog = logg.Default()
+var plog = logg.Default() //nolint:forbidigo // main package
 
 func init() {
 	serverimpl.FsPort(&port, flag.CommandLine)

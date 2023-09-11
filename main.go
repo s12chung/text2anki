@@ -26,7 +26,7 @@ import (
 const host = "http://localhost"
 const port = "3000"
 
-var plog = logg.Default()
+var plog = logg.Default() //nolint:forbidigo // main package
 
 func configFromEnv() config.Config {
 	c := config.Config{}
