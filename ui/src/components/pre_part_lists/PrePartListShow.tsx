@@ -2,11 +2,11 @@ import { printAndAlertError } from "../../services/Format.ts"
 import { PrePartList } from "../../services/PrePartListsService.ts"
 import { imageToClipboard } from "../../utils/ClipboardUtils.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
-import AwaitError from "../AwaitError.tsx"
+import AwaitWithFallback from "../AwaitWithFallback.tsx"
 import Header from "../Header.tsx"
 import SlideOver from "../SlideOver.tsx"
 import React, { useCallback, useEffect, useRef, useState } from "react"
-import { Await, Form } from "react-router-dom"
+import { Form } from "react-router-dom"
 
 export interface IPrePartListShowData {
   prePartList: Promise<PrePartList>
@@ -18,11 +18,9 @@ interface IPrePartListShowProps {
 
 const PrePartListShow: React.FC<IPrePartListShowProps> = ({ data }) => {
   return (
-    <React.Suspense fallback={<div>Loading....</div>}>
-      <Await resolve={data.prePartList} errorElement={<AwaitError />}>
-        {(prePartList: PrePartList) => <PrePartsForm prePartList={prePartList} />}
-      </Await>
-    </React.Suspense>
+    <AwaitWithFallback resolve={data.prePartList}>
+      {(prePartList: PrePartList) => <PrePartsForm prePartList={prePartList} />}
+    </AwaitWithFallback>
   )
 }
 

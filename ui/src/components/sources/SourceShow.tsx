@@ -11,11 +11,11 @@ import { unique } from "../../utils/ArrayUntil.ts"
 import { pageSize, paginate, totalPages } from "../../utils/HtmlUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { queryString } from "../../utils/RequestUtil.ts"
-import AwaitError from "../AwaitError.tsx"
+import AwaitWithFallback from "../AwaitWithFallback.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteCreate from "../notes/NoteCreate.tsx"
 import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Await, Form, Link, useFetcher } from "react-router-dom"
+import { Form, Link, useFetcher } from "react-router-dom"
 
 export interface ISourceShowData {
   source: Promise<Source>
@@ -26,11 +26,9 @@ interface ISourceShowProps {
 
 const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
   return (
-    <React.Suspense fallback={<div>Loading....</div>}>
-      <Await resolve={data.source} errorElement={<AwaitError />}>
-        {(source: Source) => <SourceComponent source={source} />}
-      </Await>
-    </React.Suspense>
+    <AwaitWithFallback resolve={data.source}>
+      {(source: Source) => <SourceComponent source={source} />}
+    </AwaitWithFallback>
   )
 }
 
