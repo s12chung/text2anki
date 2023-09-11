@@ -136,7 +136,7 @@ type Storage struct {
 }
 
 // StorageFromConfig returns a storage from the given config
-func StorageFromConfig(config StorageConfig) Storage {
+func StorageFromConfig(config StorageConfig, log *slog.Logger) Storage {
 	var storageAPI storage.API
 	var storer storage.Storer
 	var err error
@@ -150,7 +150,7 @@ func StorageFromConfig(config StorageConfig) Storage {
 		storer = ls
 	}
 	if err != nil {
-		plog.Error("config.StorageFromConfig()", logg.Err(err))
+		log.Error("config.StorageFromConfig()", logg.Err(err))
 		os.Exit(-1)
 	}
 	return Storage{DBStorage: storage.NewDBStorage(storageAPI, config.UUIDGenerator), Storer: storer}

@@ -12,7 +12,10 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
-var plog = logg.Default()
+var plog *slog.Logger
+
+// SetLog setts the log for the package
+func SetLog(log *slog.Logger) { plog = log }
 
 // HTTPError represents an http error
 type HTTPError struct {

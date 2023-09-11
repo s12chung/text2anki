@@ -47,10 +47,11 @@ func NewRoutes(ctx context.Context, c config.Config) Routes {
 			CleanSpeaker: true,
 		},
 
-		Storage:      config.StorageFromConfig(c.StorageConfig),
+		Storage:      config.StorageFromConfig(c.StorageConfig, c.Log),
 		ExtractorMap: config.ExtractorMap(c.ExtractorMap),
 	}
 	db.SetLog(c.Log)
+	jhttp.SetLog(c.Log)
 	db.SetDBStorage(routes.Storage.DBStorage)
 	return routes
 }
