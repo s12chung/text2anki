@@ -64,25 +64,17 @@ func (rs Routes) Cleanup() error { return rs.TextTokenizer.Cleanup() }
 
 // Router returns the router with all the routes set
 func (rs Routes) Router() chi.Router {
-	var r chi.Router = chi.NewRouter()
-	r.NotFound(jhttp.ResponseWrap(rs.NotFound))
-	r.MethodNotAllowed(jhttp.ResponseWrap(rs.NotAllowed))
+	r := reqtxchi.NewRouter[db.TxQs, config.TxMode](chi.NewRouter(), rs.TxIntegrator, httpWrapper{})
+	r.WithChi(func(r chi.Router) {
+		r.NotFound(jhttp.ResponseWrap(rs.NotFound))
+		r.MethodNotAllowed(jhttp.ResponseWrap(rs.NotAllowed))
 
-	r.Route(config.StorageURLPath, func(r chi.Router) {
-		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
-		r.Put("/*", responseJSONWrap(rs.StoragePut))
+		r.Route(config.StorageURLPath, func(r chi.Router) {
+			r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
+			r.Put("/*", responseJSONWrap(rs.StoragePut))
+		})
 	})
 
-	r.Mount("/", rs.txRouter())
-	return r
-}
-
-func responseJSONWrap(f jhttp.ResponseHandler) http.HandlerFunc {
-	return jhttp.ResponseWrap(responseWrap(f))
-}
-
-func (rs Routes) txRouter() chi.Router {
-	r := reqtxchi.NewRouter[db.TxQs, config.TxMode](chi.NewRouter(), rs.TxIntegrator, httpWrapper{})
 	r.Route("/sources", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 		r.Get("/", rs.SourcesIndex)
 		r.Mode(txWritable).Post("/", rs.SourceCreate)
@@ -112,6 +104,10 @@ func (rs Routes) txRouter() chi.Router {
 	return r.Router
 }
 
+func responseJSONWrap(f jhttp.ResponseHandler) http.HandlerFunc {
+	return jhttp.ResponseWrap(responseWrap(f))
+}
+
 type httpWrapper struct{}
 
 func (h httpWrapper) RequestWrap(f jhttp.RequestHandler) jhttp.RequestHandler { return f }
@@ -119,9 +115,7 @@ func (h httpWrapper) ResponseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler
 	return responseWrap(f)
 }
 
-func responseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
-	return prepareModelWrap(f)
-}
+func responseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler { return prepareModelWrap(f) }
 func prepareModelWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
 	return func(r *http.Request) (any, *jhttp.HTTPError) {
 		model, httpErr := f(r)

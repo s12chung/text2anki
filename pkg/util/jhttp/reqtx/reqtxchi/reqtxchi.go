@@ -41,6 +41,8 @@ type Router[T reqtx.Tx, Mode ~int] interface {
 	Trace(pattern string, f reqtx.ResponseHandler[T])
 
 	Mode(mode Mode) Router[T, Mode]
+	Chi() chi.Router
+	WithChi(fn func(r chi.Router))
 }
 
 // Mux returns a new Mux that wraps chi.Router functions
@@ -55,11 +57,18 @@ func NewRouter[T reqtx.Tx, Mode ~int](r chi.Router, integrator reqtx.Integrator[
 	return Mux[T, Mode]{Router: r, integrator: integrator, wrapper: wrapper}
 }
 
+// Mode sets the transaction mode
 func (m Mux[T, Mode]) Mode(mode Mode) Router[T, Mode] {
 	return m.With(func(r *http.Request) (*http.Request, *jhttp.HTTPError) {
 		return m.integrator.SetTxModeContext(r, mode), nil
 	})
 }
+
+// Chi returns the chi.Router
+func (m Mux[T, Mode]) Chi() chi.Router { return m.Router }
+
+// WithChi creates a grouping with the chi.Router
+func (m Mux[T, Mode]) WithChi(fn func(r chi.Router)) { fn(m.Router) }
 
 func (m Mux[T, Mode]) requestWrap(f jhttp.RequestHandler) func(http.Handler) http.Handler {
 	return jhttp.RequestWrap(m.wrapper.RequestWrap(f))
