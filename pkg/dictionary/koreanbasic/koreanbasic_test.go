@@ -38,13 +38,13 @@ func TestKoreanBasic_Search(t *testing.T) {
 			require := require.New(t)
 			t.Parallel()
 
-			filenameName := tc.name
+			vcrName := tc.name
 			if tc.name == "basic_with_other" {
-				filenameName = "basic"
+				vcrName = "basic"
 			}
 
 			dict := New(GetAPIKeyFromEnv())
-			clean := vcr.SetupVCR(t, fixture.JoinTestData(testName, filenameName), dict, func(r *recorder.Recorder) {
+			clean := vcr.SetupVCR(t, fixture.JoinTestData(testName, vcrName), dict, func(r *recorder.Recorder) {
 				r.AddHook(func(i *cassette.Interaction) error {
 					i.Request.URL = cleanURL(i.Request.URL)
 					return nil
@@ -57,7 +57,7 @@ func TestKoreanBasic_Search(t *testing.T) {
 
 			terms, err := dict.Search(context.Background(), tc.searchTerm, tc.pos)
 			require.NoError(err)
-			fixture.CompareReadOrUpdate(t, path.Join(testName, filenameName)+".json", fixture.JSON(t, terms))
+			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name)+".json", fixture.JSON(t, terms))
 		})
 	}
 }
