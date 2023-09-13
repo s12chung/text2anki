@@ -11,27 +11,70 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
 
+var config Config
+
+// SetConfig sets the Export and Cache config
+func SetConfig(c Config) { config = c }
+
+// Config contains Export and Cache config for Anki
+type Config struct {
+	ExportPrefix  string
+	NotesCacheDir string
+}
+
+// SoundFactory generates sounds for SoundSetter
+type SoundFactory interface {
+	Name() string
+	Sound(usage string) ([]byte, error)
+}
+
+// SoundSetter sets sounds for notes
+type SoundSetter struct{ soundFactory SoundFactory }
+
+// NewSoundSetter returns a new SoundSetter
+func NewSoundSetter(soundFactory SoundFactory) SoundSetter {
+	return SoundSetter{soundFactory: soundFactory}
+}
+
+// SetSound sets the sound from the soundFactory
+func (s SoundSetter) SetSound(notes []Note) error {
+	if s.soundFactory == nil {
+		return nil
+	}
+	soundFactoryName := s.soundFactory.Name()
+	for i, note := range notes {
+		sound, err := s.soundFactory.Sound(note.Usage)
+		if err != nil {
+			return err
+		}
+		if err = notes[i].SetSound(sound, soundFactoryName); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Note is an Anki Note, which contains data to create cards from
 type Note struct {
-	Text string
-	lang.PartOfSpeech
-	Translation string
-	Explanation string
+	Text              string `json:"text"`
+	lang.PartOfSpeech `json:"part_of_speech"`
+	Translation       string `json:"translation"`
+	Explanation       string `json:"explanation"`
+	lang.CommonLevel  `json:"common_level"`
 
-	lang.CommonLevel
-	Usage            string
-	UsageTranslation string
-	DictionarySource string
+	Usage            string `json:"usage"`
+	UsageTranslation string `json:"usage_translation"`
 
-	hasSound    bool
-	soundSource string
+	SourceName       string `json:"source_name"`
+	SourceReference  string `json:"source_reference"`
+	DictionarySource string `json:"dictionary_source"`
+	Notes            string `json:"notes"`
 
-	Notes string
+	usageSoundSource string
 }
 
 // Valid returns true when the Note is valid
@@ -45,15 +88,14 @@ func (n *Note) SetSound(sound []byte, soundSource string) error {
 	if err != nil {
 		return err
 	}
-	n.hasSound = true
-	n.soundSource = soundSource
+	n.usageSoundSource = soundSource
 	return nil
 }
 
 // CSV returns the CSV representation of the Note
 func (n *Note) CSV() []string {
 	soundAnkiFormat := ""
-	if n.hasSound {
+	if n.usageSoundSource != "" {
 		soundAnkiFormat = "[sound:" + n.soundFilename() + "]"
 	}
 	return []string{
@@ -65,11 +107,13 @@ func (n *Note) CSV() []string {
 		n.Explanation,
 		n.Usage,
 		n.UsageTranslation,
-		n.DictionarySource,
 
 		soundAnkiFormat,
-		n.soundSource,
+		n.usageSoundSource,
 
+		n.SourceName,
+		n.SourceReference,
+		n.DictionarySource,
 		n.Notes,
 	}
 }
@@ -80,44 +124,34 @@ func (n *Note) soundFilename() string {
 	return config.ExportPrefix + invalidFilenameRegex.ReplaceAllString(n.Usage, "") + ".mp3"
 }
 
-// NewNoteFromTerm returns a Note given the Term and index
-func NewNoteFromTerm(term dictionary.Term, translationIndex uint) Note {
-	translation := term.Translations[translationIndex]
-	return Note{
-		Text:         term.Text,
-		PartOfSpeech: term.PartOfSpeech,
-		Translation:  translation.Text,
-
-		CommonLevel:      term.CommonLevel,
-		Explanation:      translation.Explanation,
-		DictionarySource: term.DictionarySource,
-	}
-}
-
 // ExportFiles exports all files into the given dst
-func ExportFiles(notes []Note, dst string) error {
-	if err := ExportCSVFile(notes, path.Join(dst, "text2anki.csv")); err != nil {
+func ExportFiles(dirPath string, notes []Note) error {
+	if err := os.MkdirAll(dirPath, ioutil.OwnerRWXGroupRX); err != nil {
+		return err
+	}
+	if err := ExportCSVFile(path.Join(dirPath, "text2anki.csv"), notes); err != nil {
 		return err
 	}
 
-	if err := os.MkdirAll(path.Join(dst, "files"), ioutil.OwnerRWXGroupRX); err != nil {
+	soundsPath := path.Join(dirPath, "files")
+	if err := os.MkdirAll(soundsPath, ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
-	if err := ExportSounds(notes, path.Join(dst, "files")); err != nil {
+	if err := ExportSounds(soundsPath, notes); err != nil {
 		return err
 	}
 	return nil
 }
 
 // ExportSounds exports the sounds of the notes given the dst
-func ExportSounds(notes []Note, dst string) error {
+func ExportSounds(dirPath string, notes []Note) error {
 	for _, note := range notes {
-		if !note.hasSound {
+		if note.usageSoundSource == "" {
 			continue
 		}
 
 		src := path.Join(config.NotesCacheDir, note.soundFilename())
-		if err := ioutil.CopyFile(path.Join(dst, note.soundFilename()), src, ioutil.OwnerGroupR); err != nil {
+		if err := ioutil.CopyFile(path.Join(dirPath, note.soundFilename()), src, ioutil.OwnerGroupR); err != nil {
 			return fmt.Errorf("error copying file: %w", err)
 		}
 	}
@@ -125,12 +159,12 @@ func ExportSounds(notes []Note, dst string) error {
 }
 
 // ExportCSVFile exports the Note CSV as a file
-func ExportCSVFile(notes []Note, dst string) error {
-	f, err := os.Create(filepath.Clean(dst))
+func ExportCSVFile(filePath string, notes []Note) error {
+	f, err := os.Create(filepath.Clean(filePath))
 	if err != nil {
 		return err
 	}
-	err = ExportCSV(notes, f)
+	err = ExportCSV(f, notes)
 	if err1 := f.Close(); err1 != nil && err == nil {
 		err = err1
 	}
@@ -138,7 +172,7 @@ func ExportCSVFile(notes []Note, dst string) error {
 }
 
 // ExportCSV exports the notes as CSV
-func ExportCSV(notes []Note, w io.Writer) error {
+func ExportCSV(w io.Writer, notes []Note) error {
 	writer := csv.NewWriter(w)
 	defer writer.Flush()
 

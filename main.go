@@ -3,9 +3,6 @@ package main
 
 import (
 	"context"
-	"flag"
-	"fmt"
-	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -16,10 +13,8 @@ import (
 	"github.com/go-chi/cors"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
-	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/api"
 	"github.com/s12chung/text2anki/pkg/api/config"
-	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/logg"
 )
 
@@ -51,12 +46,6 @@ func configFromEnv() config.Config {
 }
 
 func main() {
-	cli := false
-	if cli {
-		mainAgain()
-		return
-	}
-
 	if err := run(); err != nil {
 		plog.Error("main", logg.Err(err))
 		os.Exit(-1)
@@ -103,56 +92,4 @@ func run() error {
 	}
 	plog.Info("Server running on " + host + server.Addr)
 	return server.Serve(ln)
-}
-
-func mainAgain() {
-	args := flag.Args()
-	if len(args) != 2 {
-		fmt.Printf("usage: %v textStringFilename exportDir\n", os.Args[0]) //nolint:forbidigo // usage
-		os.Exit(-1)
-	}
-
-	textStringFilename, exportDir := args[0], args[1]
-
-	if err := runAgain(textStringFilename, exportDir); err != nil {
-		plog.Error("main", logg.Err(err))
-		os.Exit(-1)
-	}
-}
-
-func runAgain(_, exportDir string) error {
-	if err := anki.SetupDefaultConfig(); err != nil {
-		return err
-	}
-	return exportFiles([]anki.Note{}, exportDir)
-}
-
-func exportFiles(notes []anki.Note, exportDir string) error {
-	if err := createAudio(notes); err != nil {
-		return err
-	}
-	if err := os.Mkdir(exportDir, ioutil.OwnerRWXGroupRX); err != nil {
-		return err
-	}
-	if err := anki.ExportFiles(notes, exportDir); err != nil {
-		return err
-	}
-	return nil
-}
-
-func createAudio(notes []anki.Note) error {
-	synth := config.Synthesizer()
-	for i := range notes {
-		note := &notes[i]
-		log := plog.With(slog.String("text", note.Text))
-
-		speech, err := synth.TextToSpeech(context.Background(), note.Usage)
-		if err != nil {
-			log.Error("error creating audio for note", logg.Err(err))
-		}
-		if err = note.SetSound(speech, synth.SourceName()); err != nil {
-			log.Error("error creating audio for note", logg.Err(err))
-		}
-	}
-	return nil
 }

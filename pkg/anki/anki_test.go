@@ -4,54 +4,72 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"path"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
+	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestMain(m *testing.M) {
-	config, err := DefaultConfig()
-	if err != nil {
-		log.Fatal(err)
-	}
-
+func init() {
 	dir := path.Join(os.TempDir(), test.GenerateName("anki.TestMain"))
-	config.NotesCacheDir = path.Join(dir, "files")
-	if err = os.MkdirAll(path.Join(dir, "files"), ioutil.OwnerRWXGroupRX); err != nil {
-		log.Fatal(err)
+	c := Config{ExportPrefix: "t2a-", NotesCacheDir: dir}
+	if err := os.MkdirAll(dir, ioutil.OwnerRWXGroupRX); err != nil {
+		slog.Error("anki.init()", logg.Err(err)) //nolint:forbidigo // used in init only
+		os.Exit(-1)
 	}
-	SetConfig(config)
-
-	exit := m.Run()
-
-	config, err = DefaultConfig()
-	if err != nil {
-		log.Fatal(err)
-	}
-	SetConfig(config)
-	os.Exit(exit)
+	SetConfig(c)
 }
 
-func koreanBasicNotesWithSounds(t *testing.T) []Note {
+func notesFromFixture(t *testing.T) []Note {
 	require := require.New(t)
 
-	notes := notesFromTerms(t)
-	sound := fixture.Read(t, "sound.mp3")
-	for i, note := range notes {
-		if note.Usage != "" {
-			err := notes[i].SetSound(sound, fmt.Sprintf("Naver CLOVA Speech Synthesis - %v", i))
-			require.NoError(err)
-		}
+	bytes, err := os.ReadFile(fixture.JoinTestData("Notes.json"))
+	require.NoError(err)
+	var notes []Note
+	require.NoError(json.Unmarshal(bytes, &notes))
+	for _, note := range notes {
+		test.EmptyFieldsMatch(t, note, "usageSoundSource")
 	}
 	return notes
+}
+
+func notesWithSounds(t *testing.T) []Note {
+	require := require.New(t)
+
+	notes := notesFromFixture(t)
+	sound := fixture.Read(t, "sound.mp3")
+	for i := range notes {
+		if i%2 == 1 {
+			continue
+		}
+		err := notes[i].SetSound(sound, fmt.Sprintf("Naver CLOVA Speech Synthesis - %v", i))
+		require.NoError(err)
+	}
+	return notes
+}
+
+type soundFactory struct{}
+
+func (s soundFactory) Name() string                       { return "soundFactory name" }
+func (s soundFactory) Sound(usage string) ([]byte, error) { return []byte(usage), nil }
+
+func TestSoundSetter_SetSound(t *testing.T) {
+	require := require.New(t)
+
+	soundSetter := NewSoundSetter(soundFactory{})
+	notes := notesFromFixture(t)
+	require.NoError(soundSetter.SetSound(notes))
+	for _, note := range notes {
+		require.Equal(soundSetter.soundFactory.Name(), note.usageSoundSource)
+		require.Equal(note.Usage, string(test.Read(t, path.Join(config.NotesCacheDir, note.soundFilename()))))
+	}
 }
 
 func TestExportFiles(t *testing.T) {
@@ -60,7 +78,7 @@ func TestExportFiles(t *testing.T) {
 
 	exportDir := path.Join(os.TempDir(), test.GenerateName(testName))
 	test.MkdirAll(t, exportDir)
-	require.NoError(ExportFiles(koreanBasicNotesWithSounds(t), exportDir))
+	require.NoError(ExportFiles(exportDir, notesWithSounds(t)))
 
 	fixture.CompareOrUpdateDir(t, "ExportFiles", exportDir)
 }
@@ -71,7 +89,7 @@ func TestExportSounds(t *testing.T) {
 
 	exportDir := path.Join(os.TempDir(), test.GenerateName(testName))
 	test.MkdirAll(t, exportDir)
-	require.NoError(ExportSounds(koreanBasicNotesWithSounds(t), exportDir))
+	require.NoError(ExportSounds(exportDir, notesWithSounds(t)))
 
 	dirEntries, err := os.ReadDir(exportDir)
 	require.NoError(err)
@@ -79,8 +97,10 @@ func TestExportSounds(t *testing.T) {
 	for i, dirEntry := range dirEntries {
 		dirEntryNames[i] = dirEntry.Name()
 	}
-
-	require.Equal([]string{"t2a-소풍: usage0.mp3", "t2a-소풍: usage2.mp3", "t2a-소풍: usage4.mp3"}, dirEntryNames)
+	require.Equal([]string{"t2a-꽃길만 걷게 해줄게요.mp3", "t2a-모자람 없이 주신 사랑이 과분하다 느낄 때쯤 난 어른이 됐죠.mp3"}, dirEntryNames)
+	for _, entry := range dirEntries {
+		require.Equal("sound.mp3 fake", string(test.Read(t, path.Join(exportDir, entry.Name()))))
+	}
 }
 
 func TestExportCSVFile(t *testing.T) {
@@ -91,39 +111,15 @@ func TestExportCSVFile(t *testing.T) {
 	test.MkdirAll(t, dir)
 
 	dir = path.Join(dir, "basic.csv")
-	require.NoError(ExportCSVFile(notesFromTerms(t), dir))
-	//nolint:gosec // for tests
-	bytes, err := os.ReadFile(dir)
-	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, "export_csv_expected.csv", bytes)
+	require.NoError(ExportCSVFile(dir, notesFromFixture(t)))
+	fixture.CompareReadOrUpdate(t, "export_csv_expected.csv", test.Read(t, dir))
 }
 
 func TestExportCSV(t *testing.T) {
 	require := require.New(t)
 
 	buffer := &bytes.Buffer{}
-	err := ExportCSV(notesFromTerms(t), buffer)
+	err := ExportCSV(buffer, notesFromFixture(t))
 	require.NoError(err)
 	fixture.CompareReadOrUpdate(t, "export_csv_expected.csv", buffer.Bytes())
-}
-
-func notesFromTerms(t *testing.T) []Note {
-	require := require.New(t)
-
-	var terms []dictionary.Term
-	// from .../TestKoreanBasic_Search/basic.json
-	err := json.Unmarshal(fixture.Read(t, "terms.json"), &terms)
-	require.NoError(err)
-
-	notes := make([]Note, len(terms))
-	for i, term := range terms {
-		notes[i] = NewNoteFromTerm(term, 0)
-	}
-	for _, testIndex := range []uint{0, 2, 4} {
-		notes[testIndex].Usage = fmt.Sprintf("소풍: /\\usage%v", testIndex)
-	}
-	for _, testIndex := range []uint{0, 2, 4} {
-		notes[testIndex].UsageTranslation = fmt.Sprintf("Test usage translation, index: %v", testIndex)
-	}
-	return notes
 }

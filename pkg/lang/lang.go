@@ -1,6 +1,10 @@
 // Package lang contains common things for languages
 package lang
 
+import (
+	"fmt"
+)
+
 // CommonLevel indicates how common a term is
 type CommonLevel uint8
 
@@ -11,6 +15,14 @@ const (
 	CommonLevelMedium
 	CommonLevelCommon
 )
+
+// ToCommonLevel returns the common level of commonLevel
+func ToCommonLevel(commonLevel int64) (CommonLevel, error) {
+	if commonLevel < 0 || commonLevel > int64(CommonLevelCommon) {
+		return 0, fmt.Errorf("common level not within range %v to %v: %v", 0, CommonLevelCommon, commonLevel)
+	}
+	return CommonLevel(commonLevel), nil
+}
 
 // PartOfSpeech are representations of part of speech
 type PartOfSpeech string
@@ -104,4 +116,15 @@ func PartOfSpeechTypes() map[string]PartOfSpeech {
 		m[string(pos)] = pos
 	}
 	return m
+}
+
+var partOfSpeechMap = PartOfSpeechTypes()
+
+// ToPartOfSpeech converts the posString to a PartOfSpeech
+func ToPartOfSpeech(posString string) (PartOfSpeech, error) {
+	pos, exists := partOfSpeechMap[posString]
+	if !exists {
+		return PartOfSpeechEmpty, fmt.Errorf("pos not matching lang.PartOfSpeech: %v", posString)
+	}
+	return pos, nil
 }
