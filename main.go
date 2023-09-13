@@ -56,7 +56,7 @@ func run() error {
 	if err := db.SetDB("db/data.sqlite3"); err != nil {
 		return err
 	}
-	ctx := context.Background()
+	ctx := context.Background() //nolint:forbidigo // this is main
 	routes := api.NewRoutes(ctx, configFromEnv())
 
 	if err := routes.Setup(ctx); err != nil {

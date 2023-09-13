@@ -74,7 +74,7 @@ func NewTransaction(tx db.Tx) Transaction { return Transaction{Tx: tx} }
 func TxQs(t *testing.T, opts *sql.TxOptions) db.TxQs {
 	require := require.New(t)
 
-	txQs, err := db.NewTxQs(context.Background(), opts)
+	txQs, err := db.NewTxQs(context.Background(), opts) //nolint:forbidigo // this is an abstraction for testing
 	require.NoError(err)
 
 	txQs.Tx = NewTransaction(txQs.Tx)
@@ -93,8 +93,8 @@ func MustSetup() {
 }
 
 // Create creates the test database
-func Create() error {
-	return runWithMatchingDB(func(txQs db.TxQs) error {
+func Create(ctx context.Context) error {
+	return runWithMatchingDB(ctx, func(txQs db.TxQs) error {
 		if err := txQs.Create(txQs.Ctx()); err != nil {
 			return err
 		}
@@ -102,7 +102,7 @@ func Create() error {
 	})
 }
 
-func runWithMatchingDB(f func(txQs db.TxQs) error) error {
+func runWithMatchingDB(ctx context.Context, f func(txQs db.TxQs) error) error {
 	dbPath := dbPathF()
 	dbSHAPath := dbSHAPathF()
 
@@ -117,7 +117,7 @@ func runWithMatchingDB(f func(txQs db.TxQs) error) error {
 		if err := db.SetDB(dbPath); err != nil {
 			return err
 		}
-		txQs, err := db.NewTxQs(context.Background(), db.WriteOpts())
+		txQs, err := db.NewTxQs(ctx, db.WriteOpts())
 		if err != nil {
 			return err
 		}
