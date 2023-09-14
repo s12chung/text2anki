@@ -80,7 +80,7 @@ func LogAndRespondError(w http.ResponseWriter, r *http.Request, httpErr *HTTPErr
 
 // LogError logs the error
 func LogError(r *http.Request, httpErr *HTTPError) {
-	plog.Error("jhttp response", slog.String("method", r.Method), slog.String("url", r.URL.Path), slog.Int("code", httpErr.Code), logg.Err(httpErr))
+	plog.LogAttrs(r.Context(), slog.LevelError, "jhttp response", append(logg.RequestAttrs(r), slog.Int("code", httpErr.Code), logg.Err(httpErr))...)
 }
 
 // ErrResponse is the struct used for the JSON error response
