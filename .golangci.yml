@@ -178,6 +178,7 @@ issues:
     - text: "if-return: redundant if ...; err != nil check, just return error instead"
       linters:
         - revive
+    # it's fine in tests
     - text: "context.Background"
       path: '(.+)_test\.go'
       linters:
