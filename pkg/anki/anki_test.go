@@ -2,6 +2,7 @@ package anki
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -57,15 +58,17 @@ func notesWithSounds(t *testing.T) []Note {
 
 type soundFactory struct{}
 
-func (s soundFactory) Name() string                       { return "soundFactory name" }
-func (s soundFactory) Sound(usage string) ([]byte, error) { return []byte(usage), nil }
+func (s soundFactory) Name() string { return "soundFactory name" }
+func (s soundFactory) Sound(_ context.Context, usage string) ([]byte, error) {
+	return []byte(usage), nil
+}
 
 func TestSoundSetter_SetSound(t *testing.T) {
 	require := require.New(t)
 
 	soundSetter := NewSoundSetter(soundFactory{})
 	notes := notesFromFixture(t)
-	require.NoError(soundSetter.SetSound(notes))
+	require.NoError(soundSetter.SetSound(context.Background(), notes))
 	for _, note := range notes {
 		require.Equal(soundSetter.soundFactory.Name(), note.usageSoundSource)
 		require.Equal(note.Usage, string(test.Read(t, path.Join(config.NotesCacheDir, note.soundFilename()))))

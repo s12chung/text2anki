@@ -2,6 +2,7 @@
 package anki
 
 import (
+	"context"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -29,7 +30,7 @@ type Config struct {
 // SoundFactory generates sounds for SoundSetter
 type SoundFactory interface {
 	Name() string
-	Sound(usage string) ([]byte, error)
+	Sound(ctx context.Context, usage string) ([]byte, error)
 }
 
 // SoundSetter sets sounds for notes
@@ -41,13 +42,13 @@ func NewSoundSetter(soundFactory SoundFactory) SoundSetter {
 }
 
 // SetSound sets the sound from the soundFactory
-func (s SoundSetter) SetSound(notes []Note) error {
+func (s SoundSetter) SetSound(ctx context.Context, notes []Note) error {
 	if s.soundFactory == nil {
 		return nil
 	}
 	soundFactoryName := s.soundFactory.Name()
 	for i, note := range notes {
-		sound, err := s.soundFactory.Sound(note.Usage)
+		sound, err := s.soundFactory.Sound(ctx, note.Usage)
 		if err != nil {
 			return err
 		}

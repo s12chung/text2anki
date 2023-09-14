@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/dictionary/koreanbasic"
 	"github.com/s12chung/text2anki/pkg/dictionary/krdict"
@@ -26,6 +27,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/tokenizer/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizer/komoran"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
 	"github.com/s12chung/text2anki/pkg/util/logg"
 )
@@ -43,14 +45,36 @@ func init() {
 
 // Config contains config settings for the API
 type Config struct {
-	Log    *slog.Logger
-	TxPool reqtx.Pool[db.TxQs, TxMode]
+	CacheDir string
+	Log      *slog.Logger
+
+	UUIDGenerator storage.UUIDGenerator
+	TxPool        reqtx.Pool[db.TxQs, TxMode]
+	StorageConfig StorageConfig
 
 	TokenizerType
 	DictionaryType
 
-	StorageConfig StorageConfig
-	ExtractorMap  extractor.Map
+	ExtractorMap extractor.Map
+
+	Synthesizer  synthesizer.Synthesizer
+	AnkiCacheDir string
+}
+
+// CacheDir returns the cache dir for the API
+func CacheDir(cacheDir string) string {
+	if cacheDir == "" {
+		cacheDir = appCacheDir
+	}
+	return cacheDir
+}
+
+// UUIDGenerator returns the configured uuidGenerator
+func UUIDGenerator(uuidGenerator storage.UUIDGenerator) storage.UUIDGenerator {
+	if uuidGenerator == nil {
+		uuidGenerator = storage.UUID7{}
+	}
+	return uuidGenerator
 }
 
 // TxMode identifies the transaction mode
@@ -59,58 +83,6 @@ type TxMode int
 // TxIntegrator returns a new TxIntegrator
 func TxIntegrator(txPool reqtx.Pool[db.TxQs, TxMode]) reqtx.Integrator[db.TxQs, TxMode] {
 	return reqtx.NewIntegrator(txPool)
-}
-
-// Parser returns the default Parser
-func Parser() text.Parser { return text.NewParser(text.Korean, text.English) }
-
-// Synthesizer returns the default Synthesizer
-func Synthesizer() synthesizer.Synthesizer {
-	return azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
-}
-
-// TokenizerType is an enum of tokenizer types
-type TokenizerType int
-
-const (
-	// TokenizerKhaiii picks the Khaiii tokenizer
-	TokenizerKhaiii TokenizerType = iota
-	// TokenizerKomoran picks the Komoran tokenizer
-	TokenizerKomoran
-)
-
-// Tokenizer returns the default Tokenizer
-func Tokenizer(ctx context.Context, tokenizerType TokenizerType, log *slog.Logger) tokenizer.Tokenizer {
-	switch tokenizerType {
-	case TokenizerKomoran:
-		return komoran.New(ctx, log)
-	case TokenizerKhaiii:
-		fallthrough
-	default:
-		return khaiii.New(ctx, log)
-	}
-}
-
-// DictionaryType is an enum of dictionary types
-type DictionaryType int
-
-const (
-	// DictionaryKrDict picks the KrDict dictionary
-	DictionaryKrDict DictionaryType = iota
-	// DictionaryKoreanBasic picks the KoreanBasic dictionary
-	DictionaryKoreanBasic
-)
-
-// Dictionary returns the default Dictionary
-func Dictionary(dictionaryType DictionaryType) dictionary.Dictionary {
-	switch dictionaryType {
-	case DictionaryKoreanBasic:
-		return koreanbasic.New(koreanbasic.GetAPIKeyFromEnv())
-	case DictionaryKrDict:
-		fallthrough
-	default:
-		return krdict.New()
-	}
 }
 
 // StorageType defines what signer type to for file storage
@@ -192,6 +164,53 @@ func LocalStoreAPI(config LocalStoreConfig) (localstore.API, error) {
 	return localstore.NewAPI(config.Origin, config.KeyBasePath, encryptor), nil
 }
 
+// Parser returns the default Parser
+func Parser() text.Parser { return text.NewParser(text.Korean, text.English) }
+
+// TokenizerType is an enum of tokenizer types
+type TokenizerType int
+
+const (
+	// TokenizerKhaiii picks the Khaiii tokenizer
+	TokenizerKhaiii TokenizerType = iota
+	// TokenizerKomoran picks the Komoran tokenizer
+	TokenizerKomoran
+)
+
+// Tokenizer returns the default Tokenizer
+func Tokenizer(ctx context.Context, tokenizerType TokenizerType, log *slog.Logger) tokenizer.Tokenizer {
+	switch tokenizerType {
+	case TokenizerKomoran:
+		return komoran.New(ctx, log)
+	case TokenizerKhaiii:
+		fallthrough
+	default:
+		return khaiii.New(ctx, log)
+	}
+}
+
+// DictionaryType is an enum of dictionary types
+type DictionaryType int
+
+const (
+	// DictionaryKrDict picks the KrDict dictionary
+	DictionaryKrDict DictionaryType = iota
+	// DictionaryKoreanBasic picks the KoreanBasic dictionary
+	DictionaryKoreanBasic
+)
+
+// Dictionary returns the default Dictionary
+func Dictionary(dictionaryType DictionaryType) dictionary.Dictionary {
+	switch dictionaryType {
+	case DictionaryKoreanBasic:
+		return koreanbasic.New(koreanbasic.GetAPIKeyFromEnv())
+	case DictionaryKrDict:
+		fallthrough
+	default:
+		return krdict.New()
+	}
+}
+
 // ExtractorMap returns the ExtractorMap config
 func ExtractorMap(extractorMap extractor.Map) extractor.Map {
 	if extractorMap != nil {
@@ -200,4 +219,42 @@ func ExtractorMap(extractorMap extractor.Map) extractor.Map {
 	return extractor.Map{
 		"instagram": extractor.NewExtractor(filepath.Join(appCacheDir, "instagram"), instagram.Factory{}),
 	}
+}
+
+// Synthesizer returns the default Synthesizer
+func Synthesizer(synth synthesizer.Synthesizer) synthesizer.Synthesizer {
+	if synth == nil {
+		synth = azure.New(azure.GetAPIKeyFromEnv(), azure.EastUSRegion)
+	}
+	return synth
+}
+
+// SynthesizerSoundFactory is the SoundFactory for the Synthesizer
+type SynthesizerSoundFactory struct {
+	synth synthesizer.Synthesizer
+}
+
+// Name returns the name of the Synthesizer
+func (s SynthesizerSoundFactory) Name() string { return s.synth.SourceName() }
+
+// Sound returns the sound from the Synthesizer
+func (s SynthesizerSoundFactory) Sound(ctx context.Context, usage string) ([]byte, error) {
+	return s.synth.TextToSpeech(ctx, usage)
+}
+
+// SoundSetter returns the SoundSetter given the Synthesizer
+func SoundSetter(synth synthesizer.Synthesizer) anki.SoundSetter {
+	return anki.NewSoundSetter(SynthesizerSoundFactory{synth: synth})
+}
+
+// Anki returns the anki.Config
+func Anki(cacheDir string, log *slog.Logger) anki.Config {
+	if cacheDir == "" {
+		cacheDir = path.Join(appCacheDir, "notes")
+	}
+	if err := os.MkdirAll(cacheDir, ioutil.OwnerRWXGroupRX); err != nil {
+		log.Error("config.Anki()", logg.Err(err))
+		os.Exit(-1)
+	}
+	return anki.Config{ExportPrefix: "t2a-", NotesCacheDir: cacheDir}
 }

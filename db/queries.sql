@@ -35,6 +35,12 @@ DELETE FROM terms;
 -- name: NotesIndex :many
 SELECT * FROM notes ORDER BY updated_at DESC;
 
+-- name: NotesDownloaded :many
+SELECT * FROM notes WHERE downloaded = false ORDER BY updated_at DESC;
+
+-- name: NotesUpdateDownloaded :execrows
+UPDATE notes SET downloaded = true WHERE downloaded = false;
+
 -- name: NoteGet :one
 SELECT * FROM notes WHERE id = ? LIMIT 1;
 
