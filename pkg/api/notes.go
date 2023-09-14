@@ -91,6 +91,6 @@ func (rs Routes) exportNotes(notes []anki.Note) (string, []byte, error) {
 	if err := anki.ExportFiles(exportDir, notes); err != nil {
 		return "", nil, err
 	}
-	b, err := ziputil.ZipDir(exportDir)
-	return id, b, err
+	zipBytes, err := ziputil.ZipDir(exportDir)
+	return id, zipBytes, err
 }

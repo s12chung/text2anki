@@ -13,7 +13,16 @@ func TestZipDir(t *testing.T) {
 	require := require.New(t)
 	testName := "TestZipDir"
 
-	b, err := ZipDir(fixture.JoinTestData(testName, "testdir"))
+	zipBytes, err := ZipDir(fixture.JoinTestData(testName))
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, filepath.Join(testName, "result.zip"), b)
+
+	paths := []string{
+		"blah.txt",
+		"innerdir/",
+		"innerdir/waka.txt",
+		"ok.txt",
+	}
+	require.NoError(CompareContents(zipBytes, paths, func(path string, contents []byte) {
+		fixture.CompareReadOrUpdate(t, filepath.Join(testName, path), contents)
+	}))
 }

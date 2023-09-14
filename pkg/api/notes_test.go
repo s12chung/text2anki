@@ -1,9 +1,7 @@
 package api
 
 import (
-	"archive/zip"
 	"bytes"
-	"io"
 	"net/http"
 	"path"
 	"path/filepath"
@@ -13,6 +11,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
+	"github.com/s12chung/text2anki/pkg/util/archive/ziputil"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
@@ -76,29 +75,16 @@ func TestRoutes_NotesDownload(t *testing.T) {
 	require.Equal("attachment; filename=text2anki-"+testUUID+".zip", result.Header.Get("Content-Disposition"))
 	require.NoError(result.Body.Close())
 
-	zipReader, err := zip.NewReader(bytes.NewReader(resp.Body.Bytes()), int64(len(resp.Body.Bytes())))
-	require.NoError(err)
-
-	files := []string{
+	paths := []string{
 		"files/",
 		"files/t2a-꽃길만 걷게 해줄게요.mp3",
 		"files/t2a-모자람 없이 주신 사랑이 과분하다 느낄 때쯤 난 어른이 됐죠.mp3",
 		"files/t2a-여길 봐 예쁘게 피었으니까.mp3",
 		"text2anki.csv",
 	}
-	for i, zipFile := range zipReader.File {
-		require.Equal(files[i], zipFile.Name)
-		if zipFile.FileInfo().IsDir() {
-			continue
-		}
-
-		fileReader, err := zipFile.Open()
-		require.NoError(err)
-		contents, err := io.ReadAll(fileReader)
-		require.NoError(err)
-		require.NoError(fileReader.Close())
-		fixture.CompareReadOrUpdate(t, filepath.Join(testName, zipFile.Name), contents) //nolint:gosec // for testing
-	}
+	require.NoError(ziputil.CompareContents(resp.Body.Bytes(), paths, func(path string, contents []byte) {
+		fixture.CompareReadOrUpdate(t, filepath.Join(testName, path), contents) //nolint:gosec // for testing
+	}))
 
 	notes, err := txQs.NotesDownloaded(txQs.Ctx())
 	require.NoError(err)
