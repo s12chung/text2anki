@@ -5,6 +5,6 @@ import "context"
 
 // Synthesizer is a text to speech API interface
 type Synthesizer interface {
-	TextToSpeech(ctx context.Context, s string) ([]byte, error)
 	SourceName() string
+	TextToSpeech(ctx context.Context, text string) ([]byte, error)
 }
