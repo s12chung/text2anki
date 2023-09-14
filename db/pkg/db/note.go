@@ -18,6 +18,7 @@ func init() {
 		"Usage":            {rule.Presence{}},
 		"UsageTranslation": {rule.Presence{}},
 
+		"SourceName":       {rule.Presence{}},
 		"DictionarySource": {rule.Presence{}},
 	}))
 }

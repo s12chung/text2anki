@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
@@ -78,9 +79,9 @@ type Note struct {
 	usageSoundSource string
 }
 
-// Valid returns true when the Note is valid
-func (n *Note) Valid() bool {
-	return n.Text != "" && n.PartOfSpeech != lang.PartOfSpeechEmpty && n.Translation != ""
+// ID returns the unique id for the note in anki
+func (n *Note) ID() string {
+	return strings.Join([]string{n.Text, n.SourceName, n.Usage}, "-")
 }
 
 // SetSound sets the sound for the note
@@ -116,6 +117,8 @@ func (n *Note) CSV() []string {
 		n.SourceReference,
 		n.DictionarySource,
 		n.Notes,
+
+		n.ID(),
 	}
 }
 

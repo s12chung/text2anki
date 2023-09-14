@@ -75,6 +75,30 @@ func TestSoundSetter_SetSound(t *testing.T) {
 	}
 }
 
+func TestNote_ID(t *testing.T) {
+	require := require.New(t)
+	require.Equal("어른-Flower Road-모자람 없이 주신 사랑이 과분하다 느낄 때쯤 난 어른이 됐죠", notesFromFixture(t)[0].ID())
+}
+
+func TestNote_SetSound(t *testing.T) {
+	require := require.New(t)
+
+	note := notesFromFixture(t)[0]
+	require.Empty(note.usageSoundSource)
+
+	soundSource := "the source"
+	soundContents := []byte("my_test")
+	require.NoError(note.SetSound(soundContents, soundSource))
+
+	require.Equal(soundSource, note.usageSoundSource)
+	require.Equal(soundContents, test.Read(t, path.Join(config.NotesCacheDir, note.soundFilename())))
+}
+
+func TestNote_CSV(t *testing.T) {
+	testName := "TestNote_CSV"
+	fixture.CompareReadOrUpdate(t, testName+".json", test.JSON(t, notesFromFixture(t)[0].CSV()))
+}
+
 func TestExportFiles(t *testing.T) {
 	require := require.New(t)
 	testName := "TestExportFiles"
@@ -115,7 +139,7 @@ func TestExportCSVFile(t *testing.T) {
 
 	dir = path.Join(dir, "basic.csv")
 	require.NoError(ExportCSVFile(dir, notesFromFixture(t)))
-	fixture.CompareReadOrUpdate(t, "export_csv_expected.csv", test.Read(t, dir))
+	fixture.CompareReadOrUpdate(t, testName+".csv", test.Read(t, dir))
 }
 
 func TestExportCSV(t *testing.T) {
@@ -124,5 +148,5 @@ func TestExportCSV(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	err := ExportCSV(buffer, notesFromFixture(t))
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, "export_csv_expected.csv", buffer.Bytes())
+	fixture.CompareReadOrUpdate(t, "TestExportCSVFile.csv", buffer.Bytes())
 }
