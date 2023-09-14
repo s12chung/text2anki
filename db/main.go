@@ -60,45 +60,47 @@ func main() {
 }
 
 func run(cmd string) error {
+	ctx := context.Background() //nolint:forbidigo // this is main
+
 	switch cmd {
 	case cmdStringCreate:
-		return cmdCreate()
+		return cmdCreate(ctx)
 	case cmdStringSeed:
-		return cmdSeed()
+		return cmdSeed(ctx)
 	case cmdStringTestDB:
-		return cmdTestDB()
+		return cmdTestDB(ctx)
 	case cmdStringSchema:
 		return cmdSchema()
 	case cmdStringSearch:
-		return cmdSearch()
+		return cmdSearch(ctx)
 	default:
 		return fmt.Errorf(usage+" -- %v not found", os.Args[0], cmd)
 	}
 }
 
-func cmdCreate() error {
-	txQs, err := setDB(dbPath, db.WriteOpts())
+func cmdCreate(ctx context.Context) error {
+	txQs, err := setDB(ctx, dbPath, db.WriteOpts())
 	if err != nil {
 		return err
 	}
-	defer txQs.Rollback() //nolint:errcheck // rollback can fail if committed
-	if err := txQs.Create(txQs.Ctx()); err != nil {
+	defer txQs.Rollback()                           //nolint:errcheck // rollback can fail if committed
+	if err := txQs.Create(txQs.Ctx()); err != nil { //nolint:contextcheck // this is my pattern
 		return err
 	}
 	return txQs.Commit()
 }
 
-func cmdSeed() error {
-	txQs, err := setDB(dbPath, db.WriteOpts())
+func cmdSeed(ctx context.Context) error {
+	txQs, err := setDB(ctx, dbPath, db.WriteOpts())
 	if err != nil {
 		return err
 	}
 	defer txQs.Rollback() //nolint:errcheck // rollback can fail if committed
 
-	if err := txQs.Create(txQs.Ctx()); err != nil {
+	if err := txQs.Create(txQs.Ctx()); err != nil { //nolint:contextcheck // this is my pattern
 		return err
 	}
-	if err := seedkrdict.Seed(txQs, seedkrdict.DefaultRscPath); err != nil {
+	if err := seedkrdict.Seed(txQs, seedkrdict.DefaultRscPath); err != nil { //nolint:contextcheck // this is my pattern
 		return err
 	}
 	if err := testdb.SeedList(txQs, map[string]bool{"Terms": false}); err != nil {
@@ -106,7 +108,7 @@ func cmdSeed() error {
 	}
 	return txQs.Commit()
 }
-func cmdTestDB() error { return testdb.Create() }
+func cmdTestDB(ctx context.Context) error { return testdb.Create(ctx) }
 
 func cmdSchema() error {
 	node, err := seedkrdict.RscSchema(seedkrdict.DefaultRscPath)
@@ -123,8 +125,8 @@ func cmdSchema() error {
 
 const searchConfigPath = "tmp/search.json"
 
-func cmdSearch() error {
-	txQs, err := setDB(dbPath, nil)
+func cmdSearch(ctx context.Context) error {
+	txQs, err := setDB(ctx, dbPath, nil)
 	if err != nil {
 		return err
 	}
@@ -145,7 +147,7 @@ func cmdSearch() error {
 	}
 
 	for _, query := range config.Queries {
-		terms, err := txQs.TermsSearch(txQs.Ctx(), query.Str, query.POS)
+		terms, err := txQs.TermsSearch(txQs.Ctx(), query.Str, query.POS) //nolint:contextcheck // this is my pattern
 		if err != nil {
 			return err
 		}
@@ -166,9 +168,9 @@ func cmdSearch() error {
 	return txQs.Commit()
 }
 
-func setDB(path string, opts *sql.TxOptions) (db.TxQs, error) {
+func setDB(ctx context.Context, path string, opts *sql.TxOptions) (db.TxQs, error) {
 	if err := db.SetDB(path); err != nil {
 		return db.TxQs{}, err
 	}
-	return db.NewTxQs(context.Background(), opts)
+	return db.NewTxQs(ctx, opts)
 }

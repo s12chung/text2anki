@@ -37,6 +37,14 @@ func ToDBTerm(term dictionary.Term, popularity int) (Term, error) {
 // DictionaryTerm converts the term to a dictionary.Term
 func (t Term) DictionaryTerm() (dictionary.Term, error) {
 	variants := stringutil.SplitClean(t.Variants, arraySeparator)
+	pos, err := lang.ToPartOfSpeech(t.PartOfSpeech)
+	if err != nil {
+		return dictionary.Term{}, err
+	}
+	commonLevel, err := lang.ToCommonLevel(t.CommonLevel)
+	if err != nil {
+		return dictionary.Term{}, err
+	}
 	var translations []dictionary.Translation
 	if err := json.Unmarshal([]byte(t.Translations), &translations); err != nil {
 		return dictionary.Term{}, err
@@ -46,8 +54,8 @@ func (t Term) DictionaryTerm() (dictionary.Term, error) {
 		ID:               t.ID,
 		Text:             t.Text,
 		Variants:         variants,
-		PartOfSpeech:     lang.PartOfSpeech(t.PartOfSpeech),
-		CommonLevel:      lang.CommonLevel(t.CommonLevel),
+		PartOfSpeech:     pos,
+		CommonLevel:      commonLevel,
 		Translations:     translations,
 		DictionarySource: "Korean Basic Dictionary (23-03)",
 	}, nil

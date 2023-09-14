@@ -1,4 +1,4 @@
-package archive
+package xz
 
 import (
 	"testing"
@@ -8,11 +8,11 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func TestXZReader(t *testing.T) {
+func TestRead(t *testing.T) {
 	require := require.New(t)
-	testName := "TestXZReader"
+	testName := "TestRead"
 
-	bytes, err := XZBytes(fixture.JoinTestData(testName + ".txt.xz"))
+	bytes, err := Read(fixture.JoinTestData(testName + ".txt.xz"))
 	require.NoError(err)
 	require.Equal("xz_contents\n", string(bytes))
 }

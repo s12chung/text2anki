@@ -55,7 +55,7 @@ func (s *ServerImpl) Run(port int) error {
 
 // Stop stops the server
 func (s *ServerImpl) Stop() error {
-	return s.server.Shutdown(context.Background())
+	return s.server.Shutdown(context.Background()) //nolint:forbidigo // just for stopping
 }
 
 func (s *ServerImpl) runWithoutStdin(port int) chan error {

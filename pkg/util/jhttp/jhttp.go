@@ -28,11 +28,6 @@ func (e HTTPError) Error() string {
 	return fmt.Sprintf("%v: %v", e.Code, e.Cause)
 }
 
-// LogError logs the error
-func LogError(r *http.Request, httpErr *HTTPError) {
-	plog.Error("jhttp response", slog.String("method", r.Method), slog.String("url", r.URL.Path), slog.Int("code", httpErr.Code), logg.Err(httpErr))
-}
-
 // Error is a safe shorthand to create a new HTTPError
 func Error(code int, cause error) *HTTPError {
 	return &HTTPError{Code: code, Cause: cause}
@@ -70,12 +65,22 @@ func ResponseWrap(f ResponseHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		model, httpErr := f(r)
 		if httpErr != nil {
-			RespondError(w, httpErr)
-			LogError(r, httpErr)
+			LogAndRespondError(w, r, httpErr)
 			return
 		}
 		RespondJSON(w, model)
 	}
+}
+
+// LogAndRespondError logs and responds the error
+func LogAndRespondError(w http.ResponseWriter, r *http.Request, httpErr *HTTPError) {
+	LogError(r, httpErr)
+	RespondError(w, httpErr)
+}
+
+// LogError logs the error
+func LogError(r *http.Request, httpErr *HTTPError) {
+	plog.LogAttrs(r.Context(), slog.LevelError, "jhttp response", append(logg.RequestAttrs(r), slog.Int("code", httpErr.Code), logg.Err(httpErr))...)
 }
 
 // ErrResponse is the struct used for the JSON error response

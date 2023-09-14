@@ -95,6 +95,49 @@ func (q *Queries) NoteGet(ctx context.Context, id int64) (Note, error) {
 	return i, err
 }
 
+const notesDownloaded = `-- name: NotesDownloaded :many
+SELECT id, text, part_of_speech, translation, explanation, common_level, usage, usage_translation, source_name, source_reference, dictionary_source, notes, downloaded, updated_at, created_at FROM notes WHERE downloaded = false ORDER BY updated_at DESC
+`
+
+func (q *Queries) NotesDownloaded(ctx context.Context) ([]Note, error) {
+	rows, err := q.db.QueryContext(ctx, notesDownloaded)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Note
+	for rows.Next() {
+		var i Note
+		if err := rows.Scan(
+			&i.ID,
+			&i.Text,
+			&i.PartOfSpeech,
+			&i.Translation,
+			&i.Explanation,
+			&i.CommonLevel,
+			&i.Usage,
+			&i.UsageTranslation,
+			&i.SourceName,
+			&i.SourceReference,
+			&i.DictionarySource,
+			&i.Notes,
+			&i.Downloaded,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const notesIndex = `-- name: NotesIndex :many
 SELECT id, text, part_of_speech, translation, explanation, common_level, usage, usage_translation, source_name, source_reference, dictionary_source, notes, downloaded, updated_at, created_at FROM notes ORDER BY updated_at DESC
 `
@@ -136,6 +179,18 @@ func (q *Queries) NotesIndex(ctx context.Context) ([]Note, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const notesUpdateDownloaded = `-- name: NotesUpdateDownloaded :execrows
+UPDATE notes SET downloaded = true WHERE downloaded = false
+`
+
+func (q *Queries) NotesUpdateDownloaded(ctx context.Context) (int64, error) {
+	result, err := q.db.ExecContext(ctx, notesUpdateDownloaded)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const sourceCreate = `-- name: SourceCreate :one

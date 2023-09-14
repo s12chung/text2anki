@@ -48,13 +48,14 @@ func TestGen___TermsSeed(t *testing.T) {
 			require.NoError(err)
 			dbTerm, err := db.ToDBTerm(term, basePopularity+i)
 			require.NoError(err)
-			terms = append(terms, dbTerm)
 
 			emptyFields := []string{"Variants"}
 			if dbTerm.CommonLevel == 0 {
 				emptyFields = append(emptyFields, "CommonLevel")
 			}
 			test.EmptyFieldsMatch(t, dbTerm, emptyFields...)
+
+			terms = append(terms, dbTerm)
 		}
 		basePopularity += len(lex.LexicalEntries)
 	}

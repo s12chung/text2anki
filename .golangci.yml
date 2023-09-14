@@ -1,8 +1,6 @@
 run:
   # timeout for analysis, e.g. 30s, 5m, default is 1m
   timeout: 2m
-  skip-files:
-    - "cmd/survey/*"
 linters:
   disable-all: true
   enable:
@@ -142,6 +140,7 @@ linters-settings:
       - "^(slog\\.(Debug|Info|Warn|Error)(Context)?)$"
       - "^(slog\\.Default)$"
       - "^(logg\\.Default)$"
+      - "^(context\\.Background)$"
   gci:
     # Section configuration to compare against.
     # Section names are case-insensitive and may contain parameters in ().
@@ -179,3 +178,8 @@ issues:
     - text: "if-return: redundant if ...; err != nil check, just return error instead"
       linters:
         - revive
+    # it's fine in tests
+    - text: "context.Background"
+      path: '(.+)_test\.go'
+      linters:
+        - forbidigo

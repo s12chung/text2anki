@@ -14,16 +14,12 @@ import (
 )
 
 // GetAPIKeyFromEnv gets the API key from the default ENV var
-func GetAPIKeyFromEnv() string {
-	return os.Getenv("AZURE_SPEECH_API_KEY")
-}
+func GetAPIKeyFromEnv() string { return os.Getenv("AZURE_SPEECH_API_KEY") }
 
 // Azure is a wrapper of the Azure Text to Speech API
 type Azure struct {
 	apiKey string
 	region Region
-
-	token string
 
 	client       *http.Client
 	cache        map[string][]byte
@@ -71,9 +67,7 @@ func New(apiKey string, region Region) synthesizer.Synthesizer {
 const SourceName = "Azure Text-to-speech REST API"
 
 // SourceName returns the source name of this synthesizer
-func (a *Azure) SourceName() string {
-	return SourceName
-}
+func (a *Azure) SourceName() string { return SourceName }
 
 //nolint:gosec // no creds here
 const tokenURL = "https://%v.api.cognitive.microsoft.com/sts/v1.0/issueToken"
@@ -111,14 +105,10 @@ const textToSpeechBody = `
 `
 
 // TextToSpeech returns the speech audio of the given string
-func (a *Azure) TextToSpeech(ctx context.Context, s string) ([]byte, error) {
-	reqBodyString := fmt.Sprintf(textToSpeechBody, s)
+func (a *Azure) TextToSpeech(ctx context.Context, text string) ([]byte, error) {
+	reqBodyString := fmt.Sprintf(textToSpeechBody, text)
 	if bytes, exists := a.cache[reqBodyString]; exists {
 		return bytes, nil
-	}
-
-	if err := a.setupToken(ctx); err != nil {
-		return nil, err
 	}
 
 	reqBody := bytes.NewBufferString(reqBodyString)
@@ -126,10 +116,12 @@ func (a *Azure) TextToSpeech(ctx context.Context, s string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err := a.addToken(ctx, request.Header); err != nil {
+		return nil, err
+	}
 	request.Header.Add("Content-type", "application/ssml+xml")
 	request.Header.Add("User-Agent", "text2anki")
 	request.Header.Add("X-Microsoft-OutputFormat", "audio-24khz-96kbitrate-mono-mp3")
-	a.addToken(request.Header)
 
 	if a.requestCount != 0 && a.requestCount%requestLimit == 0 {
 		time.Sleep(60 * time.Second)
@@ -162,24 +154,16 @@ func (a *Azure) TextToSpeech(ctx context.Context, s string) ([]byte, error) {
 const apiKeyHeader = "Ocp-Apim-Subscription-Key"
 const tokenHeader = "Authorization"
 
-func (a *Azure) addAPIKey(header http.Header) {
-	header.Add(apiKeyHeader, a.apiKey)
-}
+func (a *Azure) addAPIKey(header http.Header) { header.Add(apiKeyHeader, a.apiKey) }
 
-func (a *Azure) setupToken(ctx context.Context) error {
+func (a *Azure) addToken(ctx context.Context, header http.Header) error {
 	token, err := a.Token(ctx)
 	if err != nil {
 		return err
 	}
-	a.token = token
+	header.Add(tokenHeader, "Bearer "+token)
 	return nil
 }
 
-func (a *Azure) addToken(header http.Header) {
-	header.Add(tokenHeader, "Bearer "+a.token)
-}
-
 // SetClient sets the client for API requests
-func (a *Azure) SetClient(c *http.Client) {
-	a.client = c
-}
+func (a *Azure) SetClient(c *http.Client) { a.client = c }

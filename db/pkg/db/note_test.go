@@ -33,6 +33,43 @@ func TestNote_CreateParams(t *testing.T) {
 	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
 }
 
+func TestNote_Anki(t *testing.T) {
+	require := require.New(t)
+	testName := "TestNote_Anki"
+	txQs := TxQsT(t, nil)
+
+	ankiNote, err := firstNote(t, txQs).Anki()
+	require.NoError(err)
+	test.EmptyFieldsMatch(t, ankiNote, "usageSoundSource")
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, ankiNote))
+
+	note := firstNote(t, txQs)
+	note.CommonLevel = -1
+	_, err = note.Anki()
+	require.Error(err)
+
+	note = firstNote(t, txQs)
+	note.PartOfSpeech = "not a pos"
+	_, err = note.Anki()
+	require.Error(err)
+}
+
+func TestAnkiNotes(t *testing.T) {
+	require := require.New(t)
+	testName := "TestAnkiNotes"
+	txQs := TxQsT(t, nil)
+
+	notes, err := txQs.NotesIndex(txQs.Ctx())
+	require.NoError(err)
+	ankiNotes, err := AnkiNotes(notes)
+	require.NoError(err)
+
+	for _, note := range ankiNotes {
+		test.EmptyFieldsMatch(t, note, "usageSoundSource")
+	}
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, ankiNotes))
+}
+
 func TestQueries_NoteCreate(t *testing.T) {
 	require := require.New(t)
 	txQs := TxQsT(t, WriteOpts())

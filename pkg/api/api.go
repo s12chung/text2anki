@@ -10,10 +10,11 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
+	"github.com/s12chung/text2anki/pkg/anki"
 	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/dictionary"
 	"github.com/s12chung/text2anki/pkg/extractor"
-	"github.com/s12chung/text2anki/pkg/synthesizer"
+	"github.com/s12chung/text2anki/pkg/storage"
 	"github.com/s12chung/text2anki/pkg/util/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
 	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
@@ -22,37 +23,45 @@ import (
 
 // Routes contains the routes used for the api
 type Routes struct {
-	Log          *slog.Logger
-	TxIntegrator reqtx.Integrator[db.TxQs, config.TxMode]
+	CacheDir string
+	Log      *slog.Logger
+
+	UUIDGenerator storage.UUIDGenerator
+	TxIntegrator  reqtx.Integrator[db.TxQs, config.TxMode]
+	Storage       config.Storage
 
 	Dictionary    dictionary.Dictionary
-	Synthesizer   synthesizer.Synthesizer
 	TextTokenizer db.TextTokenizer
 
-	Storage      config.Storage
 	ExtractorMap extractor.Map
+
+	SoundSetter anki.SoundSetter
 }
 
 // NewRoutes is the routes used by the API
 func NewRoutes(ctx context.Context, c config.Config) Routes {
 	routes := Routes{
-		Log:          c.Log,
-		TxIntegrator: config.TxIntegrator(c.TxPool),
+		CacheDir: config.CacheDir(c.CacheDir),
+		Log:      c.Log,
 
-		Dictionary:  config.Dictionary(c.DictionaryType),
-		Synthesizer: config.Synthesizer(),
+		UUIDGenerator: config.UUIDGenerator(c.UUIDGenerator),
+		TxIntegrator:  config.TxIntegrator(c.TxPool),
+		Storage:       config.StorageFromConfig(c.StorageConfig, c.Log),
+
+		Dictionary: config.Dictionary(c.DictionaryType),
 		TextTokenizer: db.TextTokenizer{
 			Parser:       config.Parser(),
 			Tokenizer:    config.Tokenizer(ctx, c.TokenizerType, c.Log),
 			CleanSpeaker: true,
 		},
-
-		Storage:      config.StorageFromConfig(c.StorageConfig, c.Log),
 		ExtractorMap: config.ExtractorMap(c.ExtractorMap),
+
+		SoundSetter: config.SoundSetter(config.Synthesizer(c.Synthesizer)),
 	}
 	db.SetLog(c.Log)
 	jhttp.SetLog(c.Log)
 	db.SetDBStorage(routes.Storage.DBStorage)
+	anki.SetConfig(config.Anki(c.AnkiCacheDir, c.Log))
 	return routes
 }
 
@@ -64,25 +73,17 @@ func (rs Routes) Cleanup() error { return rs.TextTokenizer.Cleanup() }
 
 // Router returns the router with all the routes set
 func (rs Routes) Router() chi.Router {
-	var r chi.Router = chi.NewRouter()
-	r.NotFound(jhttp.ResponseWrap(rs.NotFound))
-	r.MethodNotAllowed(jhttp.ResponseWrap(rs.NotAllowed))
+	r := reqtxchi.NewRouter[db.TxQs, config.TxMode](chi.NewRouter(), rs.TxIntegrator, httpWrapper{})
+	r.WithChi(func(r chi.Router) {
+		r.NotFound(jhttp.ResponseWrap(rs.NotFound))
+		r.MethodNotAllowed(jhttp.ResponseWrap(rs.NotAllowed))
 
-	r.Route(config.StorageURLPath, func(r chi.Router) {
-		r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
-		r.Put("/*", responseJSONWrap(rs.StoragePut))
+		r.Route(config.StorageURLPath, func(r chi.Router) {
+			r.Method(http.MethodGet, "/*", http.StripPrefix(config.StorageURLPath, rs.StorageGet()))
+			r.Put("/*", responseJSONWrap(rs.StoragePut))
+		})
 	})
 
-	r.Mount("/", rs.txRouter())
-	return r
-}
-
-func responseJSONWrap(f jhttp.ResponseHandler) http.HandlerFunc {
-	return jhttp.ResponseWrap(responseWrap(f))
-}
-
-func (rs Routes) txRouter() chi.Router {
-	r := reqtxchi.NewRouter[db.TxQs, config.TxMode](chi.NewRouter(), rs.TxIntegrator, httpWrapper{})
 	r.Route("/sources", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 		r.Get("/", rs.SourcesIndex)
 		r.Mode(txWritable).Post("/", rs.SourceCreate)
@@ -108,8 +109,13 @@ func (rs Routes) txRouter() chi.Router {
 	r.Route("/notes", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
 		r.Get("/", rs.NotesIndex)
 		r.Mode(txWritable).Post("/", rs.NoteCreate)
+		r.Mode(txWritable).Chi().Get("/download", rs.NotesDownload)
 	})
 	return r.Router
+}
+
+func responseJSONWrap(f jhttp.ResponseHandler) http.HandlerFunc {
+	return jhttp.ResponseWrap(responseWrap(f))
 }
 
 type httpWrapper struct{}
@@ -119,9 +125,7 @@ func (h httpWrapper) ResponseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler
 	return responseWrap(f)
 }
 
-func responseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
-	return prepareModelWrap(f)
-}
+func responseWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler { return prepareModelWrap(f) }
 func prepareModelWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
 	return func(r *http.Request) (any, *jhttp.HTTPError) {
 		model, httpErr := f(r)
@@ -133,6 +137,13 @@ func prepareModelWrap(f jhttp.ResponseHandler) jhttp.ResponseHandler {
 		}
 		return model, nil
 	}
+}
+
+func (rs Routes) runOr500(r *http.Request, f func(r *http.Request, tx db.TxQs) error) *jhttp.HTTPError {
+	_, httpErr := rs.TxIntegrator.ResponseWrap(func(r *http.Request, tx db.TxQs) (any, *jhttp.HTTPError) {
+		return jhttp.ReturnModelOr500(func() (any, error) { return nil, f(r, tx) })
+	})(r)
+	return httpErr
 }
 
 // NotFound is the route handler for not matching pattern routes

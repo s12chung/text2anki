@@ -1,5 +1,5 @@
-// Package archive contains utils to help with archiving
-package archive
+// Package xz contains utils to help with xz archiving
+package xz
 
 import (
 	"bytes"
@@ -7,8 +7,8 @@ import (
 	"os/exec"
 )
 
-// XZBytes returns the contents of the .xz file at path
-func XZBytes(path string) ([]byte, error) {
+// Read returns the contents of the .xz file at path
+func Read(path string) ([]byte, error) {
 	cmd := exec.Command("xz", "-dc", path)
 	out := &bytes.Buffer{}
 	cmd.Stdout = out

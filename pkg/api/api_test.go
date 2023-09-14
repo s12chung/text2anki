@@ -18,6 +18,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/api/config"
 	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/extractor/extractortest"
+	"github.com/s12chung/text2anki/pkg/synthesizer/synthesizertest"
 	"github.com/s12chung/text2anki/pkg/util/httptyped"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx/reqtxtest"
@@ -38,12 +39,17 @@ func (u UUIDTest) Generate() (string, error) { return testUUID, nil }
 var routes Routes
 var server txServer
 var txPool = reqtxtest.NewPool[db.TxQs, config.TxMode]()
-var extractorCacheDir = path.Join(os.TempDir(), test.GenerateName("Extractor"))
 var plog = flog.FixtureUpdateNoWrite()
 
+var cacheDir = path.Join(os.TempDir(), test.GenerateName("Api"))
+var extractorCacheDir = path.Join(os.TempDir(), test.GenerateName("Extractor"))
+var ankiCacheDir = path.Join(os.TempDir(), test.GenerateName("Anki"))
+
 var routesConfig = config.Config{
-	Log:    plog,
-	TxPool: txPool,
+	CacheDir:      cacheDir,
+	Log:           plog,
+	TxPool:        txPool,
+	UUIDGenerator: UUIDTest{},
 
 	StorageConfig: config.StorageConfig{
 		LocalStoreConfig: config.LocalStoreConfig{
@@ -57,6 +63,9 @@ var routesConfig = config.Config{
 	ExtractorMap: extractor.Map{
 		extractorType: extractor.NewExtractor(extractorCacheDir, extractortest.NewFactory("Extractor")),
 	},
+
+	Synthesizer:  synthesizertest.Synthesizer{},
+	AnkiCacheDir: ankiCacheDir,
 }
 
 // Due to server.WithPathPrefix() calls, some functions must run via. init()
