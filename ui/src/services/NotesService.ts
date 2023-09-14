@@ -85,6 +85,10 @@ export function createNoteDataFromSourceTerm(
 class NotesService extends ApplicationService {
   protected pathPrefix = "/notes"
 
+  downloadUrl(): string {
+    return this.pathUrl("/download")
+  }
+
   async index(): Promise<Note[]> {
     return this.fetch("", [NoteEmpty])
   }
