@@ -11,7 +11,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/extractor"
-	"github.com/s12chung/text2anki/pkg/util/archive"
+	"github.com/s12chung/text2anki/pkg/util/archive/xz"
 )
 
 // Factory generates Sources
@@ -100,7 +100,7 @@ func (s *Post) Info(cacheDir string) (db.PrePartInfo, error) {
 	if len(matches) != 1 {
 		return db.PrePartInfo{}, fmt.Errorf("found != 1 files with glob (%v): %v", infoGlob, strings.Join(matches, ", "))
 	}
-	bytes, err := archive.XZBytes(matches[0])
+	bytes, err := xz.Read(matches[0])
 	if err != nil {
 		return db.PrePartInfo{}, err
 	}
