@@ -76,3 +76,16 @@ func (n Note) Anki() (anki.Note, error) {
 		Notes:            n.Notes,
 	}, nil
 }
+
+// AnkiNotes converts the []Note to []anki.Note
+func AnkiNotes(notes []Note) ([]anki.Note, error) {
+	ankiNotes := make([]anki.Note, len(notes))
+	var err error
+	for i, note := range notes {
+		ankiNotes[i], err = note.Anki()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return ankiNotes, nil
+}
