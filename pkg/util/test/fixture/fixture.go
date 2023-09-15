@@ -96,8 +96,8 @@ func CompareRead(t *testing.T, fixturePath string, resultBytes []byte) {
 	require.Equal(string(expected), strings.TrimSpace(string(resultBytes)))
 }
 
-// CompareOrUpdateDir reads a fixture dir or updates it if WillUpdate is true
-func CompareOrUpdateDir(t *testing.T, fixtureDir, resultDir string) {
+// CompareReadOrUpdateDir reads a fixture dir or updates it if WillUpdate is true
+func CompareReadOrUpdateDir(t *testing.T, fixtureDir, resultDir string) {
 	require := require.New(t)
 
 	fixtureDir = JoinTestData(fixtureDir)

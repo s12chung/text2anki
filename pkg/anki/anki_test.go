@@ -107,7 +107,7 @@ func TestExportFiles(t *testing.T) {
 	test.MkdirAll(t, exportDir)
 	require.NoError(ExportFiles(exportDir, notesWithSounds(t)))
 
-	fixture.CompareOrUpdateDir(t, "ExportFiles", exportDir)
+	fixture.CompareReadOrUpdateDir(t, "ExportFiles", exportDir)
 }
 
 func TestExportSounds(t *testing.T) {
