@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -45,7 +46,7 @@ func (rs Routes) NotesDownload(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return err
 		}
-		id, b, err := rs.exportNotes(notes)
+		id, zipBytes, err := rs.exportNotes(tx.Ctx(), notes)
 		if err != nil {
 			return err
 		}
@@ -54,11 +55,11 @@ func (rs Routes) NotesDownload(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return err
 		}
-		rs.Log.LogAttrs(tx.Ctx(), slog.LevelInfo, fmt.Sprintf("updated count: %v", updated), logg.RequestAttrs(r)...)
+		rs.Log.LogAttrs(tx.Ctx(), slog.LevelInfo, fmt.Sprintf("Notes downloaded count: %v", updated), logg.RequestAttrs(r)...)
 
 		filename := "text2anki-" + id + ".zip"
 		w.Header().Set("Content-Disposition", "attachment; filename="+filename)
-		http.ServeContent(w, r, filename, time.Now(), bytes.NewReader(b))
+		http.ServeContent(w, r, filename, time.Now(), bytes.NewReader(zipBytes))
 		return nil
 	})
 	if httpErr != nil {
@@ -76,13 +77,13 @@ func (rs Routes) downloadedAnkiNotes(tx db.TxQs) ([]anki.Note, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := rs.SoundSetter.SetSound(tx.Ctx(), ankiNotes); err != nil {
-		return nil, err
-	}
 	return ankiNotes, nil
 }
 
-func (rs Routes) exportNotes(notes []anki.Note) (string, []byte, error) {
+func (rs Routes) exportNotes(ctx context.Context, notes []anki.Note) (string, []byte, error) {
+	if err := rs.SoundSetter.SetSound(ctx, notes); err != nil {
+		return "", nil, err
+	}
 	id, err := rs.UUIDGenerator.Generate()
 	if err != nil {
 		return "", nil, err
