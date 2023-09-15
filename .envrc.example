@@ -1,4 +1,2 @@
 export KOREAN_BASIC_API_KEY=
 export AZURE_SPEECH_API_KEY=
-export ANKI_DIR=~/Library/Application\ Support/Anki2/User\ 1/collection.media
-export SYNC_FILTERED_DIR=
