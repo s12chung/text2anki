@@ -30,38 +30,6 @@ func (rs Routes) SourceGet(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError
 	return sourceStructuredFromID(r, txQs)
 }
 
-// SourceUpdateRequest represents the SourceUpdate request
-type SourceUpdateRequest struct {
-	Name      string `json:"name"`
-	Reference string `json:"reference"`
-}
-
-func init() {
-	firm.RegisterType(firm.NewDefinition(SourceUpdateRequest{}).Validates(firm.RuleMap{
-		"Name": {rule.Presence{}},
-	}))
-}
-
-// SourceUpdate updates the source
-func (rs Routes) SourceUpdate(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
-	sourceStructured, httpErr := sourceStructuredFromID(r, txQs)
-	if httpErr != nil {
-		return nil, httpErr
-	}
-
-	req := SourceUpdateRequest{}
-	if httpErr = extractAndValidate(r, &req); httpErr != nil {
-		return nil, httpErr
-	}
-	sourceStructured.Name = req.Name
-	sourceStructured.Reference = req.Reference
-
-	return jhttp.ReturnModelOr500(func() (any, error) {
-		source, err := txQs.SourceUpdate(txQs.Ctx(), sourceStructured.UpdateParams())
-		return source.ToSourceStructured(), err
-	})
-}
-
 // SourceCreateRequest represents the SourceCreate request
 type SourceCreateRequest struct {
 	PrePartListID string                    `json:"pre_part_list_id,omitempty"`
@@ -110,6 +78,61 @@ func (rs Routes) SourceCreate(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPEr
 	})
 }
 
+// SourceUpdateRequest represents the SourceUpdate request
+type SourceUpdateRequest struct {
+	Name      string `json:"name"`
+	Reference string `json:"reference"`
+}
+
+func init() {
+	firm.RegisterType(firm.NewDefinition(SourceUpdateRequest{}).Validates(firm.RuleMap{
+		"Name": {rule.Presence{}},
+	}))
+}
+
+// SourceUpdate updates the source
+func (rs Routes) SourceUpdate(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
+	sourceStructured, httpErr := sourceStructuredFromID(r, txQs)
+	if httpErr != nil {
+		return nil, httpErr
+	}
+
+	req := SourceUpdateRequest{}
+	if httpErr = extractAndValidate(r, &req); httpErr != nil {
+		return nil, httpErr
+	}
+	sourceStructured.Name = req.Name
+	sourceStructured.Reference = req.Reference
+
+	return jhttp.ReturnModelOr500(func() (any, error) {
+		source, err := txQs.SourceUpdate(txQs.Ctx(), sourceStructured.UpdateParams())
+		return source.ToSourceStructured(), err
+	})
+}
+
+// SourceDestroy destroys the source
+func (rs Routes) SourceDestroy(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
+	sourceStructured, httpErr := sourceStructuredFromID(r, txQs)
+	if httpErr != nil {
+		return nil, httpErr
+	}
+	return jhttp.ReturnModelOr500(func() (any, error) {
+		return sourceStructured, txQs.SourceDestroy(txQs.Ctx(), sourceStructured.ID)
+	})
+}
+
+func sourceStructuredFromID(r *http.Request, txQs db.TxQs) (db.SourceStructured, *jhttp.HTTPError) {
+	id, httpErr := idFromRequest(r)
+	if httpErr != nil {
+		return db.SourceStructured{}, httpErr
+	}
+	source, err := txQs.SourceGet(r.Context(), id)
+	if err != nil {
+		return db.SourceStructured{}, jhttp.Error(http.StatusNotFound, err)
+	}
+	return source.ToSourceStructured(), nil
+}
+
 func (rs Routes) sourceCreateSource(ctx context.Context, req SourceCreateRequest,
 	prePartList *db.PrePartList) (*db.SourceStructured, *jhttp.HTTPError) {
 	name, reference, err := rs.sourceCreateSourceNameRef(req.Name, req.Reference, prePartList)
@@ -155,27 +178,4 @@ func (rs Routes) sourceCreateSourceNameRef(name, ref string, prePartList *db.Pre
 		ref = info.Reference
 	}
 	return name, ref, nil
-}
-
-// SourceDestroy destroys the source
-func (rs Routes) SourceDestroy(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
-	sourceStructured, httpErr := sourceStructuredFromID(r, txQs)
-	if httpErr != nil {
-		return nil, httpErr
-	}
-	return jhttp.ReturnModelOr500(func() (any, error) {
-		return sourceStructured, txQs.SourceDestroy(txQs.Ctx(), sourceStructured.ID)
-	})
-}
-
-func sourceStructuredFromID(r *http.Request, txQs db.TxQs) (db.SourceStructured, *jhttp.HTTPError) {
-	id, httpErr := idFromRequest(r)
-	if httpErr != nil {
-		return db.SourceStructured{}, httpErr
-	}
-	source, err := txQs.SourceGet(r.Context(), id)
-	if err != nil {
-		return db.SourceStructured{}, jhttp.Error(http.StatusNotFound, err)
-	}
-	return source.ToSourceStructured(), nil
 }

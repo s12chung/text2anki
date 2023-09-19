@@ -51,49 +51,6 @@ func TestRoutes_SourceGet(t *testing.T) {
 	}
 }
 
-func TestRoutes_SourceUpdate(t *testing.T) {
-	testName := "TestRoutes_SourceUpdate"
-	t.Parallel()
-
-	testCases := []struct {
-		name         string
-		newName      string
-		reference    string
-		expectedCode int
-	}{
-		{name: "basic", newName: "new_name", expectedCode: http.StatusOK},
-		{name: "with_reference", newName: "new_name", reference: "new_ref.txt", expectedCode: http.StatusOK},
-		{name: "error", expectedCode: http.StatusUnprocessableEntity},
-	}
-	for _, tc := range testCases {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-			t.Parallel()
-
-			txQs := testdb.TxQs(t, db.WriteOpts())
-			created, err := txQs.SourceCreate(txQs.Ctx(), testdb.SourceStructureds().ModelsT(t)[1].CreateParams())
-			require.NoError(err)
-
-			reqBody := test.JSON(t, SourceUpdateRequest{Name: tc.newName, Reference: tc.reference})
-			resp := test.HTTPDo(t, sourcesServer.NewTxRequest(t, txQs, http.MethodPatch, idPath("", created.ID), bytes.NewReader(reqBody)))
-			resp.EqualCode(t, tc.expectedCode)
-
-			sourceStructured := db.SourceStructured{}
-			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
-			if resp.Code != http.StatusOK {
-				return
-			}
-
-			source, err := txQs.SourceGet(txQs.Ctx(), sourceStructured.ID)
-			require.NoError(err)
-			sourceStructured = source.ToSourceStructured()
-			sourceStructured.PrepareSerialize()
-			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, sourceStructured.StaticCopy()))
-		})
-	}
-}
-
 // nolint:funlen // for testing
 func TestRoutes_SourceCreate(t *testing.T) {
 	testName := "TestRoutes_SourceCreate"
@@ -169,13 +126,93 @@ func TestRoutes_SourceCreate(t *testing.T) {
 	}
 }
 
+func TestRoutes_SourceUpdate(t *testing.T) {
+	testName := "TestRoutes_SourceUpdate"
+	t.Parallel()
+
+	testCases := []struct {
+		name         string
+		newName      string
+		reference    string
+		expectedCode int
+	}{
+		{name: "basic", newName: "new_name", expectedCode: http.StatusOK},
+		{name: "with_reference", newName: "new_name", reference: "new_ref.txt", expectedCode: http.StatusOK},
+		{name: "error", expectedCode: http.StatusUnprocessableEntity},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			t.Parallel()
+
+			txQs := testdb.TxQs(t, db.WriteOpts())
+			created, err := txQs.SourceCreate(txQs.Ctx(), testdb.SourceStructureds().ModelsT(t)[1].CreateParams())
+			require.NoError(err)
+
+			reqBody := test.JSON(t, SourceUpdateRequest{Name: tc.newName, Reference: tc.reference})
+			resp := test.HTTPDo(t, sourcesServer.NewTxRequest(t, txQs, http.MethodPatch, idPath("", created.ID), bytes.NewReader(reqBody)))
+			resp.EqualCode(t, tc.expectedCode)
+
+			sourceStructured := db.SourceStructured{}
+			fixtureFile := testModelResponse(t, resp, testName, tc.name, &sourceStructured)
+			if resp.Code != http.StatusOK {
+				return
+			}
+
+			source, err := txQs.SourceGet(txQs.Ctx(), sourceStructured.ID)
+			require.NoError(err)
+			sourceStructured = source.ToSourceStructured()
+			sourceStructured.PrepareSerialize()
+			fixture.CompareRead(t, fixtureFile, fixture.JSON(t, sourceStructured.StaticCopy()))
+		})
+	}
+}
+
+func TestRoutes_SourceDestroy(t *testing.T) {
+	testName := "TestRoutes_SourceDestroy"
+	t.Parallel()
+
+	testCases := []struct {
+		name         string
+		path         string
+		expectedCode int
+	}{
+		{name: "normal", expectedCode: http.StatusOK},
+		{name: "invalid_id", path: "/9999", expectedCode: http.StatusNotFound},
+		{name: "not_a_number", path: "/nan", expectedCode: http.StatusNotFound},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			t.Parallel()
+
+			txQs := testdb.TxQs(t, db.WriteOpts())
+			created, err := txQs.SourceCreate(txQs.Ctx(), testdb.SourceStructureds().ModelsT(t)[1].CreateParams())
+			require.NoError(err)
+			if tc.path == "" {
+				tc.path = idPath("", created.ID)
+			}
+
+			resp := test.HTTPDo(t, sourcesServer.NewTxRequest(t, txQs, http.MethodDelete, tc.path, nil))
+			resp.EqualCode(t, tc.expectedCode)
+
+			testModelResponse(t, resp, testName, tc.name, &db.SourceStructured{})
+			if resp.Code != http.StatusOK {
+				return
+			}
+
+			_, err = txQs.SourceGet(txQs.Ctx(), created.ID)
+			require.Equal(fmt.Errorf("sql: no rows in result set"), err)
+		})
+	}
+}
+
 func setupSourceCreateMediaWithInfo(t *testing.T, prePartListID string) {
 	setupSourceCreateMedia(t, prePartListID)
 
-	info := db.PrePartInfo{
-		Name:      "test name",
-		Reference: "https://www.testref.com",
-	}
+	info := db.PrePartInfo{Name: "test name", Reference: "https://www.testref.com"}
 	baseKey := storage.BaseKey(db.SourcesTable, db.PartsColumn, prePartListID)
 	err := routes.Storage.Storer.Store(baseKey+".Info.json", bytes.NewReader(test.JSON(t, info)))
 	require.NoError(t, err)
@@ -218,44 +255,4 @@ func sourcePartFromFile(t *testing.T, testName, name string) SourceCreateRequest
 		part = SourceCreateRequestPart{Text: split[0], Translation: split[1]}
 	}
 	return part
-}
-
-func TestRoutes_SourceDestroy(t *testing.T) {
-	testName := "TestRoutes_SourceDestroy"
-	t.Parallel()
-
-	testCases := []struct {
-		name         string
-		path         string
-		expectedCode int
-	}{
-		{name: "normal", expectedCode: http.StatusOK},
-		{name: "invalid_id", path: "/9999", expectedCode: http.StatusNotFound},
-		{name: "not_a_number", path: "/nan", expectedCode: http.StatusNotFound},
-	}
-	for _, tc := range testCases {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-			t.Parallel()
-
-			txQs := testdb.TxQs(t, db.WriteOpts())
-			created, err := txQs.SourceCreate(txQs.Ctx(), testdb.SourceStructureds().ModelsT(t)[1].CreateParams())
-			require.NoError(err)
-			if tc.path == "" {
-				tc.path = idPath("", created.ID)
-			}
-
-			resp := test.HTTPDo(t, sourcesServer.NewTxRequest(t, txQs, http.MethodDelete, tc.path, nil))
-			resp.EqualCode(t, tc.expectedCode)
-
-			testModelResponse(t, resp, testName, tc.name, &db.SourceStructured{})
-			if resp.Code != http.StatusOK {
-				return
-			}
-
-			_, err = txQs.SourceGet(txQs.Ctx(), created.ID)
-			require.Equal(fmt.Errorf("sql: no rows in result set"), err)
-		})
-	}
 }
