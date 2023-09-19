@@ -4,6 +4,7 @@ package stringutil
 import (
 	"strings"
 	"unicode"
+	"unicode/utf8"
 )
 
 // SplitClean splits the string with the given separator and trims the space for each element
@@ -55,4 +56,17 @@ func FirstUnbrokenIndex(s string) int {
 		}
 	}
 	return -1
+}
+
+// TrimBytes trims the utf-8 string to the maxBytes
+func TrimBytes(s string, maxBytes int) string {
+	byteCount := 0
+	for i := range s {
+		_, size := utf8.DecodeRuneInString(s[i:])
+		byteCount += size
+		if byteCount > maxBytes {
+			return s[:i]
+		}
+	}
+	return s
 }

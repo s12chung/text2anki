@@ -78,3 +78,28 @@ func TestFirstUnbrokenIndex(t *testing.T) {
 		})
 	}
 }
+
+func TestTrimBytes(t *testing.T) {
+	tcs := []struct {
+		name       string
+		s          string
+		bytesCount int
+		expected   string
+	}{
+		{name: "basic", s: "my basic string", bytesCount: 100},
+		{name: "short", s: "my basic string", bytesCount: 4, expected: "my b"},
+		{name: "utf-8 over", s: "그래? 작은 거 같아? 좀 이상한 거 같긴 해.", bytesCount: 100},
+		{name: "utf-8 shorter", s: "그래? 작은 거 같아? 좀 이상한 거 같긴 해.", bytesCount: 23, expected: "그래? 작은 거 같"},
+	}
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			expected := tc.expected
+			if expected == "" {
+				expected = tc.s
+			}
+			require.Equal(expected, TrimBytes(tc.s, tc.bytesCount))
+		})
+	}
+}

@@ -15,6 +15,7 @@ import (
 
 	"github.com/s12chung/text2anki/pkg/lang"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
+	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
 
 var config Config
@@ -86,7 +87,7 @@ func (n *Note) ID() string {
 
 // SetSound sets the sound for the note
 func (n *Note) SetSound(sound []byte, soundSource string) error {
-	err := os.WriteFile(path.Join(config.NotesCacheDir, n.soundFilename()), sound, ioutil.OwnerRWGroupR)
+	err := os.WriteFile(path.Join(config.NotesCacheDir, n.UsageSoundFilename()), sound, ioutil.OwnerRWGroupR)
 	if err != nil {
 		return err
 	}
@@ -96,37 +97,51 @@ func (n *Note) SetSound(sound []byte, soundSource string) error {
 
 // CSV returns the CSV representation of the Note
 func (n *Note) CSV() []string {
-	soundAnkiFormat := ""
-	if n.usageSoundSource != "" {
-		soundAnkiFormat = "[sound:" + n.soundFilename() + "]"
-	}
 	return []string{
+		n.ID(),
+
 		n.Text,
 		string(n.PartOfSpeech),
 		n.Translation,
-
-		strconv.FormatUint(uint64(n.CommonLevel), 10),
 		n.Explanation,
+		strconv.FormatUint(uint64(n.CommonLevel), 10),
+
 		n.Usage,
 		n.UsageTranslation,
-
-		soundAnkiFormat,
+		n.usageSoundAnkiFormat(),
 		n.usageSoundSource,
 
 		n.SourceName,
 		n.SourceReference,
 		n.DictionarySource,
 		n.Notes,
-
-		n.ID(),
 	}
 }
 
-var invalidFilenameRegex = regexp.MustCompile(`/\\`)
+// from: https://github.com/ankitects/anki/blob/60748657635cb31c26f9a3deabf7926288471505/rslib/src/media/files.rs#L70
+var invalidFilenameRegex = regexp.MustCompile(`/\[|]|<|>|:|"|/|\?|\*|\^|\\|\|`)
 
-func (n *Note) soundFilename() string {
-	return config.ExportPrefix + invalidFilenameRegex.ReplaceAllString(n.Usage, "") + ".mp3"
+const ankiMediaMaxFilenameBytes = 119
+
+// UsageSoundFilename returns the usage sound filename
+//
+// Inspired by:
+// https://github.com/ankitects/anki/blob/60748657635cb31c26f9a3deabf7926288471505/rslib/src/media/files.rs#L248
+func (n *Note) UsageSoundFilename() string {
+	ext := ".mp3"
+	usage := stringutil.TrimBytes(config.ExportPrefix+invalidFilenameRegex.ReplaceAllString(n.Usage, ""), ankiMediaMaxFilenameBytes-len(ext))
+	return usage + ext
 }
+
+func (n *Note) usageSoundAnkiFormat() string {
+	if n.HasUsageSound() {
+		return "[sound:" + n.UsageSoundFilename() + "]"
+	}
+	return ""
+}
+
+// HasUsageSound returns true of the Note has a usage sound
+func (n *Note) HasUsageSound() bool { return n.usageSoundSource != "" }
 
 // ExportFiles exports all files into the given dst
 func ExportFiles(dirPath string, notes []Note) error {
@@ -150,12 +165,12 @@ func ExportFiles(dirPath string, notes []Note) error {
 // ExportSounds exports the sounds of the notes given the dst
 func ExportSounds(dirPath string, notes []Note) error {
 	for _, note := range notes {
-		if note.usageSoundSource == "" {
+		if !note.HasUsageSound() {
 			continue
 		}
 
-		src := path.Join(config.NotesCacheDir, note.soundFilename())
-		if err := ioutil.CopyFile(path.Join(dirPath, note.soundFilename()), src, ioutil.OwnerGroupR); err != nil {
+		src := path.Join(config.NotesCacheDir, note.UsageSoundFilename())
+		if err := ioutil.CopyFile(path.Join(dirPath, note.UsageSoundFilename()), src, ioutil.OwnerGroupR); err != nil {
 			return fmt.Errorf("error copying file: %w", err)
 		}
 	}
@@ -175,15 +190,22 @@ func ExportCSVFile(filePath string, notes []Note) error {
 	return err
 }
 
+var csvComments = []string{"#separator:Pipe", "#html:false", "#notetype:Text2Anki", "#deck:Text2Anki"}
+
 // ExportCSV exports the notes as CSV
 func ExportCSV(w io.Writer, notes []Note) error {
+	for _, comment := range csvComments {
+		if _, err := fmt.Fprintf(w, comment+"\n"); err != nil {
+			return err
+		}
+	}
 	writer := csv.NewWriter(w)
-	defer writer.Flush()
-
+	writer.Comma = '|'
 	for _, note := range notes {
 		if err := writer.Write(note.CSV()); err != nil {
 			return err
 		}
 	}
-	return nil
+	writer.Flush()
+	return writer.Error()
 }
