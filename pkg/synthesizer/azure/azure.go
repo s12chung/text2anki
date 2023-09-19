@@ -26,8 +26,9 @@ type Azure struct {
 	requestCount uint
 }
 
-// requestLimit is the limit of requests tested from the azure API
-const requestLimit = 15
+// requestLimit is the limit of requests tested from the azure API per minute
+// https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-services-quotas-and-limits#real-time-text-to-speech
+const requestLimit = 20
 
 // Region are region identifiers for the API
 type Region string
@@ -124,7 +125,7 @@ func (a *Azure) TextToSpeech(ctx context.Context, text string) ([]byte, error) {
 	request.Header.Add("X-Microsoft-OutputFormat", "audio-24khz-96kbitrate-mono-mp3")
 
 	if a.requestCount != 0 && a.requestCount%requestLimit == 0 {
-		time.Sleep(60 * time.Second)
+		time.Sleep(65 * time.Second) // 5 second padding
 	}
 	a.requestCount++
 
