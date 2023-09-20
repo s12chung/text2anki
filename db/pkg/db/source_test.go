@@ -91,6 +91,12 @@ func TestSourceStructured_DefaultedName(t *testing.T) {
 	require.Equal(source.Name, source.DefaultedName())
 	source.Name = ""
 	require.Equal(source.Parts[0].TokenizedTexts[0].Text.Text, source.DefaultedName())
+
+	source.Parts[0].TokenizedTexts = nil
+	require.Equal("", source.DefaultedName())
+
+	source.Parts = nil
+	require.Equal("", source.DefaultedName())
 }
 
 func TestSourceStructured_UpdateParams(t *testing.T) {

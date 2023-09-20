@@ -124,7 +124,7 @@ func (s SourceStructured) DefaultedName() string {
 	if s.Name != "" {
 		return s.Name
 	}
-	if len(s.Parts) == 0 && len(s.Parts[0].TokenizedTexts) == 0 {
+	if len(s.Parts) == 0 || len(s.Parts[0].TokenizedTexts) == 0 {
 		return ""
 	}
 	return SourceDefaultedName(s.Parts[0].TokenizedTexts[0].Text.Text)
