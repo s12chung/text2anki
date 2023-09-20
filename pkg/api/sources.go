@@ -46,7 +46,7 @@ type SourceCreateRequestPart struct {
 
 func init() {
 	firm.RegisterType(firm.NewDefinition(SourceCreateRequest{}).Validates(firm.RuleMap{
-		"Parts": {rule.Presence{}},
+		"Parts": {rule.Present{}},
 	}))
 }
 
@@ -86,7 +86,7 @@ type SourceUpdateRequest struct {
 
 func init() {
 	firm.RegisterType(firm.NewDefinition(SourceUpdateRequest{}).Validates(firm.RuleMap{
-		"Name": {rule.Presence{}},
+		"Name": {rule.Present{}},
 	}))
 }
 

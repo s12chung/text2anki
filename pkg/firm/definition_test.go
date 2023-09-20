@@ -12,7 +12,7 @@ type typedDefinition struct {
 
 func TestTypedDefinition_ValidatesTopLevel(t *testing.T) {
 	require := require.New(t)
-	rules := []Rule{testPresence{}}
+	rules := []Rule{testPresent{}}
 
 	definition := NewDefinition(typedDefinition{}).ValidatesTopLevel(rules...)
 	require.Equal(rules, definition.TopLevelRules())
@@ -24,7 +24,7 @@ func TestTypedDefinition_ValidatesTopLevel(t *testing.T) {
 func TestTypedDefinition_Validates(t *testing.T) {
 	require := require.New(t)
 	ruleMap := RuleMap{
-		"Primitive": {testPresence{}},
+		"Primitive": {testPresent{}},
 	}
 
 	definition := NewDefinition(typedDefinition{}).Validates(ruleMap)

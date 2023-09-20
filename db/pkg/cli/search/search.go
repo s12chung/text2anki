@@ -72,7 +72,7 @@ func init() {
 		"Queries": {},
 	}))
 	firm.RegisterType(firm.NewDefinition(Query{}).Validates(firm.RuleMap{
-		"Str": {rule.Presence{}},
+		"Str": {rule.Present{}},
 	}))
 }
 
