@@ -11,15 +11,15 @@ import (
 
 func init() {
 	firm.RegisterType(firm.NewDefinition(NoteCreateParams{}).Validates(firm.RuleMap{
-		"Text":        {rule.Presence{}},
-		"Translation": {rule.Presence{}},
-		"Explanation": {rule.Presence{}},
+		"Text":        {rule.Present{}},
+		"Translation": {rule.Present{}},
+		"Explanation": {rule.Present{}},
 
-		"Usage":            {rule.Presence{}},
-		"UsageTranslation": {rule.Presence{}},
+		"Usage":            {rule.Present{}},
+		"UsageTranslation": {rule.Present{}},
 
-		"SourceName":       {rule.Presence{}},
-		"DictionarySource": {rule.Presence{}},
+		"SourceName":       {rule.Present{}},
+		"DictionarySource": {rule.Present{}},
 	}))
 }
 

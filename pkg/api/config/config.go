@@ -135,9 +135,9 @@ type LocalStoreConfig struct {
 }
 
 var localStoreConfigValidator = firm.NewStructValidator(firm.RuleMap{
-	"Origin":        {rule.Presence{}},
-	"KeyBasePath":   {rule.Presence{}},
-	"EncryptorPath": {rule.Presence{}},
+	"Origin":        {rule.Present{}},
+	"KeyBasePath":   {rule.Present{}},
+	"EncryptorPath": {rule.Present{}},
 })
 
 const localstoreKey = "localstore.key"

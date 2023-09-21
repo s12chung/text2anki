@@ -91,12 +91,23 @@ func runInit() error {
 	if err := os.MkdirAll(extractorCacheDir, ioutil.OwnerRWXGroupRX); err != nil {
 		return err
 	}
+	if !test.IsCI() {
+		if err := routes.Setup(context.Background()); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func TestMain(m *testing.M) {
 	code := m.Run()
 	server.Close()
+	if !test.IsCI() {
+		if err := routes.Cleanup(); err != nil {
+			plog.Error("api_test.TestMain()", logg.Err(err))
+			os.Exit(-1)
+		}
+	}
 	os.Exit(code)
 }
 

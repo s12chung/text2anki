@@ -124,7 +124,7 @@ func (s SourceStructured) DefaultedName() string {
 	if s.Name != "" {
 		return s.Name
 	}
-	if len(s.Parts) == 0 && len(s.Parts[0].TokenizedTexts) == 0 {
+	if len(s.Parts) == 0 || len(s.Parts[0].TokenizedTexts) == 0 {
 		return ""
 	}
 	return SourceDefaultedName(s.Parts[0].TokenizedTexts[0].Text.Text)
@@ -148,6 +148,15 @@ func (s SourceStructured) UpdateParams() SourceUpdateParams {
 		Name:      s.Name,
 		Reference: s.Reference,
 		ID:        s.ID,
+	}
+}
+
+// UpdatePartsParams returns the SourcePartsUpdateParams for the SourceStructured
+func (s SourceStructured) UpdatePartsParams() SourcePartsUpdateParams {
+	source := s.ToSource()
+	return SourcePartsUpdateParams{
+		Parts: source.Parts,
+		ID:    s.ID,
 	}
 }
 

@@ -442,7 +442,7 @@ func TestStructValidator_Validate(t *testing.T) {
 			rawData := tc.f()
 			errKeys := make([]ErrorKey, len(tc.errorKeys))
 			for i, key := range tc.errorKeys {
-				errKeys[i] = joinKeys(key, testPresenceKey)
+				errKeys[i] = joinKeys(key, testPresentKey)
 			}
 			testValidates(t, validator, rawData, errTest, errKeys...)
 			testValidates(t, validator, &rawData, errTest, errKeys...)
@@ -483,7 +483,7 @@ var sliceValidatorTestCases = []sliceValidatorTestCase{
 }
 
 func TestSliceValidator_Validate(t *testing.T) {
-	validator := NewSliceValidator(testPresence{}, NewStructValidator(RuleMap{"Int": {testPresence{}}}))
+	validator := NewSliceValidator(testPresent{}, NewStructValidator(RuleMap{"Int": {testPresent{}}}))
 
 	t.Run("not_slice", func(t *testing.T) {
 		data := 1
@@ -496,7 +496,7 @@ func TestSliceValidator_Validate(t *testing.T) {
 			rawData := tc.f()
 			errKeys := make([]ErrorKey, len(tc.errorKeys))
 			for i, key := range tc.errorKeys {
-				errKeys[i] = joinKeys(key, testPresenceKey)
+				errKeys[i] = joinKeys(key, testPresentKey)
 			}
 			testValidates(t, validator, rawData, errTest, errKeys...)
 			testValidates(t, validator, &rawData, errTest, errKeys...)
@@ -525,8 +525,8 @@ func TestValueValidator_Validate(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			validator := NewValueValidator(testPresence{})
-			testValidates(t, validator, tc.data, tc.err, testPresenceKey)
+			validator := NewValueValidator(testPresent{})
+			testValidates(t, validator, tc.data, tc.err, testPresentKey)
 		})
 	}
 }

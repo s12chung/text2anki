@@ -53,6 +53,9 @@ func (s *ServerImpl) Run(port int) error {
 	return s.waitStdinStop(serverChannel)
 }
 
+// Running returns true if the server is running
+func (s *ServerImpl) Running() bool { return s.running }
+
 // Stop stops the server
 func (s *ServerImpl) Stop() error {
 	return s.server.Shutdown(context.Background()) //nolint:forbidigo // just for stopping
@@ -84,15 +87,14 @@ func (s *ServerImpl) runWithoutStdin(port int) chan error {
 
 func (s *ServerImpl) setupServer(port int) error {
 	mux := http.NewServeMux()
-	mux.HandleFunc(server.HealthzPath, handleHeathzfunc)
+	mux.HandleFunc(server.HealthzPath, handleHealthzFunc)
 	mux.HandleFunc(server.TokenizePath, jhttp.ResponseWrap(s.handleTokenize))
 
-	server := &http.Server{
+	s.server = &http.Server{
 		Addr:              fmt.Sprintf(":%v", port),
 		Handler:           mux,
 		ReadHeaderTimeout: time.Second,
 	}
-	s.server = server
 	return s.listen()
 }
 
@@ -142,7 +144,7 @@ func (s *ServerImpl) waitStdinStop(serverChannel chan error) error {
 	return scanner.Err()
 }
 
-func handleHeathzfunc(w http.ResponseWriter, r *http.Request) {
+func handleHealthzFunc(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "405 Method Not Allowed", http.StatusMethodNotAllowed)
 		return

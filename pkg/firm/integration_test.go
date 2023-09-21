@@ -62,12 +62,12 @@ func init() {
 	testRegistry.RegisterType(
 		NewDefinition(parent{}).
 			Validates(RuleMap{
-				"Primitive":               {testPresence{}},
-				"Basic":                   {testPresence{}},
-				"Pt":                      {testPresence{}},
-				"Any":                     {testPresence{}},
-				"Array":                   {testPresence{}},
-				"ArrayPt":                 {testPresence{}},
+				"Primitive":               {testPresent{}},
+				"Basic":                   {testPresent{}},
+				"Pt":                      {testPresent{}},
+				"Any":                     {testPresent{}},
+				"Array":                   {testPresent{}},
+				"ArrayPt":                 {testPresent{}},
 				"PrimitiveEmptyValidates": {},
 				"BasicEmptyValidates":     {},
 				"PtEmptyValidates":        {},
@@ -78,11 +78,11 @@ func init() {
 	testRegistry.RegisterType(
 		NewDefinition(child{}).
 			Validates(RuleMap{
-				"Validates": {testPresence{}},
+				"Validates": {testPresent{}},
 			}))
 	testRegistry.RegisterType(
 		NewDefinition(topLevelValidates{}).
-			ValidatesTopLevel(testPresence{}))
+			ValidatesTopLevel(testPresent{}))
 }
 
 type integrationTestCase struct {

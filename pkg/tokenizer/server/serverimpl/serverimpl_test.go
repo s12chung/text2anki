@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -27,8 +28,8 @@ const testPort = 9000
 var plog = flog.FixtureUpdateNoWrite()
 
 func TestMain(m *testing.M) {
-	server := NewServerImpl(&SplitTokenizer{})
-	serverChannel := server.runWithoutStdin(testPort)
+	s := NewServerImpl(&SplitTokenizer{})
+	serverChannel := s.runWithoutStdin(testPort)
 	go func() {
 		err := <-serverChannel
 		if err != nil {
@@ -36,8 +37,11 @@ func TestMain(m *testing.M) {
 			os.Exit(-1)
 		}
 	}()
+	for !s.Running() {
+		time.Sleep(time.Second / 5)
+	}
 	code := m.Run()
-	if err := server.Stop(); err != nil {
+	if err := s.Stop(); err != nil {
 		plog.Error("serverimpl server.Stop()", logg.Err(err))
 	}
 	if !cleaned {

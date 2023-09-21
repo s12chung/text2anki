@@ -1,0 +1,5 @@
+{
+  "error": "partIndex (-1) is less than zero",
+  "code": 422,
+  "status_text": "Unprocessable Entity"
+}

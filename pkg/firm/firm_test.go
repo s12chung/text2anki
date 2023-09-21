@@ -7,16 +7,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type testPresence struct{}
+type testPresent struct{}
 
-const testPresenceKey = "testPresence"
+const testPresentKey = "testPresent"
 
 var errTest = &TemplatedError{Template: "test"}
 
-func (p testPresence) ValidateValue(value reflect.Value) ErrorMap {
+func (p testPresent) ValidateValue(value reflect.Value) ErrorMap {
 	if !value.IsValid() || value.IsZero() {
 		return ErrorMap{
-			testPresenceKey: errTest,
+			testPresentKey: errTest,
 		}
 	}
 	return nil

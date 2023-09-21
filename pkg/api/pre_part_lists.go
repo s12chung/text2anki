@@ -42,7 +42,7 @@ type PrePartListSignRequest struct {
 
 func init() {
 	firm.RegisterType(firm.NewDefinition(PrePartListSignRequest{}).Validates(firm.RuleMap{
-		"PreParts": {rule.Presence{}},
+		"PreParts": {rule.Present{}},
 	}))
 }
 
@@ -105,7 +105,7 @@ type PrePartListVerifyRequest struct {
 
 func init() {
 	firm.RegisterType(firm.NewDefinition(PrePartListVerifyRequest{}).Validates(firm.RuleMap{
-		"Text": {rule.Presence{}},
+		"Text": {rule.Present{}},
 	}))
 }
 
@@ -134,8 +134,8 @@ type PrePartListCreateRequest struct {
 
 func init() {
 	firm.RegisterType(firm.NewDefinition(PrePartListCreateRequest{}).Validates(firm.RuleMap{
-		"ExtractorType": {rule.Presence{}},
-		"Text":          {rule.Presence{}},
+		"ExtractorType": {rule.Present{}},
+		"Text":          {rule.Present{}},
 	}))
 }
 

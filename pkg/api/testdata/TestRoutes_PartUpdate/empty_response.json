@@ -1,0 +1,5 @@
+{
+  "error": "api.PartCreateOrUpdateRequest.Text.TrimPresent: value is just spaces or empty",
+  "code": 422,
+  "status_text": "Unprocessable Entity"
+}
