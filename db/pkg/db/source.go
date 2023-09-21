@@ -151,6 +151,15 @@ func (s SourceStructured) UpdateParams() SourceUpdateParams {
 	}
 }
 
+// UpdatePartsParams returns the SourcePartsUpdateParams for the SourceStructured
+func (s SourceStructured) UpdatePartsParams() SourcePartsUpdateParams {
+	source := s.ToSource()
+	return SourcePartsUpdateParams{
+		Parts: source.Parts,
+		ID:    s.ID,
+	}
+}
+
 // CreateParams returns the SourceCreateParams for the SourceStructured
 func (s SourceStructured) CreateParams() SourceCreateParams {
 	return SourceCreateParams{

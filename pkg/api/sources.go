@@ -32,16 +32,9 @@ func (rs Routes) SourceGet(r *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError
 
 // SourceCreateRequest represents the SourceCreate request
 type SourceCreateRequest struct {
-	PrePartListID string                    `json:"pre_part_list_id,omitempty"`
-	Name          string                    `json:"name"`
-	Reference     string                    `json:"reference"`
-	Parts         []SourceCreateRequestPart `json:"parts"`
-}
-
-// SourceCreateRequestPart represents a part of a Source in a SourceCreate request
-type SourceCreateRequestPart struct {
-	Text        string `json:"text"`
-	Translation string `json:"translation,omitempty"`
+	Name      string `json:"name"`
+	Reference string `json:"reference"`
+	PartCreateMultiRequest
 }
 
 func init() {
@@ -140,29 +133,13 @@ func (rs Routes) sourceStructuredFromBodyReq(ctx context.Context, req SourceCrea
 	if httpErr != nil {
 		return nil, httpErr
 	}
-
-	name, reference, err := rs.chooseSourceNameRef(req.Name, req.Reference, prePartList)
-	if err != nil {
-		return nil, err
+	name, reference, httpErr := rs.chooseSourceNameRef(req.Name, req.Reference, prePartList)
+	if httpErr != nil {
+		return nil, httpErr
 	}
-
-	parts := make([]db.SourcePart, 0, len(req.Parts))
-	for i, part := range req.Parts {
-		if strings.TrimSpace(part.Text) == "" {
-			continue
-		}
-		tokenizedTexts, err := rs.TextTokenizer.TokenizedTexts(ctx, part.Text, part.Translation)
-		if err != nil {
-			return nil, jhttp.Error(http.StatusUnprocessableEntity, err)
-		}
-		sourcePart := db.SourcePart{TokenizedTexts: tokenizedTexts}
-		if prePartList != nil {
-			sourcePart.Media = &prePartList.PreParts[i]
-		}
-		parts = append(parts, sourcePart)
-	}
-	if len(parts) == 0 {
-		return nil, jhttp.Error(http.StatusUnprocessableEntity, fmt.Errorf("no parts found with text set"))
+	parts, httpErr := rs.requestPartsToDBParts(ctx, req.Parts, prePartList)
+	if httpErr != nil {
+		return nil, httpErr
 	}
 	return &db.SourceStructured{Name: name, Reference: reference, Parts: parts}, nil
 }
@@ -183,4 +160,27 @@ func (rs Routes) chooseSourceNameRef(name, ref string, prePartList *db.PrePartLi
 		ref = info.Reference
 	}
 	return name, ref, nil
+}
+
+func (rs Routes) requestPartsToDBParts(ctx context.Context, reqParts []PartCreateMultiRequestPart,
+	prePartList *db.PrePartList) ([]db.SourcePart, *jhttp.HTTPError) {
+	parts := make([]db.SourcePart, 0, len(reqParts))
+	for i, part := range reqParts {
+		if strings.TrimSpace(part.Text) == "" {
+			continue
+		}
+		tokenizedTexts, err := rs.TextTokenizer.TokenizedTexts(ctx, part.Text, part.Translation)
+		if err != nil {
+			return nil, jhttp.Error(http.StatusUnprocessableEntity, err)
+		}
+		sourcePart := db.SourcePart{TokenizedTexts: tokenizedTexts}
+		if prePartList != nil {
+			sourcePart.Media = &prePartList.PreParts[i]
+		}
+		parts = append(parts, sourcePart)
+	}
+	if len(parts) == 0 {
+		return nil, jhttp.Error(http.StatusUnprocessableEntity, fmt.Errorf("no parts found with text set"))
+	}
+	return parts, nil
 }

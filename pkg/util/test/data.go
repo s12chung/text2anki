@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -145,7 +146,7 @@ func (s Server) NewRequest(t *testing.T, ctx context.Context, method, path strin
 // WithPathPrefix returns a new server with the pathPrefix set for NewRequest
 func (s Server) WithPathPrefix(prefix string, log *slog.Logger) Server {
 	if s.Server == nil {
-		log.Error("test.Server is not set before calling WithPathPrefix() - due to init timing?")
+		log.Error(fmt.Sprintf("test.Server is not set before calling WithPathPrefix(%v) - due to init timing?", prefix))
 		os.Exit(-1)
 	}
 

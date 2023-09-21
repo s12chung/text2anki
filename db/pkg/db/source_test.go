@@ -104,9 +104,19 @@ func TestSourceStructured_UpdateParams(t *testing.T) {
 	txQs := TxQsT(t, nil)
 
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
-	createParams := firstSource(t, txQs).ToSourceStructured().UpdateParams()
-	test.EmptyFieldsMatch(t, createParams)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
+	updateParams := firstSource(t, txQs).ToSourceStructured().UpdateParams()
+	test.EmptyFieldsMatch(t, updateParams)
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, updateParams))
+}
+
+func TestSourceStructured_UpdatePartsParams(t *testing.T) {
+	testName := "TestSourceStructured_UpdatePartsParams"
+	txQs := TxQsT(t, nil)
+
+	test.EmptyFieldsMatch(t, firstSource(t, txQs))
+	updateParams := firstSource(t, txQs).ToSourceStructured().UpdatePartsParams()
+	test.EmptyFieldsMatch(t, updateParams)
+	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, updateParams))
 }
 
 func TestSourceStructured_CreateParams(t *testing.T) {

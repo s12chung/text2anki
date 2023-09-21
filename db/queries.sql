@@ -10,6 +10,11 @@ SET name = ?,
 reference = ?
 WHERE id = ? RETURNING *;
 
+-- name: SourcePartsUpdate :one
+UPDATE sources
+SET parts = ?
+WHERE id = ? RETURNING *;
+
 -- name: SourceCreate :one
 INSERT INTO sources (
     name, reference, parts

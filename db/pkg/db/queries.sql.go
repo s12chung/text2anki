@@ -246,6 +246,31 @@ func (q *Queries) SourceGet(ctx context.Context, id int64) (Source, error) {
 	return i, err
 }
 
+const sourcePartsUpdate = `-- name: SourcePartsUpdate :one
+UPDATE sources
+SET parts = ?
+WHERE id = ? RETURNING id, name, reference, parts, updated_at, created_at
+`
+
+type SourcePartsUpdateParams struct {
+	Parts string `json:"parts"`
+	ID    int64  `json:"id"`
+}
+
+func (q *Queries) SourcePartsUpdate(ctx context.Context, arg SourcePartsUpdateParams) (Source, error) {
+	row := q.db.QueryRowContext(ctx, sourcePartsUpdate, arg.Parts, arg.ID)
+	var i Source
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Reference,
+		&i.Parts,
+		&i.UpdatedAt,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const sourceUpdate = `-- name: SourceUpdate :one
 UPDATE sources
 SET name = ?,

@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"path"
+	"strings"
 	"testing"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
@@ -15,8 +16,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
-func idPath(path string, id int64) string {
-	return fmt.Sprintf(path+"/%v", id)
+func joinPath(elem ...any) string {
+	return fmt.Sprintf(strings.Repeat("/%v", len(elem)), elem...)
 }
 
 func testIndent(t *testing.T, resp test.Response, testName, name string) {

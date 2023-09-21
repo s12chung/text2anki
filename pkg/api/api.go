@@ -92,6 +92,13 @@ func (rs Routes) Router() chi.Router {
 			r.Get("/", rs.SourceGet)
 			r.Mode(txWritable).Patch("/", rs.SourceUpdate)
 			r.Mode(txWritable).Delete("/", rs.SourceDestroy)
+
+			r.Route("/parts", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
+				r.Mode(txWritable).Post("/", rs.PartCreate)
+				r.Mode(txWritable).Post("/multi", rs.PartCreateMulti)
+				r.Mode(txWritable).Patch("/{partIndex}", rs.PartUpdate)
+				r.Mode(txWritable).Delete("/{partIndex}", rs.PartDestroy)
+			})
 		})
 
 		r.Route("/pre_part_lists", func(r reqtxchi.Router[db.TxQs, config.TxMode]) {
