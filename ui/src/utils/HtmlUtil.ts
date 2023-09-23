@@ -1,3 +1,7 @@
+export function joinClasses(...classes: string[]): string {
+  return classes.filter(Boolean).join(" ")
+}
+
 export function paginate<T>(array: T[], maxPageSize: number, pageIndex: number): T[] {
   if (array.length === 0) return array
   if (maxPageSize <= 0) throw new Error("Invalid pageSize, it must be a positive integer.")

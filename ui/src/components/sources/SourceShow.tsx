@@ -16,7 +16,7 @@ import {
 } from "../../services/SourcesService.ts"
 import { Term } from "../../services/TermsService.ts"
 import { unique } from "../../utils/ArrayUntil.ts"
-import { pageSize, paginate, totalPages } from "../../utils/HtmlUtil.ts"
+import { joinClasses, pageSize, paginate, totalPages } from "../../utils/HtmlUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitWithFallback from "../AwaitWithFallback.tsx"
@@ -233,13 +233,19 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
   const [termsComponentProps, setTermsComponentProps] = useState<ITermsComponentProps | null>(null)
 
   const textRefs = useRef<(HTMLDivElement | null)[][]>([])
+  const [lastFocusedElement, setLastFocusedElement] = useState<HTMLDivElement | null>(null)
+  const focusElement = (element: HTMLDivElement) => {
+    setLastFocusedElement(element)
+    element.focus()
+  }
 
   const currentTokenizedTexts = useMemo<TokenizedText[]>(
     () => source.parts[partFocusIndex].tokenizedTexts,
     [partFocusIndex, source.parts]
   )
-  const termsFocus = termsComponentProps !== null
-  const setTermsFocus = (tokenFocusIndex: number) => {
+  const termsFocused = termsComponentProps !== null
+  const onTokenChange = (tokenElement: HTMLDivElement) => focusElement(tokenElement)
+  const onTokenSelect = (tokenFocusIndex: number) => {
     setTermsComponentProps(
       getTermsComponentProps(source, currentTokenizedTexts[textFocusIndex], tokenFocusIndex)
     )
@@ -271,7 +277,7 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
     setTermsComponentProps(null)
     const textElement = textRefs.current[partFocusIndex][textFocusIndex]
     if (!textElement) return
-    textElement.focus()
+    focusElement(textElement)
     window.scrollTo({
       top: textElement.getBoundingClientRect().top + window.scrollY - 150,
       behavior: "smooth",
@@ -284,13 +290,14 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
 
       switch (e.code) {
         case "Escape":
-          if (!termsFocus) return
+          if (!termsFocused) return
+          lastFocusedElement?.focus()
           setTermsComponentProps(null)
           break
         default:
       }
 
-      if (termsFocus) return
+      if (termsFocused) return
 
       switch (e.code) {
         case "ArrowUp":
@@ -308,7 +315,7 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
 
       e.preventDefault()
     },
-    [termsFocus, decrementText, incrementText]
+    [termsFocused, lastFocusedElement, decrementText, incrementText]
   )
 
   useEffect(() => {
@@ -318,16 +325,10 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
 
   const textOnClick = (index: number) => setTextFocusIndex(index)
 
-  const tokenizedTextClass = (b: boolean) =>
-    `group py-2 focin:py-4 focin:bg-gray-std ${b ? "py-4 bg-gray-std" : ""}`
-
-  const textClass = (b: boolean) => `${textClassBase} ${b ? "text-light" : ""}`
-  const translationClass = (b: boolean) => `${translationClassBase} ${b ? "text-2xl" : ""}`
-
   return (
     <SourceWrapper source={source}>
       {(tokenizedText, partIndex, textIndex) => {
-        const textFocus = partIndex === partFocusIndex && textIndex === textFocusIndex
+        const textFocused = partIndex === partFocusIndex && textIndex === textFocusIndex
         return (
           <div
             ref={(ref) => {
@@ -335,19 +336,27 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
               textRefs.current[partIndex][textIndex] = ref
             }}
             tabIndex={-1}
-            className={tokenizedTextClass(textFocus)}
+            className={joinClasses(
+              textFocused ? "py-4 bg-gray-std" : "",
+              "group py-2 focin:py-4 focin:bg-gray-std"
+            )}
             onClick={() => textOnClick(textIndex)}
           >
-            <div className={textClass(textFocus)}>{tokenizedText.text}</div>
-            {textFocus ? (
+            <div className={joinClasses(textClassBase, textFocused ? "text-light" : "")}>
+              {tokenizedText.text}
+            </div>
+            {textFocused ? (
               <TokensComponent
                 tokens={tokenizedText.tokens}
-                termsFocus={termsFocus}
-                setTermsFocus={setTermsFocus}
+                termsFocused={termsFocused}
+                onTokenChange={onTokenChange}
+                onTokenSelect={onTokenSelect}
               />
             ) : null}
-            <div className={translationClass(textFocus)}>{tokenizedText.translation}</div>
-            {textFocus && termsFocus ? (
+            <div className={joinClasses(translationClassBase, textFocused ? "text-2xl" : "")}>
+              {tokenizedText.translation}
+            </div>
+            {textFocused && termsFocused ? (
               <TermsComponent token={termsComponentProps.token} usage={termsComponentProps.usage} />
             ) : null}
           </div>
@@ -369,9 +378,10 @@ function skipPunct(
 
 const TokensComponent: React.FC<{
   tokens: Token[]
-  termsFocus: boolean
-  setTermsFocus: (tokenFocusIndex: number) => void
-}> = ({ tokens, termsFocus, setTermsFocus }) => {
+  termsFocused: boolean
+  onTokenChange: (tokenElement: HTMLDivElement) => void
+  onTokenSelect: (tokenFocusIndex: number) => void
+}> = ({ tokens, termsFocused, onTokenChange, onTokenSelect }) => {
   const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(0)
   const tokenRefs = useRef<(HTMLDivElement | null)[]>([])
 
@@ -381,12 +391,13 @@ const TokensComponent: React.FC<{
   )
 
   useEffect(() => {
-    tokenRefs.current[tokenFocusIndex]?.focus()
-  }, [tokenFocusIndex])
+    const element = tokenRefs.current[tokenFocusIndex]
+    if (element) onTokenChange(element)
+  }, [onTokenChange, tokenFocusIndex])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (stopKeyboardEvents || termsFocus || isAllPunct) return
+      if (stopKeyboardEvents || termsFocused || isAllPunct) return
 
       switch (e.code) {
         case "ArrowLeft":
@@ -399,7 +410,7 @@ const TokensComponent: React.FC<{
           break
         case "Enter":
         case "Space":
-          setTermsFocus(tokenFocusIndex)
+          onTokenSelect(tokenFocusIndex)
           break
         default:
           return
@@ -407,7 +418,7 @@ const TokensComponent: React.FC<{
 
       e.preventDefault()
     },
-    [termsFocus, isAllPunct, tokens, tokenFocusIndex, setTermsFocus]
+    [termsFocused, isAllPunct, tokens, tokenFocusIndex, onTokenSelect]
   )
 
   useEffect(() => {
@@ -416,11 +427,6 @@ const TokensComponent: React.FC<{
   }, [handleKeyDown])
 
   const tokenOnClick = (index: number) => setTokenFocusIndex(index)
-
-  const tokenClass = (focused: boolean, isPunct: boolean) =>
-    `focus:text-white focus:bg-ink${focused ? " text-white bg-ink" : ""}${
-      isPunct ? " text-faded" : ""
-    }`
 
   return (
     <div className="ko-sans text-4xl justify-center mb-2 child:py-2 flex">
@@ -438,7 +444,11 @@ const TokensComponent: React.FC<{
             {Boolean(previousSpace) && index !== 0 && <div>&nbsp;&nbsp;</div>}
             <div
               ref={(ref) => (tokenRefs.current[index] = ref)}
-              className={tokenClass(index === tokenFocusIndex, isPunct)}
+              className={joinClasses(
+                "focus:text-white focus:bg-ink",
+                index === tokenFocusIndex ? " text-white bg-ink" : "",
+                isPunct ? " text-faded" : ""
+              )}
               /* eslint-disable-next-line no-undefined */
               tabIndex={isPunct ? undefined : -1}
               /* eslint-disable-next-line no-undefined */
