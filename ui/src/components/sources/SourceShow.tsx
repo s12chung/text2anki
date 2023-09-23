@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import NotificationsContext from "../../contexts/NotificationsContext.ts"
 import { CommonLevel } from "../../services/Lang.ts"
 import {
   CreateNoteData,
@@ -21,8 +22,16 @@ import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitWithFallback from "../AwaitWithFallback.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteCreate from "../notes/NoteCreate.tsx"
-import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Form, Link, useFetcher } from "react-router-dom"
+import React, {
+  MouseEventHandler,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
+import { Form, useFetcher } from "react-router-dom"
 
 export interface ISourceShowData {
   source: Promise<Source>
@@ -39,8 +48,14 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
   )
 }
 
+let stopKeyboardEvents = false
+
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const [nav, setNav] = useState<boolean>(true)
+  const [show, setShow] = useState<boolean>(true)
+
+  const onEdit: () => void = () => setShow(false)
+  const onCancel: () => void = () => setShow(true)
 
   const onReadKorean: MouseEventHandler<HTMLAnchorElement> = (e) => {
     e.preventDefault()
@@ -49,37 +64,105 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
 
   return (
     <>
-      <div className="grid-std flex-std">
-        <div className="flex-grow">
-          <h2>{source.name}</h2>
-          <div>{source.reference}</div>
+      <div className="grid-std">
+        {show ? (
+          <SourceShowHeader source={source} onEdit={onEdit} />
+        ) : (
+          <SourceEditHeader source={source} onCancel={onCancel} />
+        )}
+        <div className="flex justify-center mt-std mb-10">
+          <a href="#" className="btn" onClick={onReadKorean}>
+            Read Korean
+          </a>
         </div>
-        <Form
-          action={`/sources/${source.id}`}
-          method="delete"
-          className="space-x-basic flex items-start"
-          onSubmit={(event) => {
-            // eslint-disable-next-line no-alert
-            if (!window.confirm("Delete Source?")) event.preventDefault()
-          }}
-        >
-          <button type="submit" className="btn">
-            Delete
-          </button>
-          <Link to={`/sources/${source.id}/edit`} className="btn">
-            Edit
-          </Link>
-        </Form>
-      </div>
-
-      <div className="flex justify-center mt-std mb-10">
-        <a href="#" className="btn" onClick={onReadKorean}>
-          Read Korean
-        </a>
       </div>
 
       {nav ? <SourceNavComponent source={source} /> : <SourceShowComponent source={source} />}
     </>
+  )
+}
+
+const SourceShowHeader: React.FC<{
+  source: Source
+  onEdit: () => void
+}> = ({ source, onEdit }) => {
+  const onEditClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
+    e.preventDefault()
+    onEdit()
+  }
+  return (
+    <Form
+      action={`/sources/${source.id}`}
+      method="delete"
+      className="flex-std"
+      onSubmit={(event) => {
+        // eslint-disable-next-line no-alert
+        if (!window.confirm("Delete Source?")) event.preventDefault()
+      }}
+    >
+      <div className="flex-grow">
+        <h2>{source.name}</h2>
+        <div>{source.reference}</div>
+      </div>
+
+      <div className="space-x-basic flex items-start">
+        <button type="submit" className="btn">
+          Delete
+        </button>
+        <a href="#" className="btn" onClick={onEditClick}>
+          Edit
+        </a>
+      </div>
+    </Form>
+  )
+}
+
+const SourceEditHeader: React.FC<{
+  source: Source
+  onCancel: () => void
+}> = ({ source, onCancel }) => {
+  useEffect(() => {
+    stopKeyboardEvents = true
+  }, [])
+  const onCancelWrap = useCallback(() => {
+    stopKeyboardEvents = false
+    onCancel()
+  }, [onCancel])
+
+  const fetcher = useFetcher<Source>()
+  const { error, success } = useContext(NotificationsContext)
+
+  useEffect(() => {
+    if (!fetcher.data) return
+    success(`Updated Source`)
+    onCancelWrap()
+  }, [fetcher, success, error, onCancelWrap])
+
+  const onCancelClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
+    e.preventDefault()
+    onCancelWrap()
+  }
+
+  return (
+    <fetcher.Form action={`/sources/${source.id}`} method="patch" className="space-y-std">
+      <label>
+        Name:
+        <input name="name" type="text" defaultValue={source.name} />
+      </label>
+      <label>
+        Reference:
+        <input name="reference" type="text" defaultValue={source.reference} />
+      </label>
+
+      <div className="flex justify-end space-x-basic">
+        <a href="#" className="btn" onClick={onCancelClick}>
+          Cancel
+        </a>
+        <button type="submit" className="btn-primary">
+          Save
+        </button>
+      </div>
+    </fetcher.Form>
   )
 }
 
@@ -143,8 +226,6 @@ function getTermsComponentProps(
   }
 }
 
-let openModal = false
-
 // eslint-disable-next-line max-lines-per-function
 const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
   const [partFocusIndex, setPartFocusIndex] = useState<number>(0)
@@ -199,7 +280,7 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (openModal) return
+      if (stopKeyboardEvents) return
 
       switch (e.code) {
         case "Escape":
@@ -305,7 +386,7 @@ const TokensComponent: React.FC<{
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (openModal || termsFocus || isAllPunct) return
+      if (stopKeyboardEvents || termsFocus || isAllPunct) return
 
       switch (e.code) {
         case "ArrowLeft":
@@ -409,12 +490,12 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
   }, [terms, pageIndex, termFocusIndex]) // trigger from terms/page to do initial focus
 
   useEffect(() => {
-    openModal = createNoteData !== null
+    stopKeyboardEvents = createNoteData !== null
   }, [createNoteData])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (openModal) return
+      if (stopKeyboardEvents) return
 
       switch (e.code) {
         case "ArrowUp":

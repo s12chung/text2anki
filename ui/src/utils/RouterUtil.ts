@@ -75,9 +75,11 @@ function resourceError(element: string, controllerMethod: string): Error {
 export function resources(
   name: string,
   controller: IController,
-  elements: IElementMap,
+  elements?: IElementMap,
   children?: RouteObject[]
 ): RouteObject {
+  if (!elements) elements = {}
+
   const route = resourcesRoute(name, controller, elements)
   if (!route.children) route.children = []
 

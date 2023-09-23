@@ -18,8 +18,6 @@ export const get: LoaderFunction = ({ params }) => {
   return defer({ source: sourcesService.get(params.id) })
 }
 
-export const edit = get
-
 export const create: ActionFunction = async ({ request }) => {
   const data = formData(await request.formData(), CreateSourceDataEmpty)
   const resp = await createPrePart(data)
@@ -33,7 +31,7 @@ export const update: ActionFunction = async ({ request, params }) => {
     params.id,
     formData(await request.formData(), UpdateSourceDataEmpty)
   )
-  return redirect(`/sources/${source.id}`)
+  return { source }
 }
 
 export const destroy: ActionFunction = async ({ params }) => {
