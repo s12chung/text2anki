@@ -135,3 +135,15 @@ class SourcesService extends ApplicationService {
 }
 
 export const sourcesService = new SourcesService()
+
+export function tokenPreviousSpace(tokens: Token[], index: number): boolean {
+  if (index === 0) return false
+  const currentToken = tokens[index]
+  const previousToken = tokens[index - 1]
+  return previousToken.startIndex + previousToken.length + 1 === currentToken.startIndex
+}
+
+export function tokenPreviousPunct(tokens: Token[], index: number): boolean {
+  if (index === 0) return false
+  return tokens[index - 1].partOfSpeech === PosPunctuation
+}

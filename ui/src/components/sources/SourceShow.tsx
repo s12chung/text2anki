@@ -5,7 +5,14 @@ import {
   createNoteDataFromSourceTerm,
   NoteUsage,
 } from "../../services/NotesService.ts"
-import { PosPunctuation, Source, Token, TokenizedText } from "../../services/SourcesService.ts"
+import {
+  PosPunctuation,
+  Source,
+  Token,
+  TokenizedText,
+  tokenPreviousPunct,
+  tokenPreviousSpace,
+} from "../../services/SourcesService.ts"
 import { Term } from "../../services/TermsService.ts"
 import { unique } from "../../utils/ArrayUntil.ts"
 import { pageSize, paginate, totalPages } from "../../utils/HtmlUtil.ts"
@@ -277,18 +284,6 @@ function skipPunct(
   index = change(index, tokens.length)
   if (tokens[index].partOfSpeech !== PosPunctuation) return index
   return skipPunct(tokens, index, change)
-}
-
-function tokenPreviousSpace(tokens: Token[], index: number): boolean {
-  if (index === 0) return false
-  const currentToken = tokens[index]
-  const previousToken = tokens[index - 1]
-  return previousToken.startIndex + previousToken.length + 1 === currentToken.startIndex
-}
-
-function tokenPreviousPunct(tokens: Token[], index: number): boolean {
-  if (index === 0) return false
-  return tokens[index - 1].partOfSpeech === PosPunctuation
 }
 
 const TokensComponent: React.FC<{
