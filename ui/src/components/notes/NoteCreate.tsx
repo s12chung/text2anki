@@ -64,7 +64,7 @@ const NoteCreate: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ d
       <TextFormGroup dataKeys={otherKeys} data={data} />
 
       <div className="my-std justify-end flex-std">
-        <button type="button" onClick={onClose}>
+        <button type="button" className="btn" onClick={onClose}>
           Cancel
         </button>
         <button ref={submitButtonRef} type="submit" className="btn-primary" disabled={submitted}>
