@@ -24,9 +24,7 @@ const NoteCreate: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ d
   const [submitted, setSubmitted] = useState<boolean>(false)
 
   const submitButtonRef = useRef<HTMLButtonElement>(null)
-  useEffect(() => {
-    submitButtonRef.current?.focus()
-  }, [])
+  useEffect(() => submitButtonRef.current?.focus(), [])
 
   useEffect(() => {
     if (!fetcher.data) return

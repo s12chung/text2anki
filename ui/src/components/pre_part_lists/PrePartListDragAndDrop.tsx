@@ -1,7 +1,9 @@
+import { sourceIdQueryParam } from "../../controllers/PrePartListsController.ts"
 import { printError } from "../../services/Format.ts"
 import { prePartListService, PrePartSignData } from "../../services/PrePartListsService.ts"
 import { Source } from "../../services/SourcesService.ts"
-import { headers } from "../../utils/RequestUtil.ts"
+import { joinClasses } from "../../utils/HtmlUtil.ts"
+import { headers, queryString } from "../../utils/RequestUtil.ts"
 import { removeExtension } from "../../utils/StringUtil.ts"
 import { XMarkIcon } from "@heroicons/react/24/outline"
 import React, {
@@ -26,7 +28,11 @@ const textFileExts: Record<string, boolean> = {
   "text/markdown": true,
 }
 
-const PrePartListDragAndDrop: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const PrePartListDragAndDrop: React.FC<{
+  sourceId?: number
+  minHeight: string
+  children: React.ReactNode
+}> = ({ sourceId, minHeight, children }) => {
   const [files, setFiles] = useState<File[]>([])
   const [dragState, setDragState] = useState<DragState>(DragState.None)
 
@@ -78,7 +84,7 @@ const PrePartListDragAndDrop: React.FC<{ children: React.ReactNode }> = ({ child
 
   return (
     <div
-      className="min-h-screen"
+      className={minHeight}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -86,19 +92,23 @@ const PrePartListDragAndDrop: React.FC<{ children: React.ReactNode }> = ({ child
       {dragState === DragState.None ? (
         children
       ) : (
-        <div className="min-h-screen flex relative">
+        <div className={joinClasses(minHeight, "flex relative")}>
           <a href="#" className="absolute top-5 right-5 a-btn" onClick={onCloseMouse}>
             <XMarkIcon className="h-10 w-10" />
           </a>
           {dragState === DragState.Dragging ? (
             <div className="m-auto text-4xl">Dragging files to create Source</div>
           ) : (
-            <PrePartListDrop files={files} />
+            <PrePartListDrop sourceId={sourceId ? sourceId : 0} files={files} />
           )}
         </div>
       )}
     </div>
   )
+}
+
+PrePartListDragAndDrop.defaultProps = {
+  sourceId: 0,
 }
 
 async function uploadFiles(files: File[]): Promise<string> {
@@ -128,7 +138,7 @@ interface ISourceCreateData {
   source: Source
 }
 
-const PrePartListDrop: React.FC<{ files: File[] }> = ({ files }) => {
+const PrePartListDrop: React.FC<{ sourceId: number; files: File[] }> = ({ sourceId, files }) => {
   const navigate = useNavigate()
   const fetcher = useFetcher<ISourceCreateData>()
 
@@ -138,10 +148,12 @@ const PrePartListDrop: React.FC<{ files: File[] }> = ({ files }) => {
   useEffect(() => {
     if (didRun.current || files.length === 0 || onlyTextFile(files)) return
     didRun.current = true
+
+    const query = sourceId ? `?${queryString({ [sourceIdQueryParam]: String(sourceId) })}` : ""
     uploadFiles(files)
-      .then((id) => navigate(`/sources/pre_part_lists/${id}`))
+      .then((id) => navigate(`/sources/pre_part_lists/${id}${query}`))
       .catch((error) => setErrorMessage(printError(error).message))
-  }, [files, navigate])
+  }, [files, navigate, sourceId])
 
   useEffect(() => {
     const file = onlyTextFile(files)

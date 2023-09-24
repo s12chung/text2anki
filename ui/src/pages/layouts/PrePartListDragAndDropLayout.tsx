@@ -4,7 +4,7 @@ import React from "react"
 
 const SourceDragAndDropLayout: React.FC = () => {
   return (
-    <PrePartListDragAndDrop>
+    <PrePartListDragAndDrop minHeight="min-h-screen">
       <ApplicationLayout />
     </PrePartListDragAndDrop>
   )
