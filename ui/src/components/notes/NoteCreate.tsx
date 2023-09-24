@@ -63,7 +63,7 @@ const NoteCreate: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ d
       <TextFormGroup dataKeys={usageKeys} data={data} />
       <TextFormGroup dataKeys={otherKeys} data={data} />
 
-      <div className="my-std justify-end flex-std">
+      <div className="my-std justify-end flex space-x-basic">
         <button type="button" className="btn" onClick={onClose}>
           Cancel
         </button>

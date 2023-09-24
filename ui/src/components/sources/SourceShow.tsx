@@ -96,7 +96,7 @@ const SourceShowHeader: React.FC<{
     <Form
       action={`/sources/${source.id}`}
       method="delete"
-      className="flex-std"
+      className="flex"
       onSubmit={(event) => {
         // eslint-disable-next-line no-alert
         if (!window.confirm("Delete Source?")) event.preventDefault()

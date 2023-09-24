@@ -21,7 +21,7 @@ const SourceList: React.FC<ISourceListProps> = ({ data }) => {
           <ul>
             {sources.map((source) => (
               <li key={`source-${source.id}`} className="my-half">
-                <Link to={`sources/${source.id}`} className="flex-std">
+                <Link to={`sources/${source.id}`} className="flex space-x-basic">
                   <DocumentTextIcon className="h-6 w-6" />
                   <div>{source.name}</div>
                 </Link>

@@ -13,7 +13,7 @@ const SourceCreateMini: React.FC = () => {
         className={text ? "h-third" : "h-20"}
         onChange={handleText}
       />
-      <div className="flex-std mt-half mb-std">
+      <div className="flex mt-half mb-std">
         <div className="flex-grow">
           <Link to="sources/new" className="btn">
             Full

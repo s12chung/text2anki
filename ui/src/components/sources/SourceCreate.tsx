@@ -15,12 +15,12 @@ const SourceCreate: React.FC = () => {
 
   return (
     <Form action="/sources" method="post">
-      <div className="flex-std">
-        <div className="flex-col-std grow">
+      <div className="flex space-x-basic">
+        <div className="flex flex-col items-center grow">
           <div>Source Language</div>
           <textarea name="parts[0].text" value={text} className="h-third" onChange={handleText} />
         </div>
-        <div className="flex-col-std grow">
+        <div className="flex flex-col items-center grow">
           <div>Translation</div>
           <textarea
             name="parts[0].translation"
@@ -30,13 +30,10 @@ const SourceCreate: React.FC = () => {
           />
         </div>
       </div>
-      <div className="flex-std mt-half mb-std">
-        <div className="flex-grow" />
-        <div className="flex-shrink-0">
-          <button type="submit" className="btn-primary" disabled={!valid}>
-            Submit
-          </button>
-        </div>
+      <div className="flex justify-end mt-half mb-std">
+        <button type="submit" className="btn-primary" disabled={!valid}>
+          Submit
+        </button>
       </div>
       <PreviewTexts texts={previewTexts} />
     </Form>
