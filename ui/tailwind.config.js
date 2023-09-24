@@ -9,7 +9,7 @@ export default {
         sans: 'source-han-sans-cjk-ko,"Open Sans","Gill Sans MT","Gill Sans",Corbel,Arial,sans-serif',
       },
       colors: {
-        ink: "rgba(36, 30, 32, 0.9)",
+        ink: "rgb(36, 30, 32)",
         light: "rgba(36, 30, 32, 0.7)",
         faded: "rgba(36, 30, 32, 0.3)",
         "gray-std": "rgb(241 245 249)",
@@ -20,8 +20,6 @@ export default {
     require("@tailwindcss/forms"),
     plugin(function ({ addVariant }) {
       addVariant("child", "& > *")
-      addVariant("focin", ["&:focus", "&:focus-within"])
-      addVariant("focgrin", ":merge(.group):focus-within &")
     }),
   ],
 }

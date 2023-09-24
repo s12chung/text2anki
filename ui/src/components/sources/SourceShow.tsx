@@ -203,8 +203,8 @@ const SourceWrapper: React.FC<{
   )
 }
 
-const textClassBase = "ko-sans text-2xl focgrin:text-light"
-const translationClassBase = "text-lg focgrin:text-2xl"
+const textClassBase = "ko-sans text-2xl"
+const translationClassBase = "text-lg"
 
 const SourceShowComponent: React.FC<{ source: Source }> = ({ source }) => {
   return (
@@ -346,10 +346,7 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
               textRefs.current[partIndex][textIndex] = ref
             }}
             tabIndex={-1}
-            className={joinClasses(
-              textFocused ? "py-4 bg-gray-std" : "",
-              "group py-2 focin:py-4 focin:bg-gray-std"
-            )}
+            className={joinClasses(textFocused ? "py-4 bg-gray-std" : "", "group py-2")}
             onClick={() => textOnClick(textIndex)}
           >
             <div className={joinClasses(textClassBase, textFocused ? "text-light" : "")}>
@@ -363,7 +360,7 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
                 onTokenSelect={onTokenSelect}
               />
             ) : null}
-            <div className={joinClasses(translationClassBase, textFocused ? "text-2xl" : "")}>
+            <div className={textFocused ? "text-2xl" : translationClassBase}>
               {tokenizedText.translation}
             </div>
             {textFocused && termsFocused ? (
@@ -455,9 +452,8 @@ const TokensComponent: React.FC<{
             <div
               ref={(ref) => (tokenRefs.current[index] = ref)}
               className={joinClasses(
-                "focus:text-white focus:bg-ink",
-                index === tokenFocusIndex ? " text-white bg-ink" : "",
-                isPunct ? " text-faded" : ""
+                index === tokenFocusIndex ? "text-white bg-ink" : "",
+                isPunct ? "text-faded" : ""
               )}
               /* eslint-disable-next-line no-undefined */
               tabIndex={isPunct ? undefined : -1}
@@ -573,15 +569,16 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
               key={term.id}
               ref={(ref) => (termRefs.current[index] = ref)}
               tabIndex={-1}
-              className="focus:underline"
+              className={joinClasses(index === termFocusIndex ? "underline" : "", "py-1")}
             >
               <div className="text-xl">
-                {term.text}&nbsp;
+                <span className="font-bold">{term.text}</span>&nbsp;
                 <span className="text-light text-base">{term.partOfSpeech}</span>
                 {term.commonLevel !== CommonLevel.Unique && (
                   <span className="relative top-2">&nbsp;{"*".repeat(term.commonLevel)}</span>
                 )}
-                : {term.translations[0].text} &mdash; {term.translations[0].explanation}
+                : {term.translations[0].text}&nbsp;&mdash;&nbsp;
+                {term.translations[0].explanation}
               </div>
               <div className="ml-std2">
                 {unique(term.translations.map((translation) => translation.text))
