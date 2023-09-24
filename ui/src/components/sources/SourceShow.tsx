@@ -9,6 +9,7 @@ import {
 import {
   PosPunctuation,
   Source,
+  SourcePart,
   Token,
   TokenizedText,
   tokenPreviousPunct,
@@ -23,8 +24,10 @@ import AwaitWithFallback from "../AwaitWithFallback.tsx"
 import DetailMenu from "../DetailMenu.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteCreate from "../notes/NoteCreate.tsx"
+import PrePartListDragAndDrop from "../pre_part_lists/PrePartListDragAndDrop.tsx"
 import { Menu } from "@headlessui/react"
 import React, {
+  ChangeEventHandler,
   MouseEventHandler,
   useCallback,
   useContext,
@@ -55,9 +58,27 @@ let stopKeyboardEvents = false
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const [nav, setNav] = useState<boolean>(true)
   const [show, setShow] = useState<boolean>(true)
+  const [expandPartsCreate, setExpandPartsCreate] = useState<boolean>(false)
 
-  const onEdit: () => void = () => setShow(false)
-  const onCancel: () => void = () => setShow(true)
+  const resetEdit = () => {
+    setShow(true)
+    setExpandPartsCreate(false)
+    stopKeyboardEvents = true
+  }
+  const onAddParts: () => void = () => setExpandPartsCreateWrap(true)
+  const onEdit: () => void = () => {
+    resetEdit()
+    setShow(false)
+  }
+  const onCancel: () => void = () => {
+    stopKeyboardEvents = false
+    setShow(true)
+  }
+  const setExpandPartsCreateWrap = (val: boolean) => {
+    resetEdit()
+    if (!val) stopKeyboardEvents = false
+    setExpandPartsCreate(val)
+  }
 
   const onReadKorean: MouseEventHandler<HTMLAnchorElement> = (e) => {
     e.preventDefault()
@@ -68,7 +89,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
     <>
       <div className="grid-std">
         {show ? (
-          <SourceShowHeader source={source} onEdit={onEdit} />
+          <SourceShowHeader source={source} onAddParts={onAddParts} onEdit={onEdit} />
         ) : (
           <SourceEditHeader source={source} onCancel={onCancel} />
         )}
@@ -80,14 +101,24 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
       </div>
 
       {nav ? <SourceNavComponent source={source} /> : <SourceShowComponent source={source} />}
+      <PartsCreate
+        sourceId={source.id}
+        expand={expandPartsCreate}
+        setExpand={setExpandPartsCreateWrap}
+      />
     </>
   )
 }
 
 const SourceShowHeader: React.FC<{
   source: Source
+  onAddParts: () => void
   onEdit: () => void
-}> = ({ source, onEdit }) => {
+}> = ({ source, onAddParts, onEdit }) => {
+  const onAddPartsClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
+    e.preventDefault()
+    onAddParts()
+  }
   const onEditClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
     e.preventDefault()
     onEdit()
@@ -110,9 +141,16 @@ const SourceShowHeader: React.FC<{
       <DetailMenu>
         <Menu.Item>
           {({ active }) => (
-            <button type="submit" className={menuClass(active)}>
+            <button type="submit" className={joinClasses("w-full", menuClass(active))}>
               Delete
             </button>
+          )}
+        </Menu.Item>
+        <Menu.Item>
+          {({ active }) => (
+            <a href="#" className={menuClass(active)} onClick={onAddPartsClick}>
+              Add Parts
+            </a>
           )}
         </Menu.Item>
         <Menu.Item>
@@ -131,26 +169,18 @@ const SourceEditHeader: React.FC<{
   source: Source
   onCancel: () => void
 }> = ({ source, onCancel }) => {
-  useEffect(() => {
-    stopKeyboardEvents = true
-  }, [])
-  const onCancelWrap = useCallback(() => {
-    stopKeyboardEvents = false
-    onCancel()
-  }, [onCancel])
-
   const fetcher = useFetcher<Source>()
   const { error, success } = useContext(NotificationsContext)
 
   useEffect(() => {
     if (!fetcher.data) return
     success(`Updated Source`)
-    onCancelWrap()
-  }, [fetcher, success, error, onCancelWrap])
+    onCancel()
+  }, [fetcher, success, error, onCancel])
 
-  const onCancelClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
+  const onCancelClick: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
-    onCancelWrap()
+    onCancel()
   }
 
   return (
@@ -165,9 +195,9 @@ const SourceEditHeader: React.FC<{
       </label>
 
       <div className="flex justify-end space-x-basic">
-        <a href="#" className="btn" onClick={onCancelClick}>
+        <button type="button" className="btn" onClick={onCancelClick}>
           Cancel
-        </a>
+        </button>
         <button type="submit" className="btn-primary">
           Save
         </button>
@@ -177,12 +207,12 @@ const SourceEditHeader: React.FC<{
 }
 
 const SourceWrapper: React.FC<{
-  source: Source
+  parts: SourcePart[]
   children: (tokenizedText: TokenizedText, partIndex: number, textIndex: number) => React.ReactNode
-}> = ({ source, children }) => {
+}> = ({ parts, children }) => {
   return (
-    <div className="text-center">
-      {source.parts.map((part, partIndex) => (
+    <div className="text-center space-y-std2">
+      {parts.map((part, partIndex) => (
         // eslint-disable-next-line react/no-array-index-key
         <div key={`part-${partIndex}`}>
           {part.tokenizedTexts.map((tokenizedText, textIndex) => (
@@ -196,7 +226,9 @@ const SourceWrapper: React.FC<{
             <div className="grid-std">
               <img src={part.media.imageUrl} alt="Part Image" />
             </div>
-          ) : null}
+          ) : (
+            partIndex !== parts.length - 1 && <hr className="mt-std2" />
+          )}
         </div>
       ))}
     </div>
@@ -208,7 +240,7 @@ const translationClassBase = "text-lg"
 
 const SourceShowComponent: React.FC<{ source: Source }> = ({ source }) => {
   return (
-    <SourceWrapper source={source}>
+    <SourceWrapper parts={source.parts}>
       {(tokenizedText) => (
         <>
           <div className={textClassBase}>{tokenizedText.text}</div>
@@ -336,7 +368,7 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
   const textOnClick = (index: number) => setTextFocusIndex(index)
 
   return (
-    <SourceWrapper source={source}>
+    <SourceWrapper parts={source.parts}>
       {(tokenizedText, partIndex, textIndex) => {
         const textFocused = partIndex === partFocusIndex && textIndex === textFocusIndex
         return (
@@ -607,6 +639,74 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
         </SlideOver.Dialog>
       )}
     </div>
+  )
+}
+
+const PartsCreate: React.FC<{
+  sourceId: number
+  expand: boolean
+  setExpand: (expand: boolean) => void
+}> = ({ sourceId, expand, setExpand }) => {
+  const onCancel = () => setExpand(false)
+  const onExpand: MouseEventHandler<HTMLButtonElement> = useCallback(
+    (e) => {
+      e.preventDefault()
+      setExpand(true)
+    },
+    [setExpand]
+  )
+
+  return (
+    <div className="grid-std pt-std pb-std2">
+      {expand ? (
+        <PartsCreateForm sourceId={sourceId} onCancel={onCancel} />
+      ) : (
+        <div className="flex justify-center">
+          <button type="button" className="btn" onClick={onExpand}>
+            Create Part
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+const PartsCreateForm: React.FC<{ sourceId: number; onCancel: () => void }> = ({
+  sourceId,
+  onCancel,
+}) => {
+  const [text, setText] = useState<string>("")
+  const handleText: ChangeEventHandler<HTMLTextAreaElement> = (e) => setText(e.target.value)
+
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  useEffect(() => textAreaRef.current?.focus(), [textAreaRef])
+
+  const onCancelClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
+    onCancel()
+  }
+
+  return (
+    <PrePartListDragAndDrop sourceId={sourceId} minHeight="h-third">
+      <Form action={`/sources/${sourceId}/parts`} method="post">
+        <textarea
+          ref={textAreaRef}
+          name="text"
+          value={text}
+          placeholder="You may also drag and drop here."
+          className="h-third"
+          onChange={handleText}
+        />
+        <div className="mt-half flex justify-end space-x-basic">
+          <button type="button" className="btn" onClick={onCancelClick}>
+            Cancel
+          </button>
+          <button type="submit" className="btn-primary" disabled={!text}>
+            Add Part
+          </button>
+        </div>
+      </Form>
+    </PrePartListDragAndDrop>
   )
 }
 

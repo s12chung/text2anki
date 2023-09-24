@@ -98,4 +98,7 @@
   .pb-half {
     @apply pb-2;
   }
+  .pb-std2 {
+    @apply pb-8;
+  }
 }

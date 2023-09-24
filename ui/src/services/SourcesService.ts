@@ -1,5 +1,6 @@
 import ApplicationService from "./ApplicationService"
 import { Http, requestInit } from "./Format.ts"
+import { PartCreateMultiData, PartCreateMultiDataEmpty } from "./PartsService.ts"
 
 export const PosPunctuation = "Punctuation"
 
@@ -76,28 +77,15 @@ export const SourceEmpty = Object.freeze<Source>({
   createdAt: new Date(0),
 })
 
-export interface CreateSourcePartData {
-  text: string
-  translation: string
-}
-
-export const CreateSourcePartDataEmpty = Object.freeze<CreateSourcePartData>({
-  text: "",
-  translation: "",
-})
-
-export interface CreateSourceData {
-  prePartListId: string
+export interface CreateSourceData extends PartCreateMultiData {
   name: string
   reference: string
-  parts: CreateSourcePartData[]
 }
 
 export const CreateSourceDataEmpty = Object.freeze<CreateSourceData>({
-  prePartListId: "",
   name: "",
   reference: "",
-  parts: [CreateSourcePartDataEmpty],
+  ...PartCreateMultiDataEmpty,
 })
 
 export interface UpdateSourceData {

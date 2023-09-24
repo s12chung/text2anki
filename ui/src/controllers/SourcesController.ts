@@ -1,12 +1,12 @@
-import { prePartListService } from "../services/PrePartListsService.ts"
+import { PartCreateMultiData } from "../services/PartsService.ts"
 import {
-  CreateSourceData,
   CreateSourceDataEmpty,
   sourcesService,
   UpdateSourceDataEmpty,
 } from "../services/SourcesService.ts"
 import { formData } from "../utils/RequestUtil.ts"
 import { Status405 } from "../utils/StatusUtil.ts"
+import { createPrePart } from "./PartsController.ts"
 import { ActionFunction, defer, LoaderFunction, redirect } from "react-router-dom"
 
 export const index: LoaderFunction = () => {
@@ -20,7 +20,7 @@ export const get: LoaderFunction = ({ params }) => {
 
 export const create: ActionFunction = async ({ request }) => {
   const data = formData(await request.formData(), CreateSourceDataEmpty)
-  const resp = await createPrePart(data)
+  const resp = await checkAndCreatePrePart(data)
   if (resp) return resp
   return redirect(`/sources/${(await sourcesService.create(data)).id}`)
 }
@@ -42,21 +42,9 @@ export const destroy: ActionFunction = async ({ params }) => {
   return redirect(`/`)
 }
 
-async function createPrePart(data: CreateSourceData): Promise<Response | null> {
+async function checkAndCreatePrePart(data: PartCreateMultiData): Promise<Response | null> {
   if (data.prePartListId || data.parts.length !== 1 || data.parts[0].translation) {
     return null
   }
-  // eslint-disable-next-line prefer-destructuring
-  const text = data.parts[0].text.trim()
-  if (text.includes("\n") || text.includes("\r")) {
-    return null
-  }
-  const { extractorType } = await prePartListService.verify({ text })
-
-  if (extractorType === "") {
-    return null
-  }
-  return redirect(
-    `/sources/pre_part_lists/${(await prePartListService.create({ extractorType, text })).id}`
-  )
+  return createPrePart(data.parts[0].text)
 }

@@ -5,6 +5,7 @@ import PrePartListShow, {
 import SourceCreate from "./components/sources/SourceCreate.tsx"
 import SourceShow, { ISourceShowData } from "./components/sources/SourceShow.tsx"
 import * as NotesController from "./controllers/NotesController.ts"
+import * as PartsController from "./controllers/PartsController.ts"
 import * as PrePartListsController from "./controllers/PrePartListsController.ts"
 import * as SourceController from "./controllers/SourcesController.ts"
 import * as TermsController from "./controllers/TermsController.ts"
@@ -46,6 +47,11 @@ const routes = route("/", null, rootOptions, [
       resources("pre_part_lists", PrePartListsController, {
         show: el(LoaderPage<IPrePartListShowData>, { Component: PrePartListShow }),
       }),
+      resources(":sourceId", {}, {}, [
+        resources("parts", PartsController, {}, [
+          route("multi", null, { action: PartsController.multi }),
+        ]),
+      ]),
     ]),
   ]),
 ])

@@ -10,6 +10,7 @@ import { Form } from "react-router-dom"
 
 export interface IPrePartListShowData {
   prePartList: Promise<PrePartList>
+  sourceId: number
 }
 
 interface IPrePartListShowProps {
@@ -19,13 +20,20 @@ interface IPrePartListShowProps {
 const PrePartListShow: React.FC<IPrePartListShowProps> = ({ data }) => {
   return (
     <AwaitWithFallback resolve={data.prePartList}>
-      {(prePartList: PrePartList) => <PrePartsForm prePartList={prePartList} />}
+      {(prePartList: PrePartList) => (
+        <PrePartsForm sourceId={data.sourceId} prePartList={prePartList} />
+      )}
     </AwaitWithFallback>
   )
 }
 
 // eslint-disable-next-line max-lines-per-function
-const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) => {
+const PrePartsForm: React.FC<{ sourceId: number; prePartList: PrePartList }> = ({
+  sourceId,
+  prePartList,
+}) => {
+  const formAction = sourceId ? `/sources/${sourceId}/parts/multi` : "/sources"
+  const action = sourceId ? "Append Parts" : "Create Source from Parts"
   const { preParts } = prePartList
   const [currentIndex, setCurrentIndex] = useState<number>(0)
   const [partTextsMap, setPartTextsMap] = useState<Record<number, string>>({})
@@ -98,8 +106,8 @@ const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) =
       show
       leftNode={<PrePartLeft image={preParts[currentIndex].imageUrl} prev={prev} next={next} />}
     >
-      <SlideOver.Header title="Create Source from Parts" />
-      <Form action="/sources" method="post" className="m-std space-y-std">
+      <SlideOver.Header title={action} />
+      <Form action={formAction} method="post" className="m-std space-y-std">
         <div className="text-center">
           Part {currentIndex + 1}/{preParts.length}
         </div>
@@ -122,7 +130,7 @@ const PrePartsForm: React.FC<{ prePartList: PrePartList }> = ({ prePartList }) =
 
         <div className="flex justify-end">
           <button type="submit" className="btn-primary">
-            Create Source from Parts
+            {action}
           </button>
         </div>
       </Form>

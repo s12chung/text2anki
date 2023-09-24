@@ -3,7 +3,10 @@ export function joinClasses(...classes: string[]): string {
 }
 
 export function menuClass(active: boolean): string {
-  return joinClasses(active ? "bg-gray-std" : "", "block whitespace-nowrap px-std py-half")
+  return joinClasses(
+    active ? "bg-gray-std" : "",
+    "block whitespace-nowrap px-std py-half text-left"
+  )
 }
 
 export function paginate<T>(array: T[], maxPageSize: number, pageIndex: number): T[] {
