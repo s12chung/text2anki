@@ -16,12 +16,14 @@ import {
 } from "../../services/SourcesService.ts"
 import { Term } from "../../services/TermsService.ts"
 import { unique } from "../../utils/ArrayUntil.ts"
-import { joinClasses, pageSize, paginate, totalPages } from "../../utils/HtmlUtil.ts"
+import { joinClasses, menuClass, pageSize, paginate, totalPages } from "../../utils/HtmlUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitWithFallback from "../AwaitWithFallback.tsx"
+import DetailMenu from "../DetailMenu.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteCreate from "../notes/NoteCreate.tsx"
+import { Menu } from "@headlessui/react"
 import React, {
   MouseEventHandler,
   useCallback,
@@ -105,14 +107,22 @@ const SourceShowHeader: React.FC<{
         <div>{source.reference}</div>
       </div>
 
-      <div className="space-x-basic flex items-start">
-        <button type="submit" className="btn">
-          Delete
-        </button>
-        <a href="#" className="btn" onClick={onEditClick}>
-          Edit
-        </a>
-      </div>
+      <DetailMenu>
+        <Menu.Item>
+          {({ active }) => (
+            <button type="submit" className={menuClass(active)}>
+              Delete
+            </button>
+          )}
+        </Menu.Item>
+        <Menu.Item>
+          {({ active }) => (
+            <a href="#" className={menuClass(active)} onClick={onEditClick}>
+              Edit
+            </a>
+          )}
+        </Menu.Item>
+      </DetailMenu>
     </Form>
   )
 }

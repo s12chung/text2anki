@@ -16,6 +16,7 @@ export const SlideOverDialog: React.FC<{
 
   return (
     <Transition.Root show={show} as={Fragment}>
+      {/* eslint-disable-next-line react/forbid-component-props */}
       <Dialog as="div" className="relative z-10" onClose={onClose}>
         {leftNode ? (
           <div
@@ -42,6 +43,7 @@ export const SlideOverDialog: React.FC<{
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel
+                  /* eslint-disable-next-line react/forbid-component-props */
                   className="pointer-events-auto"
                   /* eslint-disable-next-line react/forbid-component-props */
                   style={{
@@ -83,6 +85,7 @@ export const SlideOverHeader: React.FC<{
     <div className="bg-gray-50 px-4 py-6 sm:px-6">
       <div className="flex items-start justify-between space-x-3">
         <div className="space-y-1">
+          {/* eslint-disable-next-line react/forbid-component-props */}
           <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
             {title}
           </Dialog.Title>

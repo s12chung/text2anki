@@ -58,6 +58,9 @@
   .p-std {
     @apply p-4;
   }
+  .px-std {
+    @apply px-4;
+  }
   .py-std {
     @apply py-4;
   }
@@ -70,6 +73,9 @@
 
   .p-half {
     @apply p-2;
+  }
+  .px-half {
+    @apply px-2;
   }
   .py-half {
     @apply py-2;
