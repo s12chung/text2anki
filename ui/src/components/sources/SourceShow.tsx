@@ -53,9 +53,24 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
   )
 }
 
-let stopKeyboardEvents = false
+interface StopKeyboard {
+  stopKeyboardEvents: boolean
+  setStopKeyboardEvents: (stop: boolean) => void
+}
+const StopKeyboardContext = React.createContext<StopKeyboard>({
+  stopKeyboardEvents: false,
+  setStopKeyboardEvents: () => {
+    // do nothing
+  },
+})
 
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
+  const [stopKeyboard, setStopKeyboard] = useState<boolean>(false)
+  const stopKeyboardContext = useMemo<StopKeyboard>(
+    () => ({ stopKeyboardEvents: stopKeyboard, setStopKeyboardEvents: setStopKeyboard }),
+    [stopKeyboard]
+  )
+
   const [nav, setNav] = useState<boolean>(true)
   const [show, setShow] = useState<boolean>(true)
   const [expandPartsCreate, setExpandPartsCreate] = useState<boolean>(false)
@@ -63,7 +78,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const resetEdit = () => {
     setShow(true)
     setExpandPartsCreate(false)
-    stopKeyboardEvents = true
+    setStopKeyboard(true)
   }
   const onAddParts: () => void = () => setExpandPartsCreateWrap(true)
   const onEdit: () => void = () => {
@@ -71,12 +86,12 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
     setShow(false)
   }
   const onCancel: () => void = () => {
-    stopKeyboardEvents = false
+    setStopKeyboard(false)
     setShow(true)
   }
   const setExpandPartsCreateWrap = (val: boolean) => {
     resetEdit()
-    if (!val) stopKeyboardEvents = false
+    if (!val) setStopKeyboard(false)
     setExpandPartsCreate(val)
   }
 
@@ -86,7 +101,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   }
 
   return (
-    <>
+    <StopKeyboardContext.Provider value={stopKeyboardContext}>
       <div className="grid-std">
         {show ? (
           <SourceShowHeader source={source} onAddParts={onAddParts} onEdit={onEdit} />
@@ -106,7 +121,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
         expand={expandPartsCreate}
         setExpand={setExpandPartsCreateWrap}
       />
-    </>
+    </StopKeyboardContext.Provider>
   )
 }
 
@@ -326,6 +341,7 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
     })
   }, [partFocusIndex, textFocusIndex])
 
+  const { stopKeyboardEvents } = useContext(StopKeyboardContext)
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (stopKeyboardEvents) return
@@ -357,7 +373,7 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
 
       e.preventDefault()
     },
-    [termsFocused, lastFocusedElement, decrementText, incrementText]
+    [stopKeyboardEvents, termsFocused, lastFocusedElement, decrementText, incrementText]
   )
 
   useEffect(() => {
@@ -434,6 +450,7 @@ const TokensComponent: React.FC<{
     if (element) onTokenChange(element)
   }, [onTokenChange, tokenFocusIndex])
 
+  const { stopKeyboardEvents } = useContext(StopKeyboardContext)
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (stopKeyboardEvents || termsFocused || isAllPunct) return
@@ -457,7 +474,7 @@ const TokensComponent: React.FC<{
 
       e.preventDefault()
     },
-    [termsFocused, isAllPunct, tokens, tokenFocusIndex, onTokenSelect]
+    [stopKeyboardEvents, termsFocused, isAllPunct, tokens, tokenFocusIndex, onTokenSelect]
   )
 
   useEffect(() => {
@@ -537,10 +554,10 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
     termElement.focus()
   }, [terms, pageIndex, termFocusIndex]) // trigger from terms/page to do initial focus
 
+  const { stopKeyboardEvents, setStopKeyboardEvents } = useContext(StopKeyboardContext)
   useEffect(() => {
-    stopKeyboardEvents = createNoteData !== null
-  }, [createNoteData])
-
+    setStopKeyboardEvents(createNoteData !== null)
+  }, [createNoteData, setStopKeyboardEvents])
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (stopKeyboardEvents) return
@@ -577,7 +594,7 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
       }
       e.preventDefault()
     },
-    [termFocusIndex, pageIndex, pagesLen, terms, usage]
+    [stopKeyboardEvents, termFocusIndex, terms, pageIndex, pagesLen, usage]
   )
 
   useEffect(() => {
