@@ -1,7 +1,7 @@
 import { Term, Translation } from "../../services/TermsService.ts"
 import { unique } from "../../utils/ArrayUntil.ts"
 import { pageSize, totalPages } from "../../utils/HtmlUtil.ts"
-import { useKeyDownEffect } from "../../utils/JSXUtil.ts"
+import { useKeyDownEffect, useTimedState } from "../../utils/JSXUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { StopKeyboardContext } from "./SourceShow_SourceComponent.ts"
 import { useContext, useEffect, useMemo, useState } from "react"
@@ -12,10 +12,11 @@ export function useChangeTermWithKeyboard(
   terms: Term[],
   onEnter: (term: Term) => void,
   isEntered: () => boolean
-): readonly [number, number, number, number] {
+): readonly [number, number, number, number, boolean] {
   const [termFocusIndex, setTermFocusIndex] = useState<number>(0)
   const [pageIndex, setPageIndex] = useState<number>(0)
   const pagesLen = useMemo<number>(() => totalPages(terms, maxPageSize), [terms])
+  const [shake, setShake] = useTimedState(100)
 
   const { stopKeyboardEvents, setStopKeyboardEvents } = useContext(StopKeyboardContext)
 
@@ -23,6 +24,11 @@ export function useChangeTermWithKeyboard(
   useKeyDownEffect(
     (e: KeyboardEvent) => {
       if (stopKeyboardEvents) return
+      if (terms.length === 1) {
+        setShake(true)
+        e.preventDefault()
+        return
+      }
 
       switch (e.code) {
         case "ArrowUp":
@@ -56,9 +62,9 @@ export function useChangeTermWithKeyboard(
       }
       e.preventDefault()
     },
-    [stopKeyboardEvents, termFocusIndex, terms, pageIndex, pagesLen, onEnter]
+    [stopKeyboardEvents, termFocusIndex, terms, pageIndex, pagesLen, onEnter, setShake]
   )
-  return [termFocusIndex, pageIndex, pagesLen, maxPageSize] as const
+  return [termFocusIndex, pageIndex, pagesLen, maxPageSize, shake] as const
 }
 
 export function otherTranslationTexts(translations: Translation[]): string {

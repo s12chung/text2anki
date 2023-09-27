@@ -1,4 +1,4 @@
-import { DependencyList, ReactEventHandler, useCallback, useEffect } from "react"
+import { DependencyList, ReactEventHandler, useCallback, useEffect, useState } from "react"
 
 export function preventDefault(f: () => void): ReactEventHandler {
   return (e) => {
@@ -17,4 +17,19 @@ export function useKeyDownEffect(
     window.addEventListener("keydown", wrappedHandler)
     return () => window.removeEventListener("keydown", wrappedHandler)
   }, [wrappedHandler])
+}
+
+export const useTimedState = (duration: number) => {
+  const [value, setValue] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (!value) {
+      return () => {
+        // do nothing
+      }
+    }
+    const timer = setTimeout(() => setValue(false), duration)
+    return () => clearTimeout(timer)
+  }, [value, duration])
+  return [value, setValue] as const
 }

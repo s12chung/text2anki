@@ -337,7 +337,7 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
   }, [fetcher, token])
 
   const [createNoteData, setCreateNoteData] = useState<CreateNoteData | null>(null)
-  const [termFocusIndex, pageIndex, pagesLen, maxPageSize] = useChangeTermWithKeyboard(
+  const [termFocusIndex, pageIndex, pagesLen, maxPageSize, shake] = useChangeTermWithKeyboard(
     terms,
     (term: Term) => setCreateNoteData(createNoteDataFromSourceTerm(term, usage)),
     () => createNoteData !== null
@@ -352,7 +352,7 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
       {terms.length === 0 ? (
         <div>No terms found</div>
       ) : (
-        <div>
+        <div className={shake ? "shake" : ""}>
           {paginate(terms, maxPageSize, pageIndex).map((term, index) => (
             <div
               key={term.id}
