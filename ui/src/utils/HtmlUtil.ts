@@ -9,6 +9,13 @@ export function menuClass(active: boolean): string {
   )
 }
 
+export function scrollTo(element: HTMLElement) {
+  window.scrollTo({
+    top: element.getBoundingClientRect().top + window.scrollY - 150,
+    behavior: "smooth",
+  })
+}
+
 export function paginate<T>(array: T[], maxPageSize: number, pageIndex: number): T[] {
   if (array.length === 0) return array
   if (maxPageSize <= 0) throw new Error("Invalid pageSize, it must be a positive integer.")

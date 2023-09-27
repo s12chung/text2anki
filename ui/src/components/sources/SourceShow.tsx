@@ -1,11 +1,7 @@
 /* eslint-disable max-lines */
 import NotificationsContext from "../../contexts/NotificationsContext.ts"
 import { CommonLevel } from "../../services/Lang.ts"
-import {
-  CreateNoteData,
-  createNoteDataFromSourceTerm,
-  NoteUsage,
-} from "../../services/NotesService.ts"
+import { CreateNoteData, createNoteDataFromSourceTerm } from "../../services/NotesService.ts"
 import {
   PosPunctuation,
   Source,
@@ -16,26 +12,24 @@ import {
   tokenPreviousSpace,
 } from "../../services/SourcesService.ts"
 import { Term } from "../../services/TermsService.ts"
-import { unique } from "../../utils/ArrayUntil.ts"
-import { joinClasses, menuClass, pageSize, paginate, totalPages } from "../../utils/HtmlUtil.ts"
-import { decrement, increment } from "../../utils/NumberUtil.ts"
+import { joinClasses, menuClass, paginate, scrollTo } from "../../utils/HtmlUtil.ts"
+import { preventDefault } from "../../utils/JSXUtil.ts"
 import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitWithFallback from "../AwaitWithFallback.tsx"
 import DetailMenu from "../DetailMenu.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteCreate from "../notes/NoteCreate.tsx"
 import PrePartListDragAndDrop from "../pre_part_lists/PrePartListDragAndDrop.tsx"
+import { StopKeyboardContext, useStopKeyboard } from "./SourceShow_SourceComponent.ts"
+import {
+  getTermProps,
+  ITermsComponentProps,
+  useFocusTextWithKeyboard,
+} from "./SourceShow_SourceNavComponent.ts"
+import { otherTranslationTexts, useChangeTermWithKeyboard } from "./SourceShow_TermsComponent.ts"
+import { useFocusTokenWithKeyboard } from "./SourceShow_TokensComponent.ts"
 import { Menu } from "@headlessui/react"
-import React, {
-  ChangeEventHandler,
-  MouseEventHandler,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { Form, useFetcher } from "react-router-dom"
 
 export interface ISourceShowData {
@@ -53,63 +47,33 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
   )
 }
 
-interface StopKeyboard {
-  stopKeyboardEvents: boolean
-  setStopKeyboardEvents: (stop: boolean) => void
-}
-const StopKeyboardContext = React.createContext<StopKeyboard>({
-  stopKeyboardEvents: false,
-  setStopKeyboardEvents: () => {
-    // do nothing
-  },
-})
-
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
-  const [stopKeyboard, setStopKeyboard] = useState<boolean>(false)
-  const stopKeyboardContext = useMemo<StopKeyboard>(
-    () => ({ stopKeyboardEvents: stopKeyboard, setStopKeyboardEvents: setStopKeyboard }),
-    [stopKeyboard]
-  )
-
+  const stopKeyboardValue = useStopKeyboard()
   const [nav, setNav] = useState<boolean>(true)
   const [show, setShow] = useState<boolean>(true)
   const [expandPartsCreate, setExpandPartsCreate] = useState<boolean>(false)
 
-  const resetEdit = () => {
+  const resetAndSet = (set: (val: boolean) => void, val: boolean) => {
     setShow(true)
     setExpandPartsCreate(false)
-    setStopKeyboard(true)
-  }
-  const onAddParts: () => void = () => setExpandPartsCreateWrap(true)
-  const onEdit: () => void = () => {
-    resetEdit()
-    setShow(false)
-  }
-  const onCancel: () => void = () => {
-    setStopKeyboard(false)
-    setShow(true)
-  }
-  const setExpandPartsCreateWrap = (val: boolean) => {
-    resetEdit()
-    if (!val) setStopKeyboard(false)
-    setExpandPartsCreate(val)
-  }
-
-  const onReadKorean: MouseEventHandler<HTMLAnchorElement> = (e) => {
-    e.preventDefault()
-    setNav(!nav)
+    stopKeyboardValue.setStopKeyboardEvents(val)
+    set(val)
   }
 
   return (
-    <StopKeyboardContext.Provider value={stopKeyboardContext}>
+    <StopKeyboardContext.Provider value={stopKeyboardValue}>
       <div className="grid-std">
         {show ? (
-          <SourceShowHeader source={source} onAddParts={onAddParts} onEdit={onEdit} />
+          <SourceShowHeader
+            source={source}
+            onAddParts={() => resetAndSet(setExpandPartsCreate, true)}
+            onEdit={() => resetAndSet(setShow, false)}
+          />
         ) : (
-          <SourceEditHeader source={source} onCancel={onCancel} />
+          <SourceEditHeader source={source} onCancel={() => resetAndSet(setShow, false)} />
         )}
         <div className="flex justify-center mt-std mb-10">
-          <a href="#" className="btn" onClick={onReadKorean}>
+          <a href="#" className="btn" onClick={preventDefault(() => setNav(!nav))}>
             Read Korean
           </a>
         </div>
@@ -119,7 +83,7 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
       <PartsCreate
         sourceId={source.id}
         expand={expandPartsCreate}
-        setExpand={setExpandPartsCreateWrap}
+        setExpand={(val: boolean) => resetAndSet(setExpandPartsCreate, val)}
       />
     </StopKeyboardContext.Provider>
   )
@@ -130,14 +94,6 @@ const SourceShowHeader: React.FC<{
   onAddParts: () => void
   onEdit: () => void
 }> = ({ source, onAddParts, onEdit }) => {
-  const onAddPartsClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
-    e.preventDefault()
-    onAddParts()
-  }
-  const onEditClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
-    e.preventDefault()
-    onEdit()
-  }
   return (
     <Form
       action={`/sources/${source.id}`}
@@ -163,14 +119,14 @@ const SourceShowHeader: React.FC<{
         </Menu.Item>
         <Menu.Item>
           {({ active }) => (
-            <a href="#" className={menuClass(active)} onClick={onAddPartsClick}>
+            <a href="#" className={menuClass(active)} onClick={preventDefault(onAddParts)}>
               Add Parts
             </a>
           )}
         </Menu.Item>
         <Menu.Item>
           {({ active }) => (
-            <a href="#" className={menuClass(active)} onClick={onEditClick}>
+            <a href="#" className={menuClass(active)} onClick={preventDefault(onEdit)}>
               Edit
             </a>
           )}
@@ -193,11 +149,6 @@ const SourceEditHeader: React.FC<{
     onCancel()
   }, [fetcher, success, error, onCancel])
 
-  const onCancelClick: MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault()
-    onCancel()
-  }
-
   return (
     <fetcher.Form action={`/sources/${source.id}`} method="patch" className="space-y-std">
       <label>
@@ -210,7 +161,7 @@ const SourceEditHeader: React.FC<{
       </label>
 
       <div className="flex justify-end space-x-basic">
-        <button type="button" className="btn" onClick={onCancelClick}>
+        <button type="button" className="btn" onClick={preventDefault(onCancel)}>
           Cancel
         </button>
         <button type="submit" className="btn-primary">
@@ -221,7 +172,7 @@ const SourceEditHeader: React.FC<{
   )
 }
 
-const SourceWrapper: React.FC<{
+const SourcePartsWrapper: React.FC<{
   parts: SourcePart[]
   children: (tokenizedText: TokenizedText, partIndex: number, textIndex: number) => React.ReactNode
 }> = ({ parts, children }) => {
@@ -255,136 +206,38 @@ const translationClassBase = "text-lg"
 
 const SourceShowComponent: React.FC<{ source: Source }> = ({ source }) => {
   return (
-    <SourceWrapper parts={source.parts}>
+    <SourcePartsWrapper parts={source.parts}>
       {(tokenizedText) => (
         <>
           <div className={textClassBase}>{tokenizedText.text}</div>
           <div className={translationClassBase}>{tokenizedText.translation}</div>
         </>
       )}
-    </SourceWrapper>
+    </SourcePartsWrapper>
   )
 }
 
-function getTermsComponentProps(
-  source: Source,
-  tokenizedText: TokenizedText,
-  tokenFocusIndex: number
-): ITermsComponentProps {
-  return {
-    token: tokenizedText.tokens[tokenFocusIndex],
-    usage: {
-      sourceName: source.name,
-      sourceReference: source.reference,
-
-      usage: tokenizedText.text,
-      usageTranslation: tokenizedText.translation,
-    },
-  }
-}
-
-// eslint-disable-next-line max-lines-per-function
 const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
-  const [partFocusIndex, setPartFocusIndex] = useState<number>(0)
-  const [textFocusIndex, setTextFocusIndex] = useState<number>(0)
-  const [termsComponentProps, setTermsComponentProps] = useState<ITermsComponentProps | null>(null)
+  const [termProps, setTermProps] = useState<ITermsComponentProps | null>(null)
+
+  const termsFocused = termProps !== null
+  const [partFocusIndex, textFocusIndex, focusElement, setText] = useFocusTextWithKeyboard(
+    source.parts,
+    termsFocused,
+    () => setTermProps(null)
+  )
 
   const textRefs = useRef<(HTMLDivElement | null)[][]>([])
-  const [lastFocusedElement, setLastFocusedElement] = useState<HTMLDivElement | null>(null)
-  const focusElement = (element: HTMLDivElement) => {
-    setLastFocusedElement(element)
-    element.focus()
-  }
-
-  const currentTokenizedTexts = useMemo<TokenizedText[]>(
-    () => source.parts[partFocusIndex].tokenizedTexts,
-    [partFocusIndex, source.parts]
-  )
-  const termsFocused = termsComponentProps !== null
-  const onTokenChange = (tokenElement: HTMLDivElement) => focusElement(tokenElement)
-  const onTokenSelect = (tokenFocusIndex: number) => {
-    setTermsComponentProps(
-      getTermsComponentProps(source, currentTokenizedTexts[textFocusIndex], tokenFocusIndex)
-    )
-  }
-
-  const partsLength = source.parts.length
-  const decrementText = useCallback(() => {
-    const result = decrement(textFocusIndex, currentTokenizedTexts.length)
-    if (result !== currentTokenizedTexts.length - 1) {
-      setTextFocusIndex(result)
-      return
-    }
-    const partIndex = decrement(partFocusIndex, partsLength)
-    setPartFocusIndex(partIndex)
-    setTextFocusIndex(source.parts[partIndex].tokenizedTexts.length - 1)
-  }, [textFocusIndex, currentTokenizedTexts.length, partFocusIndex, partsLength, source.parts])
-  const incrementText = useCallback(() => {
-    const result = increment(textFocusIndex, currentTokenizedTexts.length)
-    if (result !== 0) {
-      setTextFocusIndex(result)
-      return
-    }
-    const partIndex = increment(partFocusIndex, partsLength)
-    setPartFocusIndex(partIndex)
-    setTextFocusIndex(0)
-  }, [textFocusIndex, currentTokenizedTexts.length, partFocusIndex, partsLength])
-
   useEffect(() => {
-    setTermsComponentProps(null)
+    setTermProps(null)
     const textElement = textRefs.current[partFocusIndex][textFocusIndex]
     if (!textElement) return
     focusElement(textElement)
-    window.scrollTo({
-      top: textElement.getBoundingClientRect().top + window.scrollY - 150,
-      behavior: "smooth",
-    })
-  }, [partFocusIndex, textFocusIndex])
-
-  const { stopKeyboardEvents } = useContext(StopKeyboardContext)
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (stopKeyboardEvents) return
-
-      switch (e.code) {
-        case "Escape":
-          if (!termsFocused) return
-          lastFocusedElement?.focus()
-          setTermsComponentProps(null)
-          break
-        default:
-      }
-
-      if (termsFocused) return
-
-      switch (e.code) {
-        case "ArrowUp":
-        case "KeyW":
-          decrementText()
-          break
-        case "ArrowDown":
-        case "KeyS":
-          incrementText()
-          break
-
-        default:
-          return
-      }
-
-      e.preventDefault()
-    },
-    [stopKeyboardEvents, termsFocused, lastFocusedElement, decrementText, incrementText]
-  )
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [handleKeyDown])
-
-  const textOnClick = (index: number) => setTextFocusIndex(index)
+    scrollTo(textElement)
+  }, [focusElement, partFocusIndex, textFocusIndex])
 
   return (
-    <SourceWrapper parts={source.parts}>
+    <SourcePartsWrapper parts={source.parts}>
       {(tokenizedText, partIndex, textIndex) => {
         const textFocused = partIndex === partFocusIndex && textIndex === textFocusIndex
         return (
@@ -395,7 +248,7 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
             }}
             tabIndex={-1}
             className={joinClasses(textFocused ? "py-4 bg-gray-std" : "", "group py-2")}
-            onClick={() => textOnClick(textIndex)}
+            onClick={preventDefault(() => setText(partIndex, textIndex))}
           >
             <div className={joinClasses(textClassBase, textFocused ? "text-light" : "")}>
               {tokenizedText.text}
@@ -404,85 +257,38 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
               <TokensComponent
                 tokens={tokenizedText.tokens}
                 termsFocused={termsFocused}
-                onTokenChange={onTokenChange}
-                onTokenSelect={onTokenSelect}
+                onTokenSelect={(tokenIndex) =>
+                  setTermProps(getTermProps(source, partFocusIndex, textFocusIndex, tokenIndex))
+                }
+                onTokenChange={(tokenElement) => focusElement(tokenElement)}
               />
             ) : null}
             <div className={textFocused ? "text-2xl" : translationClassBase}>
               {tokenizedText.translation}
             </div>
             {textFocused && termsFocused ? (
-              <TermsComponent token={termsComponentProps.token} usage={termsComponentProps.usage} />
+              <TermsComponent token={termProps.token} usage={termProps.usage} />
             ) : null}
           </div>
         )
       }}
-    </SourceWrapper>
+    </SourcePartsWrapper>
   )
-}
-
-function skipPunct(
-  tokens: Token[],
-  index: number,
-  change: (index: number, length: number) => number
-): number {
-  index = change(index, tokens.length)
-  if (tokens[index].partOfSpeech !== PosPunctuation) return index
-  return skipPunct(tokens, index, change)
 }
 
 const TokensComponent: React.FC<{
   tokens: Token[]
   termsFocused: boolean
-  onTokenChange: (tokenElement: HTMLDivElement) => void
   onTokenSelect: (tokenFocusIndex: number) => void
-}> = ({ tokens, termsFocused, onTokenChange, onTokenSelect }) => {
-  const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(0)
+  onTokenChange: (tokenElement: HTMLDivElement) => void
+}> = ({ tokens, termsFocused, onTokenSelect, onTokenChange }) => {
+  const [tokenFocusIndex] = useFocusTokenWithKeyboard(tokens, termsFocused, onTokenSelect)
+
   const tokenRefs = useRef<(HTMLDivElement | null)[]>([])
-
-  const isAllPunct = useMemo<boolean>(
-    () => tokens.every((token) => token.partOfSpeech === PosPunctuation),
-    [tokens]
-  )
-
   useEffect(() => {
     const element = tokenRefs.current[tokenFocusIndex]
     if (element) onTokenChange(element)
   }, [onTokenChange, tokenFocusIndex])
-
-  const { stopKeyboardEvents } = useContext(StopKeyboardContext)
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (stopKeyboardEvents || termsFocused || isAllPunct) return
-
-      switch (e.code) {
-        case "ArrowLeft":
-        case "KeyA":
-          setTokenFocusIndex(skipPunct(tokens, tokenFocusIndex, decrement))
-          break
-        case "ArrowRight":
-        case "KeyD":
-          setTokenFocusIndex(skipPunct(tokens, tokenFocusIndex, increment))
-          break
-        case "Enter":
-        case "Space":
-          onTokenSelect(tokenFocusIndex)
-          break
-        default:
-          return
-      }
-
-      e.preventDefault()
-    },
-    [stopKeyboardEvents, termsFocused, isAllPunct, tokens, tokenFocusIndex, onTokenSelect]
-  )
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [handleKeyDown])
-
-  const tokenOnClick = (index: number) => setTokenFocusIndex(index)
 
   return (
     <div className="ko-sans text-4xl justify-center mb-2 child:py-2 flex">
@@ -506,8 +312,6 @@ const TokensComponent: React.FC<{
               )}
               /* eslint-disable-next-line no-undefined */
               tabIndex={isPunct ? undefined : -1}
-              /* eslint-disable-next-line no-undefined */
-              onClick={isPunct ? undefined : () => tokenOnClick(index)}
             >
               <div>{token.text}</div>
             </div>
@@ -518,97 +322,33 @@ const TokensComponent: React.FC<{
   )
 }
 
-interface ITermsComponentProps {
-  token: Token
-  usage: NoteUsage
-}
-
 interface ITermsShowData {
   terms: Term[]
 }
 
-const maxPageSize = 5
+const termsComponentClass = "grid-std text-left text-lg py-2 space-y-2"
 
-// eslint-disable-next-line max-lines-per-function
 const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
   const fetcher = useFetcher<ITermsShowData>()
   const terms = useMemo<Term[]>(() => (fetcher.data ? fetcher.data.terms : []), [fetcher.data])
-
-  const [termFocusIndex, setTermFocusIndex] = useState<number>(0)
-  const termRefs = useRef<(HTMLDivElement | null)[]>([])
-
-  const [pageIndex, setPageIndex] = useState<number>(0)
-  const pagesLen = useMemo<number>(() => totalPages(terms, maxPageSize), [terms])
-
-  const [createNoteData, setCreateNoteData] = useState<CreateNoteData | null>(null)
-  const onCloseCreateNote = () => setCreateNoteData(null)
-
   useEffect(() => {
     if (fetcher.state !== "idle" || fetcher.data) return
     fetcher.load(`/terms/search?${queryString({ query: token.text, pos: token.partOfSpeech })}`)
   }, [fetcher, token])
 
-  useEffect(() => {
-    const termElement = termRefs.current[termFocusIndex]
-    if (!termElement) return
-    termElement.focus()
-  }, [terms, pageIndex, termFocusIndex]) // trigger from terms/page to do initial focus
-
-  const { stopKeyboardEvents, setStopKeyboardEvents } = useContext(StopKeyboardContext)
-  useEffect(() => {
-    setStopKeyboardEvents(createNoteData !== null)
-  }, [createNoteData, setStopKeyboardEvents])
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (stopKeyboardEvents) return
-
-      switch (e.code) {
-        case "ArrowUp":
-        case "KeyW":
-          setTermFocusIndex(
-            decrement(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex))
-          )
-          break
-        case "ArrowDown":
-        case "KeyS":
-          setTermFocusIndex(
-            increment(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex))
-          )
-          break
-        case "ArrowLeft":
-        case "KeyA":
-          setPageIndex(decrement(pageIndex, pagesLen))
-          setTermFocusIndex(0)
-          break
-        case "ArrowRight":
-        case "KeyD":
-          setPageIndex(increment(pageIndex, pagesLen))
-          setTermFocusIndex(0)
-          break
-        case "Enter":
-        case "Space":
-          setCreateNoteData(createNoteDataFromSourceTerm(terms[termFocusIndex], usage))
-          break
-        default:
-          return
-      }
-      e.preventDefault()
-    },
-    [stopKeyboardEvents, termFocusIndex, terms, pageIndex, pagesLen, usage]
+  const [createNoteData, setCreateNoteData] = useState<CreateNoteData | null>(null)
+  const [termFocusIndex, pageIndex, pagesLen, maxPageSize] = useChangeTermWithKeyboard(
+    terms,
+    (term: Term) => setCreateNoteData(createNoteDataFromSourceTerm(term, usage)),
+    () => createNoteData !== null
   )
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [handleKeyDown])
+  const termRefs = useRef<(HTMLDivElement | null)[]>([])
+  useEffect(() => termRefs.current[termFocusIndex]?.focus(), [terms, pageIndex, termFocusIndex])
 
-  const topLevelClass = "grid-std text-left text-lg py-2 space-y-2"
-  if (!fetcher.data) {
-    return <div className={topLevelClass}>Loading...</div>
-  }
-
+  if (!fetcher.data) return <div className={termsComponentClass}>Loading...</div>
   return (
-    <div className={topLevelClass}>
+    <div className={termsComponentClass}>
       {terms.length === 0 ? (
         <div>No terms found</div>
       ) : (
@@ -629,11 +369,7 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
                 : {term.translations[0].text}&nbsp;&mdash;&nbsp;
                 {term.translations[0].explanation}
               </div>
-              <div className="ml-std2">
-                {unique(term.translations.map((translation) => translation.text))
-                  .slice(1, 6)
-                  .join("; ")}
-              </div>
+              <div className="ml-std2">{otherTranslationTexts(term.translations)}</div>
             </div>
           ))}
           <div className="text-center space-x-half">
@@ -650,12 +386,18 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
       )}
 
       {createNoteData !== null && (
-        <SlideOver.Dialog show onClose={onCloseCreateNote}>
-          <SlideOver.Header title="Create Note" onClose={onCloseCreateNote} />
-          <NoteCreate data={createNoteData} onClose={onCloseCreateNote} />
-        </SlideOver.Dialog>
+        <NoteDialog data={createNoteData} onClose={() => setCreateNoteData(null)} />
       )}
     </div>
+  )
+}
+
+const NoteDialog: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ data, onClose }) => {
+  return (
+    <SlideOver.Dialog show onClose={onClose}>
+      <SlideOver.Header title="Create Note" onClose={onClose} />
+      <NoteCreate data={data} onClose={onClose} />
+    </SlideOver.Dialog>
   )
 }
 
@@ -664,22 +406,13 @@ const PartsCreate: React.FC<{
   expand: boolean
   setExpand: (expand: boolean) => void
 }> = ({ sourceId, expand, setExpand }) => {
-  const onCancel = () => setExpand(false)
-  const onExpand: MouseEventHandler<HTMLButtonElement> = useCallback(
-    (e) => {
-      e.preventDefault()
-      setExpand(true)
-    },
-    [setExpand]
-  )
-
   return (
     <div className="grid-std pt-std pb-std2">
       {expand ? (
-        <PartsCreateForm sourceId={sourceId} onCancel={onCancel} />
+        <PartsCreateForm sourceId={sourceId} onCancel={() => setExpand(false)} />
       ) : (
         <div className="flex justify-center">
-          <button type="button" className="btn" onClick={onExpand}>
+          <button type="button" className="btn" onClick={preventDefault(() => setExpand(true))}>
             Create Part
           </button>
         </div>
@@ -693,15 +426,8 @@ const PartsCreateForm: React.FC<{ sourceId: number; onCancel: () => void }> = ({
   onCancel,
 }) => {
   const [text, setText] = useState<string>("")
-  const handleText: ChangeEventHandler<HTMLTextAreaElement> = (e) => setText(e.target.value)
-
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   useEffect(() => textAreaRef.current?.focus(), [textAreaRef])
-
-  const onCancelClick: MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault()
-    onCancel()
-  }
 
   return (
     <PrePartListDragAndDrop sourceId={sourceId} minHeight="h-third">
@@ -712,10 +438,10 @@ const PartsCreateForm: React.FC<{ sourceId: number; onCancel: () => void }> = ({
           value={text}
           placeholder="You may also drag and drop here."
           className="h-third"
-          onChange={handleText}
+          onChange={(e) => setText(e.target.value)}
         />
         <div className="mt-half flex justify-end space-x-basic">
-          <button type="button" className="btn" onClick={onCancelClick}>
+          <button type="button" className="btn" onClick={preventDefault(onCancel)}>
             Cancel
           </button>
           <button type="submit" className="btn-primary" disabled={!text}>
