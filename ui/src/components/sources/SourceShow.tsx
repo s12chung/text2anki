@@ -136,11 +136,15 @@ const SourceShowHeader: React.FC<{
   )
 }
 
+interface ISourceResponse {
+  source: Source
+}
+
 const SourceEditHeader: React.FC<{
   source: Source
   onCancel: () => void
 }> = ({ source, onCancel }) => {
-  const fetcher = useFetcher<Source>()
+  const fetcher = useFetcher<ISourceResponse>()
   const { error, success } = useContext(NotificationsContext)
 
   useEffect(() => {
@@ -429,9 +433,18 @@ const PartsCreateForm: React.FC<{ sourceId: number; onCancel: () => void }> = ({
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   useEffect(() => textAreaRef.current?.focus(), [textAreaRef])
 
+  const fetcher = useFetcher<ISourceResponse>()
+  const { error, success } = useContext(NotificationsContext)
+
+  useEffect(() => {
+    if (!fetcher.data) return
+    success(`Created Part`)
+    onCancel()
+  }, [fetcher, success, error, onCancel])
+
   return (
     <PrePartListDragAndDrop sourceId={sourceId} minHeight="h-third">
-      <Form action={`/sources/${sourceId}/parts`} method="post">
+      <fetcher.Form action={`/sources/${sourceId}/parts`} method="post">
         <textarea
           ref={textAreaRef}
           name="text"
@@ -448,7 +461,7 @@ const PartsCreateForm: React.FC<{ sourceId: number; onCancel: () => void }> = ({
             Add Part
           </button>
         </div>
-      </Form>
+      </fetcher.Form>
     </PrePartListDragAndDrop>
   )
 }

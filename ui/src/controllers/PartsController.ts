@@ -13,13 +13,12 @@ import { ActionFunction, Params, redirect } from "react-router-dom"
 export const create: ActionFunction = async ({ request, params }) => {
   const sourceId = getSourceId(params)
   const data = formData(await request.formData(), PartDataEmpty)
+
   const resp = await checkAndCreatePrePart(data, sourceId)
   if (resp) return resp
-  await partsService.create(sourceId, data)
-  // eslint-disable-next-line no-warning-comments
-  // TODO: handle proper loading of sources
-  window.location.reload()
-  return redirect(`/sources/${sourceId}`)
+
+  const source = await partsService.create(sourceId, data)
+  return { source }
 }
 
 export const multi: ActionFunction = async ({ request, params }) => {

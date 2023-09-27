@@ -116,13 +116,13 @@ async function uploadFiles(files: File[]): Promise<string> {
   ).then(() => signedResponse.id)
 }
 
-interface ISourceCreateData {
+interface ISourceCreateResponse {
   source: Source
 }
 
 const PrePartListDrop: React.FC<{ sourceId: number; files: File[] }> = ({ sourceId, files }) => {
   const navigate = useNavigate()
-  const fetcher = useFetcher<ISourceCreateData>()
+  const fetcher = useFetcher<ISourceCreateResponse>()
 
   const didRun = useRef(false)
   const [errorMessage, setErrorMessage] = useState<string>("")
