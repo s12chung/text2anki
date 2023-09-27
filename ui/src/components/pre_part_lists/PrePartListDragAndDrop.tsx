@@ -22,7 +22,7 @@ const textFileExts: Record<string, boolean> = {
   "text/markdown": true,
 }
 
-function useDropFiles(onDrop: () => void): [File[], (e: React.DragEvent) => void] {
+function useDropFiles(onDrop: () => void): readonly [File[], (e: React.DragEvent) => void] {
   const [files, setFiles] = useState<File[]>([])
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -37,7 +37,7 @@ function useDropFiles(onDrop: () => void): [File[], (e: React.DragEvent) => void
     },
     [onDrop]
   )
-  return [files, handleDrop]
+  return [files, handleDrop] as const
 }
 
 const PrePartListDragAndDrop: React.FC<{

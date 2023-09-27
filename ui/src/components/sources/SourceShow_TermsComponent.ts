@@ -12,7 +12,7 @@ export function useChangeTermWithKeyboard(
   terms: Term[],
   onEnter: (term: Term) => void,
   isEntered: () => boolean
-): [number, number, number, number] {
+): readonly [number, number, number, number] {
   const [termFocusIndex, setTermFocusIndex] = useState<number>(0)
   const [pageIndex, setPageIndex] = useState<number>(0)
   const pagesLen = useMemo<number>(() => totalPages(terms, maxPageSize), [terms])
@@ -58,7 +58,7 @@ export function useChangeTermWithKeyboard(
     },
     [stopKeyboardEvents, termFocusIndex, terms, pageIndex, pagesLen, onEnter]
   )
-  return [termFocusIndex, pageIndex, pagesLen, maxPageSize]
+  return [termFocusIndex, pageIndex, pagesLen, maxPageSize] as const
 }
 
 export function otherTranslationTexts(translations: Translation[]): string {

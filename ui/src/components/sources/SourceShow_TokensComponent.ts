@@ -8,7 +8,7 @@ export function useFocusTokenWithKeyboard(
   tokens: Token[],
   termsFocused: boolean,
   onTokenSelect: (tokenFocusIndex: number) => void
-): [number] {
+): readonly [number] {
   const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(0)
   const isAllPunct = useMemo<boolean>(
     () => tokens.every((token) => token.partOfSpeech === PosPunctuation),
@@ -41,7 +41,7 @@ export function useFocusTokenWithKeyboard(
     },
     [stopKeyboardEvents, termsFocused, isAllPunct, tokens, tokenFocusIndex, onTokenSelect]
   )
-  return [tokenFocusIndex]
+  return [tokenFocusIndex] as const
 }
 
 function skipPunct(

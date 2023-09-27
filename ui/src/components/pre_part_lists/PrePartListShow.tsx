@@ -36,7 +36,7 @@ function setImageToClipboard(preParts: PrePart[], index: number) {
   })
 }
 
-function useSetPrePartWithKeyboard(preParts: PrePart[]): [number, () => void, () => void] {
+function useSetPrePartWithKeyboard(preParts: PrePart[]): readonly [number, () => void, () => void] {
   const [currentIndex, setCurrentIndex] = useState<number>(0)
 
   const setCurrentIndexWithClipboard = useCallback(
@@ -72,7 +72,7 @@ function useSetPrePartWithKeyboard(preParts: PrePart[]): [number, () => void, ()
     },
     [next, prev]
   )
-  return [currentIndex, prev, next]
+  return [currentIndex, prev, next] as const
 }
 
 const PrePartsForm: React.FC<{ sourceId: number; prePartList: PrePartList }> = ({

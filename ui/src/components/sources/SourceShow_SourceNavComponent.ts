@@ -9,7 +9,7 @@ export function useFocusTextWithKeyboard(
   parts: SourcePart[],
   entered: boolean,
   onEscape: () => void
-): [
+): readonly [
   number,
   number,
   (element: HTMLElement) => void,
@@ -53,7 +53,7 @@ export function useFocusTextWithKeyboard(
     },
     [stopKeyboardEvents, entered, focusLastElement, onEscape, decrementText, incrementText]
   )
-  return [partFocusIndex, textFocusIndex, focusElement, setText]
+  return [partFocusIndex, textFocusIndex, focusElement, setText] as const
 }
 
 export interface ITermsComponentProps {
@@ -81,7 +81,7 @@ export function getTermProps(
   }
 }
 
-function useFocusElement() {
+function useFocusElement(): readonly [(element: HTMLElement) => void, () => void] {
   const [lastFocusedElement, setLastFocusedElement] = useState<HTMLElement | null>(null)
   const focusElement = useCallback((element: HTMLElement) => {
     setLastFocusedElement(element)
@@ -93,7 +93,7 @@ function useFocusElement() {
 
 function useChangeFocus(
   parts: SourcePart[]
-): [
+): readonly [
   number,
   number,
   () => void,
@@ -134,5 +134,5 @@ function useChangeFocus(
     setTextFocusIndex(textFocusIndex)
   }, [])
 
-  return [partFocusIndex, textFocusIndex, decrementText, incrementText, setText]
+  return [partFocusIndex, textFocusIndex, decrementText, incrementText, setText] as const
 }
