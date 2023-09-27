@@ -1,6 +1,7 @@
 import { printAndAlertError } from "../../services/Format.ts"
-import { PrePartList } from "../../services/PrePartListsService.ts"
+import { PrePart, PrePartList } from "../../services/PrePartListsService.ts"
 import { imageToClipboard } from "../../utils/ClipboardUtils.ts"
+import { preventDefault, useKeyDownEffect } from "../../utils/JSXUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import AwaitWithFallback from "../AwaitWithFallback.tsx"
 import Header from "../Header.tsx"
@@ -27,59 +28,35 @@ const PrePartListShow: React.FC<IPrePartListShowProps> = ({ data }) => {
   )
 }
 
-// eslint-disable-next-line max-lines-per-function
-const PrePartsForm: React.FC<{ sourceId: number; prePartList: PrePartList }> = ({
-  sourceId,
-  prePartList,
-}) => {
-  const formAction = sourceId ? `/sources/${sourceId}/parts/multi` : "/sources"
-  const action = sourceId ? "Append Parts" : "Create Source from Parts"
-  const { preParts } = prePartList
-  const [currentIndex, setCurrentIndex] = useState<number>(0)
-  const [partTextsMap, setPartTextsMap] = useState<Record<number, string>>({})
+function setImageToClipboard(preParts: PrePart[], index: number) {
+  const { imageUrl } = preParts[index]
+  if (!imageUrl) return
+  imageToClipboard(imageUrl).catch((error) => {
+    printAndAlertError(error)
+  })
+}
 
-  const setImageToClipboard = useCallback(
-    (index: number) => {
-      const { imageUrl } = preParts[index]
-      if (!imageUrl) return
-      imageToClipboard(imageUrl).catch((error) => {
-        printAndAlertError(error)
-      })
-    },
-    [preParts]
-  )
+function useSetPrePartWithKeyboard(preParts: PrePart[]): [number, () => void, () => void] {
+  const [currentIndex, setCurrentIndex] = useState<number>(0)
+
   const setCurrentIndexWithClipboard = useCallback(
     (changeFunction: (index: number, length: number) => number) => {
       const index = changeFunction(currentIndex, preParts.length)
       setCurrentIndex(index)
-      setImageToClipboard(index)
+      setImageToClipboard(preParts, index)
     },
-    [currentIndex, preParts.length, setImageToClipboard]
+    [currentIndex, preParts]
+  )
+
+  const prev = useCallback(
+    () => setCurrentIndexWithClipboard(decrement),
+    [setCurrentIndexWithClipboard]
   )
   const next = useCallback(
     () => setCurrentIndexWithClipboard(increment),
     [setCurrentIndexWithClipboard]
   )
-  const prev = useCallback(
-    () => setCurrentIndexWithClipboard(decrement),
-    [setCurrentIndexWithClipboard]
-  )
-  const setPartTextsAt = (index: number, value: string) => {
-    const c = { ...partTextsMap }
-    c[index] = value
-    setPartTextsMap(c)
-  }
-
-  const textAreaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
-  useEffect(() => {
-    setImageToClipboard(currentIndex)
-
-    const textArea = textAreaRefs.current[currentIndex]
-    if (!textArea) return
-    textArea.focus()
-  }, [currentIndex, setImageToClipboard])
-
-  const handleKeyDown = useCallback(
+  useKeyDownEffect(
     (e: KeyboardEvent) => {
       switch (e.code) {
         case "F1":
@@ -95,11 +72,31 @@ const PrePartsForm: React.FC<{ sourceId: number; prePartList: PrePartList }> = (
     },
     [next, prev]
   )
+  return [currentIndex, prev, next]
+}
 
+const PrePartsForm: React.FC<{ sourceId: number; prePartList: PrePartList }> = ({
+  sourceId,
+  prePartList,
+}) => {
+  const formAction = sourceId ? `/sources/${sourceId}/parts/multi` : "/sources"
+  const action = sourceId ? "Append Parts" : "Create Source from Parts"
+
+  const { preParts } = prePartList
+  const [currentIndex, prev, next] = useSetPrePartWithKeyboard(preParts)
+
+  const [partTextsMap, setPartTextsMap] = useState<Record<number, string>>({})
+  const setPartTextsAt = (index: number, value: string) => {
+    const dupPartTextsMap = { ...partTextsMap }
+    dupPartTextsMap[index] = value
+    setPartTextsMap(dupPartTextsMap)
+  }
+
+  const textAreaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [handleKeyDown])
+    setImageToClipboard(preParts, currentIndex)
+    textAreaRefs.current[currentIndex]?.focus()
+  }, [currentIndex, preParts])
 
   return (
     <SlideOver.Dialog
@@ -165,10 +162,7 @@ const ImageNav: React.FC<{ char: string; changeF: () => void }> = ({ char, chang
     <a
       href="#"
       className="flex flex-1 bg-black justify-center items-center opacity-0 hover:opacity-50 transition ease-out duration-300"
-      onClick={(e) => {
-        e.preventDefault()
-        changeF()
-      }}
+      onClick={preventDefault(changeF)}
     >
       <span className="text-white text-8xl font-bold">{char}</span>
     </a>

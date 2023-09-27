@@ -3,17 +3,11 @@ import { printError } from "../../services/Format.ts"
 import { prePartListService, PrePartSignData } from "../../services/PrePartListsService.ts"
 import { Source } from "../../services/SourcesService.ts"
 import { joinClasses } from "../../utils/HtmlUtil.ts"
+import { preventDefault, useKeyDownEffect } from "../../utils/JSXUtil.ts"
 import { headers, queryString } from "../../utils/RequestUtil.ts"
 import { removeExtension } from "../../utils/StringUtil.ts"
 import { XMarkIcon } from "@heroicons/react/24/outline"
-import React, {
-  DragEventHandler,
-  MouseEventHandler,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { useFetcher, useNavigate } from "react-router-dom"
 import { DotLoader } from "react-spinners"
 
@@ -28,20 +22,35 @@ const textFileExts: Record<string, boolean> = {
   "text/markdown": true,
 }
 
+function useDropFiles(onDrop: () => void): [File[], (e: React.DragEvent) => void] {
+  const [files, setFiles] = useState<File[]>([])
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      // eslint-disable-next-line prefer-destructuring
+      const files = e.dataTransfer.files
+      if (files.length === 0) {
+        return
+      }
+      setFiles(Array.from(files).sort((a: File, b: File) => a.name.localeCompare(b.name)))
+      onDrop()
+    },
+    [onDrop]
+  )
+  return [files, handleDrop]
+}
+
 const PrePartListDragAndDrop: React.FC<{
   sourceId?: number
   minHeight: string
   children: React.ReactNode
 }> = ({ sourceId, minHeight, children }) => {
-  const [files, setFiles] = useState<File[]>([])
   const [dragState, setDragState] = useState<DragState>(DragState.None)
 
+  const [files, handleDrop] = useDropFiles(() => setDragState(DragState.Dropped))
   const onClose = useCallback(() => setDragState(DragState.None), [])
-  const onCloseMouse: MouseEventHandler<HTMLAnchorElement> = (e) => {
-    e.preventDefault()
-    onClose()
-  }
-  const handleKeyDown = useCallback(
+
+  useKeyDownEffect(
     (e: KeyboardEvent) => {
       switch (e.code) {
         case "Escape":
@@ -55,45 +64,18 @@ const PrePartListDragAndDrop: React.FC<{
     [onClose]
   )
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [handleKeyDown])
-
-  const handleDragOver: DragEventHandler<HTMLDivElement> = (e) => {
-    e.preventDefault()
-    setDragState(DragState.Dragging)
-  }
-
-  const handleDragLeave: DragEventHandler<HTMLDivElement> = (e) => {
-    e.preventDefault()
-    setDragState(DragState.None)
-  }
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    // eslint-disable-next-line prefer-destructuring
-    const files = e.dataTransfer.files
-    if (files.length === 0) {
-      return
-    }
-
-    setFiles(Array.from(files).sort((a: File, b: File) => a.name.localeCompare(b.name)))
-    setDragState(DragState.Dropped)
-  }
-
   return (
     <div
       className={minHeight}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
+      onDragOver={preventDefault(() => setDragState(DragState.Dragging))}
+      onDragLeave={preventDefault(() => setDragState(DragState.None))}
       onDrop={handleDrop}
     >
       {dragState === DragState.None ? (
         children
       ) : (
         <div className={joinClasses(minHeight, "flex relative")}>
-          <a href="#" className="absolute top-5 right-5 a-btn" onClick={onCloseMouse}>
+          <a href="#" className="absolute top-5 right-5 a-btn" onClick={preventDefault(onClose)}>
             <XMarkIcon className="h-10 w-10" />
           </a>
           {dragState === DragState.Dragging ? (
