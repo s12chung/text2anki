@@ -50,11 +50,11 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   const stopKeyboardValue = useStopKeyboard()
   const [nav, setNav] = useState<boolean>(true)
-  const [show, setShow] = useState<boolean>(true)
+  const [edit, setEdit] = useState<boolean>(false)
   const [expandPartsCreate, setExpandPartsCreate] = useState<boolean>(false)
 
   const resetAndSet = (set: (val: boolean) => void, val: boolean) => {
-    setShow(true)
+    setEdit(false)
     setExpandPartsCreate(false)
     stopKeyboardValue.setStopKeyboardEvents(val)
     set(val)
@@ -63,14 +63,14 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
   return (
     <StopKeyboardContext.Provider value={stopKeyboardValue}>
       <div className="grid-std">
-        {show ? (
+        {edit ? (
+          <SourceEditHeader source={source} onCancel={() => resetAndSet(setEdit, false)} />
+        ) : (
           <SourceShowHeader
             source={source}
             onAddParts={() => resetAndSet(setExpandPartsCreate, true)}
-            onEdit={() => resetAndSet(setShow, false)}
+            onEdit={() => resetAndSet(setEdit, true)}
           />
-        ) : (
-          <SourceEditHeader source={source} onCancel={() => resetAndSet(setShow, false)} />
         )}
         <div className="flex justify-center mt-std mb-10">
           <a href="#" className="btn" onClick={preventDefault(() => setNav(!nav))}>
