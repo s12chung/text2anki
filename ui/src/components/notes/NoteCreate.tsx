@@ -1,6 +1,6 @@
 import NotificationsContext from "../../contexts/NotificationsContext.ts"
 import { CommonLevel } from "../../services/Lang.ts"
-import { CreateNoteData, Note } from "../../services/NotesService.ts"
+import { CreateNoteData, CreateNoteDataEmpty, Note } from "../../services/NotesService.ts"
 import { filterKeys } from "../../utils/ArrayUntil.ts"
 import { camelToTitle } from "../../utils/StringUtil.ts"
 import React, { useContext, useEffect, useRef, useState } from "react"
@@ -10,22 +10,19 @@ interface INoteFormData {
   note: Promise<Note>
 }
 
+const termKeys: (keyof CreateNoteData)[] = ["text", "partOfSpeech", "translation", "explanation"]
+const usageKeys: (keyof CreateNoteData)[] = ["usage", "usageTranslation"]
+const commonLevelKey: keyof CreateNoteData = "commonLevel"
+const otherKeys = filterKeys(
+  Object.keys(CreateNoteDataEmpty) as (keyof CreateNoteData)[],
+  usageKeys,
+  termKeys,
+  [commonLevelKey]
+)
+
 const NoteCreate: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ data, onClose }) => {
   const fetcher = useFetcher<INoteFormData>()
-
-  const termKeys: (keyof CreateNoteData)[] = ["text", "partOfSpeech", "translation", "explanation"]
-  const usageKeys: (keyof CreateNoteData)[] = ["usage", "usageTranslation"]
-  const commonLevelKey: keyof CreateNoteData = "commonLevel"
-  const otherKeys = filterKeys(Object.keys(data) as (keyof CreateNoteData)[], usageKeys, termKeys, [
-    commonLevelKey,
-  ])
-
   const { error, success } = useContext(NotificationsContext)
-  const [submitted, setSubmitted] = useState<boolean>(false)
-
-  const submitButtonRef = useRef<HTMLButtonElement>(null)
-  useEffect(() => submitButtonRef.current?.focus(), [])
-
   useEffect(() => {
     if (!fetcher.data) return
     fetcher.data.note
@@ -33,6 +30,10 @@ const NoteCreate: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ d
       .catch(() => error("Failed to create Note"))
       .finally(() => onClose())
   }, [fetcher, onClose, success, error])
+
+  const [submitted, setSubmitted] = useState<boolean>(false)
+  const submitButtonRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => submitButtonRef.current?.focus(), [])
 
   return (
     <fetcher.Form

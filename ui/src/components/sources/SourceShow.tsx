@@ -145,13 +145,12 @@ const SourceEditHeader: React.FC<{
   onCancel: () => void
 }> = ({ source, onCancel }) => {
   const fetcher = useFetcher<ISourceResponse>()
-  const { error, success } = useContext(NotificationsContext)
-
+  const { success } = useContext(NotificationsContext)
   useEffect(() => {
     if (!fetcher.data) return
     success(`Updated Source`)
     onCancel()
-  }, [fetcher, success, error, onCancel])
+  }, [fetcher, success, onCancel])
 
   return (
     <fetcher.Form action={`/sources/${source.id}`} method="patch" className="space-y-std">
@@ -434,13 +433,12 @@ const PartsCreateForm: React.FC<{ sourceId: number; onCancel: () => void }> = ({
   useEffect(() => textAreaRef.current?.focus(), [textAreaRef])
 
   const fetcher = useFetcher<ISourceResponse>()
-  const { error, success } = useContext(NotificationsContext)
-
+  const { success } = useContext(NotificationsContext)
   useEffect(() => {
     if (!fetcher.data) return
     success(`Created Part`)
     onCancel()
-  }, [fetcher, success, error, onCancel])
+  }, [fetcher, success, onCancel])
 
   return (
     <PrePartListDragAndDrop sourceId={sourceId} minHeight="h-third">

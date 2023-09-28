@@ -23,9 +23,9 @@ export interface CreateNoteData extends NoteUsage {
   text: string
   partOfSpeech: string
   translation: string
-
-  commonLevel: CommonLevel
   explanation: string
+  commonLevel: CommonLevel
+
   dictionarySource: string
   notes: string
 }
