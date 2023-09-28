@@ -124,6 +124,18 @@ class SourcesService extends ApplicationService {
 
 export const sourcesService = new SourcesService()
 
+export function partString(part: SourcePart): string {
+  return part.tokenizedTexts
+    .map((tokenizedText): string => {
+      const lines = []
+      if (tokenizedText.previousBreak) lines.push("")
+      lines.push(tokenizedText.text)
+      if (tokenizedText.translation !== "") lines.push(tokenizedText.translation)
+      return lines.join("\n")
+    })
+    .join("\n")
+}
+
 export function tokenPreviousSpace(tokens: Token[], index: number): boolean {
   if (index === 0) return false
   const currentToken = tokens[index]

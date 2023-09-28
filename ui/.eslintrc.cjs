@@ -54,7 +54,7 @@ module.exports = {
     "react/jsx-no-target-blank": "off",
     "react/jsx-sort-props": [ "error", { callbacksLast: true, shorthandFirst: true, noSortAlphabetically: true, reservedFirst: true, }],
     "react/no-multi-comp": "off",
-    "react-hooks/exhaustive-deps": ["error", { additionalHooks: "(useKeyDownEffect)" }],
+    "react-hooks/exhaustive-deps": ["error", { additionalHooks: "(useKeyDownEffect|useResetter)" }],
     "react-refresh/only-export-components": "error",
     "sort-imports": "off",
     "sort-keys": "off",

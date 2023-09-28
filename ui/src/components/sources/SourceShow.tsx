@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import NotificationsContext from "../../contexts/NotificationsContext.ts"
 import { CommonLevel } from "../../services/Lang.ts"
 import { CreateNoteData, createNoteDataFromSourceTerm } from "../../services/NotesService.ts"
 import {
@@ -12,14 +11,12 @@ import {
   tokenPreviousSpace,
 } from "../../services/SourcesService.ts"
 import { Term } from "../../services/TermsService.ts"
-import { joinClasses, menuClass, paginate, scrollTo } from "../../utils/HtmlUtil.ts"
-import { preventDefault } from "../../utils/JSXUtil.ts"
+import { joinClasses, paginate, scrollTo } from "../../utils/HtmlUtil.ts"
+import { preventDefault, SafeSet, useSafeSet } from "../../utils/JSXUtil.ts"
 import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitWithFallback from "../AwaitWithFallback.tsx"
-import DetailMenu from "../DetailMenu.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteCreate from "../notes/NoteCreate.tsx"
-import PrePartListDragAndDrop from "../pre_part_lists/PrePartListDragAndDrop.tsx"
 import { StopKeyboardContext, useStopKeyboard } from "./SourceShow_SourceComponent.ts"
 import {
   getTermProps,
@@ -28,9 +25,15 @@ import {
 } from "./SourceShow_SourceNavComponent.ts"
 import { otherTranslationTexts, useChangeTermWithKeyboard } from "./SourceShow_TermsComponent.ts"
 import { useFocusTokenWithKeyboard } from "./SourceShow_TokensComponent.ts"
-import { Menu } from "@headlessui/react"
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
-import { Form, useFetcher } from "react-router-dom"
+import {
+  PartCreateForm,
+  PartUpdateForm,
+  SourceDetailMenu,
+  SourceEditHeader,
+  SourcePartDetailMenu,
+} from "./SourceShow_Update.tsx"
+import React, { useEffect, useMemo, useRef, useState } from "react"
+import { useFetcher } from "react-router-dom"
 
 export interface ISourceShowData {
   source: Promise<Source>
@@ -48,28 +51,29 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
 }
 
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
-  const stopKeyboardValue = useStopKeyboard()
+  const stopKeyboard = useStopKeyboard()
   const [nav, setNav] = useState<boolean>(true)
   const [edit, setEdit] = useState<boolean>(false)
   const [expandPartsCreate, setExpandPartsCreate] = useState<boolean>(false)
 
-  const resetAndSet = (set: (val: boolean) => void, val: boolean) => {
-    setEdit(false)
-    setExpandPartsCreate(false)
-    stopKeyboardValue.setStopKeyboardEvents(val)
-    set(val)
-  }
+  const safeSet = useSafeSet((val) => stopKeyboard.setStopKeyboardEvents(val), [stopKeyboard])
+  useEffect(() => {
+    safeSet.addReset(() => {
+      setEdit(false)
+      setExpandPartsCreate(false)
+    })
+  }, [safeSet])
 
   return (
-    <StopKeyboardContext.Provider value={stopKeyboardValue}>
+    <StopKeyboardContext.Provider value={stopKeyboard}>
       <div className="grid-std">
         {edit ? (
-          <SourceEditHeader source={source} onCancel={() => resetAndSet(setEdit, false)} />
+          <SourceEditHeader source={source} onCancel={() => safeSet.safeSet(setEdit, false)} />
         ) : (
           <SourceShowHeader
             source={source}
-            onAddParts={() => resetAndSet(setExpandPartsCreate, true)}
-            onEdit={() => resetAndSet(setEdit, true)}
+            onAddParts={() => safeSet.safeSet(setExpandPartsCreate, true)}
+            onEdit={() => safeSet.safeSet(setEdit, true)}
           />
         )}
         <div className="flex justify-center mt-std mb-10">
@@ -79,12 +83,29 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
         </div>
       </div>
 
-      {nav ? <SourceNavComponent source={source} /> : <SourceShowComponent source={source} />}
-      <PartsCreate
-        sourceId={source.id}
-        expand={expandPartsCreate}
-        setExpand={(val: boolean) => resetAndSet(setExpandPartsCreate, val)}
-      />
+      {nav ? (
+        <SourceNavComponent source={source} safeSet={safeSet} />
+      ) : (
+        <SourceShowComponent source={source} />
+      )}
+      <div className="grid-std pt-std pb-std2">
+        {expandPartsCreate ? (
+          <PartCreateForm
+            sourceId={source.id}
+            onCancel={() => safeSet.safeSet(setExpandPartsCreate, false)}
+          />
+        ) : (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              className="btn"
+              onClick={preventDefault(() => safeSet.safeSet(setExpandPartsCreate, true))}
+            >
+              Create Part
+            </button>
+          </div>
+        )}
+      </div>
     </StopKeyboardContext.Provider>
   )
 }
@@ -95,95 +116,78 @@ const SourceShowHeader: React.FC<{
   onEdit: () => void
 }> = ({ source, onAddParts, onEdit }) => {
   return (
-    <Form
-      action={`/sources/${source.id}`}
-      method="delete"
-      className="flex"
-      onSubmit={(event) => {
-        // eslint-disable-next-line no-alert
-        if (!window.confirm("Delete Source?")) event.preventDefault()
-      }}
-    >
+    <div className="flex">
       <div className="flex-grow">
         <h2>{source.name}</h2>
         <div>{source.reference}</div>
       </div>
-
-      <DetailMenu>
-        <Menu.Item>
-          {({ active }) => (
-            <button type="submit" className={joinClasses("w-full", menuClass(active))}>
-              Delete
-            </button>
-          )}
-        </Menu.Item>
-        <Menu.Item>
-          {({ active }) => (
-            <a href="#" className={menuClass(active)} onClick={preventDefault(onAddParts)}>
-              Add Parts
-            </a>
-          )}
-        </Menu.Item>
-        <Menu.Item>
-          {({ active }) => (
-            <a href="#" className={menuClass(active)} onClick={preventDefault(onEdit)}>
-              Edit
-            </a>
-          )}
-        </Menu.Item>
-      </DetailMenu>
-    </Form>
-  )
-}
-
-interface ISourceResponse {
-  source: Source
-}
-
-const SourceEditHeader: React.FC<{
-  source: Source
-  onCancel: () => void
-}> = ({ source, onCancel }) => {
-  const fetcher = useFetcher<ISourceResponse>()
-  const { success } = useContext(NotificationsContext)
-  useEffect(() => {
-    if (!fetcher.data) return
-    success(`Updated Source`)
-    onCancel()
-  }, [fetcher, success, onCancel])
-
-  return (
-    <fetcher.Form action={`/sources/${source.id}`} method="patch" className="space-y-std">
-      <label>
-        Name:
-        <input name="name" type="text" defaultValue={source.name} />
-      </label>
-      <label>
-        Reference:
-        <input name="reference" type="text" defaultValue={source.reference} />
-      </label>
-
-      <div className="flex justify-end space-x-basic">
-        <button type="button" className="btn" onClick={preventDefault(onCancel)}>
-          Cancel
-        </button>
-        <button type="submit" className="btn-primary">
-          Save
-        </button>
-      </div>
-    </fetcher.Form>
+      <SourceDetailMenu source={source} onAddParts={onAddParts} onEdit={onEdit} />
+    </div>
   )
 }
 
 const SourcePartsWrapper: React.FC<{
+  sourceId: number
   parts: SourcePart[]
+  safeSet?: SafeSet
   children: (tokenizedText: TokenizedText, partIndex: number, textIndex: number) => React.ReactNode
-}> = ({ parts, children }) => {
+}> = ({ sourceId, parts, safeSet, children }) => {
   return (
     <div className="text-center space-y-std2">
       {parts.map((part, partIndex) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <div key={`part-${partIndex}`}>
+        <SourcePartWrapper
+          // eslint-disable-next-line react/no-array-index-key
+          key={`part-${partIndex}`}
+          // eslint-disable-next-line react/no-children-prop
+          children={children}
+          sourceId={sourceId}
+          partIndex={partIndex}
+          part={part}
+          safeSet={safeSet}
+        />
+      ))}
+    </div>
+  )
+}
+
+SourcePartsWrapper.defaultProps = {
+  // eslint-disable-next-line no-undefined
+  safeSet: undefined,
+}
+
+const SourcePartWrapper: React.FC<{
+  sourceId: number
+  partIndex: number
+  part: SourcePart
+  safeSet?: SafeSet
+  children: (tokenizedText: TokenizedText, partIndex: number, textIndex: number) => React.ReactNode
+}> = ({ sourceId, partIndex, part, safeSet, children }) => {
+  const [edit, setEdit] = useState<boolean>(false)
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    if (!safeSet) return () => {}
+    const key = safeSet.addReset(() => setEdit(false))
+    return () => safeSet.removeReset(key)
+  }, [safeSet])
+
+  return (
+    <div className="group relative">
+      {edit ? (
+        <PartUpdateForm
+          sourceId={sourceId}
+          partIndex={partIndex}
+          part={part}
+          onCancel={() => safeSet?.safeSet(setEdit, false)}
+        />
+      ) : (
+        <>
+          {Boolean(safeSet) && (
+            <SourcePartDetailMenu
+              sourceId={sourceId}
+              partIndex={partIndex}
+              onEdit={() => safeSet?.safeSet(setEdit, true)}
+            />
+          )}
           {part.tokenizedTexts.map((tokenizedText, textIndex) => (
             /* eslint-disable-next-line react/no-array-index-key */
             <div key={`${tokenizedText.text}-${textIndex}`}>
@@ -191,17 +195,22 @@ const SourcePartsWrapper: React.FC<{
               {children(tokenizedText, partIndex, textIndex)}
             </div>
           ))}
-          {part.media.imageUrl ? (
-            <div className="grid-std">
-              <img src={part.media.imageUrl} alt="Part Image" />
-            </div>
-          ) : (
-            partIndex !== parts.length - 1 && <hr className="mt-std2" />
-          )}
+        </>
+      )}
+      {part.media.imageUrl ? (
+        <div className="grid-std">
+          <img src={part.media.imageUrl} alt="Part Image" />
         </div>
-      ))}
+      ) : (
+        <hr className="mt-std2" />
+      )}
     </div>
   )
+}
+
+SourcePartWrapper.defaultProps = {
+  // eslint-disable-next-line no-undefined
+  safeSet: undefined,
 }
 
 const textClassBase = "ko-sans text-2xl"
@@ -209,7 +218,7 @@ const translationClassBase = "text-lg"
 
 const SourceShowComponent: React.FC<{ source: Source }> = ({ source }) => {
   return (
-    <SourcePartsWrapper parts={source.parts}>
+    <SourcePartsWrapper sourceId={source.id} parts={source.parts}>
       {(tokenizedText) => (
         <>
           <div className={textClassBase}>{tokenizedText.text}</div>
@@ -220,7 +229,10 @@ const SourceShowComponent: React.FC<{ source: Source }> = ({ source }) => {
   )
 }
 
-const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
+const SourceNavComponent: React.FC<{ source: Source; safeSet: SafeSet }> = ({
+  source,
+  safeSet,
+}) => {
   const [termProps, setTermProps] = useState<ITermsComponentProps | null>(null)
 
   const termsFocused = termProps !== null
@@ -240,7 +252,7 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
   }, [focusElement, partFocusIndex, textFocusIndex])
 
   return (
-    <SourcePartsWrapper parts={source.parts}>
+    <SourcePartsWrapper sourceId={source.id} parts={source.parts} safeSet={safeSet}>
       {(tokenizedText, partIndex, textIndex) => {
         const textFocused = partIndex === partFocusIndex && textIndex === textFocusIndex
         return (
@@ -401,66 +413,6 @@ const NoteDialog: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ d
       <SlideOver.Header title="Create Note" onClose={onClose} />
       <NoteCreate data={data} onClose={onClose} />
     </SlideOver.Dialog>
-  )
-}
-
-const PartsCreate: React.FC<{
-  sourceId: number
-  expand: boolean
-  setExpand: (expand: boolean) => void
-}> = ({ sourceId, expand, setExpand }) => {
-  return (
-    <div className="grid-std pt-std pb-std2">
-      {expand ? (
-        <PartsCreateForm sourceId={sourceId} onCancel={() => setExpand(false)} />
-      ) : (
-        <div className="flex justify-center">
-          <button type="button" className="btn" onClick={preventDefault(() => setExpand(true))}>
-            Create Part
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
-
-const PartsCreateForm: React.FC<{ sourceId: number; onCancel: () => void }> = ({
-  sourceId,
-  onCancel,
-}) => {
-  const [text, setText] = useState<string>("")
-  const textAreaRef = useRef<HTMLTextAreaElement>(null)
-  useEffect(() => textAreaRef.current?.focus(), [textAreaRef])
-
-  const fetcher = useFetcher<ISourceResponse>()
-  const { success } = useContext(NotificationsContext)
-  useEffect(() => {
-    if (!fetcher.data) return
-    success(`Created Part`)
-    onCancel()
-  }, [fetcher, success, onCancel])
-
-  return (
-    <PrePartListDragAndDrop sourceId={sourceId} minHeight="h-third">
-      <fetcher.Form action={`/sources/${sourceId}/parts`} method="post">
-        <textarea
-          ref={textAreaRef}
-          name="text"
-          value={text}
-          placeholder="You may also drag and drop here."
-          className="h-third"
-          onChange={(e) => setText(e.target.value)}
-        />
-        <div className="mt-half flex justify-end space-x-basic">
-          <button type="button" className="btn" onClick={preventDefault(onCancel)}>
-            Cancel
-          </button>
-          <button type="submit" className="btn-primary" disabled={!text}>
-            Add Part
-          </button>
-        </div>
-      </fetcher.Form>
-    </PrePartListDragAndDrop>
   )
 }
 

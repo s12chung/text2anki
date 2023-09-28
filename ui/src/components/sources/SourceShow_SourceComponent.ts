@@ -6,9 +6,8 @@ interface StopKeyboard {
 }
 export const StopKeyboardContext = React.createContext<StopKeyboard>({
   stopKeyboardEvents: false,
-  setStopKeyboardEvents: () => {
-    // do nothing
-  },
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  setStopKeyboardEvents: () => {},
 })
 
 export function useStopKeyboard() {

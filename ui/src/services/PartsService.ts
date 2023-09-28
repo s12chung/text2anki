@@ -32,6 +32,18 @@ class PartsService extends ApplicationService {
   async multi(sourceId: number, data: PartCreateMultiData): Promise<Source> {
     return this.fetch(`/${sourceId}/parts/multi`, SourceEmpty, requestInit(Http.POST, data))
   }
+
+  async update(
+    sourceId: number | string,
+    partIndex: number | string,
+    data: PartData
+  ): Promise<Source> {
+    return this.fetch(`/${sourceId}/parts/${partIndex}`, SourceEmpty, requestInit(Http.PATCH, data))
+  }
+
+  async destroy(sourceId: number | string, partIndex: number | string): Promise<Source> {
+    return this.fetch(`/${sourceId}/parts/${partIndex}`, SourceEmpty, requestInit(Http.DELETE))
+  }
 }
 
 export const partsService = new PartsService()

@@ -27,6 +27,24 @@ export const multi: ActionFunction = async ({ request, params }) => {
   return redirect(`/sources/${sourceId}`)
 }
 
+export const update: ActionFunction = async ({ request, params }) => {
+  if (!params.id) throw new Response("id not found", Status405) // eslint-disable-line @typescript-eslint/no-throw-literal
+  if (!params.sourceId) throw new Response("sourceId not found", Status405) // eslint-disable-line @typescript-eslint/no-throw-literal
+  const source = await partsService.update(
+    params.sourceId,
+    params.id,
+    formData(await request.formData(), PartDataEmpty)
+  )
+  return { source }
+}
+
+export const destroy: ActionFunction = async ({ params }) => {
+  if (!params.id) throw new Response("id not found", Status405) // eslint-disable-line @typescript-eslint/no-throw-literal
+  if (!params.sourceId) throw new Response("sourceId not found", Status405) // eslint-disable-line @typescript-eslint/no-throw-literal
+  const source = await partsService.destroy(params.sourceId, params.id)
+  return { source }
+}
+
 function getSourceId(params: Params): number {
   const sourceId = Number(params.sourceId)
   if (!sourceId) throw new Response("sourceId not found", Status405) // eslint-disable-line @typescript-eslint/no-throw-literal

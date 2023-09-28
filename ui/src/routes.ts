@@ -47,7 +47,7 @@ const routes = route("/", null, rootOptions, [
       resources("pre_part_lists", PrePartListsController, {
         show: el(LoaderPage<IPrePartListShowData>, { Component: PrePartListShow }),
       }),
-      resources(":sourceId", {}, {}, [
+      route(":sourceId", null, {}, [
         resources("parts", PartsController, {}, [
           route("multi", null, { action: PartsController.multi }),
         ]),
