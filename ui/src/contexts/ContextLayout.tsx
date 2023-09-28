@@ -5,7 +5,7 @@ const ContextLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const [notifications, setNotifications] = useState<Notification[]>([])
   const notifier = useMemo<Notifier>(
     () => new Notifier(notifications, setNotifications),
-    [notifications, setNotifications]
+    [notifications]
   )
 
   return <NotificationsContext.Provider value={notifier}>{children}</NotificationsContext.Provider>

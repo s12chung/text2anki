@@ -1,3 +1,21 @@
+export function joinClasses(...classes: string[]): string {
+  return classes.filter(Boolean).join(" ")
+}
+
+export function menuClass(active: boolean): string {
+  return joinClasses(
+    active ? "bg-gray-std" : "",
+    "block whitespace-nowrap px-std py-half text-left"
+  )
+}
+
+export function scrollTo(element: HTMLElement) {
+  window.scrollTo({
+    top: element.getBoundingClientRect().top + window.scrollY - 150,
+    behavior: "smooth",
+  })
+}
+
 export function paginate<T>(array: T[], maxPageSize: number, pageIndex: number): T[] {
   if (array.length === 0) return array
   if (maxPageSize <= 0) throw new Error("Invalid pageSize, it must be a positive integer.")

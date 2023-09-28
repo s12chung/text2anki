@@ -36,3 +36,11 @@ export function convertKeys(data: unknown, convertKey: ConvertKeyFunc): unknown 
   }
   return mappedData
 }
+
+export function newHash(): string {
+  const randomBytes = new Uint8Array(32)
+  crypto.getRandomValues(randomBytes)
+  return Array.from(randomBytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+}

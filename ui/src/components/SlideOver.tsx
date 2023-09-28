@@ -1,7 +1,8 @@
 /* eslint-disable max-lines */
+import { preventDefault } from "../utils/JSXUtil.ts"
 import { Dialog, Transition } from "@headlessui/react"
 import { XMarkIcon } from "@heroicons/react/24/outline"
-import React, { Fragment, MouseEventHandler } from "react"
+import React, { Fragment } from "react"
 
 export const SlideOverDialog: React.FC<{
   show: boolean
@@ -16,6 +17,7 @@ export const SlideOverDialog: React.FC<{
 
   return (
     <Transition.Root show={show} as={Fragment}>
+      {/* eslint-disable-next-line react/forbid-component-props */}
       <Dialog as="div" className="relative z-10" onClose={onClose}>
         {leftNode ? (
           <div
@@ -42,6 +44,7 @@ export const SlideOverDialog: React.FC<{
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel
+                  /* eslint-disable-next-line react/forbid-component-props */
                   className="pointer-events-auto"
                   /* eslint-disable-next-line react/forbid-component-props */
                   style={{
@@ -72,25 +75,19 @@ export const SlideOverHeader: React.FC<{
   subtitle?: string
   onClose?: () => void
 }> = ({ title, subtitle, onClose }) => {
-  const onCloseMouse: MouseEventHandler<HTMLAnchorElement> | null = onClose
-    ? (e) => {
-        e.preventDefault()
-        onClose()
-      }
-    : null
-
   return (
     <div className="bg-gray-50 px-4 py-6 sm:px-6">
       <div className="flex items-start justify-between space-x-3">
         <div className="space-y-1">
+          {/* eslint-disable-next-line react/forbid-component-props */}
           <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
             {title}
           </Dialog.Title>
           {Boolean(subtitle) && <p className="text-sm text-gray-500">{subtitle}</p>}
         </div>
-        {onCloseMouse ? (
+        {onClose ? (
           <div className="flex h-7 items-center">
-            <a href="#" className="a-btn" onClick={onCloseMouse}>
+            <a href="#" className="a-btn" onClick={preventDefault(onClose)}>
               <span className="sr-only">Close panel</span>
               <XMarkIcon className="h-6 w-6" aria-hidden="true" />
             </a>

@@ -75,11 +75,11 @@ function setAppendAble<T extends Appendable, U extends Record<keyof U, string | 
     const values = obj[key]
 
     if (typeof values === "string") {
-      appendable.append(key, values)
+      if (values) appendable.append(key, values)
       continue
     }
     for (const value of values) {
-      appendable.append(key, value)
+      if (value) appendable.append(key, value)
     }
   }
   return appendable

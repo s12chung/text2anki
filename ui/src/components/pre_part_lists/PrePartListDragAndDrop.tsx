@@ -1,17 +1,13 @@
+import { sourceIdQueryParam } from "../../controllers/PrePartListsController.ts"
 import { printError } from "../../services/Format.ts"
 import { prePartListService, PrePartSignData } from "../../services/PrePartListsService.ts"
 import { Source } from "../../services/SourcesService.ts"
-import { headers } from "../../utils/RequestUtil.ts"
+import { joinClasses } from "../../utils/HtmlUtil.ts"
+import { preventDefault, useKeyDownEffect } from "../../utils/JSXUtil.ts"
+import { headers, queryString } from "../../utils/RequestUtil.ts"
 import { removeExtension } from "../../utils/StringUtil.ts"
 import { XMarkIcon } from "@heroicons/react/24/outline"
-import React, {
-  DragEventHandler,
-  MouseEventHandler,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { useFetcher, useNavigate } from "react-router-dom"
 import { DotLoader } from "react-spinners"
 
@@ -26,16 +22,35 @@ const textFileExts: Record<string, boolean> = {
   "text/markdown": true,
 }
 
-const PrePartListDragAndDrop: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+function useDropFiles(onDrop: () => void): readonly [File[], (e: React.DragEvent) => void] {
   const [files, setFiles] = useState<File[]>([])
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      // eslint-disable-next-line prefer-destructuring
+      const files = e.dataTransfer.files
+      if (files.length === 0) {
+        return
+      }
+      setFiles(Array.from(files).sort((a: File, b: File) => a.name.localeCompare(b.name)))
+      onDrop()
+    },
+    [onDrop]
+  )
+  return [files, handleDrop] as const
+}
+
+const PrePartListDragAndDrop: React.FC<{
+  sourceId?: number
+  minHeight: string
+  children: React.ReactNode
+}> = ({ sourceId, minHeight, children }) => {
   const [dragState, setDragState] = useState<DragState>(DragState.None)
 
+  const [files, handleDrop] = useDropFiles(() => setDragState(DragState.Dropped))
   const onClose = useCallback(() => setDragState(DragState.None), [])
-  const onCloseMouse: MouseEventHandler<HTMLAnchorElement> = (e) => {
-    e.preventDefault()
-    onClose()
-  }
-  const handleKeyDown = useCallback(
+
+  useKeyDownEffect(
     (e: KeyboardEvent) => {
       switch (e.code) {
         case "Escape":
@@ -49,56 +64,33 @@ const PrePartListDragAndDrop: React.FC<{ children: React.ReactNode }> = ({ child
     [onClose]
   )
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [handleKeyDown])
-
-  const handleDragOver: DragEventHandler<HTMLDivElement> = (e) => {
-    e.preventDefault()
-    setDragState(DragState.Dragging)
-  }
-
-  const handleDragLeave: DragEventHandler<HTMLDivElement> = (e) => {
-    e.preventDefault()
-    setDragState(DragState.None)
-  }
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    // eslint-disable-next-line prefer-destructuring
-    const files = e.dataTransfer.files
-    if (files.length === 0) {
-      return
-    }
-
-    setFiles(Array.from(files).sort((a: File, b: File) => a.name.localeCompare(b.name)))
-    setDragState(DragState.Dropped)
-  }
-
   return (
     <div
-      className="min-h-screen"
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
+      className={minHeight}
+      onDragOver={preventDefault(() => setDragState(DragState.Dragging))}
+      onDragLeave={preventDefault(() => setDragState(DragState.None))}
       onDrop={handleDrop}
     >
       {dragState === DragState.None ? (
         children
       ) : (
-        <div className="min-h-screen flex relative">
-          <a href="#" className="absolute top-5 right-5 a-btn" onClick={onCloseMouse}>
+        <div className={joinClasses(minHeight, "flex relative")}>
+          <a href="#" className="absolute top-5 right-5 a-btn" onClick={preventDefault(onClose)}>
             <XMarkIcon className="h-10 w-10" />
           </a>
           {dragState === DragState.Dragging ? (
             <div className="m-auto text-4xl">Dragging files to create Source</div>
           ) : (
-            <PrePartListDrop files={files} />
+            <PrePartListDrop sourceId={sourceId ? sourceId : 0} files={files} />
           )}
         </div>
       )}
     </div>
   )
+}
+
+PrePartListDragAndDrop.defaultProps = {
+  sourceId: 0,
 }
 
 async function uploadFiles(files: File[]): Promise<string> {
@@ -124,13 +116,13 @@ async function uploadFiles(files: File[]): Promise<string> {
   ).then(() => signedResponse.id)
 }
 
-interface ISourceCreateData {
+interface ISourceCreateResponse {
   source: Source
 }
 
-const PrePartListDrop: React.FC<{ files: File[] }> = ({ files }) => {
+const PrePartListDrop: React.FC<{ sourceId: number; files: File[] }> = ({ sourceId, files }) => {
   const navigate = useNavigate()
-  const fetcher = useFetcher<ISourceCreateData>()
+  const fetcher = useFetcher<ISourceCreateResponse>()
 
   const didRun = useRef(false)
   const [errorMessage, setErrorMessage] = useState<string>("")
@@ -138,10 +130,12 @@ const PrePartListDrop: React.FC<{ files: File[] }> = ({ files }) => {
   useEffect(() => {
     if (didRun.current || files.length === 0 || onlyTextFile(files)) return
     didRun.current = true
+
+    const query = sourceId ? `?${queryString({ [sourceIdQueryParam]: String(sourceId) })}` : ""
     uploadFiles(files)
-      .then((id) => navigate(`/sources/pre_part_lists/${id}`))
+      .then((id) => navigate(`/sources/pre_part_lists/${id}${query}`))
       .catch((error) => setErrorMessage(printError(error).message))
-  }, [files, navigate])
+  }, [files, navigate, sourceId])
 
   useEffect(() => {
     const file = onlyTextFile(files)

@@ -3,6 +3,7 @@ import NotificationsContext, {
   Notification,
   NotificationType,
 } from "../contexts/NotificationsContext.ts"
+import { preventDefault } from "../utils/JSXUtil.ts"
 import { Transition } from "@headlessui/react"
 import { InformationCircleIcon, XCircleIcon, XMarkIcon } from "@heroicons/react/20/solid"
 import { CheckCircleIcon } from "@heroicons/react/24/outline"
@@ -25,15 +26,11 @@ const Notifications: React.FC = () => {
     setNotifications(notifications.slice(1))
   }, [notifications, setNotifications])
 
-  const onClose: MouseEventHandler<HTMLAnchorElement> = (e) => {
-    e.preventDefault()
-    setNotification(null)
-  }
   return notification ? (
     <NotificationWrapper
       key={notification.createdAt}
       notification={notification}
-      onClose={onClose}
+      onClose={preventDefault(() => setNotification(null))}
     />
   ) : null
 }

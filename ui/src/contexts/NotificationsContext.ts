@@ -40,9 +40,6 @@ export class Notifier {
   }
 }
 
-const NotificationsContext = React.createContext<Notifier>(
-  new Notifier([], () => {
-    // do nothing
-  })
-)
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const NotificationsContext = React.createContext<Notifier>(new Notifier([], () => {}))
 export default NotificationsContext

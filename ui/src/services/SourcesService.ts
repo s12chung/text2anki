@@ -1,5 +1,6 @@
 import ApplicationService from "./ApplicationService"
 import { Http, requestInit } from "./Format.ts"
+import { PartCreateMultiData, PartCreateMultiDataEmpty } from "./PartsService.ts"
 
 export const PosPunctuation = "Punctuation"
 
@@ -76,28 +77,15 @@ export const SourceEmpty = Object.freeze<Source>({
   createdAt: new Date(0),
 })
 
-export interface CreateSourcePartData {
-  text: string
-  translation: string
-}
-
-export const CreateSourcePartDataEmpty = Object.freeze<CreateSourcePartData>({
-  text: "",
-  translation: "",
-})
-
-export interface CreateSourceData {
-  prePartListId: string
+export interface CreateSourceData extends PartCreateMultiData {
   name: string
   reference: string
-  parts: CreateSourcePartData[]
 }
 
 export const CreateSourceDataEmpty = Object.freeze<CreateSourceData>({
-  prePartListId: "",
   name: "",
   reference: "",
-  parts: [CreateSourcePartDataEmpty],
+  ...PartCreateMultiDataEmpty,
 })
 
 export interface UpdateSourceData {
@@ -135,3 +123,27 @@ class SourcesService extends ApplicationService {
 }
 
 export const sourcesService = new SourcesService()
+
+export function partString(part: SourcePart): string {
+  return part.tokenizedTexts
+    .map((tokenizedText): string => {
+      const lines = []
+      if (tokenizedText.previousBreak) lines.push("")
+      lines.push(tokenizedText.text)
+      if (tokenizedText.translation !== "") lines.push(tokenizedText.translation)
+      return lines.join("\n")
+    })
+    .join("\n")
+}
+
+export function tokenPreviousSpace(tokens: Token[], index: number): boolean {
+  if (index === 0) return false
+  const currentToken = tokens[index]
+  const previousToken = tokens[index - 1]
+  return previousToken.startIndex + previousToken.length + 1 === currentToken.startIndex
+}
+
+export function tokenPreviousPunct(tokens: Token[], index: number): boolean {
+  if (index === 0) return false
+  return tokens[index - 1].partOfSpeech === PosPunctuation
+}

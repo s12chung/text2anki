@@ -12,6 +12,8 @@ interface INoteListProps {
 const SourceList: React.FC<INoteListProps> = ({ data }) => {
   const onDownload: MouseEventHandler<HTMLAnchorElement> = () => {
     setTimeout(() => {
+      // eslint-disable-next-line no-warning-comments
+      // TODO: handle proper loading of sources
       window.location.reload()
     }, 1000)
   }

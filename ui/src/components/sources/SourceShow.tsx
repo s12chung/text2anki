@@ -1,21 +1,39 @@
 /* eslint-disable max-lines */
 import { CommonLevel } from "../../services/Lang.ts"
+import { CreateNoteData, createNoteDataFromSourceTerm } from "../../services/NotesService.ts"
 import {
-  CreateNoteData,
-  createNoteDataFromSourceTerm,
-  NoteUsage,
-} from "../../services/NotesService.ts"
-import { PosPunctuation, Source, Token, TokenizedText } from "../../services/SourcesService.ts"
+  PosPunctuation,
+  Source,
+  SourcePart,
+  Token,
+  TokenizedText,
+  tokenPreviousPunct,
+  tokenPreviousSpace,
+} from "../../services/SourcesService.ts"
 import { Term } from "../../services/TermsService.ts"
-import { unique } from "../../utils/ArrayUntil.ts"
-import { pageSize, paginate, totalPages } from "../../utils/HtmlUtil.ts"
-import { decrement, increment } from "../../utils/NumberUtil.ts"
+import { joinClasses, paginate, scrollTo } from "../../utils/HtmlUtil.ts"
+import { preventDefault, SafeSet, useSafeSet } from "../../utils/JSXUtil.ts"
 import { queryString } from "../../utils/RequestUtil.ts"
 import AwaitWithFallback from "../AwaitWithFallback.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteCreate from "../notes/NoteCreate.tsx"
-import React, { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Form, Link, useFetcher } from "react-router-dom"
+import { StopKeyboardContext, useStopKeyboard } from "./SourceShow_SourceComponent.ts"
+import {
+  getTermProps,
+  ITermsComponentProps,
+  useFocusTextWithKeyboard,
+} from "./SourceShow_SourceNavComponent.ts"
+import { otherTranslationTexts, useChangeTermWithKeyboard } from "./SourceShow_TermsComponent.ts"
+import { useFocusTokenWithKeyboard } from "./SourceShow_TokensComponent.ts"
+import {
+  PartCreateForm,
+  PartUpdateForm,
+  SourceDetailMenu,
+  SourceEditHeader,
+  SourcePartDetailMenu,
+} from "./SourceShow_Update.tsx"
+import React, { useEffect, useMemo, useRef, useState } from "react"
+import { useFetcher } from "react-router-dom"
 
 export interface ISourceShowData {
   source: Promise<Source>
@@ -33,58 +51,143 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
 }
 
 const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
+  const stopKeyboard = useStopKeyboard()
   const [nav, setNav] = useState<boolean>(true)
+  const [edit, setEdit] = useState<boolean>(false)
+  const [expandPartsCreate, setExpandPartsCreate] = useState<boolean>(false)
 
-  const onReadKorean: MouseEventHandler<HTMLAnchorElement> = (e) => {
-    e.preventDefault()
-    setNav(!nav)
-  }
+  const safeSet = useSafeSet((val) => stopKeyboard.setStopKeyboardEvents(val), [stopKeyboard])
+  useEffect(() => {
+    safeSet.addReset(() => {
+      setEdit(false)
+      setExpandPartsCreate(false)
+    })
+  }, [safeSet])
 
   return (
-    <>
-      <div className="grid-std flex-std">
-        <div className="flex-grow">
-          <h2>{source.name}</h2>
-          <div>{source.reference}</div>
+    <StopKeyboardContext.Provider value={stopKeyboard}>
+      <div className="grid-std">
+        {edit ? (
+          <SourceEditHeader source={source} onCancel={() => safeSet.safeSet(setEdit, false)} />
+        ) : (
+          <SourceShowHeader
+            source={source}
+            onAddParts={() => safeSet.safeSet(setExpandPartsCreate, true)}
+            onEdit={() => safeSet.safeSet(setEdit, true)}
+          />
+        )}
+        <div className="flex justify-center mt-std mb-10">
+          <a href="#" className="btn" onClick={preventDefault(() => setNav(!nav))}>
+            Read Korean
+          </a>
         </div>
-        <Form
-          action={`/sources/${source.id}`}
-          method="delete"
-          className="space-x-basic flex items-start"
-          onSubmit={(event) => {
-            // eslint-disable-next-line no-alert
-            if (!window.confirm("Delete Source?")) event.preventDefault()
-          }}
-        >
-          <button type="submit" className="btn">
-            Delete
-          </button>
-          <Link to={`/sources/${source.id}/edit`} className="btn">
-            Edit
-          </Link>
-        </Form>
       </div>
 
-      <div className="flex justify-center mt-std mb-10">
-        <a href="#" className="btn" onClick={onReadKorean}>
-          Read Korean
-        </a>
+      {nav ? (
+        <SourceNavComponent source={source} safeSet={safeSet} />
+      ) : (
+        <SourceShowComponent source={source} />
+      )}
+      <div className="grid-std pt-std pb-std2">
+        {expandPartsCreate ? (
+          <PartCreateForm
+            sourceId={source.id}
+            onCancel={() => safeSet.safeSet(setExpandPartsCreate, false)}
+          />
+        ) : (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              className="btn"
+              onClick={preventDefault(() => safeSet.safeSet(setExpandPartsCreate, true))}
+            >
+              Create Part
+            </button>
+          </div>
+        )}
       </div>
-
-      {nav ? <SourceNavComponent source={source} /> : <SourceShowComponent source={source} />}
-    </>
+    </StopKeyboardContext.Provider>
   )
 }
 
-const SourceWrapper: React.FC<{
+const SourceShowHeader: React.FC<{
   source: Source
-  children: (tokenizedText: TokenizedText, partIndex: number, textIndex: number) => React.ReactNode
-}> = ({ source, children }) => {
+  onAddParts: () => void
+  onEdit: () => void
+}> = ({ source, onAddParts, onEdit }) => {
   return (
-    <div className="text-center">
-      {source.parts.map((part, partIndex) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <div key={`part-${partIndex}`}>
+    <div className="flex">
+      <div className="flex-grow">
+        <h2>{source.name}</h2>
+        <div>{source.reference}</div>
+      </div>
+      <SourceDetailMenu source={source} onAddParts={onAddParts} onEdit={onEdit} />
+    </div>
+  )
+}
+
+const SourcePartsWrapper: React.FC<{
+  sourceId: number
+  parts: SourcePart[]
+  safeSet?: SafeSet
+  children: (tokenizedText: TokenizedText, partIndex: number, textIndex: number) => React.ReactNode
+}> = ({ sourceId, parts, safeSet, children }) => {
+  return (
+    <div className="text-center space-y-std2">
+      {parts.map((part, partIndex) => (
+        <SourcePartWrapper
+          // eslint-disable-next-line react/no-array-index-key
+          key={`part-${partIndex}`}
+          // eslint-disable-next-line react/no-children-prop
+          children={children}
+          sourceId={sourceId}
+          partIndex={partIndex}
+          part={part}
+          safeSet={safeSet}
+        />
+      ))}
+    </div>
+  )
+}
+
+SourcePartsWrapper.defaultProps = {
+  // eslint-disable-next-line no-undefined
+  safeSet: undefined,
+}
+
+const SourcePartWrapper: React.FC<{
+  sourceId: number
+  partIndex: number
+  part: SourcePart
+  safeSet?: SafeSet
+  children: (tokenizedText: TokenizedText, partIndex: number, textIndex: number) => React.ReactNode
+}> = ({ sourceId, partIndex, part, safeSet, children }) => {
+  const [edit, setEdit] = useState<boolean>(false)
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    if (!safeSet) return () => {}
+    const key = safeSet.addReset(() => setEdit(false))
+    return () => safeSet.removeReset(key)
+  }, [safeSet])
+
+  return (
+    <div className="group relative">
+      {edit ? (
+        <PartUpdateForm
+          sourceId={sourceId}
+          partIndex={partIndex}
+          part={part}
+          onCancel={() => safeSet?.safeSet(setEdit, false)}
+        />
+      ) : (
+        <>
+          {Boolean(safeSet) && (
+            <SourcePartDetailMenu
+              sourceId={sourceId}
+              partIndex={partIndex}
+              onEdit={() => safeSet?.safeSet(setEdit, true)}
+            />
+          )}
           {part.tokenizedTexts.map((tokenizedText, textIndex) => (
             /* eslint-disable-next-line react/no-array-index-key */
             <div key={`${tokenizedText.text}-${textIndex}`}>
@@ -92,154 +195,66 @@ const SourceWrapper: React.FC<{
               {children(tokenizedText, partIndex, textIndex)}
             </div>
           ))}
-          {part.media.imageUrl ? (
-            <div className="grid-std">
-              <img src={part.media.imageUrl} alt="Part Image" />
-            </div>
-          ) : null}
+        </>
+      )}
+      {part.media.imageUrl ? (
+        <div className="grid-std">
+          <img src={part.media.imageUrl} alt="Part Image" />
         </div>
-      ))}
+      ) : (
+        <hr className="mt-std2" />
+      )}
     </div>
   )
 }
 
-const textClassBase = "ko-sans text-2xl focgrin:text-light"
-const translationClassBase = "text-lg focgrin:text-2xl"
+SourcePartWrapper.defaultProps = {
+  // eslint-disable-next-line no-undefined
+  safeSet: undefined,
+}
+
+const textClassBase = "ko-sans text-2xl"
+const translationClassBase = "text-lg"
 
 const SourceShowComponent: React.FC<{ source: Source }> = ({ source }) => {
   return (
-    <SourceWrapper source={source}>
+    <SourcePartsWrapper sourceId={source.id} parts={source.parts}>
       {(tokenizedText) => (
         <>
           <div className={textClassBase}>{tokenizedText.text}</div>
           <div className={translationClassBase}>{tokenizedText.translation}</div>
         </>
       )}
-    </SourceWrapper>
+    </SourcePartsWrapper>
   )
 }
 
-function getTermsComponentProps(
-  source: Source,
-  tokenizedText: TokenizedText,
-  tokenFocusIndex: number
-): ITermsComponentProps {
-  return {
-    token: tokenizedText.tokens[tokenFocusIndex],
-    usage: {
-      sourceName: source.name,
-      sourceReference: source.reference,
+const SourceNavComponent: React.FC<{ source: Source; safeSet: SafeSet }> = ({
+  source,
+  safeSet,
+}) => {
+  const [termProps, setTermProps] = useState<ITermsComponentProps | null>(null)
 
-      usage: tokenizedText.text,
-      usageTranslation: tokenizedText.translation,
-    },
-  }
-}
-
-let openModal = false
-
-// eslint-disable-next-line max-lines-per-function
-const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
-  const [partFocusIndex, setPartFocusIndex] = useState<number>(0)
-  const [textFocusIndex, setTextFocusIndex] = useState<number>(0)
-  const [termsComponentProps, setTermsComponentProps] = useState<ITermsComponentProps | null>(null)
+  const termsFocused = termProps !== null
+  const [partFocusIndex, textFocusIndex, focusElement, setText] = useFocusTextWithKeyboard(
+    source.parts,
+    termsFocused,
+    () => setTermProps(null)
+  )
 
   const textRefs = useRef<(HTMLDivElement | null)[][]>([])
-
-  const currentTokenizedTexts = useMemo<TokenizedText[]>(
-    () => source.parts[partFocusIndex].tokenizedTexts,
-    [partFocusIndex, source.parts]
-  )
-  const termsFocus = termsComponentProps !== null
-  const setTermsFocus = (tokenFocusIndex: number) => {
-    setTermsComponentProps(
-      getTermsComponentProps(source, currentTokenizedTexts[textFocusIndex], tokenFocusIndex)
-    )
-  }
-
-  const partsLength = source.parts.length
-  const decrementText = useCallback(() => {
-    const result = decrement(textFocusIndex, currentTokenizedTexts.length)
-    if (result !== currentTokenizedTexts.length - 1) {
-      setTextFocusIndex(result)
-      return
-    }
-    const partIndex = decrement(partFocusIndex, partsLength)
-    setPartFocusIndex(partIndex)
-    setTextFocusIndex(source.parts[partIndex].tokenizedTexts.length - 1)
-  }, [textFocusIndex, currentTokenizedTexts.length, partFocusIndex, partsLength, source.parts])
-  const incrementText = useCallback(() => {
-    const result = increment(textFocusIndex, currentTokenizedTexts.length)
-    if (result !== 0) {
-      setTextFocusIndex(result)
-      return
-    }
-    const partIndex = increment(partFocusIndex, partsLength)
-    setPartFocusIndex(partIndex)
-    setTextFocusIndex(0)
-  }, [textFocusIndex, currentTokenizedTexts.length, partFocusIndex, partsLength])
-
   useEffect(() => {
-    setTermsComponentProps(null)
+    setTermProps(null)
     const textElement = textRefs.current[partFocusIndex][textFocusIndex]
     if (!textElement) return
-    textElement.focus()
-    window.scrollTo({
-      top: textElement.getBoundingClientRect().top + window.scrollY - 150,
-      behavior: "smooth",
-    })
-  }, [partFocusIndex, textFocusIndex])
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (openModal) return
-
-      switch (e.code) {
-        case "Escape":
-          if (!termsFocus) return
-          setTermsComponentProps(null)
-          break
-        default:
-      }
-
-      if (termsFocus) return
-
-      switch (e.code) {
-        case "ArrowUp":
-        case "KeyW":
-          decrementText()
-          break
-        case "ArrowDown":
-        case "KeyS":
-          incrementText()
-          break
-
-        default:
-          return
-      }
-
-      e.preventDefault()
-    },
-    [termsFocus, decrementText, incrementText]
-  )
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [handleKeyDown])
-
-  const textOnClick = (index: number) => setTextFocusIndex(index)
-
-  const tokenizedTextClass = (b: boolean) =>
-    `group py-2 focin:py-4 focin:bg-gray-std ${b ? "py-4 bg-gray-std" : ""}`
-
-  const textClass = (b: boolean) => `${textClassBase} ${b ? "text-light" : ""}`
-  const translationClass = (b: boolean) => `${translationClassBase} ${b ? "text-2xl" : ""}`
+    focusElement(textElement)
+    scrollTo(textElement)
+  }, [focusElement, partFocusIndex, textFocusIndex])
 
   return (
-    <SourceWrapper source={source}>
+    <SourcePartsWrapper sourceId={source.id} parts={source.parts} safeSet={safeSet}>
       {(tokenizedText, partIndex, textIndex) => {
-        const textFocus = partIndex === partFocusIndex && textIndex === textFocusIndex
+        const textFocused = partIndex === partFocusIndex && textIndex === textFocusIndex
         return (
           <div
             ref={(ref) => {
@@ -247,104 +262,48 @@ const SourceNavComponent: React.FC<{ source: Source }> = ({ source }) => {
               textRefs.current[partIndex][textIndex] = ref
             }}
             tabIndex={-1}
-            className={tokenizedTextClass(textFocus)}
-            onClick={() => textOnClick(textIndex)}
+            className={joinClasses(textFocused ? "py-4 bg-gray-std" : "", "group py-2")}
+            onClick={preventDefault(() => setText(partIndex, textIndex))}
           >
-            <div className={textClass(textFocus)}>{tokenizedText.text}</div>
-            {textFocus ? (
+            <div className={joinClasses(textClassBase, textFocused ? "text-light" : "")}>
+              {tokenizedText.text}
+            </div>
+            {textFocused ? (
               <TokensComponent
                 tokens={tokenizedText.tokens}
-                termsFocus={termsFocus}
-                setTermsFocus={setTermsFocus}
+                termsFocused={termsFocused}
+                onTokenSelect={(tokenIndex) =>
+                  setTermProps(getTermProps(source, partFocusIndex, textFocusIndex, tokenIndex))
+                }
+                onTokenChange={(tokenElement) => focusElement(tokenElement)}
               />
             ) : null}
-            <div className={translationClass(textFocus)}>{tokenizedText.translation}</div>
-            {textFocus && termsFocus ? (
-              <TermsComponent token={termsComponentProps.token} usage={termsComponentProps.usage} />
+            <div className={textFocused ? "text-2xl" : translationClassBase}>
+              {tokenizedText.translation}
+            </div>
+            {textFocused && termsFocused ? (
+              <TermsComponent token={termProps.token} usage={termProps.usage} />
             ) : null}
           </div>
         )
       }}
-    </SourceWrapper>
+    </SourcePartsWrapper>
   )
-}
-
-function skipPunct(
-  tokens: Token[],
-  index: number,
-  change: (index: number, length: number) => number
-): number {
-  index = change(index, tokens.length)
-  if (tokens[index].partOfSpeech !== PosPunctuation) return index
-  return skipPunct(tokens, index, change)
-}
-
-function tokenPreviousSpace(tokens: Token[], index: number): boolean {
-  if (index === 0) return false
-  const currentToken = tokens[index]
-  const previousToken = tokens[index - 1]
-  return previousToken.startIndex + previousToken.length + 1 === currentToken.startIndex
-}
-
-function tokenPreviousPunct(tokens: Token[], index: number): boolean {
-  if (index === 0) return false
-  return tokens[index - 1].partOfSpeech === PosPunctuation
 }
 
 const TokensComponent: React.FC<{
   tokens: Token[]
-  termsFocus: boolean
-  setTermsFocus: (tokenFocusIndex: number) => void
-}> = ({ tokens, termsFocus, setTermsFocus }) => {
-  const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(0)
+  termsFocused: boolean
+  onTokenSelect: (tokenFocusIndex: number) => void
+  onTokenChange: (tokenElement: HTMLDivElement) => void
+}> = ({ tokens, termsFocused, onTokenSelect, onTokenChange }) => {
+  const [tokenFocusIndex] = useFocusTokenWithKeyboard(tokens, termsFocused, onTokenSelect)
+
   const tokenRefs = useRef<(HTMLDivElement | null)[]>([])
-
-  const isAllPunct = useMemo<boolean>(
-    () => tokens.every((token) => token.partOfSpeech === PosPunctuation),
-    [tokens]
-  )
-
   useEffect(() => {
-    tokenRefs.current[tokenFocusIndex]?.focus()
-  }, [tokenFocusIndex])
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (openModal || termsFocus || isAllPunct) return
-
-      switch (e.code) {
-        case "ArrowLeft":
-        case "KeyA":
-          setTokenFocusIndex(skipPunct(tokens, tokenFocusIndex, decrement))
-          break
-        case "ArrowRight":
-        case "KeyD":
-          setTokenFocusIndex(skipPunct(tokens, tokenFocusIndex, increment))
-          break
-        case "Enter":
-        case "Space":
-          setTermsFocus(tokenFocusIndex)
-          break
-        default:
-          return
-      }
-
-      e.preventDefault()
-    },
-    [termsFocus, isAllPunct, tokens, tokenFocusIndex, setTermsFocus]
-  )
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [handleKeyDown])
-
-  const tokenOnClick = (index: number) => setTokenFocusIndex(index)
-
-  const tokenClass = (focused: boolean, isPunct: boolean) =>
-    `focus:text-white focus:bg-ink${focused ? " text-white bg-ink" : ""}${
-      isPunct ? " text-faded" : ""
-    }`
+    const element = tokenRefs.current[tokenFocusIndex]
+    if (element) onTokenChange(element)
+  }, [onTokenChange, tokenFocusIndex])
 
   return (
     <div className="ko-sans text-4xl justify-center mb-2 child:py-2 flex">
@@ -362,11 +321,12 @@ const TokensComponent: React.FC<{
             {Boolean(previousSpace) && index !== 0 && <div>&nbsp;&nbsp;</div>}
             <div
               ref={(ref) => (tokenRefs.current[index] = ref)}
-              className={tokenClass(index === tokenFocusIndex, isPunct)}
+              className={joinClasses(
+                index === tokenFocusIndex ? "text-white bg-ink" : "",
+                isPunct ? "text-faded" : ""
+              )}
               /* eslint-disable-next-line no-undefined */
               tabIndex={isPunct ? undefined : -1}
-              /* eslint-disable-next-line no-undefined */
-              onClick={isPunct ? undefined : () => tokenOnClick(index)}
             >
               <div>{token.text}</div>
             </div>
@@ -377,121 +337,54 @@ const TokensComponent: React.FC<{
   )
 }
 
-interface ITermsComponentProps {
-  token: Token
-  usage: NoteUsage
-}
-
 interface ITermsShowData {
   terms: Term[]
 }
 
-const maxPageSize = 5
+const termsComponentClass = "grid-std text-left text-lg py-2 space-y-2"
 
-// eslint-disable-next-line max-lines-per-function
 const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
   const fetcher = useFetcher<ITermsShowData>()
   const terms = useMemo<Term[]>(() => (fetcher.data ? fetcher.data.terms : []), [fetcher.data])
-
-  const [termFocusIndex, setTermFocusIndex] = useState<number>(0)
-  const termRefs = useRef<(HTMLDivElement | null)[]>([])
-
-  const [pageIndex, setPageIndex] = useState<number>(0)
-  const pagesLen = useMemo<number>(() => totalPages(terms, maxPageSize), [terms])
-
-  const [createNoteData, setCreateNoteData] = useState<CreateNoteData | null>(null)
-  const onCloseCreateNote = () => setCreateNoteData(null)
-
   useEffect(() => {
     if (fetcher.state !== "idle" || fetcher.data) return
     fetcher.load(`/terms/search?${queryString({ query: token.text, pos: token.partOfSpeech })}`)
   }, [fetcher, token])
 
-  useEffect(() => {
-    const termElement = termRefs.current[termFocusIndex]
-    if (!termElement) return
-    termElement.focus()
-  }, [terms, pageIndex, termFocusIndex]) // trigger from terms/page to do initial focus
-
-  useEffect(() => {
-    openModal = createNoteData !== null
-  }, [createNoteData])
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (openModal) return
-
-      switch (e.code) {
-        case "ArrowUp":
-        case "KeyW":
-          setTermFocusIndex(
-            decrement(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex))
-          )
-          break
-        case "ArrowDown":
-        case "KeyS":
-          setTermFocusIndex(
-            increment(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex))
-          )
-          break
-        case "ArrowLeft":
-        case "KeyA":
-          setPageIndex(decrement(pageIndex, pagesLen))
-          setTermFocusIndex(0)
-          break
-        case "ArrowRight":
-        case "KeyD":
-          setPageIndex(increment(pageIndex, pagesLen))
-          setTermFocusIndex(0)
-          break
-        case "Enter":
-        case "Space":
-          setCreateNoteData(createNoteDataFromSourceTerm(terms[termFocusIndex], usage))
-          break
-        default:
-          return
-      }
-      e.preventDefault()
-    },
-    [termFocusIndex, pageIndex, pagesLen, terms, usage]
+  const [createNoteData, setCreateNoteData] = useState<CreateNoteData | null>(null)
+  const [termFocusIndex, pageIndex, pagesLen, maxPageSize, shake] = useChangeTermWithKeyboard(
+    terms,
+    (term: Term) => setCreateNoteData(createNoteDataFromSourceTerm(term, usage)),
+    () => createNoteData !== null
   )
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [handleKeyDown])
+  const termRefs = useRef<(HTMLDivElement | null)[]>([])
+  useEffect(() => termRefs.current[termFocusIndex]?.focus(), [terms, pageIndex, termFocusIndex])
 
-  const topLevelClass = "grid-std text-left text-lg py-2 space-y-2"
-  if (!fetcher.data) {
-    return <div className={topLevelClass}>Loading...</div>
-  }
-
+  if (!fetcher.data) return <div className={termsComponentClass}>Loading...</div>
   return (
-    <div className={topLevelClass}>
+    <div className={termsComponentClass}>
       {terms.length === 0 ? (
         <div>No terms found</div>
       ) : (
-        <div>
+        <div className={shake ? "shake" : ""}>
           {paginate(terms, maxPageSize, pageIndex).map((term, index) => (
             <div
               key={term.id}
               ref={(ref) => (termRefs.current[index] = ref)}
               tabIndex={-1}
-              className="focus:underline"
+              className={joinClasses(index === termFocusIndex ? "underline" : "", "py-1")}
             >
               <div className="text-xl">
-                {term.text}&nbsp;
+                <span className="font-bold">{term.text}</span>&nbsp;
                 <span className="text-light text-base">{term.partOfSpeech}</span>
                 {term.commonLevel !== CommonLevel.Unique && (
                   <span className="relative top-2">&nbsp;{"*".repeat(term.commonLevel)}</span>
                 )}
-                : {term.translations[0].text} &mdash; {term.translations[0].explanation}
+                : {term.translations[0].text}&nbsp;&mdash;&nbsp;
+                {term.translations[0].explanation}
               </div>
-              <div className="ml-std2">
-                {unique(term.translations.map((translation) => translation.text))
-                  .slice(1, 6)
-                  .join("; ")}
-              </div>
+              <div className="ml-std2">{otherTranslationTexts(term.translations)}</div>
             </div>
           ))}
           <div className="text-center space-x-half">
@@ -508,12 +401,18 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
       )}
 
       {createNoteData !== null && (
-        <SlideOver.Dialog show onClose={onCloseCreateNote}>
-          <SlideOver.Header title="Create Note" onClose={onCloseCreateNote} />
-          <NoteCreate data={createNoteData} onClose={onCloseCreateNote} />
-        </SlideOver.Dialog>
+        <NoteDialog data={createNoteData} onClose={() => setCreateNoteData(null)} />
       )}
     </div>
+  )
+}
+
+const NoteDialog: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ data, onClose }) => {
+  return (
+    <SlideOver.Dialog show onClose={onClose}>
+      <SlideOver.Header title="Create Note" onClose={onClose} />
+      <NoteCreate data={data} onClose={onClose} />
+    </SlideOver.Dialog>
   )
 }
 

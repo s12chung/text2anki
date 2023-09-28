@@ -3,9 +3,9 @@ import PrePartListShow, {
   IPrePartListShowData,
 } from "./components/pre_part_lists/PrePartListShow.tsx"
 import SourceCreate from "./components/sources/SourceCreate.tsx"
-import SourceEdit, { ISourceEditData } from "./components/sources/SourceEdit.tsx"
 import SourceShow, { ISourceShowData } from "./components/sources/SourceShow.tsx"
 import * as NotesController from "./controllers/NotesController.ts"
+import * as PartsController from "./controllers/PartsController.ts"
 import * as PrePartListsController from "./controllers/PrePartListsController.ts"
 import * as SourceController from "./controllers/SourcesController.ts"
 import * as TermsController from "./controllers/TermsController.ts"
@@ -16,15 +16,12 @@ import ApplicationLayout from "./pages/layouts/ApplicationLayout.tsx"
 import EmptyLayout from "./pages/layouts/EmptyLayout.tsx"
 import FullLayout from "./pages/layouts/FullLayout.tsx"
 import PrePartListDragAndDropLayout from "./pages/layouts/PrePartListDragAndDropLayout.tsx"
-import { pick } from "./utils/ObjectUtil.ts"
-import { IController, resources, route, withLayout } from "./utils/RouterUtil.ts"
+import { resources, route, withLayout } from "./utils/RouterUtil.ts"
 import { createElement } from "react"
 
 const el = createElement
 
 const rootOptions = { errorElement: el(ErrorPage) }
-const appLayoutSourceController: IController = pick(SourceController, "create", "edit")
-const fullLayoutSourceController: IController = pick(SourceController, "get", "update", "destroy")
 
 const routes = route("/", null, rootOptions, [
   withLayout(el(PrePartListDragAndDropLayout), [
@@ -32,9 +29,6 @@ const routes = route("/", null, rootOptions, [
   ]),
 
   withLayout(el(ApplicationLayout), [
-    resources("sources", appLayoutSourceController, {
-      edit: el(LoaderPage<ISourceEditData>, { Component: SourceEdit }),
-    }),
     route("terms/search", null, { loader: TermsController.search }),
     resources("notes", NotesController, {
       index: el(LoaderPage<INoteListData>, { Component: NoteList }),
@@ -42,7 +36,7 @@ const routes = route("/", null, rootOptions, [
   ]),
 
   withLayout(el(FullLayout), [
-    resources("sources", fullLayoutSourceController, {
+    resources("sources", SourceController, {
       show: el(LoaderPage<ISourceShowData>, { Component: SourceShow }),
       new: el(SourceCreate),
     }),
@@ -53,6 +47,11 @@ const routes = route("/", null, rootOptions, [
       resources("pre_part_lists", PrePartListsController, {
         show: el(LoaderPage<IPrePartListShowData>, { Component: PrePartListShow }),
       }),
+      route(":sourceId", null, {}, [
+        resources("parts", PartsController, {}, [
+          route("multi", null, { action: PartsController.multi }),
+        ]),
+      ]),
     ]),
   ]),
 ])

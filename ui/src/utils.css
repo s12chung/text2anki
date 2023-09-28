@@ -6,6 +6,10 @@
   .focus-ring {
     @apply ring-2 ring-inset ring-indigo-600;
   }
+  .shake {
+    animation: shake 0.5s;
+    animation-iteration-count: infinite;
+  }
 
   .grid-std {
     @apply max-w-2xl mx-auto px-4 sm:px-6 md:px-8;
@@ -15,18 +19,30 @@
     @apply h-[33vh];
   }
 
-  .flex-std {
-    @apply flex space-x-1;
+  .space-y-std2 {
+    @apply space-y-8;
   }
-  .flex-col-std {
-    @apply flex flex-col items-center;
-  }
-
   .space-x-std {
     @apply space-x-4;
   }
   .space-y-std {
     @apply space-y-4;
+  }
+  .space-x-half {
+    @apply space-x-2;
+  }
+  .space-y-half {
+    @apply space-y-2;
+  }
+  .space-x-basic {
+    @apply space-x-1;
+  }
+
+  .mt-std2 {
+    @apply mt-8;
+  }
+  .ml-std2 {
+    @apply ml-8;
   }
 
   .m-std {
@@ -58,6 +74,9 @@
   .p-std {
     @apply p-4;
   }
+  .px-std {
+    @apply px-4;
+  }
   .py-std {
     @apply py-4;
   }
@@ -71,6 +90,9 @@
   .p-half {
     @apply p-2;
   }
+  .px-half {
+    @apply px-2;
+  }
   .py-half {
     @apply py-2;
   }
@@ -80,25 +102,27 @@
   .pb-half {
     @apply pb-2;
   }
-
-  .space-x-half {
-    @apply space-x-2;
-  }
-  .space-y-half {
-    @apply space-y-2;
+  .pb-std2 {
+    @apply pb-8;
   }
 
-  .space-x-basic {
-    @apply space-x-1;
-  }
-
-  .space-y-std2 {
-    @apply space-y-8;
-  }
-  .mt-std2 {
-    @apply mt-8;
-  }
-  .ml-std2 {
-    @apply ml-8;
+  @keyframes shake {
+    10%,
+    90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+    20%,
+    80% {
+      transform: translate3d(2px, 0, 0);
+    }
+    30%,
+    50%,
+    70% {
+      transform: translate3d(-4px, 0, 0);
+    }
+    40%,
+    60% {
+      transform: translate3d(4px, 0, 0);
+    }
   }
 }
