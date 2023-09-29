@@ -1,5 +1,5 @@
-import { NoteUsage } from "../../services/NotesService.ts"
-import { Source, SourcePart, Token } from "../../services/SourcesService.ts"
+import { NoteUsage } from "../../services/models/Note.ts"
+import { Source, SourcePart, Token } from "../../services/models/Source.ts"
 import { useKeyDownEffect } from "../../utils/JSXUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { StopKeyboardContext } from "./SourceShow_SourceComponent.ts"

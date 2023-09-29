@@ -1,7 +1,7 @@
 import { sourceIdQueryParam } from "../../controllers/PrePartListsController.ts"
 import { printError } from "../../services/Format.ts"
 import { prePartListService, PrePartSignData } from "../../services/PrePartListsService.ts"
-import { Source } from "../../services/SourcesService.ts"
+import { Source } from "../../services/models/Source.ts"
 import { joinClasses } from "../../utils/HtmlUtil.ts"
 import { preventDefault, useKeyDownEffect } from "../../utils/JSXUtil.ts"
 import { headers, queryString } from "../../utils/RequestUtil.ts"

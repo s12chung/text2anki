@@ -1,12 +1,11 @@
 import ApplicationService from "./ApplicationService.ts"
 import { Http, requestInit } from "./Format.ts"
-import { Source, SourceEmpty } from "./SourcesService.ts"
+import { Source, SourceEmpty } from "./models/Source.ts"
 
 export interface PartData {
   text: string
   translation: string
 }
-
 export const PartDataEmpty = Object.freeze<PartData>({
   text: "",
   translation: "",
@@ -16,7 +15,6 @@ export interface PartCreateMultiData {
   prePartListId: string
   parts: PartData[]
 }
-
 export const PartCreateMultiDataEmpty = Object.freeze<PartCreateMultiData>({
   prePartListId: "",
   parts: [PartDataEmpty],

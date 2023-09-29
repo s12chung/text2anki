@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
-import { CommonLevel } from "../../services/Lang.ts"
-import { CreateNoteData, createNoteDataFromSourceTerm } from "../../services/NotesService.ts"
+import { CommonLevel } from "../../services/models/Lang.ts"
+import { CreateNoteData, createNoteDataFromSourceTerm } from "../../services/models/Note.ts"
 import {
   PosPunctuation,
   Source,
@@ -9,8 +9,8 @@ import {
   TokenizedText,
   tokenPreviousPunct,
   tokenPreviousSpace,
-} from "../../services/SourcesService.ts"
-import { Term } from "../../services/TermsService.ts"
+} from "../../services/models/Source.ts"
+import { Term } from "../../services/models/Term.ts"
 import { joinClasses, paginate, scrollTo } from "../../utils/HtmlUtil.ts"
 import { preventDefault, SafeSet, useSafeSet } from "../../utils/JSXUtil.ts"
 import { queryString } from "../../utils/RequestUtil.ts"

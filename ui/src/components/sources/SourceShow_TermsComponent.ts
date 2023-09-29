@@ -1,4 +1,4 @@
-import { Term, Translation } from "../../services/TermsService.ts"
+import { Term, Translation } from "../../services/models/Term.ts"
 import { unique } from "../../utils/ArrayUntil.ts"
 import { pageSize, totalPages } from "../../utils/HtmlUtil.ts"
 import { useKeyDownEffect, useTimedState } from "../../utils/JSXUtil.ts"

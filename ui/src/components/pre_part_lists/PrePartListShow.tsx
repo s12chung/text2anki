@@ -1,5 +1,5 @@
 import { printAndAlertError } from "../../services/Format.ts"
-import { PrePart, PrePartList } from "../../services/PrePartListsService.ts"
+import { PrePart, PrePartList } from "../../services/models/PrePartList.ts"
 import { imageToClipboard } from "../../utils/ClipboardUtils.ts"
 import { preventDefault, useKeyDownEffect } from "../../utils/JSXUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"

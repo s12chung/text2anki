@@ -1,4 +1,4 @@
-import { Source } from "../../services/SourcesService.ts"
+import { Source } from "../../services/models/Source.ts"
 import AwaitWithFallback from "../AwaitWithFallback.tsx"
 import { DocumentTextIcon } from "@heroicons/react/24/outline"
 import React from "react"

@@ -1,4 +1,5 @@
-import { Note, notesService } from "../../services/NotesService.ts"
+import { notesService } from "../../services/NotesService.ts"
+import { Note } from "../../services/models/Note.ts"
 import AwaitWithFallback from "../AwaitWithFallback.tsx"
 import React, { MouseEventHandler } from "react"
 
