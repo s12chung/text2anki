@@ -1,6 +1,6 @@
 import NotificationsContext from "../../contexts/NotificationsContext.ts"
-import { CommonLevel } from "../../services/Lang.ts"
-import { CreateNoteData, CreateNoteDataEmpty, Note } from "../../services/NotesService.ts"
+import { CommonLevel } from "../../services/models/Lang.ts"
+import { CreateNoteData, CreateNoteDataEmpty, Note } from "../../services/models/Note.ts"
 import { filterKeys } from "../../utils/ArrayUntil.ts"
 import { camelToTitle } from "../../utils/StringUtil.ts"
 import React, { useContext, useEffect, useRef, useState } from "react"

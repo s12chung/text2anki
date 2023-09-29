@@ -1,5 +1,5 @@
 import NotificationsContext from "../../contexts/NotificationsContext.ts"
-import { partString, Source, SourcePart } from "../../services/SourcesService.ts"
+import { partString, Source, SourcePart } from "../../services/models/Source.ts"
 import { joinClasses, menuClass } from "../../utils/HtmlUtil.ts"
 import { preventDefault } from "../../utils/JSXUtil.ts"
 import DetailMenu from "../DetailMenu.tsx"

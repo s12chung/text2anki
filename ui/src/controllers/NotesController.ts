@@ -1,4 +1,5 @@
-import { CreateNoteDataEmpty, notesService } from "../services/NotesService.ts"
+import { notesService } from "../services/NotesService.ts"
+import { CreateNoteDataEmpty } from "../services/models/Note.ts"
 import { formData } from "../utils/RequestUtil.ts"
 import { ActionFunction, defer, LoaderFunction } from "react-router-dom"
 

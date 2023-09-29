@@ -1,4 +1,4 @@
-import { Text } from "../../services/SourcesService.ts"
+import { Text } from "../../services/models/Source.ts"
 import React, { ChangeEventHandler, useMemo, useState } from "react"
 import { Form } from "react-router-dom"
 
