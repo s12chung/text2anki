@@ -140,5 +140,19 @@
       }
     ],
     "dictionary_source": ""
+  },
+  {
+    "id": 71567,
+    "text": "-시",
+    "variants": [],
+    "part_of_speech": "Affix",
+    "common_level": 1,
+    "translations": [
+      {
+        "text": "-si",
+        "explanation": "A suffix used to mean \"considering it that way\" or \"seeing it that way.\""
+      }
+    ],
+    "dictionary_source": ""
   }
 ]
