@@ -103,7 +103,7 @@ func cmdSeed(ctx context.Context) error {
 	if err := seedkrdict.Seed(txQs, seedkrdict.DefaultRscPath); err != nil { //nolint:contextcheck // this is my pattern
 		return err
 	}
-	if err := testdb.SeedList(txQs, map[string]bool{"Terms": false}); err != nil {
+	if err := testdb.SeedList(txQs, map[string]bool{"Terms": false, "SourceStructureds": false}); err != nil {
 		return err
 	}
 	return txQs.Commit()
