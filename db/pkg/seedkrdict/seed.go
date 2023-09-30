@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"maps"
 	"os"
+	"strings"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/dictionary"
@@ -141,17 +142,14 @@ func (l *LexicalEntry) Term() (dictionary.Term, error) {
 	if err != nil {
 		return dictionary.Term{}, err
 	}
-
 	pos, commonLevel, err := l.posCommonLevel()
 	if err != nil {
 		return dictionary.Term{}, fmt.Errorf("%w with text: %v", err, text)
 	}
-
 	translations := l.translations()
 	if len(translations) == 0 {
 		return dictionary.Term{}, NoTranslationsFoundError{text: text}
 	}
-
 	return dictionary.Term{
 		ID:           int64(l.ID),
 		Text:         text,
@@ -307,6 +305,10 @@ type Equivalent struct {
 
 const engSenseLang = "영어"
 
+var cleanTranslationMap = map[string]string{
+	"&quot;": "\"",
+}
+
 func (e *Equivalent) translation() (dictionary.Translation, error) {
 	isEng := false
 	for _, feat := range e.Feats {
@@ -335,6 +337,9 @@ func (e *Equivalent) translation() (dictionary.Translation, error) {
 	}
 	if explanation == "" {
 		err = fmt.Errorf("explanation is empty")
+	}
+	for k, v := range cleanTranslationMap {
+		explanation = strings.ReplaceAll(explanation, k, v)
 	}
 	return dictionary.Translation{
 		Text:        text,

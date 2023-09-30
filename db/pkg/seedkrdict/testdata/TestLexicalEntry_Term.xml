@@ -3350,6 +3350,116 @@
 					<feat att="definition" val="人死。" />
 				</Equivalent>
 			</Sense>
-		</LexicalEntry>	
+		</LexicalEntry>
+		<LexicalEntry att="id" val="71567">
+			<feat att="homonym_number" val="4" />
+			<feat att="lexicalUnit" val="단어" />
+			<feat att="partOfSpeech" val="접사" />
+			<Lemma>
+				<feat att="writtenForm" val="-시" />
+			</Lemma>
+			<feat att="origin" val="視" />
+			<feat att="vocabularyLevel" val="고급" />
+			<feat att="semanticCategory" val="인간 > 태도" />
+			<feat att="annotation" val="일부 명사 뒤에 붙는다." />
+			<Sense att="id" val="1">
+				<feat att="definition" val="'그렇게 여김' 또는 '그렇게 봄'의 뜻을 더하는 접미사." />
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="도외시" />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="동일시" />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="등한시" />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="문제시" />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="야만시" />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="의문시" />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="적대시" />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="죄악시" />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="중요시" />
+				</SenseExample>
+				<SenseExample>
+					<feat att="type" val="구" />
+					<feat att="example" val="확실시" />
+				</SenseExample>
+				<Equivalent>
+					<feat att="language" val="영어" />
+					<feat att="lemma" val="-si" />
+					<feat att="definition" val="A suffix used to mean &amp;quot;considering it that way&amp;quot; or &amp;quot;seeing it that way.&amp;quot;" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="일본어" />
+					<feat att="lemma" val="し【視】	" />
+					<feat att="definition" val="「そう思う」または「そう見なす」の意を付加する接尾辞。" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="프랑스어" />
+					<feat att="lemma" val="(Pas d'expression équivalente)" />
+					<feat att="definition" val="Suffixe signifiant « le fait de considérer ainsi », ou « fait de voir ainsi »." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="스페인어" />
+					<feat att="lemma" val="(No hay expresión equivalente)" />
+					<feat att="definition" val="Sufijo que añade el significado de 'que considera como tal' o 'que ve como tal'. " />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="아랍어" />
+					<feat att="lemma" val="(لا يوجد كلمة مرادفة)" />
+					<feat att="definition" val="اللاحقة التي تشير إلى معنى &amp;quot;اعتباره هكذا&amp;quot; أو &amp;quot;النظر إليه بهذا النحو&amp;quot; " />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="몽골어" />
+					<feat att="lemma" val="(Тохирох үг хэллэг байхгүй байна)" />
+					<feat att="definition" val="'тэгж тооцох' болон 'тэгж үзэх' хэмээн утга нэмдэг дагавар." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="베트남어" />
+					<feat att="lemma" val="xem, xem như, cho là, cho rằng" />
+					<feat att="definition" val="Hậu tố thêm nghĩa 'cho là như thế' hoặc 'xem như thế'." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="타이어" />
+					<feat att="lemma" val="การถือว่า..., การนับว่า..., การมองว่า..." />
+					<feat att="definition" val="ปัจจัยที่ใช้เพิ่มเข้าไปในคำเพื่อให้มีความหมายว่า 'การถือเป็นดังกล่าว' หรือ 'การมองเป็นดังกล่าว'" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="인도네시아어" />
+					<feat att="lemma" val="menganggap~" />
+					<feat att="definition" val="akhiran yang menambahkan arti &amp;quot;menganggap demikian&amp;quot; atau &amp;quot;melihat demikian&amp;quot;" />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="러시아어" />
+					<feat att="lemma" val="(нет эквивалента)" />
+					<feat att="definition" val="Суффикс со значением &amp;quot;рассматривание подобны образом&amp;quot;." />
+				</Equivalent>
+				<Equivalent>
+					<feat att="language" val="중국어" />
+					<feat att="lemma" val="(无对应词汇)" />
+					<feat att="definition" val="后缀。指“看作是那样”或“那样看”。" />
+				</Equivalent>
+			</Sense>
+		</LexicalEntry>
 	</Lexicon>
 </LexicalResource>
