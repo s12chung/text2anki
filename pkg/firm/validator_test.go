@@ -429,12 +429,20 @@ var structValidatorTestCases = []structValidatorTestCase{
 }
 
 func TestStructValidator_Validate(t *testing.T) {
-	validator := testRegistry.ValidatorForType(reflect.TypeOf(parent{}))
+	validator := testRegistry.Validator(reflect.TypeOf(parent{}))
 
-	t.Run("not_struct", func(t *testing.T) {
-		data := 1
-		testValidates(t, validator, data, structValidatorError(reflect.ValueOf(data)), structValidatorErrorKey)
-	})
+	tcs := []struct {
+		name   string
+		data   any
+		result ErrorMap
+	}{
+		{name: "not_struct", data: 1, result: validateTypeErrorResult(validator, 1)},
+		{name: "invalid", data: nil, result: errInvalidValue},
+	}
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) { require.Equal(t, tc.result, validator.Validate(tc.data)) })
+	}
 
 	for _, tc := range structValidatorTestCases {
 		tc := tc
@@ -442,10 +450,39 @@ func TestStructValidator_Validate(t *testing.T) {
 			rawData := tc.f()
 			errKeys := make([]ErrorKey, len(tc.errorKeys))
 			for i, key := range tc.errorKeys {
-				errKeys[i] = joinKeys(key, testPresentKey)
+				errKeys[i] = joinKeys(key, presentRuleKey)
 			}
 			testValidates(t, validator, rawData, errTest, errKeys...)
 			testValidates(t, validator, &rawData, errTest, errKeys...)
+		})
+	}
+}
+
+func TestStructValidator_ValidateType(t *testing.T) {
+	parentType := reflect.TypeOf(parent{})
+	validator := testRegistry.Validator(parentType)
+	badCondition := "is not matching Struct of type firm.parent"
+
+	tcs := []struct {
+		name         string
+		typ          reflect.Type
+		badCondition string
+	}{
+		{name: "matching struct", typ: parentType},
+		{name: "matching struct pointer", typ: reflect.TypeOf(&parent{})},
+		{name: "other struct", typ: reflect.TypeOf(child{}), badCondition: badCondition},
+		{name: "not struct", typ: reflect.TypeOf(1), badCondition: badCondition},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			var err *RuleTypeError
+			if tc.badCondition != "" {
+				err = NewRuleTypeError(tc.typ, tc.badCondition)
+			}
+			require.Equal(err, validator.ValidateType(tc.typ))
 		})
 	}
 }
@@ -482,13 +519,24 @@ var sliceValidatorTestCases = []sliceValidatorTestCase{
 	}},
 }
 
-func TestSliceValidator_Validate(t *testing.T) {
-	validator := NewSliceValidator(testPresent{}, NewStructValidator(RuleMap{"Int": {testPresent{}}}))
+var sliceValidator = NewSliceValidator(reflect.TypeOf([]sliceValidatorElement{}),
+	presentRule{}, NewStructValidator(reflect.TypeOf([]sliceValidatorElement{}), RuleMap{"Int": {presentRule{}}}))
 
-	t.Run("not_slice", func(t *testing.T) {
-		data := 1
-		testValidates(t, validator, data, sliceValidatorError(reflect.ValueOf(data)), sliceValidatorErrorKey)
-	})
+func TestSliceValidator_Validate(t *testing.T) {
+	validator := sliceValidator
+
+	tcs := []struct {
+		name   string
+		data   any
+		result ErrorMap
+	}{
+		{name: "not_slice", data: 1, result: validateTypeErrorResult(validator, 1)},
+		{name: "invalid", data: nil, result: errInvalidValue},
+	}
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) { require.Equal(t, tc.result, validator.Validate(tc.data)) })
+	}
 
 	for _, tc := range sliceValidatorTestCases {
 		tc := tc
@@ -496,7 +544,7 @@ func TestSliceValidator_Validate(t *testing.T) {
 			rawData := tc.f()
 			errKeys := make([]ErrorKey, len(tc.errorKeys))
 			for i, key := range tc.errorKeys {
-				errKeys[i] = joinKeys(key, testPresentKey)
+				errKeys[i] = joinKeys(key, presentRuleKey)
 			}
 			testValidates(t, validator, rawData, errTest, errKeys...)
 			testValidates(t, validator, &rawData, errTest, errKeys...)
@@ -504,46 +552,136 @@ func TestSliceValidator_Validate(t *testing.T) {
 	}
 }
 
-func TestValueValidator_Validate(t *testing.T) {
-	type testCase struct {
-		name string
-		data any
+func TestSliceValidator_ValidateType(t *testing.T) {
+	sliceType := reflect.TypeOf([]sliceValidatorElement{})
+	validator := sliceValidator
+	badCondition := "is not matching Slice or Array of type []firm.sliceValidatorElement"
 
-		err *TemplatedError
+	tcs := []struct {
+		name         string
+		typ          reflect.Type
+		badCondition string
+	}{
+		{name: "matching slice", typ: sliceType},
+		{name: "matching slice pointer", typ: reflect.TypeOf(&[]sliceValidatorElement{})},
+		{name: "other slice", typ: reflect.TypeOf([]int{}), badCondition: badCondition},
+		{name: "not slice", typ: reflect.TypeOf(1), badCondition: badCondition},
 	}
-	tcs := []testCase{
-		{
-			name: "not_zero",
-			data: 1,
-		},
-		{
-			name: "zero",
-			data: 0,
-			err:  errTest,
-		},
-	}
+
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			validator := NewValueValidator(testPresent{})
-			testValidates(t, validator, tc.data, tc.err, testPresentKey)
+			require := require.New(t)
+			var err *RuleTypeError
+			if tc.badCondition != "" {
+				err = NewRuleTypeError(tc.typ, tc.badCondition)
+			}
+			require.Equal(err, validator.ValidateType(tc.typ))
+		})
+	}
+}
+
+type onlyKindRule struct{ kind reflect.Kind }
+
+func (o onlyKindRule) ValidateValue(_ reflect.Value) ErrorMap { return nil }
+func (o onlyKindRule) ValidateType(typ reflect.Type) *RuleTypeError {
+	if typ.Kind() != o.kind {
+		return NewRuleTypeError(typ, "is not "+o.kind.String())
+	}
+	return nil
+}
+
+func TestValueValidator_Validate(t *testing.T) {
+	validator := NewValueValidator(presentRule{})
+	onlyKindValidator := NewValueValidator(onlyKindRule{kind: reflect.String})
+
+	edgeTcs := []struct {
+		name      string
+		validator Validator
+		data      any
+		result    ErrorMap
+	}{
+		{name: "not_valid_type", validator: onlyKindValidator, data: 1, result: validateTypeErrorResult(onlyKindValidator, 1)},
+		{name: "invalid", validator: validator, data: nil, result: errInvalidValue},
+	}
+	for _, tc := range edgeTcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) { require.Equal(t, tc.result, tc.validator.Validate(tc.data)) })
+	}
+
+	type testCase struct {
+		name string
+		data any
+		err  *TemplatedError
+	}
+	tcs := []testCase{
+		{name: "not_zero", data: 1},
+		{name: "zero", data: 0, err: errTest},
+	}
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) { testValidates(t, validator, tc.data, tc.err, presentRuleKey) })
+	}
+}
+
+func TestValueValidator_ValidateType(t *testing.T) {
+	intType := reflect.TypeOf(1)
+	badCondition := "is not int"
+
+	i := 0
+	tcs := []struct {
+		name         string
+		typ          reflect.Type
+		extraRule    Rule
+		badCondition string
+	}{
+		{name: "matching int", typ: intType},
+		{name: "matching int pointer", typ: reflect.TypeOf(&i), badCondition: badCondition},
+		{name: "not int", typ: reflect.TypeOf([]int{}), badCondition: badCondition},
+		{name: "extra rule", typ: intType, extraRule: onlyKindRule{kind: reflect.String}, badCondition: "is not string"},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+
+			rules := []Rule{presentRule{}, onlyKindRule{kind: reflect.Int}, presentRule{}}
+			if tc.extraRule != nil {
+				rules = append(rules, tc.extraRule)
+			}
+			validator := NewValueValidator(rules...)
+
+			var err *RuleTypeError
+			if tc.badCondition != "" {
+				err = NewRuleTypeError(tc.typ, tc.badCondition)
+			}
+			require.Equal(err, validator.ValidateType(tc.typ))
 		})
 	}
 }
 
 func testValidates(t *testing.T, validator Validator, data any, err *TemplatedError, keySuffixes ...ErrorKey) {
+	testValidatesFull(t, false, validator, data, err, keySuffixes...)
+}
+
+func testValidatesFull(t *testing.T, skipValidate bool, validator Validator, data any, err *TemplatedError, keySuffixes ...ErrorKey) {
 	require := require.New(t)
 
-	validateValueExpected := ErrorMap{}
-	if err != nil {
+	var validateValueExpected ErrorMap
+	if err != nil && len(keySuffixes) > 0 {
+		validateValueExpected = ErrorMap{}
 		for _, key := range keySuffixes {
 			validateValueExpected[key] = err
 		}
 	}
 	validateExpected := ErrorMap{}
-	MergeErrorMap(typeNameKey(reflect.ValueOf(data)), validateValueExpected, validateExpected)
+	validateValueExpected.MergeInto(typeNameKey(reflect.ValueOf(data)), validateExpected)
+	validateExpected = validateExpected.ToNil()
 
-	require.Equal(MapResult{errorMap: validateExpected}, validator.Validate(data))
+	if !skipValidate {
+		require.Equal(validateExpected, validator.Validate(data))
+	}
 	require.Equal(validateValueExpected, validator.ValidateValue(reflect.ValueOf(data)))
 
 	errorMap := ErrorMap{"Existing": nil}

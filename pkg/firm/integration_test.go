@@ -62,12 +62,12 @@ func init() {
 	testRegistry.RegisterType(
 		NewDefinition(parent{}).
 			Validates(RuleMap{
-				"Primitive":               {testPresent{}},
-				"Basic":                   {testPresent{}},
-				"Pt":                      {testPresent{}},
-				"Any":                     {testPresent{}},
-				"Array":                   {testPresent{}},
-				"ArrayPt":                 {testPresent{}},
+				"Primitive":               {presentRule{}},
+				"Basic":                   {presentRule{}},
+				"Pt":                      {presentRule{}},
+				"Any":                     {presentRule{}},
+				"Array":                   {presentRule{}},
+				"ArrayPt":                 {presentRule{}},
 				"PrimitiveEmptyValidates": {},
 				"BasicEmptyValidates":     {},
 				"PtEmptyValidates":        {},
@@ -78,11 +78,11 @@ func init() {
 	testRegistry.RegisterType(
 		NewDefinition(child{}).
 			Validates(RuleMap{
-				"Validates": {testPresent{}},
+				"Validates": {presentRule{}},
 			}))
 	testRegistry.RegisterType(
 		NewDefinition(topLevelValidates{}).
-			ValidatesTopLevel(testPresent{}))
+			ValidatesTopLevel(presentRule{}))
 }
 
 type integrationTestCase struct {
@@ -165,11 +165,11 @@ func TestIntegration(t *testing.T) {
 			require := require.New(t)
 			if tc.f != nil {
 				data := tc.f()
-				require.Equal(tc.isValid, testRegistry.Validate(data).IsValid())
-				require.Equal(tc.isValid, testRegistry.Validate(&data).IsValid())
+				require.Equal(tc.isValid, testRegistry.Validate(data) == nil)
+				require.Equal(tc.isValid, testRegistry.Validate(&data) == nil)
 				return
 			}
-			require.Equal(tc.isValid, testRegistry.Validate(tc.anyF()).IsValid())
+			require.Equal(tc.isValid, testRegistry.Validate(tc.anyF()) == nil)
 		})
 	}
 }

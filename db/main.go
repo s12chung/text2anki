@@ -142,8 +142,8 @@ func cmdSearch(ctx context.Context) error {
 	}
 
 	validation := firm.Validate(config)
-	if !validation.IsValid() {
-		return fmt.Errorf("config is missing a field: %v", validation)
+	if validation != nil {
+		return fmt.Errorf("config is missing a field: %w", validation)
 	}
 
 	for _, query := range config.Queries {

@@ -6,47 +6,40 @@ import (
 )
 
 // NewStructValidator returns a new StructValidator
-func NewStructValidator(ruleMap RuleMap) StructValidator {
+func NewStructValidator(typ reflect.Type, ruleMap RuleMap) StructValidator {
 	rm := map[string]*[]Rule{}
 	for k, v := range ruleMap {
 		rules := v
 		rm[k] = &rules
 	}
-	return StructValidator{RuleMap: rm}
+	return StructValidator{Type: indirectType(typ), RuleMap: rm}
 }
 
 // StructValidator validates structs
 type StructValidator struct {
+	Type    reflect.Type
 	RuleMap map[string]*[]Rule
 }
 
 // Validate validates the data
-func (s StructValidator) Validate(data any) Result {
-	return validate(data, s.ValidateMerge)
-}
+func (s StructValidator) Validate(data any) ErrorMap { return validate(data, s) }
 
-// ValidateValue validates the data value
+// ValidateValue validates the data value (assumes ValidateType is called)
 func (s StructValidator) ValidateValue(value reflect.Value) ErrorMap {
-	return validateValue(value, s.ValidateMerge)
+	return validateValue(value, s)
 }
 
-const structValidatorErrorKey = "StructValidator"
-
-func structValidatorError(value reflect.Value) *TemplatedError {
-	return &TemplatedError{
-		TemplateFields: map[string]string{"Type": typeName(value)},
-		Template:       "passed in data of type, {{.Type}}, is not a Struct",
-	}
+// ValidateType checks whether the type is valid for the Rule
+func (s StructValidator) ValidateType(typ reflect.Type) *RuleTypeError {
+	return validateType(typ, s.Type, "Struct")
 }
 
-// ValidateMerge validates the data value, also doing a merge with the errorMap
+// ValidateMerge validates the data value, also doing a merge with the errorMap (assumes ValidateType is called)
 func (s StructValidator) ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap) {
 	value = indirect(value)
-	if value.Kind() != reflect.Struct {
-		MergeErrorMap(key, ErrorMap{structValidatorErrorKey: structValidatorError(value)}, errorMap)
+	if !value.IsValid() {
 		return
 	}
-
 	for fieldName, rules := range s.RuleMap {
 		field, _ := value.Type().FieldByName(fieldName)
 		fieldKey := joinKeys(key, ErrorKey(field.Name))
@@ -55,44 +48,35 @@ func (s StructValidator) ValidateMerge(value reflect.Value, key ErrorKey, errorM
 }
 
 // NewSliceValidator returns a new SliceValidator
-func NewSliceValidator(elementRules ...Rule) SliceValidator {
+func NewSliceValidator(typ reflect.Type, elementRules ...Rule) SliceValidator {
 	return SliceValidator{
+		Type:         indirectType(typ),
 		ElementRules: elementRules,
 	}
 }
 
 // SliceValidator validates slices and arrys
 type SliceValidator struct {
+	Type         reflect.Type
 	ElementRules []Rule
 }
 
 // Validate validates the data
-func (s SliceValidator) Validate(data any) Result {
-	return validate(data, s.ValidateMerge)
-}
+func (s SliceValidator) Validate(data any) ErrorMap { return validate(data, s) }
 
-// ValidateValue validates the data value
+// ValidateValue validates the data value (assumes ValidateType is called)
 func (s SliceValidator) ValidateValue(value reflect.Value) ErrorMap {
-	return validateValue(value, s.ValidateMerge)
+	return validateValue(value, s)
 }
 
-const sliceValidatorErrorKey = "SliceValidator"
-
-func sliceValidatorError(value reflect.Value) *TemplatedError {
-	return &TemplatedError{
-		TemplateFields: map[string]string{"Type": typeName(value)},
-		Template:       "passed in data of type, {{.Type}}, is not a Slice or Array",
-	}
+// ValidateType checks whether the type is valid for the Rule
+func (s SliceValidator) ValidateType(typ reflect.Type) *RuleTypeError {
+	return validateType(typ, s.Type, "Slice or Array")
 }
 
-// ValidateMerge validates the data value, also doing a merge with the errorMap
+// ValidateMerge validates the data value, also doing a merge with the errorMap (assumes ValidateType is called)
 func (s SliceValidator) ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap) {
 	value = indirect(value)
-	if !(value.Kind() == reflect.Slice || value.Kind() == reflect.Array) {
-		MergeErrorMap(key, ErrorMap{sliceValidatorErrorKey: sliceValidatorError(value)}, errorMap)
-		return
-	}
-
 	for i := 0; i < value.Len(); i++ {
 		indexKey := joinKeys(key, ErrorKey("["+strconv.Itoa(i)+"]"))
 		validateMerge(value.Index(i), indexKey, errorMap, s.ElementRules)
@@ -112,45 +96,67 @@ type ValueValidator struct {
 }
 
 // Validate validates the data
-func (v ValueValidator) Validate(data any) Result {
-	return validate(data, v.ValidateMerge)
-}
+func (v ValueValidator) Validate(data any) ErrorMap { return validate(data, v) }
 
-// ValidateValue validates the data value
+// ValidateValue validates the data value (assumes ValidateType is called)
 func (v ValueValidator) ValidateValue(value reflect.Value) ErrorMap {
 	errorMap := ErrorMap{}
 	v.ValidateMerge(value, "", errorMap)
-	return errorMap
+	return errorMap.ToNil()
 }
 
-// ValidateMerge validates the data value, also doing a merge with the errorMap
+// ValidateType checks whether the type is valid for the Rule
+func (v ValueValidator) ValidateType(typ reflect.Type) *RuleTypeError {
+	for _, rule := range v.Rules {
+		if err := rule.ValidateType(typ); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// ValidateMerge validates the data value, also doing a merge with the errorMap (assumes ValidateType is called)
 func (v ValueValidator) ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap) {
 	value = indirect(value)
 	validateMerge(value, key, errorMap, v.Rules)
 }
 
-type validateMergeF func(value reflect.Value, key ErrorKey, errorMap ErrorMap)
+var errInvalidValue = ErrorMap{"Validate": &TemplatedError{Template: "value is not valid"}}
 
-func validate(data any, validateMerge validateMergeF) Result {
+func validate(data any, validator Validator) ErrorMap {
 	value := reflect.ValueOf(data)
-	errorMap := ErrorMap{}
-	validateMerge(value, typeNameKey(value), errorMap)
-	return MapResult{errorMap: errorMap}
+	if !value.IsValid() {
+		return errInvalidValue
+	}
+	return validateValueResult(value, validator)
 }
 
-func validateValue(value reflect.Value, validateMerge validateMergeF) ErrorMap {
-	value = indirect(value)
-	errorMap := ErrorMap{}
-
-	if !value.IsValid() {
-		return errorMap
+func validateValueResult(value reflect.Value, validator Validator) ErrorMap {
+	if err := validator.ValidateType(value.Type()); err != nil {
+		return ErrorMap{"ValidateType": err.TemplatedError()}
 	}
-	validateMerge(value, "", errorMap)
-	return errorMap
+
+	errorMap := ErrorMap{}
+	validator.ValidateMerge(value, typeNameKey(value), errorMap)
+	return errorMap.ToNil()
+}
+
+func validateValue(value reflect.Value, validator Validator) ErrorMap {
+	errorMap := ErrorMap{}
+	validator.ValidateMerge(value, "", errorMap)
+	return errorMap.ToNil()
 }
 
 func validateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap, rules []Rule) {
 	for _, rule := range rules {
-		MergeErrorMap(key, rule.ValidateValue(value), errorMap)
+		rule.ValidateValue(value).MergeInto(key, errorMap)
 	}
+}
+
+func validateType(typ, expectedType reflect.Type, kindString string) *RuleTypeError {
+	iType := indirectType(typ)
+	if iType != expectedType {
+		return NewRuleTypeError(typ, "is not matching "+kindString+" of type "+expectedType.String())
+	}
+	return nil
 }

@@ -24,7 +24,7 @@ func (r *Registry) RegisterType(definition *Definition) {
 		panic(fmt.Sprintf("RegisterType() with type %v already exists", typ.String()))
 	}
 
-	structValidator := NewStructValidator(definition.RuleMap())
+	structValidator := NewStructValidator(typ, definition.RuleMap())
 	for fieldName := range structValidator.RuleMap {
 		field, _ := typ.FieldByName(fieldName)
 		r.registerRecursionType(field.Type, structValidator.RuleMap[fieldName])
@@ -56,30 +56,39 @@ func (r *Registry) registerRecursionType(typ reflect.Type, rules *[]Rule) {
 			r.unregisteredTypeReferences[typ] = append(references, rules)
 		}
 	case reflect.Slice, reflect.Array:
-		validator := NewSliceValidator()
+		validator := NewSliceValidator(typ)
 		*rules = append(*rules, &validator)
 		r.registerRecursionType(typ.Elem(), &validator.ElementRules)
 	}
 }
 
 // Validate validates the data with the correct validator
-func (r *Registry) Validate(data any) Result {
-	return r.DefaultedValidator(reflect.ValueOf(data)).Validate(data)
+func (r *Registry) Validate(data any) ErrorMap {
+	value := reflect.ValueOf(data)
+	if !value.IsValid() {
+		return errInvalidValue
+	}
+	return validateValueResult(value, r.DefaultedValidator(value.Type()))
 }
 
-// ValidateValue validates the data value with the correct validator
+// ValidateValue validates the data value with the correct validator (assumes ValidateType is called)
 func (r *Registry) ValidateValue(value reflect.Value) ErrorMap {
-	return r.DefaultedValidator(value).ValidateValue(value)
+	return r.DefaultedValidator(value.Type()).ValidateValue(value)
 }
 
-// ValidateMerge validates the data value with the correct validator, also doing a merge with the errorMap
+// ValidateType checks whether the type is valid for the Rule
+func (r *Registry) ValidateType(typ reflect.Type) *RuleTypeError {
+	return r.DefaultedValidator(typ).ValidateType(typ)
+}
+
+// ValidateMerge validates the data value with the correct validator, also doing a merge with the errorMap (assumes ValidateType is called)
 func (r *Registry) ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap) {
-	r.DefaultedValidator(value).ValidateMerge(value, key, errorMap)
+	r.DefaultedValidator(value.Type()).ValidateMerge(value, key, errorMap)
 }
 
 // DefaultedValidator returns the validator for the value, defaulted by r.DefaultValidator, then DefaultValidator
-func (r *Registry) DefaultedValidator(value reflect.Value) Validator {
-	validator := r.Validator(value)
+func (r *Registry) DefaultedValidator(typ reflect.Type) Validator {
+	validator := r.Validator(typ)
 	if validator != nil {
 		return validator
 	}
@@ -89,17 +98,8 @@ func (r *Registry) DefaultedValidator(value reflect.Value) Validator {
 	return DefaultValidator
 }
 
-// Validator returns the validator for the value (not defaulted)
-func (r *Registry) Validator(value reflect.Value) Validator {
-	value = indirect(value)
-	if !value.IsValid() {
-		return nil
-	}
-	return r.ValidatorForType(value.Type())
-}
-
-// ValidatorForType returns the validator for the type (not defaulted)
-func (r *Registry) ValidatorForType(typ reflect.Type) Validator {
+// Validator returns the validator for the type (not defaulted)
+func (r *Registry) Validator(typ reflect.Type) Validator {
 	if typ == nil || r.typeToValidator == nil {
 		return nil
 	}

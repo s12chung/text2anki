@@ -3,9 +3,6 @@ package firm
 
 import (
 	"reflect"
-	"sort"
-	"strings"
-	"text/template"
 )
 
 // RegisterType registers the TypeDefinition to the DefaultRegistry
@@ -23,13 +20,10 @@ var DefaultValidator = NewValueValidator(NotFoundRule{})
 // NotFoundRule is the rule used for not found types in the DefaultValidator
 type NotFoundRule struct{}
 
-// ValidateValue validates the value (always an error)
+// ValidateValue validates the value (should never be called due to ValidateType)
 func (n NotFoundRule) ValidateValue(value reflect.Value) ErrorMap {
 	return ErrorMap{notFoundRuleErrorKey: notFoundRuleError(value)}
 }
-
-const notFoundRuleErrorKey = "NotFound"
-
 func notFoundRuleError(value reflect.Value) *TemplatedError {
 	return &TemplatedError{
 		TemplateFields: map[string]string{"Type": typeName(value)},
@@ -37,133 +31,30 @@ func notFoundRuleError(value reflect.Value) *TemplatedError {
 	}
 }
 
-// Rule defines a rule for validation definitions and validators
-type Rule interface {
-	ValidateValue(value reflect.Value) ErrorMap
+const notFoundRuleErrorKey = "NotFound"
+
+// ValidateType checks whether the type is valid for the Rule
+func (n NotFoundRule) ValidateType(typ reflect.Type) *RuleTypeError {
+	return NewRuleTypeError(typ, "is not found in Registry")
 }
 
-// Validator validates the data
-type Validator interface {
-	Rule
-	Validate(data any) Result
-	ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap)
+// NewRuleTypeError returns a new RuleTypeError
+func NewRuleTypeError(typ reflect.Type, badCondition string) *RuleTypeError {
+	return &RuleTypeError{Type: typ, BadCondition: badCondition}
 }
 
 // RuleMap is a map of fields or keys to rules
 type RuleMap map[string][]Rule
 
-// ErrorMap is a map of TemplatedError keys to their respective TemplatedError
-type ErrorMap map[ErrorKey]*TemplatedError
-
-func (e ErrorMap) String() string {
-	errors := make([]string, len(e))
-	keys := e.sortedKeys()
-	for i, k := range keys {
-		errors[i] = k + ": " + e[ErrorKey(k)].Error()
-	}
-	return strings.Join(errors, ", ")
+// Rule defines a rule for validation definitions and validators
+type Rule interface {
+	ValidateValue(value reflect.Value) ErrorMap
+	ValidateType(typ reflect.Type) *RuleTypeError
 }
 
-func (e ErrorMap) sortedKeys() []string {
-	keys := make([]string, len(e))
-	i := 0
-	for k := range e {
-		keys[i] = string(k)
-		i++
-	}
-	sort.Strings(keys)
-	return keys
-}
-
-// MergeErrorMap merges src into dest, given appending path to the src keys
-func MergeErrorMap(path ErrorKey, src, dest ErrorMap) {
-	for k, v := range src {
-		dest[joinKeys(path, k)] = v
-	}
-}
-
-// TemplatedError is an error that contains a key matching a field or top level, a golang template, and template fields
-type TemplatedError struct {
-	Template       string
-	TemplateFields map[string]string
-}
-
-// Error returns a string for the error
-func (t *TemplatedError) Error() string {
-	badTemplateString := t.Template + " (bad format)"
-	temp, err := template.New("top").Parse(t.Template)
-	if err != nil {
-		return badTemplateString
-	}
-	var sb strings.Builder
-	if err = temp.Execute(&sb, t.TemplateFields); err != nil {
-		return badTemplateString
-	}
-	return sb.String()
-}
-
-const nilName = "nil"
-
-func typeName(value reflect.Value) string {
-	if !value.IsValid() {
-		return nilName
-	}
-	return indirect(value).Type().String()
-}
-
-func typeNameKey(value reflect.Value) ErrorKey {
-	return ErrorKey(typeName(value))
-}
-
-func indirect(value reflect.Value) reflect.Value {
-	for value.Kind() == reflect.Pointer {
-		value = value.Elem()
-	}
-	return value
-}
-
-func indirectType(typ reflect.Type) reflect.Type {
-	for typ.Kind() == reflect.Pointer {
-		typ = typ.Elem()
-	}
-	return typ
-}
-
-const keySeparator = "."
-
-func joinKeys(keys ...ErrorKey) ErrorKey {
-	var key ErrorKey
-	for _, v := range keys {
-		if v == "" {
-			continue
-		}
-		if key != "" {
-			key += keySeparator
-		}
-		key += v
-	}
-	return key
-}
-
-// ErrorKey is a string that has helper functions relating to error keys
-type ErrorKey string
-
-// TypeName returns the type name of the key
-func (e ErrorKey) TypeName() string {
-	s := string(e)
-	firstIdx := strings.Index(s, keySeparator)
-	if firstIdx == -1 {
-		return ""
-	}
-	return s[:firstIdx]
-}
-
-// ErrorName returns the error name of the key
-func (e ErrorKey) ErrorName() string {
-	s := string(e)
-	lastIdx := strings.LastIndex(s, keySeparator)
-	if lastIdx == -1 {
-		return ""
-	}
-	return s[lastIdx+len(keySeparator):]
+// Validator validates the data
+type Validator interface {
+	Rule
+	Validate(data any) ErrorMap
+	ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap)
 }

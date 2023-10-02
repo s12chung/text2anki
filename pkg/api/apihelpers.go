@@ -24,9 +24,9 @@ func extractAndValidate(r *http.Request, req any) *jhttp.HTTPError {
 	if httpError := jhttp.ExtractJSON(r, req); httpError != nil {
 		return httpError
 	}
-	result := firm.Validate(req)
-	if !result.IsValid() {
-		return jhttp.Error(http.StatusUnprocessableEntity, fmt.Errorf(result.ErrorMap().String()))
+	errorMap := firm.Validate(req)
+	if errorMap != nil {
+		return jhttp.Error(http.StatusUnprocessableEntity, errorMap)
 	}
 	return nil
 }

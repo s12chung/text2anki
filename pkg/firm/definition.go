@@ -7,9 +7,8 @@ import (
 
 // NewDefinition returns a new Definition
 func NewDefinition(data any) *Definition {
-	value := indirect(reflect.ValueOf(data))
 	validator := &Definition{
-		typ:           value.Type(),
+		typ:           indirectType(reflect.TypeOf(data)),
 		topLevelRules: []Rule{},
 		ruleMap:       RuleMap{},
 	}

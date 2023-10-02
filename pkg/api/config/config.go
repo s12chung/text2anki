@@ -3,7 +3,6 @@ package config
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
 	"path"
@@ -134,11 +133,13 @@ type LocalStoreConfig struct {
 	EncryptorPath string
 }
 
-var localStoreConfigValidator = firm.NewStructValidator(firm.RuleMap{
-	"Origin":        {rule.Present{}},
-	"KeyBasePath":   {rule.Present{}},
-	"EncryptorPath": {rule.Present{}},
-})
+func init() {
+	firm.RegisterType(firm.NewDefinition(LocalStoreConfig{}).Validates(firm.RuleMap{
+		"Origin":        {rule.Present{}},
+		"KeyBasePath":   {rule.Present{}},
+		"EncryptorPath": {rule.Present{}},
+	}))
+}
 
 const localstoreKey = "localstore.key"
 
@@ -152,10 +153,9 @@ func LocalStoreAPI(config LocalStoreConfig) (localstore.API, error) {
 	}
 	config.Origin += StorageURLPath[1:]
 
-	// LocalStoreAPI is called when declaring package level vars (before init()), this ensures the definition works
-	result := localStoreConfigValidator.Validate(config)
-	if !result.IsValid() {
-		return localstore.API{}, fmt.Errorf(result.ErrorMap().String())
+	errorMap := firm.Validate(config)
+	if errorMap != nil {
+		return localstore.API{}, errorMap
 	}
 	encryptor, err := localstore.NewAESEncryptorFromFile(path.Join(config.EncryptorPath, localstoreKey))
 	if err != nil {
