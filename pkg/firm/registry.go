@@ -12,8 +12,15 @@ type Registry struct {
 	DefaultValidator           Validator
 }
 
+// MustRegisterType registers the Definition to validate the type, panics if there is an error
+func (r *Registry) MustRegisterType(definition *Definition) {
+	if err := r.RegisterType(definition); err != nil {
+		panic(err.Error())
+	}
+}
+
 // RegisterType registers the Definition to validate the type
-func (r *Registry) RegisterType(definition *Definition) {
+func (r *Registry) RegisterType(definition *Definition) error {
 	if r.typeToValidator == nil {
 		r.typeToValidator = map[reflect.Type]*ValueValidator{}
 		r.unregisteredTypeReferences = map[reflect.Type][]*[]Rule{}
@@ -21,22 +28,23 @@ func (r *Registry) RegisterType(definition *Definition) {
 
 	typ := definition.typ
 	if _, exists := r.typeToValidator[typ]; exists {
-		panic(fmt.Sprintf("RegisterType() with type %v already exists", typ.String()))
+		return fmt.Errorf("RegisterType() with type %v already exists", typ.String())
 	}
 
-	structValidator := NewStructValidator(typ, definition.RuleMap())
-	for fieldName := range structValidator.RuleMap {
+	structValidator := mustNewStructValidator(typ, definition.RuleMap())
+	for fieldName := range structValidator.ruleMap {
 		field, _ := typ.FieldByName(fieldName)
-		r.registerRecursionType(field.Type, structValidator.RuleMap[fieldName])
+		r.registerRecursionType(field.Type, structValidator.ruleMap[fieldName])
 	}
 
-	validator := NewValueValidator(append(definition.TopLevelRules(), &structValidator)...)
+	validator := mustNewValueValidator(typ, append(definition.TopLevelRules(), &structValidator)...)
 	r.typeToValidator[typ] = &validator
 
 	for _, rules := range r.unregisteredTypeReferences[typ] {
 		*rules = append(*rules, r.typeToValidator[typ])
 	}
 	delete(r.unregisteredTypeReferences, typ)
+	return nil
 }
 
 func (r *Registry) registerRecursionType(typ reflect.Type, rules *[]Rule) {
@@ -47,7 +55,7 @@ func (r *Registry) registerRecursionType(typ reflect.Type, rules *[]Rule) {
 	case reflect.Struct:
 		validator := r.typeToValidator[typ]
 		if validator != nil {
-			*rules = append(*rules, validator.Rules...)
+			*rules = append(*rules, validator.rules...)
 		} else {
 			references, exists := r.unregisteredTypeReferences[typ]
 			if !exists {
@@ -56,11 +64,14 @@ func (r *Registry) registerRecursionType(typ reflect.Type, rules *[]Rule) {
 			r.unregisteredTypeReferences[typ] = append(references, rules)
 		}
 	case reflect.Slice, reflect.Array:
-		validator := NewSliceValidator(typ)
+		validator := mustNewSliceValidator(typ)
 		*rules = append(*rules, &validator)
-		r.registerRecursionType(typ.Elem(), &validator.ElementRules)
+		r.registerRecursionType(typ.Elem(), &validator.elementRules)
 	}
 }
+
+// Type returns the Type the Registry handles
+func (r *Registry) Type() reflect.Type { return r.Validator(nil).Type() }
 
 // Validate validates the data with the correct validator
 func (r *Registry) Validate(data any) ErrorMap {
@@ -68,7 +79,7 @@ func (r *Registry) Validate(data any) ErrorMap {
 	if !value.IsValid() {
 		return errInvalidValue
 	}
-	return validateValueResult(value, r.DefaultedValidator(value.Type()))
+	return validateValueResult(r.DefaultedValidator(value.Type()), value)
 }
 
 // ValidateValue validates the data value with the correct validator (assumes ValidateType is called)

@@ -90,6 +90,11 @@ func (e ErrorKey) ErrorName() string {
 	return s[lastIdx+len(keySeparator):]
 }
 
+// NewRuleTypeError returns a new RuleTypeError
+func NewRuleTypeError(typ reflect.Type, badCondition string) *RuleTypeError {
+	return &RuleTypeError{Type: typ, BadCondition: badCondition}
+}
+
 // RuleTypeError is an error returned by Rule.ValidateType
 type RuleTypeError struct {
 	Type         reflect.Type
@@ -98,8 +103,12 @@ type RuleTypeError struct {
 
 // TemplatedError returns the TemplatedError represented by the RuleTypeError
 func (r RuleTypeError) TemplatedError() *TemplatedError {
+	typeString := "nil"
+	if r.Type != nil {
+		typeString = r.Type.String()
+	}
 	return &TemplatedError{
-		TemplateFields: map[string]string{"Type": r.Type.String()},
+		TemplateFields: map[string]string{"Type": typeString},
 		Template:       "value to validate " + r.BadCondition + ", got {{.Type}}",
 	}
 }

@@ -1,6 +1,7 @@
 package firm
 
 import (
+	"fmt"
 	"maps"
 	"reflect"
 	"testing"
@@ -428,6 +429,42 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 }
 
+func TestNewStructValidator(t *testing.T) {
+	noMatchingRule := onlyKindRule{kind: reflect.Bool}
+
+	tcs := []struct {
+		name    string
+		data    any
+		ruleMap RuleMap
+		err     error
+	}{
+		{name: "normal", data: child{}, ruleMap: RuleMap{"Validates": {presentRule{}}}},
+		{name: "nil_type", data: nil, err: fmt.Errorf("type is not a Struct")},
+		{name: "non_matching_field", data: child{}, ruleMap: RuleMap{"No": {presentRule{}}}, err: fmt.Errorf("field, No, not found in type: firm.child")},
+		{name: "no_matching_rule", data: child{}, ruleMap: RuleMap{"Validates": {noMatchingRule}},
+			err: fmt.Errorf("field, Validates, in firm.child: %w", noMatchingRule.ValidateType(reflect.TypeOf("")))},
+	}
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+
+			validator, err := NewStructValidator(tc.data, tc.ruleMap)
+			if tc.err != nil {
+				require.Equal(tc.err, err)
+				return
+			}
+
+			require.NoError(err)
+			require.Equal(reflect.TypeOf(tc.data), validator.typ)
+			require.Equal(len(tc.ruleMap), len(validator.ruleMap))
+			for k, v := range tc.ruleMap {
+				require.Equal(v, *validator.ruleMap[k])
+			}
+		})
+	}
+}
+
 func TestStructValidator_Validate(t *testing.T) {
 	validator := testRegistry.Validator(reflect.TypeOf(parent{}))
 
@@ -460,7 +497,8 @@ func TestStructValidator_Validate(t *testing.T) {
 
 func TestStructValidator_ValidateType(t *testing.T) {
 	parentType := reflect.TypeOf(parent{})
-	validator := testRegistry.Validator(parentType)
+	validator, err := newStructValidator(parentType, RuleMap{})
+	require.NoError(t, err)
 	badCondition := "is not matching Struct of type firm.parent"
 
 	tcs := []struct {
@@ -519,8 +557,40 @@ var sliceValidatorTestCases = []sliceValidatorTestCase{
 	}},
 }
 
-var sliceValidator = NewSliceValidator(reflect.TypeOf([]sliceValidatorElement{}),
-	presentRule{}, NewStructValidator(reflect.TypeOf([]sliceValidatorElement{}), RuleMap{"Int": {presentRule{}}}))
+var sliceValidator = MustNewSliceValidator([]sliceValidatorElement{},
+	presentRule{}, MustNewStructValidator(sliceValidatorElement{}, RuleMap{"Int": {presentRule{}}}))
+
+func TestNewSliceValidator(t *testing.T) {
+	noMatchingRule := onlyKindRule{kind: reflect.Bool}
+
+	tcs := []struct {
+		name  string
+		data  any
+		rules []Rule
+		err   error
+	}{
+		{name: "normal", data: []child{}, rules: []Rule{presentRule{}}},
+		{name: "nil_type", data: nil, err: fmt.Errorf("type, nil, is not a Slice or Array")},
+		{name: "not_slice", data: child{}, err: fmt.Errorf("type, firm.child, is not a Slice or Array")},
+		{name: "no_matching_rule", data: []child{}, rules: []Rule{noMatchingRule},
+			err: fmt.Errorf("element type: %w", noMatchingRule.ValidateType(reflect.TypeOf(child{})))},
+	}
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+
+			validator, err := NewSliceValidator(tc.data, tc.rules...)
+			if tc.err != nil {
+				require.Equal(tc.err, err)
+				return
+			}
+
+			require.NoError(err)
+			require.Equal(SliceValidator{typ: reflect.TypeOf(tc.data), elementRules: tc.rules}, validator)
+		})
+	}
+}
 
 func TestSliceValidator_Validate(t *testing.T) {
 	validator := sliceValidator
@@ -591,9 +661,46 @@ func (o onlyKindRule) ValidateType(typ reflect.Type) *RuleTypeError {
 	return nil
 }
 
+func TestNewValueValidator(t *testing.T) {
+	i := 0
+	intRule := onlyKindRule{kind: reflect.Int}
+
+	tcs := []struct {
+		name  string
+		data  any
+		rules []Rule
+		err   error
+	}{
+		{name: "normal", data: i, rules: []Rule{intRule}},
+		{name: "int_pointer", data: &i, rules: []Rule{intRule}, err: intRule.ValidateType(reflect.TypeOf(&i))},
+		{name: "not_int", data: []int{}, rules: []Rule{intRule}, err: intRule.ValidateType(reflect.TypeOf([]int{}))},
+		{name: "nil_type", data: nil, rules: []Rule{intRule}, err: intRule.ValidateType(anyTyp)},
+		{name: "nil_with_presentRule", data: nil, rules: []Rule{presentRule{}}},
+	}
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+
+			validator, err := NewValueValidator(tc.data, tc.rules...)
+			if tc.err != nil {
+				require.Equal(tc.err, err)
+				return
+			}
+
+			require.NoError(err)
+			expectedType := reflect.TypeOf(tc.data)
+			if expectedType == nil {
+				expectedType = anyTyp
+			}
+			require.Equal(ValueValidator{typ: expectedType, rules: tc.rules}, validator)
+		})
+	}
+}
+
 func TestValueValidator_Validate(t *testing.T) {
-	validator := NewValueValidator(presentRule{})
-	onlyKindValidator := NewValueValidator(onlyKindRule{kind: reflect.String})
+	validator, err := newValueValidator(nil, presentRule{})
+	require.NoError(t, err)
 
 	edgeTcs := []struct {
 		name      string
@@ -601,7 +708,6 @@ func TestValueValidator_Validate(t *testing.T) {
 		data      any
 		result    ErrorMap
 	}{
-		{name: "not_valid_type", validator: onlyKindValidator, data: 1, result: validateTypeErrorResult(onlyKindValidator, 1)},
 		{name: "invalid", validator: validator, data: nil, result: errInvalidValue},
 	}
 	for _, tc := range edgeTcs {
@@ -625,10 +731,9 @@ func TestValueValidator_Validate(t *testing.T) {
 }
 
 func TestValueValidator_ValidateType(t *testing.T) {
-	intType := reflect.TypeOf(1)
-	badCondition := "is not int"
-
 	i := 0
+	intType := reflect.TypeOf(i)
+
 	tcs := []struct {
 		name         string
 		typ          reflect.Type
@@ -636,9 +741,8 @@ func TestValueValidator_ValidateType(t *testing.T) {
 		badCondition string
 	}{
 		{name: "matching int", typ: intType},
-		{name: "matching int pointer", typ: reflect.TypeOf(&i), badCondition: badCondition},
-		{name: "not int", typ: reflect.TypeOf([]int{}), badCondition: badCondition},
-		{name: "extra rule", typ: intType, extraRule: onlyKindRule{kind: reflect.String}, badCondition: "is not string"},
+		{name: "matching int pointer", typ: reflect.TypeOf(&i)},
+		{name: "not int", typ: reflect.TypeOf([]int{}), badCondition: "is not matching of type int"},
 	}
 
 	for _, tc := range tcs {
@@ -650,13 +754,14 @@ func TestValueValidator_ValidateType(t *testing.T) {
 			if tc.extraRule != nil {
 				rules = append(rules, tc.extraRule)
 			}
-			validator := NewValueValidator(rules...)
+			validator, err := newValueValidator(intType, rules...)
+			require.NoError(err)
 
-			var err *RuleTypeError
+			var ruleTypeError *RuleTypeError
 			if tc.badCondition != "" {
-				err = NewRuleTypeError(tc.typ, tc.badCondition)
+				ruleTypeError = NewRuleTypeError(tc.typ, tc.badCondition)
 			}
-			require.Equal(err, validator.ValidateType(tc.typ))
+			require.Equal(ruleTypeError, validator.ValidateType(tc.typ))
 		})
 	}
 }
@@ -676,7 +781,7 @@ func testValidatesFull(t *testing.T, skipValidate bool, validator Validator, dat
 		}
 	}
 	validateExpected := ErrorMap{}
-	validateValueExpected.MergeInto(typeNameKey(reflect.ValueOf(data)), validateExpected)
+	validateValueExpected.MergeInto(TypeNameKey(reflect.ValueOf(data)), validateExpected)
 	validateExpected = validateExpected.ToNil()
 
 	if !skipValidate {

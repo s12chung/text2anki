@@ -31,9 +31,3 @@ func TestNotFoundRule_ValidateValue(t *testing.T) {
 	require.NotNil(errorMap)
 	require.NotEmpty(errorMap)
 }
-
-func TestNotFoundRule_ValidateType(t *testing.T) {
-	require := require.New(t)
-	typ := reflect.TypeOf("")
-	require.Equal(NewRuleTypeError(typ, "is not found in Registry"), NotFoundRule{}.ValidateType(typ))
-}
