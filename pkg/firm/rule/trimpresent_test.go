@@ -16,8 +16,8 @@ func TestTrimPresent_ValidateValue(t *testing.T) {
 		expected firm.ErrorMap
 	}{
 		{name: "valid", value: "\t not space \n", expected: nil},
-		{name: "just space", value: "\t \t\n \n", expected: errorMapNotSpace("value is just spaces or empty")},
-		{name: "empty", value: "", expected: errorMapNotSpace("value is just spaces or empty")},
+		{name: "just space", value: "\t \t\n \n", expected: errorMapTrimPresent},
+		{name: "empty", value: "", expected: errorMapTrimPresent},
 	}
 
 	for _, tc := range tcs {

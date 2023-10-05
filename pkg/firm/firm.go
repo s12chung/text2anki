@@ -31,17 +31,9 @@ var DefaultValidator = MustNewValueValidator(nil, NotFoundRule{})
 type NotFoundRule struct{}
 
 // ValidateValue validates the value
-func (n NotFoundRule) ValidateValue(value reflect.Value) ErrorMap {
-	return ErrorMap{notFoundRuleErrorKey: notFoundRuleError(value)}
+func (n NotFoundRule) ValidateValue(_ reflect.Value) ErrorMap {
+	return ErrorMap{"NotFound": &TemplateError{Template: "type, {{.TypeName}}, not found in Registry"}}
 }
-func notFoundRuleError(value reflect.Value) *TemplatedError {
-	return &TemplatedError{
-		TemplateFields: map[string]string{"Type": typeName(value)},
-		Template:       "type, {{.Type}}, not found in Registry",
-	}
-}
-
-const notFoundRuleErrorKey = "NotFound"
 
 // ValidateType checks whether the type is valid for the Rule
 func (n NotFoundRule) ValidateType(_ reflect.Type) *RuleTypeError { return nil }
@@ -60,5 +52,5 @@ type Validator interface {
 	Rule
 	Type() reflect.Type
 	Validate(data any) ErrorMap
-	ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap)
+	ValidateMerge(value reflect.Value, key string, errorMap ErrorMap)
 }

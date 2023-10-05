@@ -7,6 +7,7 @@ import (
 )
 
 type parent struct {
+	child
 	Primitive               int
 	Basic                   child
 	Pt                      *child
@@ -37,6 +38,7 @@ func fullParent() parent {
 		return &child{Validates: "child validates", NoValidates: "no validates"}
 	}
 	return parent{
+		child: *fc(),
 		// validate field + child
 		Primitive: 1, Basic: *fc(), Pt: fc(), Any: *fc(),
 		Array: []child{*fc(), *fc()}, ArrayPt: []*child{fc(), fc()},
@@ -62,6 +64,7 @@ func init() {
 	testRegistry.MustRegisterType(
 		NewDefinition(parent{}).
 			Validates(RuleMap{
+				"child":                   {presentRule{}},
 				"Primitive":               {presentRule{}},
 				"Basic":                   {presentRule{}},
 				"Pt":                      {presentRule{}},

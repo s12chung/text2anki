@@ -13,7 +13,7 @@ type TrimPresent struct{}
 // ValidateValue returns true if the value is present (assumes ValidateType is called)
 func (t TrimPresent) ValidateValue(value reflect.Value) firm.ErrorMap {
 	if strings.TrimSpace(value.String()) == "" {
-		return errorMapNotSpace("value is just spaces or empty")
+		return errorMapTrimPresent
 	}
 	return nil
 }
@@ -26,6 +26,4 @@ func (t TrimPresent) ValidateType(typ reflect.Type) *firm.RuleTypeError {
 	return nil
 }
 
-func errorMapNotSpace(template string) firm.ErrorMap {
-	return firm.ErrorMap{"TrimPresent": &firm.TemplatedError{Template: template}}
-}
+var errorMapTrimPresent = firm.ErrorMap{"TrimPresent": &firm.TemplateError{Template: "is just spaces or empty"}}

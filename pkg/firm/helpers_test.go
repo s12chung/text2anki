@@ -7,13 +7,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTypeNameKey(t *testing.T) {
+func TestTypeName(t *testing.T) {
 	i := 0
 
 	tcs := []struct {
 		name     string
 		data     any
-		expected ErrorKey
+		expected string
 	}{
 		{name: "normal", data: i, expected: "int"},
 		{name: "pointer", data: &i, expected: "int"},
@@ -25,7 +25,7 @@ func TestTypeNameKey(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			require.Equal(tc.expected, TypeNameKey(reflect.ValueOf(tc.data)))
+			require.Equal(tc.expected, TypeName(reflect.ValueOf(tc.data)))
 		})
 	}
 }

@@ -14,11 +14,13 @@ type presentRule struct{}
 
 const presentRuleKey = "presentRule"
 
-var errTest = &firm.TemplatedError{Template: "test"}
+func templateError(errorKey firm.ErrorKey) *firm.TemplateError {
+	return &firm.TemplateError{TypeName: errorKey.TypeName(), ValueName: errorKey.ValueName(), Template: "test"}
+}
 
 func (p presentRule) ValidateValue(value reflect.Value) firm.ErrorMap {
 	if !value.IsValid() || value.IsZero() {
-		return firm.ErrorMap{presentRuleKey: errTest}
+		return firm.ErrorMap{presentRuleKey: &firm.TemplateError{Template: "test"}}
 	}
 	return nil
 }
@@ -70,10 +72,11 @@ func TestNewStruct(t *testing.T) {
 }
 
 func TestStruct_ValidateTyped(t *testing.T) {
+	errorKey := firm.ErrorKey("typedvalidator.testStruct.WillV." + presentRuleKey)
+
 	tcs := []validateTypedTC[testStruct]{
 		{name: "valid", data: testStruct{WillV: "ok"}},
-		{name: "invalid", data: testStruct{NoV: "not_ok"},
-			result: firm.ErrorMap{"typedvalidator.testStruct.WillV." + presentRuleKey: errTest}},
+		{name: "invalid", data: testStruct{NoV: "not_ok"}, result: firm.ErrorMap{errorKey: templateError(errorKey)}},
 	}
 	testValidateTyped(t, tcs, func() (TypedValidator[testStruct], error) {
 		return NewStruct(testStruct{}, firm.RuleMap{"WillV": []firm.Rule{presentRule{}}})
@@ -113,10 +116,11 @@ func TestNewSlice(t *testing.T) {
 }
 
 func TestSlice_ValidateTyped(t *testing.T) {
+	errorKey := firm.ErrorKey("[]typedvalidator.testStruct.[0]." + presentRuleKey)
 	tcs := []validateTypedTC[[]testStruct]{
 		{name: "valid", data: []testStruct{{WillV: "ok"}}},
 		{name: "invalid", data: []testStruct{{}},
-			result: firm.ErrorMap{"[]typedvalidator.testStruct.[0]." + presentRuleKey: errTest}},
+			result: firm.ErrorMap{errorKey: templateError(errorKey)}},
 	}
 	testValidateTyped(t, tcs, func() (TypedValidator[[]testStruct], error) {
 		return NewSlice([]testStruct{}, presentRule{})
@@ -155,10 +159,10 @@ func TestMustNewValue(t *testing.T) {
 }
 
 func TestValue_ValidateTyped(t *testing.T) {
+	errorKey := firm.ErrorKey("typedvalidator.testStruct." + presentRuleKey)
 	tcs := []validateTypedTC[testStruct]{
 		{name: "valid", data: testStruct{WillV: "ok"}},
-		{name: "invalid", data: testStruct{},
-			result: firm.ErrorMap{"typedvalidator.testStruct." + presentRuleKey: errTest}},
+		{name: "invalid", data: testStruct{}, result: firm.ErrorMap{errorKey: templateError(errorKey)}},
 	}
 	testValidateTyped(t, tcs, func() (TypedValidator[testStruct], error) {
 		return NewValue(testStruct{}, presentRule{})
@@ -178,8 +182,9 @@ func testValidateTyped[T any](t *testing.T, tcs []validateTypedTC[T], newValidat
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require.Equal(t, tc.result, validator.ValidateTyped(tc.data))
-			require.Equal(t, tc.result, validator.Validate(tc.data))
+			require := require.New(t)
+			require.Equal(tc.result, validator.ValidateTyped(tc.data))
+			require.Equal(tc.result, validator.Validate(tc.data))
 		})
 	}
 }

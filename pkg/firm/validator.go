@@ -66,15 +66,14 @@ func (s StructValidator) ValidateType(typ reflect.Type) *RuleTypeError {
 }
 
 // ValidateMerge validates the data value, also doing a merge with the errorMap (assumes ValidateType is called)
-func (s StructValidator) ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap) {
+func (s StructValidator) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
 	value = indirect(value)
 	if !value.IsValid() {
 		return
 	}
 	for fieldName, rules := range s.ruleMap {
 		field, _ := value.Type().FieldByName(fieldName)
-		fieldKey := joinKeys(key, ErrorKey(field.Name))
-		validateMerge(value.FieldByName(fieldName), fieldKey, errorMap, *rules)
+		validateMerge(value.FieldByName(fieldName), joinKeys(key, field.Name), errorMap, *rules)
 	}
 }
 
@@ -130,11 +129,10 @@ func (s SliceValidator) ValidateType(typ reflect.Type) *RuleTypeError {
 }
 
 // ValidateMerge validates the data value, also doing a merge with the errorMap (assumes ValidateType is called)
-func (s SliceValidator) ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap) {
+func (s SliceValidator) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
 	value = indirect(value)
 	for i := 0; i < value.Len(); i++ {
-		indexKey := joinKeys(key, ErrorKey("["+strconv.Itoa(i)+"]"))
-		validateMerge(value.Index(i), indexKey, errorMap, s.elementRules)
+		validateMerge(value.Index(i), joinKeys(key, "["+strconv.Itoa(i)+"]"), errorMap, s.elementRules)
 	}
 }
 
@@ -190,7 +188,7 @@ func (v ValueValidator) ValidateType(typ reflect.Type) *RuleTypeError {
 }
 
 // ValidateMerge validates the data value, also doing a merge with the errorMap (assumes ValidateType is called)
-func (v ValueValidator) ValidateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap) {
+func (v ValueValidator) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
 	value = indirect(value)
 	validateMerge(value, key, errorMap, v.rules)
 }
@@ -203,7 +201,7 @@ func mustNewValidator[T any](f func() (T, error)) T {
 	return validator
 }
 
-var errInvalidValue = ErrorMap{"Validate": &TemplatedError{Template: "value is not valid"}}
+var errInvalidValue = ErrorMap{"Validate": &TemplateError{Template: "value is not valid"}}
 
 func validate(validator Validator, data any) ErrorMap {
 	value := reflect.ValueOf(data)
@@ -215,12 +213,12 @@ func validate(validator Validator, data any) ErrorMap {
 
 func validateValueResult(validator Validator, value reflect.Value) ErrorMap {
 	if err := validator.ValidateType(value.Type()); err != nil {
-		return ErrorMap{"ValidateType": err.TemplatedError()}
+		return ErrorMap{"ValidateType": err.TemplateError()}
 	}
 
 	errorMap := ErrorMap{}
-	validator.ValidateMerge(value, TypeNameKey(value), errorMap)
-	return errorMap.ToNil()
+	validator.ValidateMerge(value, TypeName(value), errorMap)
+	return errorMap.Finish()
 }
 
 func validateValue(validator Validator, value reflect.Value) ErrorMap {
@@ -229,7 +227,7 @@ func validateValue(validator Validator, value reflect.Value) ErrorMap {
 	return errorMap.ToNil()
 }
 
-func validateMerge(value reflect.Value, key ErrorKey, errorMap ErrorMap, rules []Rule) {
+func validateMerge(value reflect.Value, key string, errorMap ErrorMap, rules []Rule) {
 	for _, rule := range rules {
 		rule.ValidateValue(value).MergeInto(key, errorMap)
 	}

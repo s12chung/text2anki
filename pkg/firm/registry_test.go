@@ -55,12 +55,10 @@ func TestRegistry_RegisterType(t *testing.T) {
 }
 
 func notFoundError(data any) ErrorMap {
-	validator := DefaultValidator
 	value := reflect.ValueOf(data)
-
 	errorMap := ErrorMap{}
-	validator.ValidateMerge(value, TypeNameKey(value), errorMap)
-	return errorMap.ToNil()
+	DefaultValidator.ValidateMerge(value, TypeName(value), errorMap)
+	return errorMap.Finish()
 }
 
 // nolint:funlen // a bunch of test cases
@@ -70,8 +68,8 @@ func TestRegistry_Validate(t *testing.T) {
 		definition *Definition
 		data       func() registryTestParent
 
-		expectedKeySuffix ErrorKey
-		err               *TemplatedError
+		expectedKeySuffix string
+		err               *TemplateError
 	}
 	tcs := []testCase{
 		{
@@ -79,7 +77,7 @@ func TestRegistry_Validate(t *testing.T) {
 			definition:        NewDefinition(registryTestParent{}).ValidatesTopLevel(presentRule{}),
 			data:              func() registryTestParent { return registryTestParent{} },
 			expectedKeySuffix: presentRuleKey,
-			err:               errTest,
+			err:               templateError(),
 		},
 		{
 			name: "field_Primitive",
@@ -89,13 +87,12 @@ func TestRegistry_Validate(t *testing.T) {
 				}),
 			data:              func() registryTestParent { return registryTestParent{} },
 			expectedKeySuffix: "Primitive.presentRule",
-			err:               errTest,
+			err:               templateError(),
 		},
 		{
 			name:              "not_found",
 			definition:        NewDefinition(registryTestParent{}).ValidatesTopLevel(presentRule{}),
-			expectedKeySuffix: notFoundRuleErrorKey,
-			err:               notFoundRuleError(reflect.ValueOf(registryNotFoundTest{})),
+			expectedKeySuffix: "NotFound",
 		},
 		{
 			name: "not_found_field_Primitive",
@@ -103,8 +100,7 @@ func TestRegistry_Validate(t *testing.T) {
 				Validates(RuleMap{
 					"Primitive": {presentRule{}},
 				}),
-			expectedKeySuffix: notFoundRuleErrorKey,
-			err:               notFoundRuleError(reflect.ValueOf(registryNotFoundTest{})),
+			expectedKeySuffix: "NotFound",
 		},
 		{
 			name:       "invalid",
@@ -130,8 +126,10 @@ func TestRegistry_Validate(t *testing.T) {
 				data := registryNotFoundTest{}
 				require.Equal(notFoundError(data), registry.Validate(data))
 				require.Equal(notFoundError(&data), registry.Validate(&data))
-				testValidatesFull(t, true, registry, data, tc.err, tc.expectedKeySuffix)
-				testValidatesFull(t, true, registry, &data, tc.err, tc.expectedKeySuffix)
+
+				notFoundTemplateError := &TemplateError{Template: "type, {{.TypeName}}, not found in Registry"}
+				testValidatesFull(t, true, registry, data, notFoundTemplateError, tc.expectedKeySuffix)
+				testValidatesFull(t, true, registry, &data, notFoundTemplateError, tc.expectedKeySuffix)
 				return
 			}
 			data := tc.data()

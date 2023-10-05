@@ -39,7 +39,7 @@ type SourceCreateRequest struct {
 
 func init() {
 	firm.MustRegisterType(firm.NewDefinition(SourceCreateRequest{}).Validates(firm.RuleMap{
-		"Parts": {rule.Present{}},
+		"PartCreateMultiRequest": {},
 	}))
 }
 

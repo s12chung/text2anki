@@ -84,6 +84,6 @@ func mustNew[T any](f func() (T, error)) T {
 func validateTyped(validator firm.Validator, data any) firm.ErrorMap {
 	value := reflect.ValueOf(data)
 	errorMap := firm.ErrorMap{}
-	validator.ValidateMerge(value, firm.TypeNameKey(value), errorMap)
-	return errorMap.ToNil()
+	validator.ValidateMerge(value, firm.TypeName(value), errorMap)
+	return errorMap.Finish()
 }
