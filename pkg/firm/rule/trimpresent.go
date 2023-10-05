@@ -26,4 +26,4 @@ func (t TrimPresent) ValidateType(typ reflect.Type) *firm.RuleTypeError {
 	return nil
 }
 
-var errorMapTrimPresent = firm.ErrorMap{"TrimPresent": &firm.TemplateError{Template: "is just spaces or empty"}}
+var errorMapTrimPresent = firm.ErrorMap{"TrimPresent": firm.TemplateError{Template: "is just spaces or empty"}}

@@ -1,6 +1,7 @@
 package firm
 
 import (
+	"maps"
 	"reflect"
 	"testing"
 
@@ -15,7 +16,7 @@ func templateError() *TemplateError { return &TemplateError{Template: "test"} }
 
 func (p presentRule) ValidateValue(value reflect.Value) ErrorMap {
 	if !value.IsValid() || value.IsZero() {
-		return ErrorMap{presentRuleKey: templateError()}
+		return ErrorMap{presentRuleKey: *templateError()}
 	}
 	return nil
 }
@@ -36,33 +37,26 @@ func testValidatesFull(t *testing.T, skipValidate bool, validator Validator, dat
 	if err != nil && len(keySuffixes) > 0 {
 		validateValueExpected = ErrorMap{}
 		for _, key := range keySuffixes {
-			dupErr := *err
-			validateValueExpected[ErrorKey(key)] = &dupErr
+			validateValueExpected[ErrorKey(key)] = *err
 		}
 	}
 	validateExpected := ErrorMap{}
 	validateValueExpected.MergeInto(TypeName(reflect.ValueOf(data)), validateExpected)
 	validateExpected = validateExpected.ToNil()
 
+	if !skipValidate {
+		require.Equal(validateExpected.Finish(), validator.Validate(data))
+	}
 	require.Equal(validateValueExpected, validator.ValidateValue(reflect.ValueOf(data)))
 
-	if !skipValidate {
-		// Run this last because .Finish() mutates
-		validateExpected = validateExpected.Finish()
-		require.Equal(validateExpected, validator.Validate(data))
-	}
-
-	// ValidateMerge will set TypeName and ValueName
-	errorMap := ErrorMap{"Existing": nil}
-	expectedErrorMap := ErrorMap{"Existing": nil}
+	errorKey := "pkger.Mover.Parent"
+	errorMap := ErrorMap{"Existing": TemplateError{}}
+	expectedErrorMap := maps.Clone(errorMap)
 	if err != nil {
-		errorKey := ErrorKey("pkger.Mover.Parent") // this ErrorKey is incomplete - built via MergeInto
 		for _, keySuffix := range keySuffixes {
-			errorKeySuffix := ErrorKey(keySuffix)
-			dupErr := *err
-			expectedErrorMap[joinKeys(errorKey, errorKeySuffix)] = &dupErr
+			expectedErrorMap[ErrorKey(joinKeys(errorKey, keySuffix))] = *err
 		}
 	}
-	validator.ValidateMerge(reflect.ValueOf(data), "pkger.Mover.Parent", errorMap)
+	validator.ValidateMerge(reflect.ValueOf(data), errorKey, errorMap)
 	require.Equal(expectedErrorMap, errorMap)
 }

@@ -32,7 +32,7 @@ type NotFoundRule struct{}
 
 // ValidateValue validates the value
 func (n NotFoundRule) ValidateValue(_ reflect.Value) ErrorMap {
-	return ErrorMap{"NotFound": &TemplateError{Template: "type, {{.TypeName}}, not found in Registry"}}
+	return ErrorMap{"NotFound": TemplateError{Template: "type, {{.TypeName}}, not found in Registry"}}
 }
 
 // ValidateType checks whether the type is valid for the Rule

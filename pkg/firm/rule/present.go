@@ -29,4 +29,4 @@ func (p Present) ValidateValue(value reflect.Value) firm.ErrorMap {
 // ValidateType checks whether the type is valid for the Rule
 func (p Present) ValidateType(_ reflect.Type) *firm.RuleTypeError { return nil }
 
-var errorMapPresent = firm.ErrorMap{"Present": &firm.TemplateError{Template: "is not present"}}
+var errorMapPresent = firm.ErrorMap{"Present": firm.TemplateError{Template: "is not present"}}

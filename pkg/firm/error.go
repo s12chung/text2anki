@@ -11,7 +11,7 @@ import (
 // ErrorMap is a map of TemplateError keys to their respective TemplateError
 //
 //nolint:errname
-type ErrorMap map[ErrorKey]*TemplateError
+type ErrorMap map[ErrorKey]TemplateError
 
 func (e ErrorMap) Error() string {
 	errors := make([]string, len(e))
@@ -53,6 +53,7 @@ func (e ErrorMap) Finish() ErrorMap {
 	for k, v := range e {
 		v.TypeName = k.TypeName()
 		v.ValueName = k.ValueName()
+		e[k] = v
 	}
 	return e.ToNil()
 }
@@ -162,12 +163,12 @@ type RuleTypeError struct {
 }
 
 // TemplateError returns the TemplateError represented by the RuleTypeError
-func (r RuleTypeError) TemplateError() *TemplateError {
+func (r RuleTypeError) TemplateError() TemplateError {
 	typeString := "nil"
 	if r.Type != nil {
 		typeString = r.Type.String()
 	}
-	return &TemplateError{
+	return TemplateError{
 		TemplateFields: map[string]string{"Type": typeString},
 		Template:       "value to validate " + r.BadCondition + ", got {{.Type}}",
 	}

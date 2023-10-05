@@ -201,7 +201,7 @@ func mustNewValidator[T any](f func() (T, error)) T {
 	return validator
 }
 
-var errInvalidValue = ErrorMap{"Validate": &TemplateError{Template: "value is not valid"}}
+var errInvalidValue = ErrorMap{"Validate": TemplateError{Template: "value is not valid"}}
 
 func validate(validator Validator, data any) ErrorMap {
 	value := reflect.ValueOf(data)

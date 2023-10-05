@@ -10,8 +10,8 @@ func TestErrorMap_Error(t *testing.T) {
 	require := require.New(t)
 
 	errorMap := ErrorMap{
-		"A": &TemplateError{Template: "field A message"},
-		"B": &TemplateError{Template: "field B message"},
+		"A": TemplateError{Template: "field A message"},
+		"B": TemplateError{Template: "field B message"},
 	}
 	require.Equal("A: value field A message, B: value field B message", errorMap.Error())
 }
@@ -20,18 +20,18 @@ func TestErrorMap_MergeInto(t *testing.T) {
 	require := require.New(t)
 
 	src := ErrorMap{
-		"A": &TemplateError{Template: "a1"},
-		"B": &TemplateError{Template: "b1"},
+		"A": TemplateError{Template: "a1"},
+		"B": TemplateError{Template: "b1"},
 	}
 	dest := ErrorMap{
-		"PATH.B": &TemplateError{Template: "b2"},
-		"PATH.C": &TemplateError{Template: "c2"},
+		"PATH.B": TemplateError{Template: "b2"},
+		"PATH.C": TemplateError{Template: "c2"},
 	}
 	src.MergeInto("PATH", dest)
 	require.Equal(ErrorMap{
-		"PATH.A": &TemplateError{Template: "a1"},
-		"PATH.B": &TemplateError{Template: "b1"},
-		"PATH.C": &TemplateError{Template: "c2"},
+		"PATH.A": TemplateError{Template: "a1"},
+		"PATH.B": TemplateError{Template: "b1"},
+		"PATH.C": TemplateError{Template: "c2"},
 	}, dest)
 }
 
@@ -41,7 +41,7 @@ func TestErrorMap_ToNil(t *testing.T) {
 		errorMap ErrorMap
 		isNil    bool
 	}{
-		{name: "not_empty", errorMap: ErrorMap{"testy": nil}},
+		{name: "not_empty", errorMap: ErrorMap{"testy": TemplateError{}}},
 		{name: "empty", errorMap: ErrorMap{}, isNil: true},
 		{name: "nil", errorMap: nil, isNil: true},
 	}
@@ -77,7 +77,7 @@ func TestErrorMap_Finish(t *testing.T) {
 		errorMap ErrorMap
 		expected *TemplateError
 	}{
-		{name: "not_empty", errorMap: ErrorMap{fullTemplateErrorKey: &TemplateError{}},
+		{name: "not_empty", errorMap: ErrorMap{fullTemplateErrorKey: TemplateError{}},
 			expected: &TemplateError{TypeName: errTemplateError.TypeName, ValueName: errTemplateError.ValueName}},
 		{name: "empty", errorMap: ErrorMap{}, expected: nil},
 	}
@@ -87,7 +87,7 @@ func TestErrorMap_Finish(t *testing.T) {
 			require := require.New(t)
 			var expected ErrorMap
 			if tc.expected != nil {
-				expected = ErrorMap{fullTemplateErrorKey: tc.expected}
+				expected = ErrorMap{fullTemplateErrorKey: *tc.expected}
 			}
 			require.Equal(expected, tc.errorMap.Finish())
 		})
