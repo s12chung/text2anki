@@ -21,12 +21,7 @@ func (p Present) ValidateValue(value reflect.Value) firm.ErrorMap {
 			return errorMapPresent
 		}
 	case reflect.Ptr:
-		elem := value.Type().Elem()
-		if elem.Kind() == reflect.Array {
-			if elem.Len() == 0 {
-				return errorMapPresent
-			}
-		}
+		return p.ValidateValue(value.Elem())
 	}
 	return nil
 }

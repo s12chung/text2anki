@@ -18,22 +18,33 @@ func TestPresent_ValidateValue(t *testing.T) {
 		expected firm.ErrorMap
 	}{
 		{name: "int", value: 10, expected: nil},
-		{name: "empty_int", value: 0, expected: errorMapPresent},
+		{name: "int_empty", value: 0, expected: errorMapPresent},
+
 		{name: "string", value: "abc", expected: nil},
-		{name: "empty_string", value: "", expected: errorMapPresent},
+		{name: "string_empty", value: "", expected: errorMapPresent},
+
 		{name: "struct", value: presentStruct{Integer: 1}, expected: nil},
-		{name: "empty_struct", value: presentStruct{}, expected: errorMapPresent},
-		{name: "func", value: func() {}, expected: nil},
-		{name: "empty_channel", value: make(chan int), expected: errorMapPresent},
-		{name: "pointer", value: &presentStruct{}, expected: nil},
+		{name: "struct_pointer", value: &presentStruct{Integer: 1}, expected: nil},
+		{name: "struct_empty", value: presentStruct{}, expected: errorMapPresent},
+		{name: "struct_empty_pointer", value: &presentStruct{}, expected: errorMapPresent},
+
 		{name: "slice", value: []int{1, 2}, expected: nil},
 		{name: "slice_pointer", value: []int{1, 2}, expected: nil},
-		{name: "empty_slice", value: []int{}, expected: errorMapPresent},
+		{name: "slice_empty", value: []int{}, expected: errorMapPresent},
+		{name: "slice_empty_pointer", value: &[]int{}, expected: errorMapPresent},
+
 		{name: "array", value: [3]int{1, 2, 3}, expected: nil},
 		{name: "array_pointer", value: &[3]int{1, 2, 3}, expected: nil},
 		{name: "array_empty", value: [3]int{}, expected: errorMapPresent},
+		{name: "array_empty_pointer", value: &[3]int{}, expected: errorMapPresent},
+
 		{name: "map", value: map[int]int{1: 1, 2: 2}, expected: nil},
-		{name: "empty_map", value: map[int]int{}, expected: errorMapPresent},
+		{name: "map_pointer", value: &map[int]int{1: 1, 2: 2}, expected: nil},
+		{name: "map_empty", value: map[int]int{}, expected: errorMapPresent},
+		{name: "map_empty_pointer", value: &map[int]int{}, expected: errorMapPresent},
+
+		{name: "func", value: func() {}, expected: nil},
+		{name: "channel_empty", value: make(chan int), expected: errorMapPresent},
 		{name: "nil", value: nil, expected: errorMapPresent},
 	}
 
