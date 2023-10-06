@@ -127,7 +127,7 @@ func TestRegistry_Validate(t *testing.T) {
 				require.Equal(notFoundError(data), registry.Validate(data))
 				require.Equal(notFoundError(&data), registry.Validate(&data))
 
-				notFoundTemplateError := &TemplateError{Template: "type, {{.TypeName}}, not found in Registry"}
+				notFoundTemplateError := &TemplateError{Template: "type, {{.RootTypeName}}, not found in Registry"}
 				testValidatesFull(t, true, registry, data, notFoundTemplateError, tc.expectedKeySuffix)
 				testValidatesFull(t, true, registry, &data, notFoundTemplateError, tc.expectedKeySuffix)
 				return

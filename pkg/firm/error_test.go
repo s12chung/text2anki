@@ -1,6 +1,7 @@
 package firm
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -61,7 +62,7 @@ func TestErrorMap_ToNil(t *testing.T) {
 var fullTemplateErrorKey = ErrorKey("pkger.Mover.Parent.MyField.TheError")
 var errTemplateError = TemplateError{
 	ErrorKey: fullTemplateErrorKey,
-	Template: "has no {{ .Him }} and {{ .Her }} since it's of type: {{.TypeName}}",
+	Template: "has no {{ .Him }} and {{ .Her }} since it's of type: {{.RootTypeName}}",
 	TemplateFields: map[string]string{
 		"Him": "Jack",
 		"Her": "Jill",
@@ -128,7 +129,7 @@ func TestTemplateError_Error(t *testing.T) {
 	}
 }
 
-func TestErrorKey_TypeName(t *testing.T) {
+func TestErrorKey_RootTypeName(t *testing.T) {
 	tcs := []struct {
 		name     string
 		errorKey ErrorKey
@@ -144,7 +145,7 @@ func TestErrorKey_TypeName(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			require.Equal(tc.expected, tc.errorKey.TypeName())
+			require.Equal(tc.expected, tc.errorKey.RootTypeName())
 		})
 	}
 }
@@ -189,4 +190,10 @@ func TestErrorKey_ErrorName(t *testing.T) {
 			require.Equal(tc.expected, tc.errorKey.ErrorName())
 		})
 	}
+}
+
+func TestRuleTypeError_TemplateError(t *testing.T) {
+	require := require.New(t)
+	require.Equal("value is not a string, got int",
+		NewRuleTypeError(reflect.TypeOf(0), "is not a string").TemplateError().Error())
 }

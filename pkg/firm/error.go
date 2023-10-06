@@ -76,11 +76,11 @@ func (t TemplateError) Error() string {
 	if t.TemplateFields != nil {
 		templateDot = maps.Clone(t.TemplateFields)
 	}
-	typeName := t.ErrorKey.TypeName()
+	typeName := t.ErrorKey.RootTypeName()
 	if typeName == "" {
 		typeName = "NoType"
 	}
-	templateDot["TypeName"] = typeName
+	templateDot["RootTypeName"] = typeName
 	valueName := t.ErrorKey.ValueName()
 	if valueName == "" {
 		valueName = "value"
@@ -97,8 +97,8 @@ func (t TemplateError) Error() string {
 // ErrorKey is a string that has helper functions relating to error keys
 type ErrorKey string
 
-// TypeName returns the type name of the key
-func (e ErrorKey) TypeName() string {
+// RootTypeName returns the type name of the key
+func (e ErrorKey) RootTypeName() string {
 	suffix := string(e)
 	for i := 0; i < 2; i++ {
 		index := strings.Index(suffix, keySeparator)
@@ -154,13 +154,13 @@ type RuleTypeError struct {
 
 // TemplateError returns the TemplateError represented by the RuleTypeError
 func (r RuleTypeError) TemplateError() TemplateError {
-	typeString := "nil"
+	valueTypeName := "nil"
 	if r.Type != nil {
-		typeString = r.Type.String()
+		valueTypeName = r.Type.String()
 	}
 	return TemplateError{
-		TemplateFields: map[string]string{"Type": typeString},
-		Template:       "value to validate " + r.BadCondition + ", got {{.Type}}",
+		TemplateFields: map[string]string{"ValueTypeName": valueTypeName},
+		Template:       r.BadCondition + ", got {{.ValueTypeName}}",
 	}
 }
 
