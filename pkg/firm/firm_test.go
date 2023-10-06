@@ -12,4 +12,5 @@ func TestNotFoundRule_ValidateValue(t *testing.T) {
 	errorMap := NotFoundRule{}.ValidateValue(reflect.ValueOf(1))
 	require.NotNil(errorMap)
 	require.NotEmpty(errorMap)
+	require.Equal("NotFound: value type, NoType, not found in Registry", errorMap.Error())
 }

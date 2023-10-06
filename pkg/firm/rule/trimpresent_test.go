@@ -10,6 +10,8 @@ import (
 )
 
 func TestTrimPresent_ValidateValue(t *testing.T) {
+	require.Equal(t, "TrimPresent: value is just spaces or empty", errorMapTrimPresent.Error())
+
 	tcs := []struct {
 		name     string
 		value    any

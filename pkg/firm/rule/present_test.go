@@ -12,6 +12,8 @@ import (
 type presentStruct struct{ Integer int }
 
 func TestPresent_ValidateValue(t *testing.T) {
+	require.Equal(t, "Present: value is not present", errorMapPresent.Error())
+
 	tcs := []struct {
 		name     string
 		value    any
