@@ -12,15 +12,15 @@ type presentRule struct{}
 
 const presentRuleKey = "presentRule"
 
-func templateError() *TemplateError { return &TemplateError{Template: "test"} }
-
 func (p presentRule) ValidateValue(value reflect.Value) ErrorMap {
-	if !value.IsValid() || value.IsZero() {
-		return ErrorMap{presentRuleKey: *templateError()}
+	if value.IsZero() {
+		return ErrorMap{presentRuleKey: *presentRuleError()}
 	}
 	return nil
 }
 func (p presentRule) ValidateType(_ reflect.Type) *RuleTypeError { return nil }
+
+func presentRuleError() *TemplateError { return &TemplateError{Template: presentRuleKey + " template"} }
 
 func validateTypeErrorResult(rule Rule, data any) ErrorMap {
 	return ErrorMap{"ValidateType": rule.ValidateType(reflect.TypeOf(data)).TemplateError()}

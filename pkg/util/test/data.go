@@ -25,6 +25,11 @@ func JSON(t *testing.T, v any) []byte {
 	return bytes
 }
 
+// JSONString returns indented json as a string
+func JSONString(t *testing.T, v any) string {
+	return string(JSON(t, v))
+}
+
 // IndentJSON returns indented JSON
 func IndentJSON(t *testing.T, original []byte) []byte {
 	require := require.New(t)

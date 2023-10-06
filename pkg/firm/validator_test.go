@@ -25,17 +25,17 @@ var structValidatorTestCases = []structValidatorTestCase{
 	//
 	{name: "Embed___child_validates_ok", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.child.NoValidates = ""
+		changeParent.Child.NoValidates = ""
 		return changeParent
 	}},
-	{name: "Embed___child_validates_zero", errorKeys: []string{"child.Validates"}, f: func() parent {
+	{name: "Embed___child_validates_zero", errorKeys: []string{"Child.Validates"}, f: func() parent {
 		changeParent := fullParent()
-		changeParent.child.Validates = ""
+		changeParent.Child.Validates = ""
 		return changeParent
 	}},
-	{name: "Embed___child_empty", errorKeys: []string{"child", "child.Validates"}, f: func() parent {
+	{name: "Embed___child_empty", errorKeys: []string{"Child", "Child.Validates"}, f: func() parent {
 		changeParent := fullParent()
-		changeParent.child = child{}
+		changeParent.Child = Child{}
 		return changeParent
 	}},
 
@@ -63,7 +63,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "Basic___child_empty", errorKeys: []string{"Basic", "Basic.Validates"}, f: func() parent {
 		changeParent := fullParent()
-		changeParent.Basic = child{}
+		changeParent.Basic = Child{}
 		return changeParent
 	}},
 
@@ -82,7 +82,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "Pt___child_empty", errorKeys: []string{"Pt.Validates"}, f: func() parent {
 		changeParent := fullParent()
-		changeParent.Pt = &child{}
+		changeParent.Pt = &Child{}
 		return changeParent
 	}},
 	{name: "Pt___nil", errorKeys: []string{"Pt"}, f: func() parent {
@@ -94,9 +94,9 @@ var structValidatorTestCases = []structValidatorTestCase{
 	//
 	// Multi
 	//
-	{name: "Multi", errorKeys: []string{"child", "child.Validates", "Primitive", "Pt"}, f: func() parent {
+	{name: "Multi", errorKeys: []string{"Child", "Child.Validates", "Primitive", "Pt"}, f: func() parent {
 		changeParent := fullParent()
-		changeParent.child = child{}
+		changeParent.Child = Child{}
 		changeParent.Primitive = 0
 		changeParent.Pt = nil
 		return changeParent
@@ -107,12 +107,12 @@ var structValidatorTestCases = []structValidatorTestCase{
 	//
 	{name: "Any___child_empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.Any = child{}
+		changeParent.Any = Child{}
 		return changeParent
 	}},
 	{name: "Any___child_pointer_empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.Any = &child{}
+		changeParent.Any = &Child{}
 		return changeParent
 	}},
 	{name: "Any___nil", errorKeys: []string{"Any"}, f: func() parent {
@@ -144,7 +144,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "Array___empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.Array = []child{}
+		changeParent.Array = []Child{}
 		return changeParent
 	}},
 	{name: "Array___nil", errorKeys: []string{"Array"}, f: func() parent {
@@ -176,7 +176,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "ArrayPt___empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.ArrayPt = []*child{}
+		changeParent.ArrayPt = []*Child{}
 		return changeParent
 	}},
 	{name: "ArrayPt___nil", errorKeys: []string{"ArrayPt"}, f: func() parent {
@@ -209,7 +209,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "BasicEmptyValidates____child_empty", errorKeys: []string{"BasicEmptyValidates.Validates"}, f: func() parent {
 		changeParent := fullParent()
-		changeParent.BasicEmptyValidates = child{}
+		changeParent.BasicEmptyValidates = Child{}
 		return changeParent
 	}},
 
@@ -228,7 +228,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "PtEmptyValidates___child_empty", errorKeys: []string{"PtEmptyValidates.Validates"}, f: func() parent {
 		changeParent := fullParent()
-		changeParent.PtEmptyValidates = &child{}
+		changeParent.PtEmptyValidates = &Child{}
 		return changeParent
 	}},
 	{name: "PtEmptyValidates___nil", errorKeys: nil, f: func() parent {
@@ -242,12 +242,12 @@ var structValidatorTestCases = []structValidatorTestCase{
 	//
 	{name: "AnyEmptyValidates___child_empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.AnyEmptyValidates = child{}
+		changeParent.AnyEmptyValidates = Child{}
 		return changeParent
 	}},
 	{name: "AnyEmptyValidates___child_pointer_empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.AnyEmptyValidates = &child{}
+		changeParent.AnyEmptyValidates = &Child{}
 		return changeParent
 	}},
 	{name: "AnyEmptyValidates___nil", errorKeys: nil, f: func() parent {
@@ -280,7 +280,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "ArrayValidates___empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.ArrayValidates = []child{}
+		changeParent.ArrayValidates = []Child{}
 		return changeParent
 	}},
 	{name: "ArrayValidates___nil", errorKeys: nil, f: func() parent {
@@ -313,7 +313,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "ArrayPtValidates___empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.ArrayPtValidates = []*child{}
+		changeParent.ArrayPtValidates = []*Child{}
 		return changeParent
 	}},
 	{name: "ArrayPtValidates___nil", errorKeys: nil, f: func() parent {
@@ -346,7 +346,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "BasicNoValidates____child_empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.BasicNoValidates = child{}
+		changeParent.BasicNoValidates = Child{}
 		return changeParent
 	}},
 
@@ -365,7 +365,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "PtNoValidates___child_empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.PtNoValidates = &child{}
+		changeParent.PtNoValidates = &Child{}
 		return changeParent
 	}},
 	{name: "PtNoValidates___nil", errorKeys: nil, f: func() parent {
@@ -379,12 +379,12 @@ var structValidatorTestCases = []structValidatorTestCase{
 	//
 	{name: "AnyNoValidates___child_empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.AnyNoValidates = child{}
+		changeParent.AnyNoValidates = Child{}
 		return changeParent
 	}},
 	{name: "AnyNoValidates___child_pointer_empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.AnyNoValidates = &child{}
+		changeParent.AnyNoValidates = &Child{}
 		return changeParent
 	}},
 	{name: "AnyNoValidates___nil", errorKeys: nil, f: func() parent {
@@ -416,7 +416,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "ArrayNoValidates___empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.ArrayNoValidates = []child{}
+		changeParent.ArrayNoValidates = []Child{}
 		return changeParent
 	}},
 	{name: "ArrayNoValidates___nil", errorKeys: nil, f: func() parent {
@@ -448,7 +448,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 	{name: "ArrayPtNoValidates___empty", errorKeys: nil, f: func() parent {
 		changeParent := fullParent()
-		changeParent.ArrayPtNoValidates = []*child{}
+		changeParent.ArrayPtNoValidates = []*Child{}
 		return changeParent
 	}},
 	{name: "ArrayPtNoValidates___nil", errorKeys: nil, f: func() parent {
@@ -467,11 +467,12 @@ func TestNewStructValidator(t *testing.T) {
 		ruleMap RuleMap
 		err     error
 	}{
-		{name: "normal", data: child{}, ruleMap: RuleMap{"Validates": {presentRule{}}}},
+		{name: "normal", data: Child{}, ruleMap: RuleMap{"Validates": {presentRule{}}}},
+		{name: "non_exported_field", data: Child{}, ruleMap: RuleMap{"private": {presentRule{}}}},
 		{name: "nil_type", data: nil, err: fmt.Errorf("type is not a Struct")},
-		{name: "non_matching_field", data: child{}, ruleMap: RuleMap{"No": {presentRule{}}}, err: fmt.Errorf("field, No, not found in type: firm.child")},
-		{name: "no_matching_rule", data: child{}, ruleMap: RuleMap{"Validates": {noMatchingRule}},
-			err: fmt.Errorf("field, Validates, in firm.child: %w", noMatchingRule.ValidateType(reflect.TypeOf("")))},
+		{name: "non_matching_field", data: Child{}, ruleMap: RuleMap{"No": {presentRule{}}}, err: fmt.Errorf("field, No, not found in type: firm.Child")},
+		{name: "no_matching_rule", data: Child{}, ruleMap: RuleMap{"Validates": {noMatchingRule}},
+			err: fmt.Errorf("field, Validates, in firm.Child: %w", noMatchingRule.ValidateType(reflect.TypeOf("")))},
 	}
 	for _, tc := range tcs {
 		tc := tc
@@ -518,8 +519,8 @@ func TestStructValidator_Validate(t *testing.T) {
 			for i, key := range tc.errorKeys {
 				errKeySuffixes[i] = joinKeys(key, presentRuleKey)
 			}
-			testValidates(t, validator, rawData, templateError(), errKeySuffixes...)
-			testValidates(t, validator, &rawData, templateError(), errKeySuffixes...)
+			testValidates(t, validator, rawData, presentRuleError(), errKeySuffixes...)
+			testValidates(t, validator, &rawData, presentRuleError(), errKeySuffixes...)
 		})
 	}
 }
@@ -536,7 +537,7 @@ func TestStructValidator_ValidateType(t *testing.T) {
 	}{
 		{name: "matching struct", typ: reflect.TypeOf(parent{})},
 		{name: "matching struct pointer", typ: reflect.TypeOf(&parent{})},
-		{name: "other struct", typ: reflect.TypeOf(child{}), badCondition: badCondition},
+		{name: "other struct", typ: reflect.TypeOf(Child{}), badCondition: badCondition},
 		{name: "not struct", typ: reflect.TypeOf(1), badCondition: badCondition},
 	}
 
@@ -597,11 +598,11 @@ func TestNewSliceValidator(t *testing.T) {
 		rules []Rule
 		err   error
 	}{
-		{name: "normal", data: []child{}, rules: []Rule{presentRule{}}},
+		{name: "normal", data: []Child{}, rules: []Rule{presentRule{}}},
 		{name: "nil_type", data: nil, err: fmt.Errorf("type, nil, is not a Slice or Array")},
-		{name: "not_slice", data: child{}, err: fmt.Errorf("type, firm.child, is not a Slice or Array")},
-		{name: "no_matching_rule", data: []child{}, rules: []Rule{noMatchingRule},
-			err: fmt.Errorf("element type: %w", noMatchingRule.ValidateType(reflect.TypeOf(child{})))},
+		{name: "not_slice", data: Child{}, err: fmt.Errorf("type, firm.Child, is not a Slice or Array")},
+		{name: "no_matching_rule", data: []Child{}, rules: []Rule{noMatchingRule},
+			err: fmt.Errorf("element type: %w", noMatchingRule.ValidateType(reflect.TypeOf(Child{})))},
 	}
 	for _, tc := range tcs {
 		tc := tc
@@ -644,8 +645,8 @@ func TestSliceValidator_Validate(t *testing.T) {
 			for i, key := range tc.errorKeys {
 				errKeySuffixes[i] = joinKeys(key, presentRuleKey)
 			}
-			testValidates(t, validator, rawData, templateError(), errKeySuffixes...)
-			testValidates(t, validator, &rawData, templateError(), errKeySuffixes...)
+			testValidates(t, validator, rawData, presentRuleError(), errKeySuffixes...)
+			testValidates(t, validator, &rawData, presentRuleError(), errKeySuffixes...)
 		})
 	}
 }
@@ -750,7 +751,7 @@ func TestValueValidator_Validate(t *testing.T) {
 	}
 	tcs := []testCase{
 		{name: "not_zero", data: 1},
-		{name: "zero", data: 0, err: templateError()},
+		{name: "zero", data: 0, err: presentRuleError()},
 	}
 	for _, tc := range tcs {
 		tc := tc

@@ -7,47 +7,48 @@ import (
 )
 
 type parent struct {
-	child
+	Child
 	Primitive               int
-	Basic                   child
-	Pt                      *child
+	Basic                   Child
+	Pt                      *Child
 	Any                     any
-	Array                   []child
-	ArrayPt                 []*child
+	Array                   []Child
+	ArrayPt                 []*Child
 	PrimitiveEmptyValidates int
-	BasicEmptyValidates     child
-	PtEmptyValidates        *child
+	BasicEmptyValidates     Child
+	PtEmptyValidates        *Child
 	AnyEmptyValidates       any
-	ArrayValidates          []child
-	ArrayPtValidates        []*child
+	ArrayValidates          []Child
+	ArrayPtValidates        []*Child
 	PrimitiveNoValidates    int
-	BasicNoValidates        child
-	PtNoValidates           *child
+	BasicNoValidates        Child
+	PtNoValidates           *Child
 	AnyNoValidates          any
-	ArrayNoValidates        []child
-	ArrayPtNoValidates      []*child
+	ArrayNoValidates        []Child
+	ArrayPtNoValidates      []*Child
 }
 
-type child struct {
+type Child struct {
 	Validates   string
 	NoValidates string
+	private     string //nolint:unused // it's used
 }
 
 func fullParent() parent {
-	fc := func() *child {
-		return &child{Validates: "child validates", NoValidates: "no validates"}
+	fc := func() *Child {
+		return &Child{Validates: "Child validates", NoValidates: "no validates"}
 	}
 	return parent{
-		child: *fc(),
-		// validate field + child
+		Child: *fc(),
+		// validate field + Child
 		Primitive: 1, Basic: *fc(), Pt: fc(), Any: *fc(),
-		Array: []child{*fc(), *fc()}, ArrayPt: []*child{fc(), fc()},
-		// validate child
+		Array: []Child{*fc(), *fc()}, ArrayPt: []*Child{fc(), fc()},
+		// validate Child
 		PrimitiveEmptyValidates: 1, BasicEmptyValidates: *fc(), PtEmptyValidates: fc(), AnyEmptyValidates: *fc(),
-		ArrayValidates: []child{*fc(), *fc()}, ArrayPtValidates: []*child{fc(), fc()},
+		ArrayValidates: []Child{*fc(), *fc()}, ArrayPtValidates: []*Child{fc(), fc()},
 		// validate none
 		PrimitiveNoValidates: 1, BasicNoValidates: *fc(), PtNoValidates: fc(), AnyNoValidates: *fc(),
-		ArrayNoValidates: []child{*fc(), *fc()}, ArrayPtNoValidates: []*child{fc(), fc()},
+		ArrayNoValidates: []Child{*fc(), *fc()}, ArrayPtNoValidates: []*Child{fc(), fc()},
 	}
 }
 
@@ -61,31 +62,25 @@ type unregistered struct{}
 var testRegistry = &Registry{}
 
 func init() {
-	testRegistry.MustRegisterType(
-		NewDefinition(parent{}).
-			Validates(RuleMap{
-				"child":                   {presentRule{}},
-				"Primitive":               {presentRule{}},
-				"Basic":                   {presentRule{}},
-				"Pt":                      {presentRule{}},
-				"Any":                     {presentRule{}},
-				"Array":                   {presentRule{}},
-				"ArrayPt":                 {presentRule{}},
-				"PrimitiveEmptyValidates": {},
-				"BasicEmptyValidates":     {},
-				"PtEmptyValidates":        {},
-				"AnyEmptyValidates":       {},
-				"ArrayValidates":          {},
-				"ArrayPtValidates":        {},
-			}))
-	testRegistry.MustRegisterType(
-		NewDefinition(child{}).
-			Validates(RuleMap{
-				"Validates": {presentRule{}},
-			}))
-	testRegistry.MustRegisterType(
-		NewDefinition(topLevelValidates{}).
-			ValidatesTopLevel(presentRule{}))
+	testRegistry.MustRegisterType(NewDefinition(parent{}).Validates(RuleMap{
+		"Child":                   {presentRule{}},
+		"Primitive":               {presentRule{}},
+		"Basic":                   {presentRule{}},
+		"Pt":                      {presentRule{}},
+		"Any":                     {presentRule{}},
+		"Array":                   {presentRule{}},
+		"ArrayPt":                 {presentRule{}},
+		"PrimitiveEmptyValidates": {},
+		"BasicEmptyValidates":     {},
+		"PtEmptyValidates":        {},
+		"AnyEmptyValidates":       {},
+		"ArrayValidates":          {},
+		"ArrayPtValidates":        {},
+	}))
+	testRegistry.MustRegisterType(NewDefinition(Child{}).Validates(RuleMap{
+		"Validates": {presentRule{}},
+	}))
+	testRegistry.MustRegisterType(NewDefinition(topLevelValidates{}).ValidatesTopLevel(presentRule{}))
 }
 
 type integrationTestCase struct {

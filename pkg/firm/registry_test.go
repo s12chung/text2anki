@@ -77,7 +77,7 @@ func TestRegistry_Validate(t *testing.T) {
 			definition:        NewDefinition(registryTestParent{}).ValidatesTopLevel(presentRule{}),
 			data:              func() registryTestParent { return registryTestParent{} },
 			expectedKeySuffix: presentRuleKey,
-			err:               templateError(),
+			err:               presentRuleError(),
 		},
 		{
 			name: "field_Primitive",
@@ -87,7 +87,7 @@ func TestRegistry_Validate(t *testing.T) {
 				}),
 			data:              func() registryTestParent { return registryTestParent{} },
 			expectedKeySuffix: "Primitive.presentRule",
-			err:               templateError(),
+			err:               presentRuleError(),
 		},
 		{
 			name:              "not_found",
