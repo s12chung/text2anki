@@ -60,9 +60,8 @@ func TestErrorMap_ToNil(t *testing.T) {
 
 var fullTemplateErrorKey = ErrorKey("pkger.Mover.Parent.MyField.TheError")
 var errTemplateError = TemplateError{
-	TypeName:  fullTemplateErrorKey.TypeName(),
-	ValueName: fullTemplateErrorKey.ValueName(),
-	Template:  "has no {{ .Him }} and {{ .Her }} since it's of type: {{.TypeName}}",
+	ErrorKey: fullTemplateErrorKey,
+	Template: "has no {{ .Him }} and {{ .Her }} since it's of type: {{.TypeName}}",
 	TemplateFields: map[string]string{
 		"Him": "Jack",
 		"Her": "Jill",
@@ -78,7 +77,7 @@ func TestErrorMap_Finish(t *testing.T) {
 		expected *TemplateError
 	}{
 		{name: "not_empty", errorMap: ErrorMap{fullTemplateErrorKey: TemplateError{}},
-			expected: &TemplateError{TypeName: errTemplateError.TypeName, ValueName: errTemplateError.ValueName}},
+			expected: &TemplateError{ErrorKey: fullTemplateErrorKey}},
 		{name: "empty", errorMap: ErrorMap{}, expected: nil},
 	}
 	for _, tc := range tcs {
@@ -102,7 +101,7 @@ func TestTemplateError_Error(t *testing.T) {
 		expected string
 	}{
 		{name: "everything", expected: "MyField has no Jack and Jill since it's of type: pkger.Mover"},
-		{name: "no_type_or_value", expected: "value has no Jack and Jill since it's of type: NoType"},
+		{name: "empty_error_key", expected: "value has no Jack and Jill since it's of type: NoType"},
 		{name: "missing_one", expected: "MyField has no <no value> and Jill since it's of type: pkger.Mover", fields: map[string]string{
 			"Her": "Jill",
 		}},
@@ -114,9 +113,8 @@ func TestTemplateError_Error(t *testing.T) {
 			require := require.New(t)
 
 			templateError := fullTemplate()
-			if tc.name == "no_type_or_value" {
-				templateError.TypeName = ""
-				templateError.ValueName = ""
+			if tc.name == "empty_error_key" {
+				templateError.ErrorKey = ""
 			}
 			if tc.fields != nil {
 				templateError.TemplateFields = tc.fields

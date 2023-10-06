@@ -15,7 +15,7 @@ type presentRule struct{}
 const presentRuleKey = "presentRule"
 
 func templateError(errorKey firm.ErrorKey) *firm.TemplateError {
-	return &firm.TemplateError{TypeName: errorKey.TypeName(), ValueName: errorKey.ValueName(), Template: "test"}
+	return &firm.TemplateError{ErrorKey: errorKey, Template: "test"}
 }
 
 func (p presentRule) ValidateValue(value reflect.Value) firm.ErrorMap {

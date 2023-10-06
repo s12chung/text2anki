@@ -51,8 +51,7 @@ func (e ErrorMap) ToNil() ErrorMap {
 // Finish finishes the ErrorMap for consumption by filling in the TypeName and ValueName
 func (e ErrorMap) Finish() ErrorMap {
 	for k, v := range e {
-		v.TypeName = k.TypeName()
-		v.ValueName = k.ValueName()
+		v.ErrorKey = k
 		e[k] = v
 	}
 	return e.ToNil()
@@ -62,8 +61,7 @@ func (e ErrorMap) Finish() ErrorMap {
 type TemplateError struct {
 	Template       string
 	TemplateFields map[string]string
-	TypeName       string
-	ValueName      string
+	ErrorKey       ErrorKey
 }
 
 // Error returns a string for the error
@@ -78,30 +76,22 @@ func (t TemplateError) Error() string {
 	if t.TemplateFields != nil {
 		templateDot = maps.Clone(t.TemplateFields)
 	}
-	templateDot["TypeName"] = t.DefaultedTypeName()
-	templateDot["ValueName"] = t.DefaultedValueName()
+	typeName := t.ErrorKey.TypeName()
+	if typeName == "" {
+		typeName = "NoType"
+	}
+	templateDot["TypeName"] = typeName
+	valueName := t.ErrorKey.ValueName()
+	if valueName == "" {
+		valueName = "value"
+	}
+	templateDot["ValueName"] = valueName
 
 	var sb strings.Builder
 	if err = temp.Execute(&sb, templateDot); err != nil {
 		return badTemplateString
 	}
 	return sb.String()
-}
-
-// DefaultedTypeName returns TypeName, but defaulted
-func (t TemplateError) DefaultedTypeName() string {
-	if t.TypeName == "" {
-		return "NoType"
-	}
-	return t.TypeName
-}
-
-// DefaultedValueName returns ValueName, but defaulted
-func (t TemplateError) DefaultedValueName() string {
-	if t.ValueName == "" {
-		return "value"
-	}
-	return t.ValueName
 }
 
 // ErrorKey is a string that has helper functions relating to error keys
