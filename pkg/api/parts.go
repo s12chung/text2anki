@@ -6,6 +6,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/firm"
+	"github.com/s12chung/text2anki/pkg/firm/attr"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/util/chiutil"
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
@@ -25,7 +26,10 @@ type PartCreateMultiRequestPart struct {
 
 func init() {
 	firm.MustRegisterType(firm.NewDefinition(PartCreateMultiRequest{}).Validates(firm.RuleMap{
-		"Parts": {rule.Present{}},
+		"Parts": {
+			rule.Present{},
+			rule.Attr{Of: attr.Len{}, Rule: rule.Less[int]{OrEqual: true, To: 20}},
+		},
 	}))
 }
 
