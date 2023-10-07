@@ -1,2 +1,2 @@
-// Package rule contains the default rules for firm
+// Package rule contains the default firm.Rule
 package rule

@@ -47,6 +47,12 @@ type Rule interface {
 	ValidateType(typ reflect.Type) *RuleTypeError
 }
 
+// BasicRule is a Rule that is not composed of other rules
+type BasicRule interface {
+	Rule
+	ErrorMap() ErrorMap
+}
+
 // Validator validates the data
 type Validator interface {
 	Rule

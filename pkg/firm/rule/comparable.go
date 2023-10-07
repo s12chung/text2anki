@@ -9,10 +9,10 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-// Equal checks if value is equal to .To
+// Equal checks if data is equal to .To
 type Equal[T comparable] struct{ To T }
 
-// ValidateValue returns true if the value is valid (assumes ValidateType is called)
+// ValidateValue returns true if the data is valid (assumes ValidateType is called)
 func (e Equal[T]) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return comparableValidateValue[T](e, value)
 }
@@ -33,13 +33,13 @@ func (e Equal[T]) ValidateType(typ reflect.Type) *firm.RuleTypeError {
 	return comparableValidateType(e.To, typ)
 }
 
-// Less checks if value is less (or equal to) .To
+// Less checks if data is less (or equal to) .To
 type Less[T cmp.Ordered] struct {
 	OrEqual bool
 	To      T
 }
 
-// ValidateValue returns true if the value is valid (assumes ValidateType is called)
+// ValidateValue returns true if the data is valid (assumes ValidateType is called)
 func (l Less[T]) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return comparableValidateValue[T](l, value)
 }
@@ -55,13 +55,13 @@ func (l Less[T]) ValidateType(typ reflect.Type) *firm.RuleTypeError {
 	return comparableValidateType(l.To, typ)
 }
 
-// Greater checks if value is greater (or equal to) .To
+// Greater checks if data is greater (or equal to) .To
 type Greater[T cmp.Ordered] struct {
 	OrEqual bool
 	To      T
 }
 
-// ValidateValue returns true if the value is valid (assumes ValidateType is called)
+// ValidateValue returns true if the data is valid (assumes ValidateType is called)
 func (g Greater[T]) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return comparableValidateValue[T](g, value)
 }
@@ -78,8 +78,7 @@ func (g Greater[T]) ValidateType(typ reflect.Type) *firm.RuleTypeError {
 }
 
 type comparableRule[T comparable] interface {
-	firm.Rule
-	ErrorMap() firm.ErrorMap
+	firm.BasicRule
 	Compare(data T) bool
 }
 

@@ -14,19 +14,19 @@ func TestTrimPresent_ValidateValue(t *testing.T) {
 
 	tcs := []struct {
 		name     string
-		value    any
+		data     any
 		expected firm.ErrorMap
 	}{
-		{name: "valid", value: "\t not space \n", expected: nil},
-		{name: "just space", value: "\t \t\n \n", expected: errorMapTrimPresent},
-		{name: "empty", value: "", expected: errorMapTrimPresent},
+		{name: "valid", data: "\t not space \n", expected: nil},
+		{name: "just space", data: "\t \t\n \n", expected: errorMapTrimPresent},
+		{name: "empty", data: "", expected: errorMapTrimPresent},
 	}
 
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			require.Equal(tc.expected, TrimPresent{}.ValidateValue(reflect.ValueOf(tc.value)))
+			require.Equal(tc.expected, TrimPresent{}.ValidateValue(reflect.ValueOf(tc.data)))
 		})
 	}
 }

@@ -6,10 +6,10 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-// Present checks if value is non-Zero and non-Empty
+// Present checks if data is non-Zero and non-Empty
 type Present struct{}
 
-// ValidateValue returns true if the value is valid (assumes ValidateType is called)
+// ValidateValue returns true if the data is valid (assumes ValidateType is called)
 func (p Present) ValidateValue(value reflect.Value) firm.ErrorMap {
 	if !value.IsValid() || value.IsZero() {
 		return errorMapPresent
