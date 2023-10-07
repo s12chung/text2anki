@@ -27,6 +27,7 @@ func TestAttr_ValidateValue(t *testing.T) {
 		{name: "normal", data: " ", rule: intEqual(1)},
 		{name: "multi", data: " ", rule: intEqual(1)},
 		{name: "invalid", data: " ", rule: intEqual(2), errorMap: intEqual(2).ErrorMap()},
+		{name: "invalid_with_empty_template_fields", data: "", rule: Present{}, errorMap: errorMapPresent},
 	}
 
 	for _, tc := range tcs {
@@ -38,11 +39,18 @@ func TestAttr_ValidateValue(t *testing.T) {
 			if attribute == nil {
 				attribute = attr.Len{}
 			}
-			expected := firm.ErrorMap{}
+			var expected firm.ErrorMap
 			for k, v := range tc.errorMap {
 				err := v
+				if err.TemplateFields == nil {
+					err.TemplateFields = map[string]string{}
+				}
 				err.TemplateFields["AttrName"] = "Len"
 				err.Template = "attribute, {{.AttrName}}, " + err.Template
+
+				if expected == nil {
+					expected = firm.ErrorMap{}
+				}
 				expected["Len-"+k] = err
 			}
 			require.Equal(expected, Attr{Of: attribute, Rule: tc.rule}.ValidateValue(reflect.ValueOf(tc.data)))

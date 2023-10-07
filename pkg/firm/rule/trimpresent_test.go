@@ -38,7 +38,7 @@ func TestTrimPresent_ValidateType(t *testing.T) {
 		badCondition string
 	}{
 		{name: "string", data: ""},
-		{name: "not string", data: 1, badCondition: "is not a string"},
+		{name: "not string", data: 1, badCondition: "is not a String"},
 	}
 
 	for _, tc := range tcs {

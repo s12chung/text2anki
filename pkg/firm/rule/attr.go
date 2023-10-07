@@ -26,11 +26,14 @@ func (a Attr) ValidateValue(value reflect.Value) firm.ErrorMap {
 	errorMap := firm.ErrorMap{}
 	for k, v := range a.Rule.ValidateValue(a.Of.Get(value)) {
 		err := v
+		if err.TemplateFields == nil {
+			err.TemplateFields = map[string]string{}
+		}
 		err.TemplateFields["AttrName"] = a.Of.Name()
 		err.Template = "attribute, {{.AttrName}}, " + err.Template
 		errorMap[firm.ErrorKey(a.Of.Name())+"-"+k] = err
 	}
-	return errorMap
+	return errorMap.ToNil()
 }
 
 // ValidateType checks whether the type is valid for the Attribute
