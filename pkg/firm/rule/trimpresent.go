@@ -10,7 +10,7 @@ import (
 // TrimPresent checks if value is not "" when strings.TrimSpace is applied
 type TrimPresent struct{}
 
-// ValidateValue returns true if the value is present (assumes ValidateType is called)
+// ValidateValue returns true if the value is valid (assumes ValidateType is called)
 func (t TrimPresent) ValidateValue(value reflect.Value) firm.ErrorMap {
 	if strings.TrimSpace(value.String()) == "" {
 		return errorMapTrimPresent

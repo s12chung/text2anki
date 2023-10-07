@@ -34,22 +34,25 @@ func TestTrimPresent_ValidateValue(t *testing.T) {
 func TestTrimPresent_ValidateType(t *testing.T) {
 	tcs := []struct {
 		name         string
-		typ          reflect.Type
+		data         any
 		badCondition string
 	}{
-		{name: "string", typ: reflect.TypeOf("")},
-		{name: "not string", typ: reflect.TypeOf(1), badCondition: "is not a string"},
+		{name: "string", data: ""},
+		{name: "not string", data: 1, badCondition: "is not a string"},
 	}
 
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+
+			typ := reflect.TypeOf(tc.data)
+
 			var err *firm.RuleTypeError
 			if tc.badCondition != "" {
-				err = firm.NewRuleTypeError(tc.typ, tc.badCondition)
+				err = firm.NewRuleTypeError(typ, tc.badCondition)
 			}
-			require.Equal(err, TrimPresent{}.ValidateType(tc.typ))
+			require.Equal(err, TrimPresent{}.ValidateType(typ))
 		})
 	}
 }

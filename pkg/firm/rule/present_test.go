@@ -58,3 +58,30 @@ func TestPresent_ValidateValue(t *testing.T) {
 		})
 	}
 }
+
+func TestPresent_ValidateType(t *testing.T) {
+	type anyType struct{}
+
+	tcs := []struct {
+		name         string
+		data         any
+		badCondition string
+	}{
+		{name: "any", data: anyType{}},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+
+			typ := reflect.TypeOf(tc.data)
+
+			var err *firm.RuleTypeError
+			if tc.badCondition != "" {
+				err = firm.NewRuleTypeError(typ, tc.badCondition)
+			}
+			require.Equal(err, Present{}.ValidateType(typ))
+		})
+	}
+}

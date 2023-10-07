@@ -532,24 +532,27 @@ func TestStructValidator_ValidateType(t *testing.T) {
 
 	tcs := []struct {
 		name         string
-		typ          reflect.Type
+		data         any
 		badCondition string
 	}{
-		{name: "matching struct", typ: reflect.TypeOf(parent{})},
-		{name: "matching struct pointer", typ: reflect.TypeOf(&parent{})},
-		{name: "other struct", typ: reflect.TypeOf(Child{}), badCondition: badCondition},
-		{name: "not struct", typ: reflect.TypeOf(1), badCondition: badCondition},
+		{name: "matching struct", data: parent{}},
+		{name: "matching struct pointer", data: &parent{}},
+		{name: "other struct", data: Child{}, badCondition: badCondition},
+		{name: "not struct", data: 1, badCondition: badCondition},
 	}
 
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+
+			typ := reflect.TypeOf(tc.data)
+
 			var err *RuleTypeError
 			if tc.badCondition != "" {
-				err = NewRuleTypeError(tc.typ, tc.badCondition)
+				err = NewRuleTypeError(typ, tc.badCondition)
 			}
-			require.Equal(err, validator.ValidateType(tc.typ))
+			require.Equal(err, validator.ValidateType(typ))
 		})
 	}
 }
@@ -652,30 +655,32 @@ func TestSliceValidator_Validate(t *testing.T) {
 }
 
 func TestSliceValidator_ValidateType(t *testing.T) {
-	sliceType := reflect.TypeOf([]sliceValidatorElement{})
 	validator := sliceValidator
 	badCondition := "is not matching Slice or Array of type []firm.sliceValidatorElement"
 
 	tcs := []struct {
 		name         string
-		typ          reflect.Type
+		data         any
 		badCondition string
 	}{
-		{name: "matching slice", typ: sliceType},
-		{name: "matching slice pointer", typ: reflect.TypeOf(&[]sliceValidatorElement{})},
-		{name: "other slice", typ: reflect.TypeOf([]int{}), badCondition: badCondition},
-		{name: "not slice", typ: reflect.TypeOf(1), badCondition: badCondition},
+		{name: "matching slice", data: []sliceValidatorElement{}},
+		{name: "matching slice pointer", data: &[]sliceValidatorElement{}},
+		{name: "other slice", data: []int{}, badCondition: badCondition},
+		{name: "not slice", data: 1, badCondition: badCondition},
 	}
 
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
+
+			typ := reflect.TypeOf(tc.data)
+
 			var err *RuleTypeError
 			if tc.badCondition != "" {
-				err = NewRuleTypeError(tc.typ, tc.badCondition)
+				err = NewRuleTypeError(typ, tc.badCondition)
 			}
-			require.Equal(err, validator.ValidateType(tc.typ))
+			require.Equal(err, validator.ValidateType(typ))
 		})
 	}
 }
@@ -761,17 +766,16 @@ func TestValueValidator_Validate(t *testing.T) {
 
 func TestValueValidator_ValidateType(t *testing.T) {
 	i := 0
-	intType := reflect.TypeOf(i)
 
 	tcs := []struct {
 		name         string
-		typ          reflect.Type
+		data         any
 		extraRule    Rule
 		badCondition string
 	}{
-		{name: "matching int", typ: intType},
-		{name: "matching int pointer", typ: reflect.TypeOf(&i)},
-		{name: "not int", typ: reflect.TypeOf([]int{}), badCondition: "is not matching of type int"},
+		{name: "matching int", data: 0},
+		{name: "matching int pointer", data: &i},
+		{name: "not int", data: []int{}, badCondition: "is not matching of type int"},
 	}
 
 	for _, tc := range tcs {
@@ -786,11 +790,13 @@ func TestValueValidator_ValidateType(t *testing.T) {
 			validator, err := NewValueValidator(i, rules...)
 			require.NoError(err)
 
+			typ := reflect.TypeOf(tc.data)
+
 			var ruleTypeError *RuleTypeError
 			if tc.badCondition != "" {
-				ruleTypeError = NewRuleTypeError(tc.typ, tc.badCondition)
+				ruleTypeError = NewRuleTypeError(typ, tc.badCondition)
 			}
-			require.Equal(ruleTypeError, validator.ValidateType(tc.typ))
+			require.Equal(ruleTypeError, validator.ValidateType(typ))
 		})
 	}
 }
