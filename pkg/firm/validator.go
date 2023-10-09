@@ -90,15 +90,15 @@ func (s StructAny) RuleMap() RuleMap {
 }
 
 // MustNewSlice returns a new Slice, panics if there is an error
-func MustNewSlice[T any](elementRules ...Rule) Slice[T] {
-	return mustNewValidator(func() (Slice[T], error) { return NewSlice[T](elementRules...) })
+func MustNewSlice[T []U, U any](elementRules ...Rule) Slice[T, U] {
+	return mustNewValidator(func() (Slice[T, U], error) { return NewSlice[T, U](elementRules...) })
 }
 
 // NewSlice returns a new Slice
-func NewSlice[T any](elementRules ...Rule) (Slice[T], error) {
+func NewSlice[T []U, U any](elementRules ...Rule) (Slice[T, U], error) {
 	var zero T
 	sliceAny, err := NewSliceAny(reflect.TypeOf(zero), elementRules...)
-	return Slice[T]{SliceAny: sliceAny}, err
+	return Slice[T, U]{SliceAny: sliceAny}, err
 }
 
 // NewSliceAny returns the Slice validator without generics
@@ -120,10 +120,10 @@ func NewSliceAny(typ reflect.Type, elementRules ...Rule) (SliceAny, error) {
 }
 
 // Slice validates slices and arrays
-type Slice[T any] struct{ SliceAny }
+type Slice[T []U, U any] struct{ SliceAny }
 
 // Validate is firm.Validator(), but with a typed arg, so no type checking is done on runtime
-func (s Slice[T]) Validate(data T) ErrorMap { return validate(s, data) }
+func (s Slice[T, U]) Validate(data T) ErrorMap { return validate(s, data) }
 
 // SliceAny is a Slice without generics
 type SliceAny struct {
