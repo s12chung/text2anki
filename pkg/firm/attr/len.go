@@ -20,8 +20,8 @@ func (l Len) Type() reflect.Type { return intType }
 // Get gets the attribute value from the value
 func (l Len) Get(value reflect.Value) reflect.Value { return reflect.ValueOf(value.Len()) }
 
-// ValidateType checks whether the type is valid for the Attribute
-func (l Len) ValidateType(typ reflect.Type) *firm.RuleTypeError {
+// TypeCheck checks whether the type is valid for the Attribute
+func (l Len) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
 	//nolint:exhaustive // these are the only types that return nil
 	switch typ.Kind() {
 	case reflect.Slice, reflect.Array, reflect.Map, reflect.Chan, reflect.String:

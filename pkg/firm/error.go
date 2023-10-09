@@ -146,7 +146,7 @@ func NewRuleTypeError(typ reflect.Type, badCondition string) *RuleTypeError {
 	return &RuleTypeError{Type: typ, BadCondition: badCondition}
 }
 
-// RuleTypeError is an error returned by Rule.ValidateType
+// RuleTypeError is an error returned by Rule.TypeCheck
 type RuleTypeError struct {
 	Type         reflect.Type
 	BadCondition string

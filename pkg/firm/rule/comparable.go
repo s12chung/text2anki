@@ -12,7 +12,7 @@ import (
 // Equal checks if data is equal to .To
 type Equal[T comparable] struct{ To T }
 
-// ValidateValue returns true if the data is valid (assumes ValidateType is called)
+// ValidateValue returns true if the data is valid (assumes TypeCheck is called)
 func (e Equal[T]) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return comparableValidateValue[T](e, value)
 }
@@ -28,9 +28,9 @@ func (e Equal[T]) ErrorMap() firm.ErrorMap {
 	}}
 }
 
-// ValidateType checks whether the type is valid for the Rule
-func (e Equal[T]) ValidateType(typ reflect.Type) *firm.RuleTypeError {
-	return comparableValidateType(e.To, typ)
+// TypeCheck checks whether the type is valid for the Rule
+func (e Equal[T]) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
+	return comparableTypeCheck(e.To, typ)
 }
 
 // Less checks if data is less (or equal to) .To
@@ -39,7 +39,7 @@ type Less[T cmp.Ordered] struct {
 	To      T
 }
 
-// ValidateValue returns true if the data is valid (assumes ValidateType is called)
+// ValidateValue returns true if the data is valid (assumes TypeCheck is called)
 func (l Less[T]) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return comparableValidateValue[T](l, value)
 }
@@ -50,9 +50,9 @@ func (l Less[T]) Compare(data T) bool { return less(l.OrEqual, data, l.To) }
 // ErrorMap returns the ErrorMap returned from ValidateValue
 func (l Less[T]) ErrorMap() firm.ErrorMap { return orderedErrorMap("less", l.To, l.OrEqual) }
 
-// ValidateType checks whether the type is valid for the Rule
-func (l Less[T]) ValidateType(typ reflect.Type) *firm.RuleTypeError {
-	return comparableValidateType(l.To, typ)
+// TypeCheck checks whether the type is valid for the Rule
+func (l Less[T]) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
+	return comparableTypeCheck(l.To, typ)
 }
 
 // Greater checks if data is greater (or equal to) .To
@@ -61,7 +61,7 @@ type Greater[T cmp.Ordered] struct {
 	To      T
 }
 
-// ValidateValue returns true if the data is valid (assumes ValidateType is called)
+// ValidateValue returns true if the data is valid (assumes TypeCheck is called)
 func (g Greater[T]) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return comparableValidateValue[T](g, value)
 }
@@ -72,9 +72,9 @@ func (g Greater[T]) Compare(data T) bool { return !less(!g.OrEqual, data, g.To) 
 // ErrorMap returns the ErrorMap returned from ValidateValue
 func (g Greater[T]) ErrorMap() firm.ErrorMap { return orderedErrorMap("greater", g.To, g.OrEqual) }
 
-// ValidateType checks whether the type is valid for the Rule
-func (g Greater[T]) ValidateType(typ reflect.Type) *firm.RuleTypeError {
-	return comparableValidateType(g.To, typ)
+// TypeCheck checks whether the type is valid for the Rule
+func (g Greater[T]) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
+	return comparableTypeCheck(g.To, typ)
 }
 
 type comparableRule[T comparable] interface {
@@ -85,14 +85,14 @@ type comparableRule[T comparable] interface {
 func comparableValidateValue[T comparable](rule comparableRule[T], value reflect.Value) firm.ErrorMap {
 	data, ok := value.Interface().(T)
 	if !ok {
-		panic("comparable ValidateValue type not matching type--called before ValidateType?")
+		panic("comparable ValidateValue type not matching type--called before TypeCheck?")
 	}
 	if rule.Compare(data) {
 		return nil
 	}
 	return rule.ErrorMap()
 }
-func comparableValidateType[T comparable](to T, typ reflect.Type) *firm.RuleTypeError {
+func comparableTypeCheck[T comparable](to T, typ reflect.Type) *firm.RuleTypeError {
 	//nolint:godox // want the comment
 	toType := reflect.TypeOf(to) // TODO: cache in struct?, or use cast switch to package level cache?
 	if toType == typ {

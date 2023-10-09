@@ -59,7 +59,7 @@ func TestPresent_ValidateValue(t *testing.T) {
 	}
 }
 
-func TestPresent_ValidateType(t *testing.T) {
+func TestPresent_TypeCheck(t *testing.T) {
 	type anyType struct{}
 
 	tcs := []struct {
@@ -81,7 +81,7 @@ func TestPresent_ValidateType(t *testing.T) {
 			if tc.badCondition != "" {
 				err = firm.NewRuleTypeError(typ, tc.badCondition)
 			}
-			require.Equal(err, Present{}.ValidateType(typ))
+			require.Equal(err, Present{}.TypeCheck(typ))
 		})
 	}
 }

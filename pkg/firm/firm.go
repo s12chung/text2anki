@@ -33,8 +33,8 @@ func (n NotFoundRule) ValidateValue(_ reflect.Value) ErrorMap {
 	return ErrorMap{"NotFound": TemplateError{Template: "type, {{.RootTypeName}}, not found in Registry"}}
 }
 
-// ValidateType checks whether the type is valid for the Rule
-func (n NotFoundRule) ValidateType(_ reflect.Type) *RuleTypeError { return nil }
+// TypeCheck checks whether the type is valid for the Rule
+func (n NotFoundRule) TypeCheck(_ reflect.Type) *RuleTypeError { return nil }
 
 // RuleMap is a map of fields or keys to rules
 type RuleMap map[string][]Rule
@@ -42,7 +42,7 @@ type RuleMap map[string][]Rule
 // Rule defines a rule for validation definitions and validators
 type Rule interface {
 	ValidateValue(value reflect.Value) ErrorMap
-	ValidateType(typ reflect.Type) *RuleTypeError
+	TypeCheck(typ reflect.Type) *RuleTypeError
 }
 
 // BasicRule is a Rule that is not composed of other rules

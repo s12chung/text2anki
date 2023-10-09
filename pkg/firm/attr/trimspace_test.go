@@ -29,7 +29,7 @@ func TestTrimSpace_Get(t *testing.T) {
 	}
 }
 
-func TestTrimSpace_ValidateType(t *testing.T) {
+func TestTrimSpace_TypeCheck(t *testing.T) {
 	badCondition := "is not a String"
 
 	tcs := []struct {
@@ -52,7 +52,7 @@ func TestTrimSpace_ValidateType(t *testing.T) {
 			if tc.badCondition != "" {
 				err = firm.NewRuleTypeError(typ, tc.badCondition)
 			}
-			require.Equal(err, TrimSpace{}.ValidateType(typ))
+			require.Equal(err, TrimSpace{}.TypeCheck(typ))
 		})
 	}
 }

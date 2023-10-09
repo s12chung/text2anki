@@ -21,8 +21,8 @@ func (t TrimSpace) Get(value reflect.Value) reflect.Value {
 	return reflect.ValueOf(strings.TrimSpace(value.String()))
 }
 
-// ValidateType checks whether the type is valid for the Attribute
-func (t TrimSpace) ValidateType(typ reflect.Type) *firm.RuleTypeError {
+// TypeCheck checks whether the type is valid for the Attribute
+func (t TrimSpace) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
 	if typ.Kind() == reflect.String {
 		return nil
 	}

@@ -10,7 +10,7 @@ import (
 // TrimPresent checks if data is not "" when strings.TrimSpace is applied
 type TrimPresent struct{}
 
-// ValidateValue returns true if the data is valid (assumes ValidateType is called)
+// ValidateValue returns true if the data is valid (assumes TypeCheck is called)
 func (t TrimPresent) ValidateValue(value reflect.Value) firm.ErrorMap {
 	if strings.TrimSpace(value.String()) == "" {
 		return errorMapTrimPresent
@@ -18,8 +18,8 @@ func (t TrimPresent) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return nil
 }
 
-// ValidateType checks whether the type is valid for the Rule
-func (t TrimPresent) ValidateType(typ reflect.Type) *firm.RuleTypeError {
+// TypeCheck checks whether the type is valid for the Rule
+func (t TrimPresent) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
 	if typ.Kind() != reflect.String {
 		return firm.NewRuleTypeError(typ, "is not a String")
 	}

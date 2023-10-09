@@ -30,7 +30,7 @@ func NewStructAny(typ reflect.Type, ruleMap RuleMap) (StructAny, error) {
 			return StructAny{}, fmt.Errorf("field, %v, not found in type: %v", fieldName, typ.String())
 		}
 		for _, rule := range rules {
-			if err := rule.ValidateType(field.Type); err != nil {
+			if err := rule.TypeCheck(field.Type); err != nil {
 				return StructAny{}, fmt.Errorf("field, %v, in %v: %w", fieldName, typ.String(), err)
 			}
 		}
@@ -62,15 +62,15 @@ func (s StructAny) Type() reflect.Type { return s.typ }
 // Validate validates the data
 func (s StructAny) Validate(data any) ErrorMap { return validate(s, data) }
 
-// ValidateValue validates the data value (assumes ValidateType is called)
+// ValidateValue validates the data value (assumes TypeCheck is called)
 func (s StructAny) ValidateValue(value reflect.Value) ErrorMap { return validateValue(s, value) }
 
-// ValidateType checks whether the type is valid for the Rule
-func (s StructAny) ValidateType(typ reflect.Type) *RuleTypeError {
-	return validateType(typ, s.typ, "Struct")
+// TypeCheck checks whether the type is valid for the Rule
+func (s StructAny) TypeCheck(typ reflect.Type) *RuleTypeError {
+	return typeCheck(typ, s.typ, "Struct")
 }
 
-// ValidateMerge validates the data value, also doing a merge with the errorMap (assumes ValidateType is called)
+// ValidateMerge validates the data value, also doing a merge with the errorMap (assumes TypeCheck is called)
 func (s StructAny) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
 	value = indirect(value)
 	if !value.IsValid() {
@@ -114,7 +114,7 @@ func NewSliceAny(typ reflect.Type, elementRules ...Rule) (SliceAny, error) {
 	}
 
 	for _, rule := range elementRules {
-		if err := rule.ValidateType(typ.Elem()); err != nil {
+		if err := rule.TypeCheck(typ.Elem()); err != nil {
 			return SliceAny{}, fmt.Errorf("element type: %w", err)
 		}
 	}
@@ -139,15 +139,15 @@ func (s SliceAny) Type() reflect.Type { return s.typ }
 // Validate validates the data
 func (s SliceAny) Validate(data any) ErrorMap { return validate(s, data) }
 
-// ValidateValue validates the data value (assumes ValidateType is called)
+// ValidateValue validates the data value (assumes TypeCheck is called)
 func (s SliceAny) ValidateValue(value reflect.Value) ErrorMap { return validateValue(s, value) }
 
-// ValidateType checks whether the type is valid for the Rule
-func (s SliceAny) ValidateType(typ reflect.Type) *RuleTypeError {
-	return validateType(typ, s.typ, "Slice or Array")
+// TypeCheck checks whether the type is valid for the Rule
+func (s SliceAny) TypeCheck(typ reflect.Type) *RuleTypeError {
+	return typeCheck(typ, s.typ, "Slice or Array")
 }
 
-// ValidateMerge validates the data value, also doing a merge with the errorMap (assumes ValidateType is called)
+// ValidateMerge validates the data value, also doing a merge with the errorMap (assumes TypeCheck is called)
 func (s SliceAny) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
 	value = indirect(value)
 	for i := 0; i < value.Len(); i++ {
@@ -176,7 +176,7 @@ func NewValueAny(typ reflect.Type, rules ...Rule) (ValueAny, error) {
 		typ = anyTyp
 	}
 	for _, rule := range rules {
-		if err := rule.ValidateType(typ); err != nil {
+		if err := rule.TypeCheck(typ); err != nil {
 			return ValueAny{}, err
 		}
 	}
@@ -201,19 +201,19 @@ func (v ValueAny) Type() reflect.Type { return v.typ }
 // Validate validates the data
 func (v ValueAny) Validate(data any) ErrorMap { return validate(v, data) }
 
-// ValidateValue validates the data value (assumes ValidateType is called)
+// ValidateValue validates the data value (assumes TypeCheck is called)
 func (v ValueAny) ValidateValue(value reflect.Value) ErrorMap {
 	errorMap := ErrorMap{}
 	v.ValidateMerge(value, "", errorMap)
 	return errorMap.ToNil()
 }
 
-// ValidateType checks whether the type is valid for the Rule
-func (v ValueAny) ValidateType(typ reflect.Type) *RuleTypeError {
-	return validateType(typ, v.typ, "")
+// TypeCheck checks whether the type is valid for the Rule
+func (v ValueAny) TypeCheck(typ reflect.Type) *RuleTypeError {
+	return typeCheck(typ, v.typ, "")
 }
 
-// ValidateMerge validates the data value, also doing a merge with the errorMap (assumes ValidateType is called)
+// ValidateMerge validates the data value, also doing a merge with the errorMap (assumes TypeCheck is called)
 func (v ValueAny) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
 	value = indirect(value)
 	validateMerge(value, key, errorMap, v.rules)
@@ -241,8 +241,8 @@ func validate(validator Validator, data any) ErrorMap {
 }
 
 func validateValueResult(validator Validator, value reflect.Value) ErrorMap {
-	if err := validator.ValidateType(value.Type()); err != nil {
-		return ErrorMap{"ValidateType": err.TemplateError()}
+	if err := validator.TypeCheck(value.Type()); err != nil {
+		return ErrorMap{"TypeCheck": err.TemplateError()}
 	}
 
 	errorMap := ErrorMap{}
@@ -262,7 +262,7 @@ func validateMerge(value reflect.Value, key string, errorMap ErrorMap, rules []R
 	}
 }
 
-func validateType(typ, expectedType reflect.Type, kindString string) *RuleTypeError {
+func typeCheck(typ, expectedType reflect.Type, kindString string) *RuleTypeError {
 	if expectedType == anyTyp {
 		return nil
 	}

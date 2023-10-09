@@ -472,7 +472,7 @@ func TestNewStructAny(t *testing.T) {
 		{name: "nil_type", data: nil, err: fmt.Errorf("type is not a Struct")},
 		{name: "non_matching_field", data: Child{}, ruleMap: RuleMap{"No": {presentRule{}}}, err: fmt.Errorf("field, No, not found in type: firm.Child")},
 		{name: "no_matching_rule", data: Child{}, ruleMap: RuleMap{"Validates": {noMatchingRule}},
-			err: fmt.Errorf("field, Validates, in firm.Child: %w", noMatchingRule.ValidateType(reflect.TypeOf("")))},
+			err: fmt.Errorf("field, Validates, in firm.Child: %w", noMatchingRule.TypeCheck(reflect.TypeOf("")))},
 	}
 	for _, tc := range tcs {
 		tc := tc
@@ -515,7 +515,7 @@ func TestStructAny_Validate(t *testing.T) {
 		data   any
 		result ErrorMap
 	}{
-		{name: "not_struct", data: 1, result: validateTypeErrorResult(validator, 1)},
+		{name: "not_struct", data: 1, result: typeCheckErrorResult(validator, 1)},
 		{name: "invalid", data: nil, result: errInvalidValue},
 	}
 	for _, tc := range tcs {
@@ -537,7 +537,7 @@ func TestStructAny_Validate(t *testing.T) {
 	}
 }
 
-func TestStructAny_ValidateType(t *testing.T) {
+func TestStructAny_TypeCheck(t *testing.T) {
 	validator, err := NewStructAny(reflect.TypeOf(parent{}), RuleMap{})
 	require.NoError(t, err)
 	badCondition := "is not matching Struct of type firm.parent"
@@ -564,7 +564,7 @@ func TestStructAny_ValidateType(t *testing.T) {
 			if tc.badCondition != "" {
 				err = NewRuleTypeError(typ, tc.badCondition)
 			}
-			require.Equal(err, validator.ValidateType(typ))
+			require.Equal(err, validator.TypeCheck(typ))
 		})
 	}
 }
@@ -617,7 +617,7 @@ func TestNewSliceAny(t *testing.T) {
 		{name: "nil_type", data: nil, err: fmt.Errorf("type, nil, is not a Slice or Array")},
 		{name: "not_slice", data: Child{}, err: fmt.Errorf("type, firm.Child, is not a Slice or Array")},
 		{name: "no_matching_rule", data: []Child{}, rules: []Rule{noMatchingRule},
-			err: fmt.Errorf("element type: %w", noMatchingRule.ValidateType(reflect.TypeOf(Child{})))},
+			err: fmt.Errorf("element type: %w", noMatchingRule.TypeCheck(reflect.TypeOf(Child{})))},
 	}
 	for _, tc := range tcs {
 		tc := tc
@@ -655,7 +655,7 @@ func TestSliceAny_Validate(t *testing.T) {
 		data   any
 		result ErrorMap
 	}{
-		{name: "not_slice", data: 1, result: validateTypeErrorResult(validator, 1)},
+		{name: "not_slice", data: 1, result: typeCheckErrorResult(validator, 1)},
 		{name: "invalid", data: nil, result: errInvalidValue},
 	}
 	for _, tc := range tcs {
@@ -677,7 +677,7 @@ func TestSliceAny_Validate(t *testing.T) {
 	}
 }
 
-func TestSliceAny_ValidateType(t *testing.T) {
+func TestSliceAny_TypeCheck(t *testing.T) {
 	validator := sliceValidator
 	badCondition := "is not matching Slice or Array of type []firm.sliceValidatorElement"
 
@@ -703,7 +703,7 @@ func TestSliceAny_ValidateType(t *testing.T) {
 			if tc.badCondition != "" {
 				err = NewRuleTypeError(typ, tc.badCondition)
 			}
-			require.Equal(err, validator.ValidateType(typ))
+			require.Equal(err, validator.TypeCheck(typ))
 		})
 	}
 }
@@ -719,9 +719,9 @@ func TestNewValueAny(t *testing.T) {
 		err   error
 	}{
 		{name: "normal", data: i, rules: []Rule{intRule}},
-		{name: "int_pointer", data: &i, rules: []Rule{intRule}, err: intRule.ValidateType(reflect.TypeOf(&i))},
-		{name: "not_int", data: []int{}, rules: []Rule{intRule}, err: intRule.ValidateType(reflect.TypeOf([]int{}))},
-		{name: "nil_type", data: nil, rules: []Rule{intRule}, err: intRule.ValidateType(anyTyp)},
+		{name: "int_pointer", data: &i, rules: []Rule{intRule}, err: intRule.TypeCheck(reflect.TypeOf(&i))},
+		{name: "not_int", data: []int{}, rules: []Rule{intRule}, err: intRule.TypeCheck(reflect.TypeOf([]int{}))},
+		{name: "nil_type", data: nil, rules: []Rule{intRule}, err: intRule.TypeCheck(anyTyp)},
 		{name: "nil_with_presentRule", data: nil, rules: []Rule{presentRule{}}},
 	}
 	for _, tc := range tcs {
@@ -788,7 +788,7 @@ func TestValueAny_Validate(t *testing.T) {
 	}
 }
 
-func TestValueAny_ValidateType(t *testing.T) {
+func TestValueAny_TypeCheck(t *testing.T) {
 	i := 0
 
 	tcs := []struct {
@@ -820,7 +820,7 @@ func TestValueAny_ValidateType(t *testing.T) {
 			if tc.badCondition != "" {
 				ruleTypeError = NewRuleTypeError(typ, tc.badCondition)
 			}
-			require.Equal(ruleTypeError, validator.ValidateType(typ))
+			require.Equal(ruleTypeError, validator.TypeCheck(typ))
 		})
 	}
 }

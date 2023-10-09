@@ -9,7 +9,7 @@ import (
 // Present checks if data is non-Zero and non-Empty
 type Present struct{}
 
-// ValidateValue returns true if the data is valid (assumes ValidateType is called)
+// ValidateValue returns true if the data is valid (assumes TypeCheck is called)
 func (p Present) ValidateValue(value reflect.Value) firm.ErrorMap {
 	if !value.IsValid() || value.IsZero() {
 		return errorMapPresent
@@ -26,7 +26,7 @@ func (p Present) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return nil
 }
 
-// ValidateType checks whether the type is valid for the Rule -- allow all types
-func (p Present) ValidateType(_ reflect.Type) *firm.RuleTypeError { return nil }
+// TypeCheck checks whether the type is valid for the Rule -- allow all types
+func (p Present) TypeCheck(_ reflect.Type) *firm.RuleTypeError { return nil }
 
 var errorMapPresent = firm.ErrorMap{"Present": firm.TemplateError{Template: "is not present"}}

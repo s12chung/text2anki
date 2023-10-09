@@ -31,7 +31,7 @@ func TestEqual_ValidateValue(t *testing.T) {
 	}
 }
 
-func TestEqual_ValidateType(t *testing.T) { testComparableRule_ValidateType[Equal[int]](t) }
+func TestEqual_TypeCheck(t *testing.T) { testComparableRule_TypeCheck[Equal[int]](t) }
 
 func TestLess_ValidateValue(t *testing.T) {
 	require.Equal(t, "Less: value is not less than 99", Less[int]{To: 99}.ErrorMap().Error())
@@ -60,7 +60,7 @@ func TestLess_ValidateValue(t *testing.T) {
 	}
 }
 
-func TestLess_ValidateType(t *testing.T) { testComparableRule_ValidateType[Less[int]](t) }
+func TestLess_TypeCheck(t *testing.T) { testComparableRule_TypeCheck[Less[int]](t) }
 
 func TestGreater_ValidateValue(t *testing.T) {
 	require.Equal(t, "Greater: value is not greater than 99", Greater[int]{To: 99}.ErrorMap().Error())
@@ -89,7 +89,7 @@ func TestGreater_ValidateValue(t *testing.T) {
 	}
 }
 
-func TestGreater_ValidateType(t *testing.T) { testComparableRule_ValidateType[Greater[int]](t) }
+func TestGreater_TypeCheck(t *testing.T) { testComparableRule_TypeCheck[Greater[int]](t) }
 
 //nolint:revive,stylecheck // for tests
 func testComparableRule_ValidateValue[T comparable](t *testing.T, rule comparableRule[T], hasError bool, data T) {
@@ -102,7 +102,7 @@ func testComparableRule_ValidateValue[T comparable](t *testing.T, rule comparabl
 }
 
 //nolint:revive,stylecheck // for tests
-func testComparableRule_ValidateType[T comparableRule[int]](t *testing.T) {
+func testComparableRule_TypeCheck[T comparableRule[int]](t *testing.T) {
 	i := 0
 	badCondition := "is not a int"
 
@@ -128,7 +128,7 @@ func testComparableRule_ValidateType[T comparableRule[int]](t *testing.T) {
 				err = firm.NewRuleTypeError(typ, tc.badCondition)
 			}
 			var rule T
-			require.Equal(err, rule.ValidateType(typ))
+			require.Equal(err, rule.TypeCheck(typ))
 		})
 	}
 }

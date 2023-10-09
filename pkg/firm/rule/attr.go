@@ -12,7 +12,7 @@ type Attribute interface {
 	Name() string
 	Type() reflect.Type
 	Get(value reflect.Value) reflect.Value
-	ValidateType(typ reflect.Type) *firm.RuleTypeError
+	TypeCheck(typ reflect.Type) *firm.RuleTypeError
 }
 
 // Attr is a rule that applies a firm.Rule to an Attribute value
@@ -21,7 +21,7 @@ type Attr struct {
 	Rule firm.Rule
 }
 
-// ValidateValue runs all the rules after .Attr is called (assumes ValidateType is called)
+// ValidateValue runs all the rules after .Attr is called (assumes TypeCheck is called)
 func (a Attr) ValidateValue(value reflect.Value) firm.ErrorMap {
 	errorMap := firm.ErrorMap{}
 	for k, v := range a.Rule.ValidateValue(a.Of.Get(value)) {
@@ -36,13 +36,13 @@ func (a Attr) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return errorMap.ToNil()
 }
 
-// ValidateType checks whether the type is valid for the Attribute
-func (a Attr) ValidateType(typ reflect.Type) *firm.RuleTypeError {
-	if err := a.Of.ValidateType(typ); err != nil {
+// TypeCheck checks whether the type is valid for the Attribute
+func (a Attr) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
+	if err := a.Of.TypeCheck(typ); err != nil {
 		return err
 	}
 	ofType := a.Of.Type()
-	if err := a.Rule.ValidateType(ofType); err != nil {
+	if err := a.Rule.TypeCheck(ofType); err != nil {
 		err.BadCondition = fmt.Sprintf("has Attr, %v, which ", a.Of.Name()) + err.BadCondition
 		return err
 	}

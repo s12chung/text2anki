@@ -11,7 +11,7 @@ import (
 type onlyKindRule struct{ kind reflect.Kind }
 
 func (o onlyKindRule) ValidateValue(_ reflect.Value) ErrorMap { return nil }
-func (o onlyKindRule) ValidateType(typ reflect.Type) *RuleTypeError {
+func (o onlyKindRule) TypeCheck(typ reflect.Type) *RuleTypeError {
 	if typ.Kind() != o.kind {
 		return NewRuleTypeError(typ, "is not "+o.kind.String())
 	}
@@ -28,15 +28,15 @@ func (p presentRule) ValidateValue(value reflect.Value) ErrorMap {
 	}
 	return nil
 }
-func (p presentRule) ValidateType(_ reflect.Type) *RuleTypeError { return nil }
+func (p presentRule) TypeCheck(_ reflect.Type) *RuleTypeError { return nil }
 
 //nolint:unparam // leave it for tests
 func presentRuleError(errorKey ErrorKey) *TemplateError {
 	return &TemplateError{ErrorKey: errorKey, Template: presentRuleKey + " template"}
 }
 
-func validateTypeErrorResult(rule Rule, data any) ErrorMap {
-	return ErrorMap{"ValidateType": rule.ValidateType(reflect.TypeOf(data)).TemplateError()}
+func typeCheckErrorResult(rule Rule, data any) ErrorMap {
+	return ErrorMap{"TypeCheck": rule.TypeCheck(reflect.TypeOf(data)).TemplateError()}
 }
 
 func testValidates(t *testing.T, validator Validator, data any, err *TemplateError, keySuffixes ...string) {

@@ -31,7 +31,7 @@ func TestTrimPresent_ValidateValue(t *testing.T) {
 	}
 }
 
-func TestTrimPresent_ValidateType(t *testing.T) {
+func TestTrimPresent_TypeCheck(t *testing.T) {
 	tcs := []struct {
 		name         string
 		data         any
@@ -52,7 +52,7 @@ func TestTrimPresent_ValidateType(t *testing.T) {
 			if tc.badCondition != "" {
 				err = firm.NewRuleTypeError(typ, tc.badCondition)
 			}
-			require.Equal(err, TrimPresent{}.ValidateType(typ))
+			require.Equal(err, TrimPresent{}.TypeCheck(typ))
 		})
 	}
 }

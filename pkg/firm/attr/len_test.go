@@ -32,7 +32,7 @@ func TestLen_Get(t *testing.T) {
 	}
 }
 
-func TestLen_ValidateType(t *testing.T) {
+func TestLen_TypeCheck(t *testing.T) {
 	badCondition := "does not have a length (not a Slice, Array, Array pointer, Channel, Map or String)"
 
 	tcs := []struct {
@@ -62,7 +62,7 @@ func TestLen_ValidateType(t *testing.T) {
 			if tc.badCondition != "" {
 				err = firm.NewRuleTypeError(typ, tc.badCondition)
 			}
-			require.Equal(err, Len{}.ValidateType(typ))
+			require.Equal(err, Len{}.TypeCheck(typ))
 		})
 	}
 }

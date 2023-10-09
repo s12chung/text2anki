@@ -58,7 +58,7 @@ func TestAttr_ValidateValue(t *testing.T) {
 	}
 }
 
-func TestAttr_ValidateType(t *testing.T) {
+func TestAttr_TypeCheck(t *testing.T) {
 	tcs := []struct {
 		name string
 		attr Attribute
@@ -94,7 +94,7 @@ func TestAttr_ValidateType(t *testing.T) {
 				}
 				err = firm.NewRuleTypeError(errData, tc.badCondition)
 			}
-			require.Equal(err, Attr{Of: attribute, Rule: tc.rule}.ValidateType(typ))
+			require.Equal(err, Attr{Of: attribute, Rule: tc.rule}.TypeCheck(typ))
 		})
 	}
 }

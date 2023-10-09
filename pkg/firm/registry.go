@@ -87,17 +87,17 @@ func (r *Registry) Validate(data any) ErrorMap {
 	return validateValueResult(r.DefaultedValidator(value.Type()), value)
 }
 
-// ValidateValue validates the data value with the correct validator (assumes ValidateType is called)
+// ValidateValue validates the data value with the correct validator (assumes TypeCheck is called)
 func (r *Registry) ValidateValue(value reflect.Value) ErrorMap {
 	return r.DefaultedValidator(value.Type()).ValidateValue(value)
 }
 
-// ValidateType checks whether the type is valid for the Rule
-func (r *Registry) ValidateType(typ reflect.Type) *RuleTypeError {
-	return r.DefaultedValidator(typ).ValidateType(typ)
+// TypeCheck checks whether the type is valid for the Rule
+func (r *Registry) TypeCheck(typ reflect.Type) *RuleTypeError {
+	return r.DefaultedValidator(typ).TypeCheck(typ)
 }
 
-// ValidateMerge validates the data value with the correct validator, also doing a merge with the errorMap (assumes ValidateType is called)
+// ValidateMerge validates the data value with the correct validator, also doing a merge with the errorMap (assumes TypeCheck is called)
 func (r *Registry) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
 	r.DefaultedValidator(value.Type()).ValidateMerge(value, key, errorMap)
 }
