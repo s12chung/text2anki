@@ -263,7 +263,7 @@ func validateValueResult(validator Validator, value reflect.Value) ErrorMap {
 	}
 
 	errorMap := ErrorMap{}
-	validator.ValidateMerge(value, TypeName(value), errorMap)
+	validator.ValidateMerge(value, typ.String(), errorMap)
 	return errorMap.Finish()
 }
 
@@ -292,6 +292,6 @@ func typeCheck(typ, expectedType reflect.Type, kindString string) *RuleTypeError
 func validate(validator Validator, data any) ErrorMap {
 	value := reflect.ValueOf(data)
 	errorMap := ErrorMap{}
-	validator.ValidateMerge(value, TypeName(value), errorMap)
+	validator.ValidateMerge(value, typeName(value), errorMap)
 	return errorMap.Finish()
 }

@@ -55,7 +55,7 @@ func TestRegistry_RegisterType(t *testing.T) {
 func notFoundError(data any) ErrorMap {
 	value := reflect.ValueOf(data)
 	errorMap := ErrorMap{}
-	DefaultValidator.ValidateMerge(value, TypeName(value), errorMap)
+	DefaultValidator.ValidateMerge(value, typeName(value), errorMap)
 	return errorMap.Finish()
 }
 

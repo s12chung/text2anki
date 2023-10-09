@@ -2,16 +2,6 @@ package firm
 
 import "reflect"
 
-const nilName = "nil"
-
-// TypeName returns the type name of the type
-func TypeName(value reflect.Value) string {
-	if !value.IsValid() {
-		return nilName
-	}
-	return indirect(value).Type().String()
-}
-
 func indirect(value reflect.Value) reflect.Value {
 	for value.Kind() == reflect.Pointer {
 		value = value.Elem()

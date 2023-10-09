@@ -25,7 +25,7 @@ func TestTypeName(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			require.Equal(tc.expected, TypeName(reflect.ValueOf(tc.data)))
+			require.Equal(tc.expected, typeName(reflect.ValueOf(tc.data)))
 		})
 	}
 }

@@ -8,6 +8,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const nilName = "nil"
+const presentRuleKey = "presentRule"
+
+func typeName(value reflect.Value) string {
+	if !value.IsValid() {
+		return nilName
+	}
+	return indirect(value).Type().String()
+}
+
 type onlyKindRule struct{ kind reflect.Kind }
 
 func (o onlyKindRule) ValidateValue(_ reflect.Value) ErrorMap { return nil }
@@ -19,8 +29,6 @@ func (o onlyKindRule) TypeCheck(typ reflect.Type) *RuleTypeError {
 }
 
 type presentRule struct{}
-
-const presentRuleKey = "presentRule"
 
 func (p presentRule) ValidateValue(value reflect.Value) ErrorMap {
 	if value.IsZero() {
@@ -54,7 +62,7 @@ func testValidateAllFull(t *testing.T, skipValidate bool, validator Validator, d
 		}
 	}
 	validateExpected := ErrorMap{}
-	validateValueExpected.MergeInto(TypeName(reflect.ValueOf(data)), validateExpected)
+	validateValueExpected.MergeInto(typeName(reflect.ValueOf(data)), validateExpected)
 	validateExpected = validateExpected.ToNil()
 
 	if !skipValidate {

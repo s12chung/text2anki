@@ -48,7 +48,7 @@ func (e ErrorMap) ToNil() ErrorMap {
 	return e
 }
 
-// Finish finishes the ErrorMap for consumption by filling in the TypeName and ValueName
+// Finish finishes the ErrorMap for consumption by filling in the typeName and ValueName
 func (e ErrorMap) Finish() ErrorMap {
 	for k, v := range e {
 		v.ErrorKey = k
