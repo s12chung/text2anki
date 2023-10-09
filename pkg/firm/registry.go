@@ -55,6 +55,7 @@ func (r *Registry) registeredStruct(definition *Definition) *ValueAny {
 }
 
 func (r *Registry) registerRecursionType(typ reflect.Type, rules *[]Rule) {
+	// Registry handles indirect types only, user can't control the types here
 	typ = indirectType(typ)
 
 	//nolint:exhaustive // just need these cases
@@ -75,15 +76,13 @@ func (r *Registry) registerRecursionType(typ reflect.Type, rules *[]Rule) {
 	}
 }
 
-// Type returns the Type the Registry handles
-func (r *Registry) Type() reflect.Type { return r.Validator(nil).Type() }
-
 // ValidateAny validates the data with the correct validator
 func (r *Registry) ValidateAny(data any) ErrorMap {
 	value := reflect.ValueOf(data)
 	if !value.IsValid() {
 		return errInvalidValue
 	}
+	// value is used here, so can't use validateValue to save reflect.TypeOf call
 	return validateValueResult(r.DefaultedValidator(value.Type()), value)
 }
 
@@ -119,6 +118,7 @@ func (r *Registry) Validator(typ reflect.Type) Validator {
 	if typ == nil || r.typeToValidator == nil {
 		return nil
 	}
+	// Registry only contains indirect types, make the function safe
 	typ = indirectType(typ)
 	validator := r.typeToValidator[typ]
 	if validator == nil {

@@ -8,8 +8,12 @@ import (
 // NewDefinition returns a new Definition
 func NewDefinition[T any]() *Definition {
 	var zero T
+	typ := reflect.TypeOf(zero)
+	if typ.Kind() == reflect.Pointer {
+		panic(fmt.Sprintf("NewDefinition created with pointer type, dereference it: %v", typ.String()))
+	}
 	validator := &Definition{
-		typ:           indirectType(reflect.TypeOf(zero)),
+		typ:           typ,
 		topLevelRules: []Rule{},
 		ruleMap:       RuleMap{},
 	}

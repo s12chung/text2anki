@@ -20,8 +20,11 @@ func NewStruct[T any](ruleMap RuleMap) (Struct[T], error) {
 
 // NewStructAny returns a new StructAny
 func NewStructAny(typ reflect.Type, ruleMap RuleMap) (StructAny, error) {
-	if typ == nil || typ.Kind() != reflect.Struct {
-		return StructAny{}, fmt.Errorf("type is not a Struct")
+	if typ == nil {
+		return StructAny{}, fmt.Errorf("type, nil, is not a Struct")
+	}
+	if typ.Kind() != reflect.Struct {
+		return StructAny{}, fmt.Errorf("type, %v, is not a Struct", typ.String())
 	}
 
 	for fieldName, rules := range ruleMap {
@@ -41,7 +44,7 @@ func NewStructAny(typ reflect.Type, ruleMap RuleMap) (StructAny, error) {
 		rules := v
 		rm[k] = &rules
 	}
-	return StructAny{typ: indirectType(typ), ruleMap: rm}, nil
+	return StructAny{typ: typ, ruleMap: rm}, nil
 }
 
 // Struct validates structs
@@ -116,7 +119,7 @@ func NewSliceAny(typ reflect.Type, elementRules ...Rule) (SliceAny, error) {
 			return SliceAny{}, fmt.Errorf("element type: %w", err)
 		}
 	}
-	return SliceAny{typ: indirectType(typ), elementRules: elementRules}, nil
+	return SliceAny{typ: typ, elementRules: elementRules}, nil
 }
 
 // Slice validates slices and arrays
@@ -171,8 +174,12 @@ func NewValue[T any](rules ...Rule) (Value[T], error) {
 // NewValueAny returns a ValueAny
 func NewValueAny(typ reflect.Type, rules ...Rule) (ValueAny, error) {
 	if typ == nil {
-		typ = anyTyp
+		return ValueAny{}, fmt.Errorf("type is nil, not recommended")
 	}
+	if typ.Kind() == reflect.Pointer {
+		return ValueAny{}, fmt.Errorf("type, %v, is a Pointer, not recommended", typ.String())
+	}
+
 	for _, rule := range rules {
 		if err := rule.TypeCheck(typ); err != nil {
 			return ValueAny{}, err
@@ -218,6 +225,18 @@ func (v ValueAny) TypeCheck(typ reflect.Type) *RuleTypeError { return typeCheck(
 // Rules returns the rules for ValueAny
 func (v ValueAny) Rules() []Rule { return v.rules }
 
+// RuleValidator is a Validator wrapper around Rule
+type RuleValidator struct{ Rule }
+
+// ValidateAny validates the data
+func (r RuleValidator) ValidateAny(data any) ErrorMap { return validateAny(r, data) }
+
+// ValidateMerge validates the data value, also doing a merge with the errorMap (assumes TypeCheck is called)
+func (r RuleValidator) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
+	value = indirect(value)
+	validateMerge(value, key, errorMap, []Rule{r.Rule})
+}
+
 func mustNewValidator[T any](f func() (T, error)) T {
 	validator, err := f()
 	if err != nil {
@@ -237,7 +256,9 @@ func validateAny(validator Validator, data any) ErrorMap {
 }
 
 func validateValueResult(validator Validator, value reflect.Value) ErrorMap {
-	if err := validator.TypeCheck(value.Type()); err != nil {
+	// Users often don't have control over whether any is a pointer, so we're generous
+	typ := indirectType(value.Type())
+	if err := validator.TypeCheck(typ); err != nil {
 		return ErrorMap{"TypeCheck": err.TemplateError()}
 	}
 
@@ -259,12 +280,7 @@ func validateMerge(value reflect.Value, key string, errorMap ErrorMap, rules []R
 }
 
 func typeCheck(typ, expectedType reflect.Type, kindString string) *RuleTypeError {
-	if expectedType == anyTyp {
-		return nil
-	}
-
-	iType := indirectType(typ)
-	if iType != expectedType {
+	if typ != expectedType {
 		if kindString != "" {
 			kindString += " "
 		}

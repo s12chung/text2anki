@@ -23,7 +23,7 @@ var ValidateAny = DefaultRegistry.ValidateAny
 var DefaultRegistry = &Registry{}
 
 // DefaultValidator is the validator used by registries for not found types when DefaultValidator is not defined
-var DefaultValidator = MustNewValue[Any](NotFoundRule{})
+var DefaultValidator = RuleValidator{Rule: NotFoundRule{}}
 
 // NotFoundRule is the rule used for not found types in the DefaultValidator
 type NotFoundRule struct{}
@@ -54,7 +54,6 @@ type BasicRule interface {
 // Validator validates the data
 type Validator interface {
 	Rule
-	Type() reflect.Type
 	ValidateAny(data any) ErrorMap
 	ValidateMerge(value reflect.Value, key string, errorMap ErrorMap)
 }

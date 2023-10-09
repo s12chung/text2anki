@@ -39,11 +39,11 @@ func typeCheckErrorResult(rule Rule, data any) ErrorMap {
 	return ErrorMap{"TypeCheck": rule.TypeCheck(reflect.TypeOf(data)).TemplateError()}
 }
 
-func testValidates(t *testing.T, validator Validator, data any, err *TemplateError, keySuffixes ...string) {
-	testValidatesFull(t, false, validator, data, err, keySuffixes...)
+func testValidateAll(t *testing.T, validator Validator, data any, err *TemplateError, keySuffixes ...string) {
+	testValidateAllFull(t, false, validator, data, err, keySuffixes...)
 }
 
-func testValidatesFull(t *testing.T, skipValidate bool, validator Validator, data any, err *TemplateError, keySuffixes ...string) {
+func testValidateAllFull(t *testing.T, skipValidate bool, validator Validator, data any, err *TemplateError, keySuffixes ...string) {
 	require := require.New(t)
 
 	var validateValueExpected ErrorMap
