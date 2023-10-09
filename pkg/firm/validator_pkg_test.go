@@ -30,18 +30,17 @@ func errorMap(field, name firm.ErrorKey, template string) firm.ErrorMap {
 	return firm.ErrorMap{key: firm.TemplateError{Template: template, ErrorKey: key}}
 }
 
-func TestNewStructValidatorPkg(t *testing.T) {
+func TestNewStructPkg(t *testing.T) {
 	tcs := []struct {
 		name    string
-		data    any
 		ruleMap firm.RuleMap
 		failErr error
 	}{
-		{name: "exported_field", data: nonExport{}, ruleMap: firm.RuleMap{"Public": {rule.TrimPresent{}}},
+		{name: "exported_field", ruleMap: firm.RuleMap{"Public": {rule.TrimPresent{}}},
 			failErr: errorMap("Public", "", "")},
-		{name: "non_exported_field", data: nonExport{}, ruleMap: firm.RuleMap{"private": {rule.TrimPresent{}}},
+		{name: "non_exported_field", ruleMap: firm.RuleMap{"private": {rule.TrimPresent{}}},
 			failErr: errorMap("private", "", "")},
-		{name: "non_exported_child", data: nonExport{}, ruleMap: firm.RuleMap{"privateChild": {rule.Present{}}},
+		{name: "non_exported_child", ruleMap: firm.RuleMap{"privateChild": {rule.Present{}}},
 			failErr: errorMap("privateChild", "Present", "is not present")},
 	}
 	for _, tc := range tcs {
@@ -49,7 +48,7 @@ func TestNewStructValidatorPkg(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			validator, err := firm.NewStructValidator(tc.data, tc.ruleMap)
+			validator, err := firm.NewStruct[nonExport](tc.ruleMap)
 			require.NoError(err)
 			require.True(validator.Validate(notEmpty) == nil)
 			require.Equal(tc.failErr, validator.Validate(nonExport{}))

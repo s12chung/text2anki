@@ -8,19 +8,32 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type onlyKindRule struct{ kind reflect.Kind }
+
+func (o onlyKindRule) ValidateValue(_ reflect.Value) ErrorMap { return nil }
+func (o onlyKindRule) ValidateType(typ reflect.Type) *RuleTypeError {
+	if typ.Kind() != o.kind {
+		return NewRuleTypeError(typ, "is not "+o.kind.String())
+	}
+	return nil
+}
+
 type presentRule struct{}
 
 const presentRuleKey = "presentRule"
 
 func (p presentRule) ValidateValue(value reflect.Value) ErrorMap {
 	if value.IsZero() {
-		return ErrorMap{presentRuleKey: *presentRuleError()}
+		return ErrorMap{presentRuleKey: *presentRuleError("")}
 	}
 	return nil
 }
 func (p presentRule) ValidateType(_ reflect.Type) *RuleTypeError { return nil }
 
-func presentRuleError() *TemplateError { return &TemplateError{Template: presentRuleKey + " template"} }
+//nolint:unparam // leave it for tests
+func presentRuleError(errorKey ErrorKey) *TemplateError {
+	return &TemplateError{ErrorKey: errorKey, Template: presentRuleKey + " template"}
+}
 
 func validateTypeErrorResult(rule Rule, data any) ErrorMap {
 	return ErrorMap{"ValidateType": rule.ValidateType(reflect.TypeOf(data)).TemplateError()}
@@ -59,4 +72,24 @@ func testValidatesFull(t *testing.T, skipValidate bool, validator Validator, dat
 	}
 	validator.ValidateMerge(reflect.ValueOf(data), errorKey, errorMap)
 	require.Equal(expectedErrorMap, errorMap)
+}
+
+type validateXTc[T any] struct {
+	name   string
+	data   T
+	result ErrorMap
+}
+
+func testValidateX[T any](t *testing.T, tcs []validateXTc[T], newValidator func() (ValidatorX[T], error)) {
+	validator, err := newValidator()
+	require.NoError(t, err)
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			require.Equal(tc.result, validator.ValidateX(tc.data))
+			require.Equal(tc.result, validator.Validate(tc.data))
+		})
+	}
 }

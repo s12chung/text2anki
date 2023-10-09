@@ -6,9 +6,10 @@ import (
 )
 
 // NewDefinition returns a new Definition
-func NewDefinition(data any) *Definition {
+func NewDefinition[T any]() *Definition {
+	var zero T
 	validator := &Definition{
-		typ:           indirectType(reflect.TypeOf(data)),
+		typ:           indirectType(reflect.TypeOf(zero)),
 		topLevelRules: []Rule{},
 		ruleMap:       RuleMap{},
 	}
@@ -46,12 +47,11 @@ func (s *Definition) Validates(ruleMap RuleMap) *Definition {
 	return s
 }
 
+// Type returns the type for the definition
+func (s *Definition) Type() reflect.Type { return s.typ }
+
 // TopLevelRules return the rules that apply to the top level
-func (s *Definition) TopLevelRules() []Rule {
-	return s.topLevelRules
-}
+func (s *Definition) TopLevelRules() []Rule { return s.topLevelRules }
 
 // RuleMap returns the map of rules for the structure
-func (s *Definition) RuleMap() RuleMap {
-	return s.ruleMap
-}
+func (s *Definition) RuleMap() RuleMap { return s.ruleMap }

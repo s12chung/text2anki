@@ -62,7 +62,7 @@ type unregistered struct{}
 var testRegistry = &Registry{}
 
 func init() {
-	testRegistry.MustRegisterType(NewDefinition(parent{}).Validates(RuleMap{
+	testRegistry.MustRegisterType(NewDefinition[parent]().Validates(RuleMap{
 		"Child":                   {presentRule{}},
 		"Primitive":               {presentRule{}},
 		"Basic":                   {presentRule{}},
@@ -77,10 +77,10 @@ func init() {
 		"ArrayValidates":          {},
 		"ArrayPtValidates":        {},
 	}))
-	testRegistry.MustRegisterType(NewDefinition(Child{}).Validates(RuleMap{
+	testRegistry.MustRegisterType(NewDefinition[Child]().Validates(RuleMap{
 		"Validates": {presentRule{}},
 	}))
-	testRegistry.MustRegisterType(NewDefinition(topLevelValidates{}).ValidatesTopLevel(presentRule{}))
+	testRegistry.MustRegisterType(NewDefinition[topLevelValidates]().ValidatesTopLevel(presentRule{}))
 }
 
 type integrationTestCase struct {

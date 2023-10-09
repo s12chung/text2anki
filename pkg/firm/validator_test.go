@@ -458,7 +458,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 	}},
 }
 
-func TestNewStructValidator(t *testing.T) {
+func TestNewStructAny(t *testing.T) {
 	noMatchingRule := onlyKindRule{kind: reflect.Bool}
 
 	tcs := []struct {
@@ -479,7 +479,7 @@ func TestNewStructValidator(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			validator, err := NewStructValidator(tc.data, tc.ruleMap)
+			validator, err := NewStructAny(reflect.TypeOf(tc.data), tc.ruleMap)
 			if tc.err != nil {
 				require.Equal(tc.err, err)
 				return
@@ -495,7 +495,19 @@ func TestNewStructValidator(t *testing.T) {
 	}
 }
 
-func TestStructValidator_Validate(t *testing.T) {
+func TestStruct_ValidateX(t *testing.T) {
+	errorKey := ErrorKey("firm.Child.Validates." + presentRuleKey)
+
+	tcs := []validateXTc[Child]{
+		{name: "valid", data: Child{Validates: "ok"}},
+		{name: "invalid", data: Child{NoValidates: "not_ok"}, result: ErrorMap{errorKey: *presentRuleError(errorKey)}},
+	}
+	testValidateX(t, tcs, func() (ValidatorX[Child], error) {
+		return NewStruct[Child](RuleMap{"Validates": []Rule{presentRule{}}})
+	})
+}
+
+func TestStructAny_Validate(t *testing.T) {
 	validator := testRegistry.Validator(reflect.TypeOf(parent{}))
 
 	tcs := []struct {
@@ -519,14 +531,14 @@ func TestStructValidator_Validate(t *testing.T) {
 			for i, key := range tc.errorKeys {
 				errKeySuffixes[i] = joinKeys(key, presentRuleKey)
 			}
-			testValidates(t, validator, rawData, presentRuleError(), errKeySuffixes...)
-			testValidates(t, validator, &rawData, presentRuleError(), errKeySuffixes...)
+			testValidates(t, validator, rawData, presentRuleError(""), errKeySuffixes...)
+			testValidates(t, validator, &rawData, presentRuleError(""), errKeySuffixes...)
 		})
 	}
 }
 
-func TestStructValidator_ValidateType(t *testing.T) {
-	validator, err := NewStructValidator(parent{}, RuleMap{})
+func TestStructAny_ValidateType(t *testing.T) {
+	validator, err := NewStructAny(reflect.TypeOf(parent{}), RuleMap{})
 	require.NoError(t, err)
 	badCondition := "is not matching Struct of type firm.parent"
 
@@ -589,10 +601,10 @@ var sliceValidatorTestCases = []sliceValidatorTestCase{
 	}},
 }
 
-var sliceValidator = MustNewSliceValidator([]sliceValidatorElement{},
-	presentRule{}, MustNewStructValidator(sliceValidatorElement{}, RuleMap{"Int": {presentRule{}}}))
+var sliceValidator = MustNewSlice[[]sliceValidatorElement](
+	presentRule{}, MustNewStruct[sliceValidatorElement](RuleMap{"Int": {presentRule{}}}))
 
-func TestNewSliceValidator(t *testing.T) {
+func TestNewSliceAny(t *testing.T) {
 	noMatchingRule := onlyKindRule{kind: reflect.Bool}
 
 	tcs := []struct {
@@ -612,19 +624,30 @@ func TestNewSliceValidator(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			validator, err := NewSliceValidator(tc.data, tc.rules...)
+			validator, err := NewSliceAny(reflect.TypeOf(tc.data), tc.rules...)
 			if tc.err != nil {
 				require.Equal(tc.err, err)
 				return
 			}
 
 			require.NoError(err)
-			require.Equal(SliceValidator{typ: reflect.TypeOf(tc.data), elementRules: tc.rules}, validator)
+			require.Equal(SliceAny{typ: reflect.TypeOf(tc.data), elementRules: tc.rules}, validator)
 		})
 	}
 }
 
-func TestSliceValidator_Validate(t *testing.T) {
+func TestSlice_ValidateX(t *testing.T) {
+	errorKey := ErrorKey("[]firm.Child.[0]." + presentRuleKey)
+	tcs := []validateXTc[[]Child]{
+		{name: "valid", data: []Child{{Validates: "ok"}}},
+		{name: "invalid", data: []Child{{}}, result: ErrorMap{errorKey: *presentRuleError(errorKey)}},
+	}
+	testValidateX(t, tcs, func() (ValidatorX[[]Child], error) {
+		return NewSlice[[]Child](presentRule{})
+	})
+}
+
+func TestSliceAny_Validate(t *testing.T) {
 	validator := sliceValidator
 
 	tcs := []struct {
@@ -648,13 +671,13 @@ func TestSliceValidator_Validate(t *testing.T) {
 			for i, key := range tc.errorKeys {
 				errKeySuffixes[i] = joinKeys(key, presentRuleKey)
 			}
-			testValidates(t, validator, rawData, presentRuleError(), errKeySuffixes...)
-			testValidates(t, validator, &rawData, presentRuleError(), errKeySuffixes...)
+			testValidates(t, validator, rawData, presentRuleError(""), errKeySuffixes...)
+			testValidates(t, validator, &rawData, presentRuleError(""), errKeySuffixes...)
 		})
 	}
 }
 
-func TestSliceValidator_ValidateType(t *testing.T) {
+func TestSliceAny_ValidateType(t *testing.T) {
 	validator := sliceValidator
 	badCondition := "is not matching Slice or Array of type []firm.sliceValidatorElement"
 
@@ -685,17 +708,7 @@ func TestSliceValidator_ValidateType(t *testing.T) {
 	}
 }
 
-type onlyKindRule struct{ kind reflect.Kind }
-
-func (o onlyKindRule) ValidateValue(_ reflect.Value) ErrorMap { return nil }
-func (o onlyKindRule) ValidateType(typ reflect.Type) *RuleTypeError {
-	if typ.Kind() != o.kind {
-		return NewRuleTypeError(typ, "is not "+o.kind.String())
-	}
-	return nil
-}
-
-func TestNewValueValidator(t *testing.T) {
+func TestNewValueAny(t *testing.T) {
 	i := 0
 	intRule := onlyKindRule{kind: reflect.Int}
 
@@ -716,7 +729,7 @@ func TestNewValueValidator(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			validator, err := NewValueValidator(tc.data, tc.rules...)
+			validator, err := NewValueAny(reflect.TypeOf(tc.data), tc.rules...)
 			if tc.err != nil {
 				require.Equal(tc.err, err)
 				return
@@ -727,13 +740,24 @@ func TestNewValueValidator(t *testing.T) {
 			if expectedType == nil {
 				expectedType = anyTyp
 			}
-			require.Equal(ValueValidator{typ: expectedType, rules: tc.rules}, validator)
+			require.Equal(ValueAny{typ: expectedType, rules: tc.rules}, validator)
 		})
 	}
 }
 
-func TestValueValidator_Validate(t *testing.T) {
-	validator, err := NewValueValidator(nil, presentRule{})
+func TestValue_ValidateX(t *testing.T) {
+	errorKey := ErrorKey("firm.Child." + presentRuleKey)
+	tcs := []validateXTc[Child]{
+		{name: "valid", data: Child{Validates: "ok"}},
+		{name: "invalid", data: Child{}, result: ErrorMap{errorKey: *presentRuleError(errorKey)}},
+	}
+	testValidateX(t, tcs, func() (ValidatorX[Child], error) {
+		return NewValue[Child](presentRule{})
+	})
+}
+
+func TestValueAny_Validate(t *testing.T) {
+	validator, err := NewValueAny(reflect.TypeOf(0), presentRule{})
 	require.NoError(t, err)
 
 	edgeTcs := []struct {
@@ -756,7 +780,7 @@ func TestValueValidator_Validate(t *testing.T) {
 	}
 	tcs := []testCase{
 		{name: "not_zero", data: 1},
-		{name: "zero", data: 0, err: presentRuleError()},
+		{name: "zero", data: 0, err: presentRuleError("")},
 	}
 	for _, tc := range tcs {
 		tc := tc
@@ -764,7 +788,7 @@ func TestValueValidator_Validate(t *testing.T) {
 	}
 }
 
-func TestValueValidator_ValidateType(t *testing.T) {
+func TestValueAny_ValidateType(t *testing.T) {
 	i := 0
 
 	tcs := []struct {
@@ -787,7 +811,7 @@ func TestValueValidator_ValidateType(t *testing.T) {
 			if tc.extraRule != nil {
 				rules = append(rules, tc.extraRule)
 			}
-			validator, err := NewValueValidator(i, rules...)
+			validator, err := NewValueAny(reflect.TypeOf(i), rules...)
 			require.NoError(err)
 
 			typ := reflect.TypeOf(tc.data)

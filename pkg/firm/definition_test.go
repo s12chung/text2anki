@@ -6,33 +6,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type typedDefinition struct {
-	Primitive int
-}
-
-func TestTypedDefinition_ValidatesTopLevel(t *testing.T) {
+func TestDefinition_ValidatesTopLevel(t *testing.T) {
 	require := require.New(t)
 	rules := []Rule{presentRule{}}
 
-	definition := NewDefinition(typedDefinition{}).ValidatesTopLevel(rules...)
+	definition := NewDefinition[Child]().ValidatesTopLevel(rules...)
 	require.Equal(rules, definition.TopLevelRules())
 	require.Panics(func() {
 		definition.ValidatesTopLevel()
 	})
 }
 
-func TestTypedDefinition_Validates(t *testing.T) {
+func TestDefinition_Validates(t *testing.T) {
 	require := require.New(t)
-	ruleMap := RuleMap{
-		"Primitive": {presentRule{}},
-	}
 
-	definition := NewDefinition(typedDefinition{}).Validates(ruleMap)
+	ruleMap := RuleMap{"Validates": {presentRule{}}}
+	definition := NewDefinition[Child]().Validates(ruleMap)
 	require.Equal(ruleMap, definition.RuleMap())
-	require.Panics(func() {
-		definition.Validates(RuleMap{})
-	})
-	require.Panics(func() {
-		NewDefinition(typedDefinition{}).Validates(RuleMap{"DoesNotExist": {}})
-	})
+
+	require.Panics(func() { definition.Validates(RuleMap{}) })
+	require.Panics(func() { NewDefinition[Child]().Validates(RuleMap{"DoesNotExist": {}}) })
 }

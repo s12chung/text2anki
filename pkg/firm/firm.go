@@ -5,12 +5,10 @@ import (
 	"reflect"
 )
 
-type anyType struct{}
+// Any is a helper that returns the type used to represent `any` in types
+type Any struct{}
 
-var anyTyp = AnyType()
-
-// AnyType is a helper that returns the type used to fill in `nil` types
-func AnyType() reflect.Type { return reflect.TypeOf(anyType{}) }
+var anyTyp = reflect.TypeOf(Any{})
 
 // MustRegisterType registers the TypeDefinition to the DefaultRegistry, panics if there is an error
 var MustRegisterType = DefaultRegistry.MustRegisterType
@@ -25,7 +23,7 @@ var Validate = DefaultRegistry.Validate
 var DefaultRegistry = &Registry{}
 
 // DefaultValidator is the validator used by registries for not found types when DefaultValidator is not defined
-var DefaultValidator = MustNewValueValidator(nil, NotFoundRule{})
+var DefaultValidator = MustNewValue[Any](NotFoundRule{})
 
 // NotFoundRule is the rule used for not found types in the DefaultValidator
 type NotFoundRule struct{}
@@ -59,4 +57,10 @@ type Validator interface {
 	Type() reflect.Type
 	Validate(data any) ErrorMap
 	ValidateMerge(value reflect.Value, key string, errorMap ErrorMap)
+}
+
+// ValidatorX is a generic firm.Validator that has a typed ValidateX() function
+type ValidatorX[T any] interface {
+	Validator
+	ValidateX(data T) ErrorMap
 }

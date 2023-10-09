@@ -134,7 +134,7 @@ type LocalStoreConfig struct {
 }
 
 func init() {
-	firm.MustRegisterType(firm.NewDefinition(LocalStoreConfig{}).Validates(firm.RuleMap{
+	firm.MustRegisterType(firm.NewDefinition[LocalStoreConfig]().Validates(firm.RuleMap{
 		"Origin":        {rule.Present{}},
 		"KeyBasePath":   {rule.Present{}},
 		"EncryptorPath": {rule.Present{}},

@@ -25,7 +25,7 @@ type PartCreateMultiRequestPart struct {
 }
 
 func init() {
-	firm.MustRegisterType(firm.NewDefinition(PartCreateMultiRequest{}).Validates(firm.RuleMap{
+	firm.MustRegisterType(firm.NewDefinition[PartCreateMultiRequest]().Validates(firm.RuleMap{
 		"Parts": {
 			rule.Present{},
 			rule.Attr{Of: attr.Len{}, Rule: rule.Less[int]{OrEqual: true, To: 20}},
@@ -63,7 +63,7 @@ func (rs Routes) PartCreateMulti(r *http.Request, txQs db.TxQs) (any, *jhttp.HTT
 type PartCreateOrUpdateRequest PartCreateMultiRequestPart
 
 func init() {
-	firm.MustRegisterType(firm.NewDefinition(PartCreateOrUpdateRequest{}).Validates(firm.RuleMap{
+	firm.MustRegisterType(firm.NewDefinition[PartCreateOrUpdateRequest]().Validates(firm.RuleMap{
 		"Text": {rule.TrimPresent{}},
 	}))
 }

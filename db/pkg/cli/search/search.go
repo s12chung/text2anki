@@ -68,10 +68,10 @@ type Query struct {
 }
 
 func init() {
-	firm.MustRegisterType(firm.NewDefinition(Config{}).Validates(firm.RuleMap{
+	firm.MustRegisterType(firm.NewDefinition[Config]().Validates(firm.RuleMap{
 		"Queries": {},
 	}))
-	firm.MustRegisterType(firm.NewDefinition(Query{}).Validates(firm.RuleMap{
+	firm.MustRegisterType(firm.NewDefinition[Query]().Validates(firm.RuleMap{
 		"Str": {rule.Present{}},
 	}))
 }
