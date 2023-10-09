@@ -495,14 +495,14 @@ func TestNewStructAny(t *testing.T) {
 	}
 }
 
-func TestStruct_ValidateX(t *testing.T) {
+func TestStruct_Validate(t *testing.T) {
 	errorKey := ErrorKey("firm.Child.Validates." + presentRuleKey)
 
-	tcs := []validateXTc[Child]{
+	tcs := []validateTc[Child]{
 		{name: "valid", data: Child{Validates: "ok"}},
 		{name: "invalid", data: Child{NoValidates: "not_ok"}, result: ErrorMap{errorKey: *presentRuleError(errorKey)}},
 	}
-	testValidateX(t, tcs, func() (ValidatorX[Child], error) {
+	testValidate(t, tcs, func() (ValidatorTyped[Child], error) {
 		return NewStruct[Child](RuleMap{"Validates": []Rule{presentRule{}}})
 	})
 }
@@ -636,13 +636,13 @@ func TestNewSliceAny(t *testing.T) {
 	}
 }
 
-func TestSlice_ValidateX(t *testing.T) {
+func TestSlice_Validate(t *testing.T) {
 	errorKey := ErrorKey("[]firm.Child.[0]." + presentRuleKey)
-	tcs := []validateXTc[[]Child]{
+	tcs := []validateTc[[]Child]{
 		{name: "valid", data: []Child{{Validates: "ok"}}},
 		{name: "invalid", data: []Child{{}}, result: ErrorMap{errorKey: *presentRuleError(errorKey)}},
 	}
-	testValidateX(t, tcs, func() (ValidatorX[[]Child], error) {
+	testValidate(t, tcs, func() (ValidatorTyped[[]Child], error) {
 		return NewSlice[[]Child](presentRule{})
 	})
 }
@@ -745,13 +745,13 @@ func TestNewValueAny(t *testing.T) {
 	}
 }
 
-func TestValue_ValidateX(t *testing.T) {
+func TestValue_Validate(t *testing.T) {
 	errorKey := ErrorKey("firm.Child." + presentRuleKey)
-	tcs := []validateXTc[Child]{
+	tcs := []validateTc[Child]{
 		{name: "valid", data: Child{Validates: "ok"}},
 		{name: "invalid", data: Child{}, result: ErrorMap{errorKey: *presentRuleError(errorKey)}},
 	}
-	testValidateX(t, tcs, func() (ValidatorX[Child], error) {
+	testValidate(t, tcs, func() (ValidatorTyped[Child], error) {
 		return NewValue[Child](presentRule{})
 	})
 }

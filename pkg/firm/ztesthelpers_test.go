@@ -74,13 +74,13 @@ func testValidatesFull(t *testing.T, skipValidate bool, validator Validator, dat
 	require.Equal(expectedErrorMap, errorMap)
 }
 
-type validateXTc[T any] struct {
+type validateTc[T any] struct {
 	name   string
 	data   T
 	result ErrorMap
 }
 
-func testValidateX[T any](t *testing.T, tcs []validateXTc[T], newValidator func() (ValidatorX[T], error)) {
+func testValidate[T any](t *testing.T, tcs []validateTc[T], newValidator func() (ValidatorTyped[T], error)) {
 	validator, err := newValidator()
 	require.NoError(t, err)
 
@@ -88,7 +88,7 @@ func testValidateX[T any](t *testing.T, tcs []validateXTc[T], newValidator func(
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			require.Equal(tc.result, validator.ValidateX(tc.data))
+			require.Equal(tc.result, validator.Validate(tc.data))
 			require.Equal(tc.result, validator.ValidateAny(tc.data))
 		})
 	}

@@ -47,8 +47,8 @@ func NewStructAny(typ reflect.Type, ruleMap RuleMap) (StructAny, error) {
 // Struct validates structs
 type Struct[T any] struct{ StructAny }
 
-// ValidateX is firm.Validator(), but with a typed arg, so no type checking is done on runtime
-func (s Struct[T]) ValidateX(data T) ErrorMap { return validateX(s, data) }
+// Validate is firm.Validator(), but with a typed arg, so no type checking is done on runtime
+func (s Struct[T]) Validate(data T) ErrorMap { return validate(s, data) }
 
 // StructAny is a Struct without generics
 type StructAny struct {
@@ -122,8 +122,8 @@ func NewSliceAny(typ reflect.Type, elementRules ...Rule) (SliceAny, error) {
 // Slice validates slices and arrays
 type Slice[T any] struct{ SliceAny }
 
-// ValidateX is firm.Validator(), but with a typed arg, so no type checking is done on runtime
-func (s Slice[T]) ValidateX(data T) ErrorMap { return validateX(s, data) }
+// Validate is firm.Validator(), but with a typed arg, so no type checking is done on runtime
+func (s Slice[T]) Validate(data T) ErrorMap { return validate(s, data) }
 
 // SliceAny is a Slice without generics
 type SliceAny struct {
@@ -184,8 +184,8 @@ func NewValueAny(typ reflect.Type, rules ...Rule) (ValueAny, error) {
 // Value validates a simple value
 type Value[T any] struct{ ValueAny }
 
-// ValidateX is firm.Validator(), but with a typed arg, so no type checking is done on runtime
-func (v Value[T]) ValidateX(data T) ErrorMap { return validateX(v, data) }
+// Validate is firm.Validator(), but with a typed arg, so no type checking is done on runtime
+func (v Value[T]) Validate(data T) ErrorMap { return validate(v, data) }
 
 // ValueAny is a Value without generics
 type ValueAny struct {
@@ -273,7 +273,7 @@ func typeCheck(typ, expectedType reflect.Type, kindString string) *RuleTypeError
 	return nil
 }
 
-func validateX(validator Validator, data any) ErrorMap {
+func validate(validator Validator, data any) ErrorMap {
 	value := reflect.ValueOf(data)
 	errorMap := ErrorMap{}
 	validator.ValidateMerge(value, TypeName(value), errorMap)

@@ -59,8 +59,8 @@ type Validator interface {
 	ValidateMerge(value reflect.Value, key string, errorMap ErrorMap)
 }
 
-// ValidatorX is a generic firm.Validator that has a typed ValidateX() function
-type ValidatorX[T any] interface {
+// ValidatorTyped is a generic firm.Validator that has a typed Validate() function
+type ValidatorTyped[T any] interface {
 	Validator
-	ValidateX(data T) ErrorMap
+	Validate(data T) ErrorMap
 }
