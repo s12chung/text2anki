@@ -80,7 +80,7 @@ var structValidatorTestCases = []structValidatorTestCase{
 		changeParent.Pt.Validates = ""
 		return changeParent
 	}},
-	{name: "Pt___child_empty", errorKeys: []string{"Pt.Validates"}, f: func() parent {
+	{name: "Pt___child_empty", errorKeys: []string{"Pt", "Pt.Validates"}, f: func() parent {
 		changeParent := fullParent()
 		changeParent.Pt = &Child{}
 		return changeParent

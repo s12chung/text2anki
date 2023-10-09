@@ -70,13 +70,13 @@ func (s StructAny) ValidateValue(value reflect.Value) ErrorMap { return validate
 
 // ValidateMerge validates the data value, also doing a merge with the errorMap (assumes TypeCheck is called)
 func (s StructAny) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
-	value = indirect(value)
 	if !value.IsValid() {
 		return
 	}
 	for fieldName, rules := range s.ruleMap {
 		field, _ := value.Type().FieldByName(fieldName)
-		validateMerge(value.FieldByName(fieldName), joinKeys(key, field.Name), errorMap, *rules)
+		// no control over types, so indirect
+		validateMerge(indirect(value.FieldByName(fieldName)), joinKeys(key, field.Name), errorMap, *rules)
 	}
 }
 
@@ -145,9 +145,10 @@ func (s SliceAny) ValidateValue(value reflect.Value) ErrorMap { return validateV
 
 // ValidateMerge validates the data value, also doing a merge with the errorMap (assumes TypeCheck is called)
 func (s SliceAny) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
-	value = indirect(value)
 	for i := 0; i < value.Len(); i++ {
-		validateMerge(value.Index(i), joinKeys(key, "["+strconv.Itoa(i)+"]"), errorMap, s.elementRules)
+		// no control over types, so indirect
+		v := indirect(value.Index(i))
+		validateMerge(v, joinKeys(key, "["+strconv.Itoa(i)+"]"), errorMap, s.elementRules)
 	}
 }
 
@@ -215,7 +216,6 @@ func (v ValueAny) ValidateValue(value reflect.Value) ErrorMap {
 
 // ValidateMerge validates the data value, also doing a merge with the errorMap (assumes TypeCheck is called)
 func (v ValueAny) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
-	value = indirect(value)
 	validateMerge(value, key, errorMap, v.rules)
 }
 
@@ -233,7 +233,6 @@ func (r RuleValidator) ValidateAny(data any) ErrorMap { return validateAny(r, da
 
 // ValidateMerge validates the data value, also doing a merge with the errorMap (assumes TypeCheck is called)
 func (r RuleValidator) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
-	value = indirect(value)
 	validateMerge(value, key, errorMap, []Rule{r.Rule})
 }
 
@@ -256,8 +255,9 @@ func validateAny(validator Validator, data any) ErrorMap {
 }
 
 func validateValueResult(validator Validator, value reflect.Value) ErrorMap {
-	// Users often don't have control over whether any is a pointer, so we're generous
-	typ := indirectType(value.Type())
+	// Users often don't have control over whether any is a pointer, so we're generous via indirect
+	value = indirect(value)
+	typ := value.Type()
 	if err := validator.TypeCheck(typ); err != nil {
 		return ErrorMap{"TypeCheck": err.TemplateError()}
 	}
@@ -290,8 +290,9 @@ func typeCheck(typ, expectedType reflect.Type, kindString string) *RuleTypeError
 }
 
 func validate(validator Validator, data any) ErrorMap {
-	value := reflect.ValueOf(data)
+	// Users often don't have control over whether any is a pointer, so we're generous via indirect
+	value := indirect(reflect.ValueOf(data))
 	errorMap := ErrorMap{}
-	validator.ValidateMerge(value, typeName(value), errorMap)
+	validator.ValidateMerge(value, value.Type().String(), errorMap)
 	return errorMap.Finish()
 }

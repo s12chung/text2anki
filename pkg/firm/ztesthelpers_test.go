@@ -31,7 +31,7 @@ func (o onlyKindRule) TypeCheck(typ reflect.Type) *RuleTypeError {
 type presentRule struct{}
 
 func (p presentRule) ValidateValue(value reflect.Value) ErrorMap {
-	if value.IsZero() {
+	if !value.IsValid() || value.IsZero() {
 		return ErrorMap{presentRuleKey: *presentRuleError("")}
 	}
 	return nil
@@ -68,7 +68,8 @@ func testValidateAllFull(t *testing.T, skipValidate bool, validator Validator, d
 	if !skipValidate {
 		require.Equal(validateExpected.Finish(), validator.ValidateAny(data))
 	}
-	require.Equal(validateValueExpected, validator.ValidateValue(reflect.ValueOf(data)))
+	indirectValue := indirect(reflect.ValueOf(data))
+	require.Equal(validateValueExpected, validator.ValidateValue(indirectValue))
 
 	errorKey := "pkger.Mover.Parent"
 	errorMap := ErrorMap{"Existing": TemplateError{}}
@@ -78,7 +79,7 @@ func testValidateAllFull(t *testing.T, skipValidate bool, validator Validator, d
 			expectedErrorMap[ErrorKey(joinKeys(errorKey, keySuffix))] = *err
 		}
 	}
-	validator.ValidateMerge(reflect.ValueOf(data), errorKey, errorMap)
+	validator.ValidateMerge(indirectValue, errorKey, errorMap)
 	require.Equal(expectedErrorMap, errorMap)
 }
 
