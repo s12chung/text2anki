@@ -58,7 +58,7 @@ func testValidatesFull(t *testing.T, skipValidate bool, validator Validator, dat
 	validateExpected = validateExpected.ToNil()
 
 	if !skipValidate {
-		require.Equal(validateExpected.Finish(), validator.Validate(data))
+		require.Equal(validateExpected.Finish(), validator.ValidateAny(data))
 	}
 	require.Equal(validateValueExpected, validator.ValidateValue(reflect.ValueOf(data)))
 
@@ -89,7 +89,7 @@ func testValidateX[T any](t *testing.T, tcs []validateXTc[T], newValidator func(
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.result, validator.ValidateX(tc.data))
-			require.Equal(tc.result, validator.Validate(tc.data))
+			require.Equal(tc.result, validator.ValidateAny(tc.data))
 		})
 	}
 }

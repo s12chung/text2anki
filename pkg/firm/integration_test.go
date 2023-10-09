@@ -163,11 +163,11 @@ func TestIntegration(t *testing.T) {
 			require := require.New(t)
 			if tc.f != nil {
 				data := tc.f()
-				require.Equal(tc.isValid, testRegistry.Validate(data) == nil)
-				require.Equal(tc.isValid, testRegistry.Validate(&data) == nil)
+				require.Equal(tc.isValid, testRegistry.ValidateAny(data) == nil)
+				require.Equal(tc.isValid, testRegistry.ValidateAny(&data) == nil)
 				return
 			}
-			require.Equal(tc.isValid, testRegistry.Validate(tc.anyF()) == nil)
+			require.Equal(tc.isValid, testRegistry.ValidateAny(tc.anyF()) == nil)
 		})
 	}
 }

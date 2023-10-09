@@ -60,7 +60,7 @@ func notFoundError(data any) ErrorMap {
 }
 
 // nolint:funlen // a bunch of test cases
-func TestRegistry_Validate(t *testing.T) {
+func TestRegistry_ValidateAny(t *testing.T) {
 	type testCase struct {
 		name       string
 		definition *Definition
@@ -114,14 +114,14 @@ func TestRegistry_Validate(t *testing.T) {
 
 			if tc.name == "invalid" {
 				var data any
-				require.Equal(errInvalidValue, registry.Validate(data))
-				require.Equal(notFoundError(&data), registry.Validate(&data))
+				require.Equal(errInvalidValue, registry.ValidateAny(data))
+				require.Equal(notFoundError(&data), registry.ValidateAny(&data))
 				return
 			}
 			if strings.HasPrefix(tc.name, "not_found") {
 				data := registryNotFoundTest{}
-				require.Equal(notFoundError(data), registry.Validate(data))
-				require.Equal(notFoundError(&data), registry.Validate(&data))
+				require.Equal(notFoundError(data), registry.ValidateAny(data))
+				require.Equal(notFoundError(&data), registry.ValidateAny(&data))
 
 				notFoundTemplateError := &TemplateError{Template: "type, {{.RootTypeName}}, not found in Registry"}
 				testValidatesFull(t, true, registry, data, notFoundTemplateError, tc.expectedKeySuffix)

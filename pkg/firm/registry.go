@@ -78,8 +78,8 @@ func (r *Registry) registerRecursionType(typ reflect.Type, rules *[]Rule) {
 // Type returns the Type the Registry handles
 func (r *Registry) Type() reflect.Type { return r.Validator(nil).Type() }
 
-// Validate validates the data with the correct validator
-func (r *Registry) Validate(data any) ErrorMap {
+// ValidateAny validates the data with the correct validator
+func (r *Registry) ValidateAny(data any) ErrorMap {
 	value := reflect.ValueOf(data)
 	if !value.IsValid() {
 		return errInvalidValue

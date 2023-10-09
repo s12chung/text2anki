@@ -16,8 +16,8 @@ var MustRegisterType = DefaultRegistry.MustRegisterType
 // RegisterType registers the TypeDefinition to the DefaultRegistry
 var RegisterType = DefaultRegistry.RegisterType
 
-// Validate validates the data with the DefaultRegistry
-var Validate = DefaultRegistry.Validate
+// ValidateAny validates the data with the DefaultRegistry
+var ValidateAny = DefaultRegistry.ValidateAny
 
 // DefaultRegistry is the registry used for global functions
 var DefaultRegistry = &Registry{}
@@ -55,7 +55,7 @@ type BasicRule interface {
 type Validator interface {
 	Rule
 	Type() reflect.Type
-	Validate(data any) ErrorMap
+	ValidateAny(data any) ErrorMap
 	ValidateMerge(value reflect.Value, key string, errorMap ErrorMap)
 }
 

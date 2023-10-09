@@ -507,7 +507,7 @@ func TestStruct_ValidateX(t *testing.T) {
 	})
 }
 
-func TestStructAny_Validate(t *testing.T) {
+func TestStructAny_ValidateAny(t *testing.T) {
 	validator := testRegistry.Validator(reflect.TypeOf(parent{}))
 
 	tcs := []struct {
@@ -520,7 +520,7 @@ func TestStructAny_Validate(t *testing.T) {
 	}
 	for _, tc := range tcs {
 		tc := tc
-		t.Run(tc.name, func(t *testing.T) { require.Equal(t, tc.result, validator.Validate(tc.data)) })
+		t.Run(tc.name, func(t *testing.T) { require.Equal(t, tc.result, validator.ValidateAny(tc.data)) })
 	}
 
 	for _, tc := range structValidatorTestCases {
@@ -647,7 +647,7 @@ func TestSlice_ValidateX(t *testing.T) {
 	})
 }
 
-func TestSliceAny_Validate(t *testing.T) {
+func TestSliceAny_ValidateAny(t *testing.T) {
 	validator := sliceValidator
 
 	tcs := []struct {
@@ -660,7 +660,7 @@ func TestSliceAny_Validate(t *testing.T) {
 	}
 	for _, tc := range tcs {
 		tc := tc
-		t.Run(tc.name, func(t *testing.T) { require.Equal(t, tc.result, validator.Validate(tc.data)) })
+		t.Run(tc.name, func(t *testing.T) { require.Equal(t, tc.result, validator.ValidateAny(tc.data)) })
 	}
 
 	for _, tc := range sliceValidatorTestCases {
@@ -756,7 +756,7 @@ func TestValue_ValidateX(t *testing.T) {
 	})
 }
 
-func TestValueAny_Validate(t *testing.T) {
+func TestValueAny_ValidateAny(t *testing.T) {
 	validator, err := NewValueAny(reflect.TypeOf(0), presentRule{})
 	require.NoError(t, err)
 
@@ -770,7 +770,7 @@ func TestValueAny_Validate(t *testing.T) {
 	}
 	for _, tc := range edgeTcs {
 		tc := tc
-		t.Run(tc.name, func(t *testing.T) { require.Equal(t, tc.result, tc.validator.Validate(tc.data)) })
+		t.Run(tc.name, func(t *testing.T) { require.Equal(t, tc.result, tc.validator.ValidateAny(tc.data)) })
 	}
 
 	type testCase struct {

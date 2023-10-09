@@ -153,7 +153,7 @@ func LocalStoreAPI(config LocalStoreConfig) (localstore.API, error) {
 	}
 	config.Origin += StorageURLPath[1:]
 
-	errorMap := firm.Validate(config)
+	errorMap := firm.ValidateAny(config)
 	if errorMap != nil {
 		return localstore.API{}, errorMap
 	}
