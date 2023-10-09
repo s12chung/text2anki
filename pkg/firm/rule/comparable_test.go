@@ -119,16 +119,8 @@ func testComparableRule_TypeCheck[T comparableRule[int]](t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
-			typ := reflect.TypeOf(tc.data)
-
-			var err *firm.RuleTypeError
-			if tc.badCondition != "" {
-				err = firm.NewRuleTypeError(typ, tc.badCondition)
-			}
 			var rule T
-			require.Equal(err, rule.TypeCheck(typ))
+			testTypeCheck(t, tc.data, tc.badCondition, rule)
 		})
 	}
 }

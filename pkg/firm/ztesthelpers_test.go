@@ -74,13 +74,13 @@ func testValidatesFull(t *testing.T, skipValidate bool, validator Validator, dat
 	require.Equal(expectedErrorMap, errorMap)
 }
 
-type validateTc[T any] struct {
+type validateTC[T any] struct {
 	name   string
 	data   T
 	result ErrorMap
 }
 
-func testValidate[T any](t *testing.T, tcs []validateTc[T], newValidator func() (ValidatorTyped[T], error)) {
+func testValidate[T any](t *testing.T, tcs []validateTC[T], newValidator func() (ValidatorTyped[T], error)) {
 	validator, err := newValidator()
 	require.NoError(t, err)
 
@@ -92,4 +92,19 @@ func testValidate[T any](t *testing.T, tcs []validateTc[T], newValidator func() 
 			require.Equal(tc.result, validator.ValidateAny(tc.data))
 		})
 	}
+}
+
+func testTypeCheck(t *testing.T, data any, badCondition string, newValidator func() (Rule, error)) {
+	require := require.New(t)
+
+	validator, err := newValidator()
+	require.NoError(err)
+
+	typ := reflect.TypeOf(data)
+
+	var ruleTypeError *RuleTypeError
+	if badCondition != "" {
+		ruleTypeError = NewRuleTypeError(typ, badCondition)
+	}
+	require.Equal(ruleTypeError, validator.TypeCheck(typ))
 }

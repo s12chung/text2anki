@@ -498,7 +498,7 @@ func TestNewStructAny(t *testing.T) {
 func TestStruct_Validate(t *testing.T) {
 	errorKey := ErrorKey("firm.Child.Validates." + presentRuleKey)
 
-	tcs := []validateTc[Child]{
+	tcs := []validateTC[Child]{
 		{name: "valid", data: Child{Validates: "ok"}},
 		{name: "invalid", data: Child{NoValidates: "not_ok"}, result: ErrorMap{errorKey: *presentRuleError(errorKey)}},
 	}
@@ -556,15 +556,9 @@ func TestStructAny_TypeCheck(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
-			typ := reflect.TypeOf(tc.data)
-
-			var err *RuleTypeError
-			if tc.badCondition != "" {
-				err = NewRuleTypeError(typ, tc.badCondition)
-			}
-			require.Equal(err, validator.TypeCheck(typ))
+			testTypeCheck(t, tc.data, tc.badCondition, func() (Rule, error) {
+				return validator, nil
+			})
 		})
 	}
 }
@@ -638,7 +632,7 @@ func TestNewSliceAny(t *testing.T) {
 
 func TestSlice_Validate(t *testing.T) {
 	errorKey := ErrorKey("[]firm.Child.[0]." + presentRuleKey)
-	tcs := []validateTc[[]Child]{
+	tcs := []validateTC[[]Child]{
 		{name: "valid", data: []Child{{Validates: "ok"}}},
 		{name: "invalid", data: []Child{{}}, result: ErrorMap{errorKey: *presentRuleError(errorKey)}},
 	}
@@ -695,15 +689,9 @@ func TestSliceAny_TypeCheck(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
-			typ := reflect.TypeOf(tc.data)
-
-			var err *RuleTypeError
-			if tc.badCondition != "" {
-				err = NewRuleTypeError(typ, tc.badCondition)
-			}
-			require.Equal(err, validator.TypeCheck(typ))
+			testTypeCheck(t, tc.data, tc.badCondition, func() (Rule, error) {
+				return validator, nil
+			})
 		})
 	}
 }
@@ -747,7 +735,7 @@ func TestNewValueAny(t *testing.T) {
 
 func TestValue_Validate(t *testing.T) {
 	errorKey := ErrorKey("firm.Child." + presentRuleKey)
-	tcs := []validateTc[Child]{
+	tcs := []validateTC[Child]{
 		{name: "valid", data: Child{Validates: "ok"}},
 		{name: "invalid", data: Child{}, result: ErrorMap{errorKey: *presentRuleError(errorKey)}},
 	}
@@ -805,22 +793,13 @@ func TestValueAny_TypeCheck(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
 			rules := []Rule{presentRule{}, onlyKindRule{kind: reflect.Int}, presentRule{}}
 			if tc.extraRule != nil {
 				rules = append(rules, tc.extraRule)
 			}
-			validator, err := NewValueAny(reflect.TypeOf(i), rules...)
-			require.NoError(err)
-
-			typ := reflect.TypeOf(tc.data)
-
-			var ruleTypeError *RuleTypeError
-			if tc.badCondition != "" {
-				ruleTypeError = NewRuleTypeError(typ, tc.badCondition)
-			}
-			require.Equal(ruleTypeError, validator.TypeCheck(typ))
+			testTypeCheck(t, tc.data, tc.badCondition, func() (Rule, error) {
+				return NewValueAny(reflect.TypeOf(i), rules...)
+			})
 		})
 	}
 }

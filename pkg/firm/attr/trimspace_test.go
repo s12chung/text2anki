@@ -5,8 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/s12chung/text2anki/pkg/firm"
 )
 
 func TestTrimSpace_Get(t *testing.T) {
@@ -44,15 +42,7 @@ func TestTrimSpace_TypeCheck(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-
-			typ := reflect.TypeOf(tc.data)
-
-			var err *firm.RuleTypeError
-			if tc.badCondition != "" {
-				err = firm.NewRuleTypeError(typ, tc.badCondition)
-			}
-			require.Equal(err, TrimSpace{}.TypeCheck(typ))
+			testTypeCheck(t, tc.data, tc.badCondition, TrimSpace{})
 		})
 	}
 }
