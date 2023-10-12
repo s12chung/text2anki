@@ -6,7 +6,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-// Present checks if data is non-Zero and non-Empty
+// Present checks if data is non-Zero, valid, and not of length 0
 type Present struct{}
 
 // ValidateValue returns true if the data is valid (assumes TypeCheck is called)

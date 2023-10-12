@@ -12,10 +12,13 @@ import (
 // Equal checks if data is equal to .To
 type Equal[T comparable] struct{ To T }
 
-// ValidateValue returns true if the data is valid (assumes TypeCheck is called)
+// ValidateValue validates the data value (assumes TypeCheck is called)
 func (e Equal[T]) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return comparableValidateValue[T](e, value)
 }
+
+// Validate validates the data value
+func (e Equal[T]) Validate(data T) firm.ErrorMap { return comparableValidate[T](e, data) }
 
 // Compare returns true if the data is valid
 func (e Equal[T]) Compare(data T) bool { return data == e.To }
@@ -44,6 +47,9 @@ func (l Less[T]) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return comparableValidateValue[T](l, value)
 }
 
+// Validate validates the data value
+func (l Less[T]) Validate(data T) firm.ErrorMap { return comparableValidate[T](l, data) }
+
 // Compare returns true if the data is valid
 func (l Less[T]) Compare(data T) bool { return less(l.OrEqual, data, l.To) }
 
@@ -66,6 +72,9 @@ func (g Greater[T]) ValidateValue(value reflect.Value) firm.ErrorMap {
 	return comparableValidateValue[T](g, value)
 }
 
+// Validate validates the data value
+func (g Greater[T]) Validate(data T) firm.ErrorMap { return comparableValidate[T](g, data) }
+
 // Compare returns true if the data is valid
 func (g Greater[T]) Compare(data T) bool { return !less(!g.OrEqual, data, g.To) }
 
@@ -78,7 +87,7 @@ func (g Greater[T]) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
 }
 
 type comparableRule[T comparable] interface {
-	firm.RuleBasic
+	firm.RuleTyped[T]
 	Compare(data T) bool
 }
 
@@ -87,6 +96,9 @@ func comparableValidateValue[T comparable](rule comparableRule[T], value reflect
 	if !ok {
 		panic("comparable ValidateValue type not matching type--called before TypeCheck?")
 	}
+	return comparableValidate(rule, data)
+}
+func comparableValidate[T comparable](rule comparableRule[T], data T) firm.ErrorMap {
 	if rule.Compare(data) {
 		return nil
 	}

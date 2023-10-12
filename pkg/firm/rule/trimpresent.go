@@ -12,7 +12,12 @@ type TrimPresent struct{}
 
 // ValidateValue returns true if the data is valid (assumes TypeCheck is called)
 func (t TrimPresent) ValidateValue(value reflect.Value) firm.ErrorMap {
-	if strings.TrimSpace(value.String()) == "" {
+	return t.Validate(value.String())
+}
+
+// Validate validates the data value
+func (t TrimPresent) Validate(data string) firm.ErrorMap {
+	if strings.TrimSpace(data) == "" {
 		return t.ErrorMap()
 	}
 	return nil

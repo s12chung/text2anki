@@ -13,10 +13,10 @@ func TestTrimPresent_ErrorMap(t *testing.T) {
 	testErrorMap(t, TrimPresent{}, "TrimPresent: value is just spaces or empty")
 }
 
-func TestTrimPresent_ValidateValue(t *testing.T) {
+func TestTrimPresent_ValidateAll(t *testing.T) {
 	tcs := []struct {
 		name     string
-		data     any
+		data     string
 		hasError bool
 	}{
 		{name: "valid", data: "\t not space \n"},
@@ -31,6 +31,7 @@ func TestTrimPresent_ValidateValue(t *testing.T) {
 			if tc.hasError {
 				expected = TrimPresent{}.ErrorMap()
 			}
+			require.Equal(t, expected, TrimPresent{}.Validate(tc.data))
 			require.Equal(t, expected, TrimPresent{}.ValidateValue(reflect.ValueOf(tc.data)))
 		})
 	}

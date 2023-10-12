@@ -28,7 +28,7 @@ func TestEqual_ValidateValue(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			testComparableRule_ValidateValue[int](t, Equal[int]{To: tc.to}, tc.hasError, tc.data)
+			testComparableRule_ValidateAll[int](t, Equal[int]{To: tc.to}, tc.hasError, tc.data)
 		})
 	}
 }
@@ -57,7 +57,7 @@ func TestLess_ValidateValue(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			testComparableRule_ValidateValue[int](t, Less[int]{OrEqual: tc.orEqual, To: tc.to}, tc.hasError, tc.data)
+			testComparableRule_ValidateAll[int](t, Less[int]{OrEqual: tc.orEqual, To: tc.to}, tc.hasError, tc.data)
 		})
 	}
 }
@@ -86,7 +86,7 @@ func TestGreater_ValidateValue(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			testComparableRule_ValidateValue[int](t, Greater[int]{OrEqual: tc.orEqual, To: tc.to}, tc.hasError, tc.data)
+			testComparableRule_ValidateAll[int](t, Greater[int]{OrEqual: tc.orEqual, To: tc.to}, tc.hasError, tc.data)
 		})
 	}
 }
@@ -94,12 +94,13 @@ func TestGreater_ValidateValue(t *testing.T) {
 func TestGreater_TypeCheck(t *testing.T) { testComparableRule_TypeCheck[Greater[int]](t) }
 
 //nolint:revive,stylecheck // for tests
-func testComparableRule_ValidateValue[T comparable](t *testing.T, rule comparableRule[T], hasError bool, data T) {
+func testComparableRule_ValidateAll[T comparable](t *testing.T, rule comparableRule[T], hasError bool, data T) {
 	require := require.New(t)
 	var expected firm.ErrorMap
 	if hasError {
 		expected = rule.ErrorMap()
 	}
+	require.Equal(expected, rule.Validate(data))
 	require.Equal(expected, rule.ValidateValue(reflect.ValueOf(data)))
 }
 
