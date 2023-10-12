@@ -10,8 +10,6 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm/attr"
 )
 
-func intEqual(i int) Equal[int] { return Equal[int]{To: i} }
-
 func TestAttr_ErrorMap(t *testing.T) {
 	rule := Attr{Of: attr.Len{}, Rule: intEqual(1)}
 	testErrorMap(t, rule, "Len-Equal: value attribute, Len, is not equal to 1")
@@ -28,7 +26,6 @@ func TestAttr_ValidateValue(t *testing.T) {
 		errorMap firm.ErrorMap
 	}{
 		{name: "normal", data: " ", rule: intEqual(1)},
-		{name: "multi", data: " ", rule: intEqual(1)},
 		{name: "invalid", data: " ", rule: intEqual(2), errorMap: intEqual(2).ErrorMap()},
 		{name: "invalid_with_empty_template_fields", data: "", rule: Present{}, errorMap: errorMapPresent},
 	}
