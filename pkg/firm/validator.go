@@ -81,7 +81,7 @@ func (s StructAny) ValidateMerge(value reflect.Value, key string, errorMap Error
 }
 
 // TypeCheck checks whether the type is valid for the Rule
-func (s StructAny) TypeCheck(typ reflect.Type) *RuleTypeError { return typeCheck(typ, s.typ, "Struct") }
+func (s StructAny) TypeCheck(typ reflect.Type) *RuleTypeError { return TypeCheck(typ, s.typ, "Struct") }
 
 // RuleMap returns the rules mapped to each field
 func (s StructAny) RuleMap() RuleMap {
@@ -154,7 +154,7 @@ func (s SliceAny) ValidateMerge(value reflect.Value, key string, errorMap ErrorM
 
 // TypeCheck checks whether the type is valid for the Rule
 func (s SliceAny) TypeCheck(typ reflect.Type) *RuleTypeError {
-	return typeCheck(typ, s.typ, "Slice or Array")
+	return TypeCheck(typ, s.typ, "Slice or Array")
 }
 
 // ElementRules returns the rules each element in the Slice or Array
@@ -220,7 +220,7 @@ func (v ValueAny) ValidateMerge(value reflect.Value, key string, errorMap ErrorM
 }
 
 // TypeCheck checks whether the type is valid for the Rule
-func (v ValueAny) TypeCheck(typ reflect.Type) *RuleTypeError { return typeCheck(typ, v.typ, "") }
+func (v ValueAny) TypeCheck(typ reflect.Type) *RuleTypeError { return TypeCheck(typ, v.typ, "") }
 
 // Rules returns the rules for ValueAny
 func (v ValueAny) Rules() []Rule { return v.rules }
@@ -277,16 +277,6 @@ func validateMerge(value reflect.Value, key string, errorMap ErrorMap, rules []R
 	for _, rule := range rules {
 		rule.ValidateValue(value).MergeInto(key, errorMap)
 	}
-}
-
-func typeCheck(typ, expectedType reflect.Type, kindString string) *RuleTypeError {
-	if typ != expectedType {
-		if kindString != "" {
-			kindString += " "
-		}
-		return NewRuleTypeError(typ, "is not matching "+kindString+"of type "+expectedType.String())
-	}
-	return nil
 }
 
 func validate(validator Validator, data any) ErrorMap {

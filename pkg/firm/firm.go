@@ -29,12 +29,15 @@ var DefaultValidator = RuleValidator{Rule: NotFoundRule{}}
 type NotFoundRule struct{}
 
 // ValidateValue validates the value
-func (n NotFoundRule) ValidateValue(_ reflect.Value) ErrorMap {
-	return ErrorMap{"NotFound": TemplateError{Template: "type, {{.RootTypeName}}, not found in Registry"}}
-}
+func (n NotFoundRule) ValidateValue(_ reflect.Value) ErrorMap { return n.ErrorMap() }
 
 // TypeCheck checks whether the type is valid for the Rule
 func (n NotFoundRule) TypeCheck(_ reflect.Type) *RuleTypeError { return nil }
+
+// ErrorMap returns the ErrorMap returned from ValidateValue
+func (n NotFoundRule) ErrorMap() ErrorMap {
+	return ErrorMap{"NotFound": TemplateError{Template: "type, {{.RootTypeName}}, not found in Registry"}}
+}
 
 // RuleMap is a map of fields or keys to rules
 type RuleMap map[string][]Rule
@@ -45,8 +48,8 @@ type Rule interface {
 	TypeCheck(typ reflect.Type) *RuleTypeError
 }
 
-// BasicRule is a Rule that is not composed of other rules
-type BasicRule interface {
+// RuleBasic is a Rule that is not composed of other rules
+type RuleBasic interface {
 	Rule
 	ErrorMap() ErrorMap
 }

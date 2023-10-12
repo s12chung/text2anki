@@ -12,14 +12,17 @@ import (
 
 func intEqual(i int) Equal[int] { return Equal[int]{To: i} }
 
-func TestAttr_ValidateValue(t *testing.T) {
-	require.Equal(t, "Len-Equal: value attribute, Len, is not equal to 1",
-		Attr{Of: attr.Len{}, Rule: intEqual(1)}.ValidateValue(reflect.ValueOf("")).Error())
+func TestAttr_ErrorMap(t *testing.T) {
+	rule := Attr{Of: attr.Len{}, Rule: intEqual(1)}
+	testErrorMap(t, rule, "Len-Equal: value attribute, Len, is not equal to 1")
+	require.Equal(t, rule.ValidateValue(reflect.ValueOf("")), rule.ErrorMap())
+}
 
+func TestAttr_ValidateValue(t *testing.T) {
 	tcs := []struct {
 		name string
 		attr Attribute
-		rule firm.Rule
+		rule firm.RuleBasic
 
 		data     any
 		errorMap firm.ErrorMap
@@ -62,7 +65,7 @@ func TestAttr_TypeCheck(t *testing.T) {
 	tcs := []struct {
 		name string
 		attr Attribute
-		rule firm.Rule
+		rule firm.RuleBasic
 
 		data         any
 		errData      any

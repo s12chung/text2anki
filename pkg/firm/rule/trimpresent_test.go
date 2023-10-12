@@ -9,24 +9,29 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-func TestTrimPresent_ValidateValue(t *testing.T) {
-	require.Equal(t, "TrimPresent: value is just spaces or empty", errorMapTrimPresent.Error())
+func TestTrimPresent_ErrorMap(t *testing.T) {
+	testErrorMap(t, TrimPresent{}, "TrimPresent: value is just spaces or empty")
+}
 
+func TestTrimPresent_ValidateValue(t *testing.T) {
 	tcs := []struct {
 		name     string
 		data     any
-		expected firm.ErrorMap
+		hasError bool
 	}{
-		{name: "valid", data: "\t not space \n", expected: nil},
-		{name: "just space", data: "\t \t\n \n", expected: errorMapTrimPresent},
-		{name: "empty", data: "", expected: errorMapTrimPresent},
+		{name: "valid", data: "\t not space \n"},
+		{name: "just space", data: "\t \t\n \n", hasError: true},
+		{name: "empty", data: "", hasError: true},
 	}
 
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-			require.Equal(tc.expected, TrimPresent{}.ValidateValue(reflect.ValueOf(tc.data)))
+			var expected firm.ErrorMap
+			if tc.hasError {
+				expected = TrimPresent{}.ErrorMap()
+			}
+			require.Equal(t, expected, TrimPresent{}.ValidateValue(reflect.ValueOf(tc.data)))
 		})
 	}
 }

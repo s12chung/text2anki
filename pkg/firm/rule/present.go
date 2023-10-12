@@ -29,4 +29,7 @@ func (p Present) ValidateValue(value reflect.Value) firm.ErrorMap {
 // TypeCheck checks whether the type is valid for the Rule -- allow all types
 func (p Present) TypeCheck(_ reflect.Type) *firm.RuleTypeError { return nil }
 
+// ErrorMap returns the ErrorMap returned from ValidateValue
+func (p Present) ErrorMap() firm.ErrorMap { return errorMapPresent }
+
 var errorMapPresent = firm.ErrorMap{"Present": firm.TemplateError{Template: "is not present"}}

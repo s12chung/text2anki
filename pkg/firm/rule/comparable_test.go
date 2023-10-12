@@ -9,9 +9,11 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-func TestEqual_ValidateValue(t *testing.T) {
-	require.Equal(t, "Equal: value is not equal to 99", Equal[int]{To: 99}.ErrorMap().Error())
+func TestEqual_ErrorMap(t *testing.T) {
+	testErrorMap(t, Equal[int]{To: 99}, "Equal: value is not equal to 99")
+}
 
+func TestEqual_ValidateValue(t *testing.T) {
 	tcs := []struct {
 		name string
 		to   int

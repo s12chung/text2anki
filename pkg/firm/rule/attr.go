@@ -18,22 +18,12 @@ type Attribute interface {
 // Attr is a rule that applies a firm.Rule to an Attribute value
 type Attr struct {
 	Of   Attribute
-	Rule firm.Rule
+	Rule firm.RuleBasic
 }
 
 // ValidateValue runs all the rules after .Attr is called (assumes TypeCheck is called)
 func (a Attr) ValidateValue(value reflect.Value) firm.ErrorMap {
-	errorMap := firm.ErrorMap{}
-	for k, v := range a.Rule.ValidateValue(a.Of.Get(value)) {
-		err := v
-		if err.TemplateFields == nil {
-			err.TemplateFields = map[string]string{}
-		}
-		err.TemplateFields["AttrName"] = a.Of.Name()
-		err.Template = "attribute, {{.AttrName}}, " + err.Template
-		errorMap[firm.ErrorKey(a.Of.Name())+"-"+k] = err
-	}
-	return errorMap.ToNil()
+	return a.errorMap(a.Rule.ValidateValue(a.Of.Get(value)))
 }
 
 // TypeCheck checks whether the type is valid for the Attribute
@@ -47,4 +37,25 @@ func (a Attr) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
 		return err
 	}
 	return nil
+}
+
+// ErrorMap returns the ErrorMap returned from ValidateValue
+func (a Attr) ErrorMap() firm.ErrorMap { return a.errorMap(a.Rule.ErrorMap()) }
+
+func (a Attr) errorMap(original firm.ErrorMap) firm.ErrorMap {
+	if len(original) == 0 {
+		return nil
+	}
+
+	errorMap := firm.ErrorMap{}
+	for k, v := range original {
+		err := v
+		if err.TemplateFields == nil {
+			err.TemplateFields = map[string]string{}
+		}
+		err.TemplateFields["AttrName"] = a.Of.Name()
+		err.Template = "attribute, {{.AttrName}}, " + err.Template
+		errorMap[firm.ErrorKey(a.Of.Name())+"-"+k] = err
+	}
+	return errorMap
 }

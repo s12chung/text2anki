@@ -78,7 +78,7 @@ func (g Greater[T]) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
 }
 
 type comparableRule[T comparable] interface {
-	firm.BasicRule
+	firm.RuleBasic
 	Compare(data T) bool
 }
 

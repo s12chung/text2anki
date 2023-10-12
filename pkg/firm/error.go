@@ -166,3 +166,14 @@ func (r RuleTypeError) TemplateError() TemplateError {
 
 // Error returns the error string for the error
 func (r RuleTypeError) Error() string { return r.TemplateError().Error() }
+
+// TypeCheck is a basic implementation for TypeCheck
+func TypeCheck(typ, expectedType reflect.Type, kindString string) *RuleTypeError {
+	if typ != expectedType {
+		if kindString != "" {
+			kindString += " "
+		}
+		return NewRuleTypeError(typ, "is not matching "+kindString+"of type "+expectedType.String())
+	}
+	return nil
+}

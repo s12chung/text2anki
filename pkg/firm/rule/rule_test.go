@@ -9,6 +9,10 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
+func testErrorMap(t *testing.T, rule firm.RuleBasic, expected string) {
+	require.Equal(t, expected, rule.ErrorMap().Error())
+}
+
 func testTypeCheck(t *testing.T, data any, badCondition string, rule firm.Rule) {
 	require := require.New(t)
 
