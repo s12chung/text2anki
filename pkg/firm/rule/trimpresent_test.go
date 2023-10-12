@@ -9,10 +9,6 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-func TestTrimPresent_ErrorMap(t *testing.T) {
-	testErrorMap(t, TrimPresent{}, "TrimPresent: value is just spaces or empty")
-}
-
 func TestTrimPresent_ValidateAll(t *testing.T) {
 	tcs := []struct {
 		name     string
@@ -53,4 +49,8 @@ func TestTrimPresent_TypeCheck(t *testing.T) {
 			testTypeCheck(t, tc.data, tc.badCondition, TrimPresent{})
 		})
 	}
+}
+
+func TestTrimPresent_ErrorMap(t *testing.T) {
+	testErrorMap(t, TrimPresent{}, "TrimPresent: value is just spaces or empty")
 }

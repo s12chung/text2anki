@@ -7,6 +7,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestLen_Type(t *testing.T) {
+	require.Equal(t, reflect.TypeOf(0), Len{}.Type())
+}
+
 func TestLen_Get(t *testing.T) {
 	tcs := []struct {
 		name   string

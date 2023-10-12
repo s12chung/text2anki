@@ -6,8 +6,6 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-var intType = reflect.TypeOf(0)
-
 // Len is a rule.Attribute that returns the reflect.Len attribute
 type Len struct{}
 

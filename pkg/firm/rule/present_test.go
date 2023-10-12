@@ -11,8 +11,6 @@ import (
 
 type presentStruct struct{ Integer int }
 
-func TestPresent_ErrorMap(t *testing.T) { testErrorMap(t, Present{}, "Present: value is not present") }
-
 func TestPresent_ValidateValue(t *testing.T) {
 	tcs := []struct {
 		name     string
@@ -80,3 +78,5 @@ func TestPresent_TypeCheck(t *testing.T) {
 		})
 	}
 }
+
+func TestPresent_ErrorMap(t *testing.T) { testErrorMap(t, Present{}, "Present: value is not present") }

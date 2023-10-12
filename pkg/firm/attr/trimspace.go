@@ -14,7 +14,7 @@ type TrimSpace struct{}
 func (t TrimSpace) Name() string { return "TrimSpace" }
 
 // Type is the type of the Attribute
-func (t TrimSpace) Type() reflect.Type { return intType }
+func (t TrimSpace) Type() reflect.Type { return stringType }
 
 // Get gets the attribute value from the value
 func (t TrimSpace) Get(value reflect.Value) reflect.Value {

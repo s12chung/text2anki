@@ -725,11 +725,7 @@ func TestNewValueAny(t *testing.T) {
 			}
 
 			require.NoError(err)
-			expectedType := reflect.TypeOf(tc.data)
-			if expectedType == nil {
-				expectedType = anyTyp
-			}
-			require.Equal(ValueAny{typ: expectedType, rules: tc.rules}, validator)
+			require.Equal(ValueAny{typ: reflect.TypeOf(tc.data), rules: tc.rules}, validator)
 		})
 	}
 }

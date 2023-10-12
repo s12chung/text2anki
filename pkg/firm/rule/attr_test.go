@@ -10,12 +10,6 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm/attr"
 )
 
-func TestAttr_ErrorMap(t *testing.T) {
-	rule := Attr{Of: attr.Len{}, Rule: intEqual(1)}
-	testErrorMap(t, rule, "Len-Equal: value attribute, Len, is not equal to 1")
-	require.Equal(t, rule.ValidateValue(reflect.ValueOf("")), rule.ErrorMap())
-}
-
 func TestAttr_ValidateValue(t *testing.T) {
 	tcs := []struct {
 		name string
@@ -97,4 +91,10 @@ func TestAttr_TypeCheck(t *testing.T) {
 			require.Equal(err, Attr{Of: attribute, Rule: tc.rule}.TypeCheck(typ))
 		})
 	}
+}
+
+func TestAttr_ErrorMap(t *testing.T) {
+	rule := Attr{Of: attr.Len{}, Rule: intEqual(1)}
+	testErrorMap(t, rule, "Len-Equal: value attribute, Len, is not equal to 1")
+	require.Equal(t, rule.ValidateValue(reflect.ValueOf("")), rule.ErrorMap())
 }

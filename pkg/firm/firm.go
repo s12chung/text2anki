@@ -5,11 +5,6 @@ import (
 	"reflect"
 )
 
-// Any is a helper that returns the type used to represent `any` in types
-type Any struct{}
-
-var anyTyp = reflect.TypeOf(Any{})
-
 // MustRegisterType registers the TypeDefinition to the DefaultRegistry, panics if there is an error
 var MustRegisterType = DefaultRegistry.MustRegisterType
 

@@ -9,10 +9,6 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-func TestEqual_ErrorMap(t *testing.T) {
-	testErrorMap(t, Equal[int]{To: 99}, "Equal: value is not equal to 99")
-}
-
 func TestEqual_ValidateValue(t *testing.T) {
 	tcs := []struct {
 		name string
@@ -34,6 +30,10 @@ func TestEqual_ValidateValue(t *testing.T) {
 }
 
 func TestEqual_TypeCheck(t *testing.T) { testComparableRule_TypeCheck[Equal[int]](t) }
+
+func TestEqual_ErrorMap(t *testing.T) {
+	testErrorMap(t, Equal[int]{To: 99}, "Equal: value is not equal to 99")
+}
 
 func TestLess_ValidateValue(t *testing.T) {
 	require.Equal(t, "Less: value is not less than 99", Less[int]{To: 99}.ErrorMap().Error())
@@ -64,6 +64,11 @@ func TestLess_ValidateValue(t *testing.T) {
 
 func TestLess_TypeCheck(t *testing.T) { testComparableRule_TypeCheck[Less[int]](t) }
 
+func TestLess_ErrorMap(t *testing.T) {
+	testErrorMap(t, Less[int]{To: 1}, "Less: value is not less than 1")
+	testErrorMap(t, Less[int]{OrEqual: true, To: 9}, "LessOrEqual: value is not less than or equal to 9")
+}
+
 func TestGreater_ValidateValue(t *testing.T) {
 	require.Equal(t, "Greater: value is not greater than 99", Greater[int]{To: 99}.ErrorMap().Error())
 	require.Equal(t, "GreaterOrEqual: value is not greater than or equal to 99", Greater[int]{OrEqual: true, To: 99}.ErrorMap().Error())
@@ -92,6 +97,11 @@ func TestGreater_ValidateValue(t *testing.T) {
 }
 
 func TestGreater_TypeCheck(t *testing.T) { testComparableRule_TypeCheck[Greater[int]](t) }
+
+func TestGreater_ErrorMap(t *testing.T) {
+	testErrorMap(t, Greater[int]{To: 1}, "Greater: value is not greater than 1")
+	testErrorMap(t, Greater[int]{OrEqual: true, To: 9}, "GreaterOrEqual: value is not greater than or equal to 9")
+}
 
 //nolint:revive,stylecheck // for tests
 func testComparableRule_ValidateAll[T comparable](t *testing.T, rule comparableRule[T], hasError bool, data T) {

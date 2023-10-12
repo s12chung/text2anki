@@ -9,12 +9,6 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-func TestNot_ErrorMap(t *testing.T) {
-	rule := Not{Rule: Present{}}
-	testErrorMap(t, rule, "NotPresent: value is not present--Not")
-	require.Equal(t, rule.ValidateValue(reflect.ValueOf(" ")), rule.ErrorMap())
-}
-
 func TestNot_ValidateValue(t *testing.T) {
 	tcs := []struct {
 		name string
@@ -46,4 +40,28 @@ func TestNot_ValidateValue(t *testing.T) {
 			require.Equal(expected, Not{Rule: tc.rule}.ValidateValue(reflect.ValueOf(tc.data)))
 		})
 	}
+}
+
+func TestNot_TypeCheck(t *testing.T) {
+	tcs := []struct {
+		name         string
+		data         any
+		badCondition string
+	}{
+		{name: "string", data: ""},
+		{name: "not string", data: 1, badCondition: "is not a String"},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			testTypeCheck(t, tc.data, tc.badCondition, Not{Rule: TrimPresent{}})
+		})
+	}
+}
+
+func TestNot_ErrorMap(t *testing.T) {
+	rule := Not{Rule: Present{}}
+	testErrorMap(t, rule, "NotPresent: value is not present--Not")
+	require.Equal(t, rule.ValidateValue(reflect.ValueOf(" ")), rule.ErrorMap())
 }

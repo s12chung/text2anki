@@ -147,7 +147,8 @@ func TestRegistry_DefaultedValidator(t *testing.T) {
 	notFoundType := reflect.TypeOf(nil)
 	require.Equal(DefaultValidator, registry.DefaultedValidator(notFoundType))
 
-	registry.DefaultValidator = Value[Any]{}
+	type anyType struct{}
+	registry.DefaultValidator = Value[anyType]{}
 	require.Equal(registry.DefaultValidator, registry.DefaultedValidator(notFoundType))
 }
 

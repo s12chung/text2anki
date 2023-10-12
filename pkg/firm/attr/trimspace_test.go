@@ -7,6 +7,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestTrimSpace_Type(t *testing.T) {
+	require.Equal(t, reflect.TypeOf(""), TrimSpace{}.Type())
+}
+
 func TestTrimSpace_Get(t *testing.T) {
 	tcs := []struct {
 		name   string
