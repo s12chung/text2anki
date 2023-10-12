@@ -46,7 +46,7 @@ func TestTrimSpace_TypeCheck(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			testTypeCheck(t, tc.data, tc.badCondition, TrimSpace{})
+			testTypeCheck(t, tc.data, "TrimSpace", tc.badCondition, TrimSpace{})
 		})
 	}
 }

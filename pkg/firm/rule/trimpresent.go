@@ -26,7 +26,7 @@ func (t TrimPresent) Validate(data string) firm.ErrorMap {
 // TypeCheck checks whether the type is valid for the Rule
 func (t TrimPresent) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
 	if typ.Kind() != reflect.String {
-		return firm.NewRuleTypeError(typ, "is not a String")
+		return firm.NewRuleTypeError(trimPresentName, typ, "is not a String")
 	}
 	return nil
 }
@@ -34,4 +34,6 @@ func (t TrimPresent) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
 // ErrorMap returns the ErrorMap returned from ValidateValue
 func (t TrimPresent) ErrorMap() firm.ErrorMap { return errorMapTrimPresent }
 
-var errorMapTrimPresent = firm.ErrorMap{"TrimPresent": firm.TemplateError{Template: "is just spaces or empty"}}
+const trimPresentName = "TrimPresent"
+
+var errorMapTrimPresent = firm.ErrorMap{trimPresentName: firm.TemplateError{Template: "is just spaces or empty"}}

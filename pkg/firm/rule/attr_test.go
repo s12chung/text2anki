@@ -60,13 +60,14 @@ func TestAttr_TypeCheck(t *testing.T) {
 
 		data         any
 		errData      any
+		ruleName     string
 		badCondition string
 	}{
 		{name: "normal", data: " ", rule: intEqual(1)},
 		{name: "invalid_data", data: 0, rule: intEqual(2),
-			badCondition: "does not have a length (not a Slice, Array, Array pointer, Channel, Map or String)"},
+			ruleName: "Len", badCondition: "does not have a length (not a Slice, Array, Array pointer, Channel, Map or String)"},
 		{name: "invalid_rule", data: " ", rule: Less[string]{To: ""},
-			errData: 0, badCondition: "has Attr, Len, which is not a string"},
+			errData: 0, ruleName: "Less", badCondition: "has Attr, Len, which is not a string"},
 	}
 
 	for _, tc := range tcs {
@@ -86,7 +87,7 @@ func TestAttr_TypeCheck(t *testing.T) {
 				if tc.errData != nil {
 					errData = reflect.TypeOf(tc.errData)
 				}
-				err = firm.NewRuleTypeError(errData, tc.badCondition)
+				err = firm.NewRuleTypeError(tc.ruleName, errData, tc.badCondition)
 			}
 			require.Equal(err, Attr{Of: attribute, Rule: tc.rule}.TypeCheck(typ))
 		})

@@ -26,5 +26,5 @@ func (t TrimSpace) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
 	if typ.Kind() == reflect.String {
 		return nil
 	}
-	return firm.NewRuleTypeError(typ, "is not a String")
+	return firm.NewRuleTypeError(t.Name(), typ, "is not a String")
 }

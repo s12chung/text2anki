@@ -15,14 +15,14 @@ func testErrorMap(t *testing.T, rule firm.RuleBasic, expected string) {
 	require.Equal(t, expected, rule.ErrorMap().Error())
 }
 
-func testTypeCheck(t *testing.T, data any, badCondition string, rule firm.Rule) {
+func testTypeCheck(t *testing.T, data any, ruleName, badCondition string, rule firm.Rule) {
 	require := require.New(t)
 
 	typ := reflect.TypeOf(data)
 
 	var ruleTypeError *firm.RuleTypeError
 	if badCondition != "" {
-		ruleTypeError = firm.NewRuleTypeError(typ, badCondition)
+		ruleTypeError = firm.NewRuleTypeError(ruleName, typ, badCondition)
 	}
 	require.Equal(ruleTypeError, rule.TypeCheck(typ))
 }

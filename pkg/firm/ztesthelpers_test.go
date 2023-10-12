@@ -23,7 +23,7 @@ type onlyKindRule struct{ kind reflect.Kind }
 func (o onlyKindRule) ValidateValue(_ reflect.Value) ErrorMap { return nil }
 func (o onlyKindRule) TypeCheck(typ reflect.Type) *RuleTypeError {
 	if typ.Kind() != o.kind {
-		return NewRuleTypeError(typ, "is not "+o.kind.String())
+		return NewRuleTypeError("onlyKindRule", typ, "is not "+o.kind.String())
 	}
 	return nil
 }
@@ -103,7 +103,7 @@ func testValidate[T any](t *testing.T, tcs []validateTC[T], newValidator func() 
 	}
 }
 
-func testTypeCheck(t *testing.T, data any, badCondition string, newValidator func() (Rule, error)) {
+func testTypeCheck(t *testing.T, data any, ruleName, badCondition string, newValidator func() (Rule, error)) {
 	require := require.New(t)
 
 	validator, err := newValidator()
@@ -113,7 +113,7 @@ func testTypeCheck(t *testing.T, data any, badCondition string, newValidator fun
 
 	var ruleTypeError *RuleTypeError
 	if badCondition != "" {
-		ruleTypeError = NewRuleTypeError(typ, badCondition)
+		ruleTypeError = NewRuleTypeError(ruleName, typ, badCondition)
 	}
 	require.Equal(ruleTypeError, validator.TypeCheck(typ))
 }

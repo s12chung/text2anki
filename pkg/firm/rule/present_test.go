@@ -74,7 +74,7 @@ func TestPresent_TypeCheck(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			testTypeCheck(t, tc.data, tc.badCondition, Present{})
+			testTypeCheck(t, tc.data, "Present", tc.badCondition, Present{})
 		})
 	}
 }

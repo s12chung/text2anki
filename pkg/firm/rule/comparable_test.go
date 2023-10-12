@@ -35,6 +35,8 @@ func TestEqual_ErrorMap(t *testing.T) {
 	testErrorMap(t, Equal[int]{To: 99}, "Equal: value is not equal to 99")
 }
 
+func TestEqual_Name(t *testing.T) { require.Equal(t, equalName, Equal[int]{}.Name()) }
+
 func TestLess_ValidateValue(t *testing.T) {
 	require.Equal(t, "Less: value is not less than 99", Less[int]{To: 99}.ErrorMap().Error())
 	require.Equal(t, "LessOrEqual: value is not less than or equal to 99", Less[int]{OrEqual: true, To: 99}.ErrorMap().Error())
@@ -68,6 +70,8 @@ func TestLess_ErrorMap(t *testing.T) {
 	testErrorMap(t, Less[int]{To: 1}, "Less: value is not less than 1")
 	testErrorMap(t, Less[int]{OrEqual: true, To: 9}, "LessOrEqual: value is not less than or equal to 9")
 }
+
+func TestLess_Name(t *testing.T) { require.Equal(t, lessName, Less[int]{}.Name()) }
 
 func TestGreater_ValidateValue(t *testing.T) {
 	require.Equal(t, "Greater: value is not greater than 99", Greater[int]{To: 99}.ErrorMap().Error())
@@ -103,6 +107,8 @@ func TestGreater_ErrorMap(t *testing.T) {
 	testErrorMap(t, Greater[int]{OrEqual: true, To: 9}, "GreaterOrEqual: value is not greater than or equal to 9")
 }
 
+func TestGreater_Name(t *testing.T) { require.Equal(t, greaterName, Greater[int]{}.Name()) }
+
 //nolint:revive,stylecheck // for tests
 func testComparableRule_ValidateAll[T comparable](t *testing.T, rule comparableRule[T], hasError bool, data T) {
 	require := require.New(t)
@@ -133,7 +139,7 @@ func testComparableRule_TypeCheck[T comparableRule[int]](t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			var rule T
-			testTypeCheck(t, tc.data, tc.badCondition, rule)
+			testTypeCheck(t, tc.data, rule.Name(), tc.badCondition, rule)
 		})
 	}
 }

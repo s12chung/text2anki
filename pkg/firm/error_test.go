@@ -195,5 +195,11 @@ func TestErrorKey_ErrorName(t *testing.T) {
 func TestRuleTypeError_TemplateError(t *testing.T) {
 	require := require.New(t)
 	require.Equal("value is not a string, got int",
-		NewRuleTypeError(reflect.TypeOf(0), "is not a string").TemplateError().Error())
+		NewRuleTypeError("MyRule", reflect.TypeOf(0), "is not a string").TemplateError().Error())
+}
+
+func TestRuleTypeError_Error(t *testing.T) {
+	require := require.New(t)
+	require.Equal("MyRule: value is not a string, got int",
+		NewRuleTypeError("MyRule", reflect.TypeOf(0), "is not a string").Error())
 }

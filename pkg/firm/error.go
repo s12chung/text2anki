@@ -142,12 +142,13 @@ func (e ErrorKey) ErrorName() string {
 }
 
 // NewRuleTypeError returns a new RuleTypeError
-func NewRuleTypeError(typ reflect.Type, badCondition string) *RuleTypeError {
-	return &RuleTypeError{Type: typ, BadCondition: badCondition}
+func NewRuleTypeError(ruleName string, typ reflect.Type, badCondition string) *RuleTypeError {
+	return &RuleTypeError{RuleName: ruleName, Type: typ, BadCondition: badCondition}
 }
 
 // RuleTypeError is an error returned by Rule.TypeCheck
 type RuleTypeError struct {
+	RuleName     string
 	Type         reflect.Type
 	BadCondition string
 }
@@ -165,15 +166,15 @@ func (r RuleTypeError) TemplateError() TemplateError {
 }
 
 // Error returns the error string for the error
-func (r RuleTypeError) Error() string { return r.TemplateError().Error() }
+func (r RuleTypeError) Error() string { return r.RuleName + ": " + r.TemplateError().Error() }
 
 // TypeCheck is a basic implementation for TypeCheck
-func TypeCheck(typ, expectedType reflect.Type, kindString string) *RuleTypeError {
+func TypeCheck(ruleName string, typ, expectedType reflect.Type, kindString string) *RuleTypeError {
 	if typ != expectedType {
 		if kindString != "" {
 			kindString += " "
 		}
-		return NewRuleTypeError(typ, "is not matching "+kindString+"of type "+expectedType.String())
+		return NewRuleTypeError(ruleName, typ, "is not matching "+kindString+"of type "+expectedType.String())
 	}
 	return nil
 }

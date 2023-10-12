@@ -56,7 +56,7 @@ func TestLen_TypeCheck(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			testTypeCheck(t, tc.data, tc.badCondition, Len{})
+			testTypeCheck(t, tc.data, "Len", tc.badCondition, Len{})
 		})
 	}
 }

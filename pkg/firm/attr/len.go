@@ -30,5 +30,5 @@ func (l Len) TypeCheck(typ reflect.Type) *firm.RuleTypeError {
 			return nil
 		}
 	}
-	return firm.NewRuleTypeError(typ, "does not have a length (not a Slice, Array, Array pointer, Channel, Map or String)")
+	return firm.NewRuleTypeError(l.Name(), typ, "does not have a length (not a Slice, Array, Array pointer, Channel, Map or String)")
 }

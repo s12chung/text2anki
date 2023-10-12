@@ -557,7 +557,7 @@ func TestStructAny_TypeCheck(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			testTypeCheck(t, tc.data, tc.badCondition, func() (Rule, error) {
+			testTypeCheck(t, tc.data, "StructAny", tc.badCondition, func() (Rule, error) {
 				return validator, nil
 			})
 		})
@@ -691,7 +691,7 @@ func TestSliceAny_TypeCheck(t *testing.T) {
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			testTypeCheck(t, tc.data, tc.badCondition, func() (Rule, error) {
+			testTypeCheck(t, tc.data, "SliceAny", tc.badCondition, func() (Rule, error) {
 				return validator, nil
 			})
 		})
@@ -763,7 +763,7 @@ func TestValueAny_ValidateAll(t *testing.T) {
 
 			validator, err := NewValueAny(reflect.TypeOf(true), tc.rule)
 			if tc.newError {
-				require.Equal(NewRuleTypeError(reflect.TypeOf(true), "is not string"), err)
+				require.Equal(NewRuleTypeError("onlyKindRule", reflect.TypeOf(true), "is not string"), err)
 				return
 			}
 
@@ -816,7 +816,7 @@ func TestValueAny_TypeCheck(t *testing.T) {
 			if tc.extraRule != nil {
 				rules = append(rules, tc.extraRule)
 			}
-			testTypeCheck(t, tc.data, tc.badCondition, func() (Rule, error) {
+			testTypeCheck(t, tc.data, "ValueAny", tc.badCondition, func() (Rule, error) {
 				return NewValueAny(reflect.TypeOf(i), rules...)
 			})
 		})
