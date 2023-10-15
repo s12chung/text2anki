@@ -89,7 +89,7 @@ func TestAPI_KeyFromSignGet(t *testing.T) {
 	require.Equal(expectedKey, key)
 }
 
-func TestAPI_ValidateAny(t *testing.T) {
+func TestAPI_Validate(t *testing.T) {
 	require := require.New(t)
 	api := newAPIWithT(t)
 	ciphertext, err := newEncryptorT(t).Encrypt(testKey)
