@@ -6,6 +6,7 @@ import (
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/firm"
+	"github.com/s12chung/text2anki/pkg/firm/attr"
 	"github.com/s12chung/text2anki/pkg/firm/rule"
 	"github.com/s12chung/text2anki/pkg/util/chiutil"
 	"github.com/s12chung/text2anki/pkg/util/jhttp"
@@ -24,8 +25,11 @@ type PartCreateMultiRequestPart struct {
 }
 
 func init() {
-	firm.RegisterType(firm.NewDefinition(PartCreateMultiRequest{}).Validates(firm.RuleMap{
-		"Parts": {rule.Present{}},
+	firm.MustRegisterType(firm.NewDefinition[PartCreateMultiRequest]().Validates(firm.RuleMap{
+		"Parts": {
+			rule.Present{},
+			rule.Attr{Of: attr.Len{}, Rule: rule.Less[int]{OrEqual: true, To: 20}},
+		},
 	}))
 }
 
@@ -59,7 +63,7 @@ func (rs Routes) PartCreateMulti(r *http.Request, txQs db.TxQs) (any, *jhttp.HTT
 type PartCreateOrUpdateRequest PartCreateMultiRequestPart
 
 func init() {
-	firm.RegisterType(firm.NewDefinition(PartCreateOrUpdateRequest{}).Validates(firm.RuleMap{
+	firm.MustRegisterType(firm.NewDefinition[PartCreateOrUpdateRequest]().Validates(firm.RuleMap{
 		"Text": {rule.TrimPresent{}},
 	}))
 }

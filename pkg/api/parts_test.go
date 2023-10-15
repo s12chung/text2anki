@@ -37,6 +37,7 @@ func TestRoutes_PartCreateMulti(t *testing.T) {
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty_parts", expectedCode: http.StatusUnprocessableEntity},
+		{name: "51_parts", expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
 		tc := tc

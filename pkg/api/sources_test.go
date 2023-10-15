@@ -88,6 +88,7 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty", expectedCode: http.StatusUnprocessableEntity},
 		{name: "empty_parts", expectedCode: http.StatusUnprocessableEntity},
+		{name: "51_parts", expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
 		tc := tc
@@ -206,6 +207,12 @@ func sourceCreateRequestParts(t *testing.T, caseName, testName string, partCount
 		parts[0].Text = "  "
 	case "empty_parts":
 		parts = []PartCreateMultiRequestPart{}
+	case "51_parts":
+		partsLen := 51
+		parts = make([]PartCreateMultiRequestPart, partsLen)
+		for i := 0; i < partsLen; i++ {
+			parts[i] = PartCreateMultiRequestPart{}
+		}
 	default:
 		for i := 0; i < partCount; i++ {
 			parts[i] = sourceCreateRequestPartFromFile(t, testName, caseName+strconv.Itoa(i)+".txt")

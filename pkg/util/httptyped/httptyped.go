@@ -33,7 +33,7 @@ func (r *Registry) RegisterType(values ...any) {
 	for _, value := range values {
 		typ := indirectType(reflect.TypeOf(value))
 		if typ.Kind() != reflect.Struct {
-			panic(fmt.Sprintf("RegisterType() with non-Struct kind %v", typ.String()))
+			panic(fmt.Sprintf("httptyped.RegisterType() with non-Struct kind %v", typ.String()))
 		}
 		r.registeredTypes[typ] = true
 	}

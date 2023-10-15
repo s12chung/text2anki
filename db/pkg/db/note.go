@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	firm.RegisterType(firm.NewDefinition(NoteCreateParams{}).Validates(firm.RuleMap{
+	firm.MustRegisterType(firm.NewDefinition[NoteCreateParams]().Validates(firm.RuleMap{
 		"Text":        {rule.Present{}},
 		"Translation": {rule.Present{}},
 		"Explanation": {rule.Present{}},

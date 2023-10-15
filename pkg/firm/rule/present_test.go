@@ -14,34 +14,69 @@ type presentStruct struct{ Integer int }
 func TestPresent_ValidateValue(t *testing.T) {
 	tcs := []struct {
 		name     string
-		value    any
-		expected firm.ErrorMap
+		data     any
+		hasError bool
 	}{
-		{name: "int", value: 10, expected: nil},
-		{name: "empty_int", value: 0, expected: errorMapPresent},
-		{name: "string", value: "abc", expected: nil},
-		{name: "empty_string", value: "", expected: errorMapPresent},
-		{name: "struct", value: presentStruct{Integer: 1}, expected: nil},
-		{name: "empty_struct", value: presentStruct{}, expected: errorMapPresent},
-		{name: "func", value: func() {}, expected: nil},
-		{name: "empty_channel", value: make(chan int), expected: errorMapPresent},
-		{name: "pointer", value: &presentStruct{}, expected: nil},
-		{name: "slice", value: []int{1, 2}, expected: nil},
-		{name: "slice_pointer", value: []int{1, 2}, expected: nil},
-		{name: "empty_slice", value: []int{}, expected: errorMapPresent},
-		{name: "array", value: [3]int{1, 2, 3}, expected: nil},
-		{name: "array_pointer", value: &[3]int{1, 2, 3}, expected: nil},
-		{name: "array_empty", value: [3]int{}, expected: errorMapPresent},
-		{name: "map", value: map[int]int{1: 1, 2: 2}, expected: nil},
-		{name: "empty_map", value: map[int]int{}, expected: errorMapPresent},
-		{name: "nil", value: nil, expected: errorMapPresent},
+		{name: "int", data: 10},
+		{name: "int_empty", data: 0, hasError: true},
+
+		{name: "string", data: "abc"},
+		{name: "string_empty", data: "", hasError: true},
+
+		{name: "struct", data: presentStruct{Integer: 1}},
+		{name: "struct_pointer", data: &presentStruct{Integer: 1}},
+		{name: "struct_empty", data: presentStruct{}, hasError: true},
+		{name: "struct_empty_pointer", data: &presentStruct{}, hasError: true},
+
+		{name: "slice", data: []int{1, 2}},
+		{name: "slice_pointer", data: []int{1, 2}},
+		{name: "slice_empty", data: []int{}, hasError: true},
+		{name: "slice_empty_pointer", data: &[]int{}, hasError: true},
+
+		{name: "array", data: [3]int{1, 2, 3}},
+		{name: "array_pointer", data: &[3]int{1, 2, 3}},
+		{name: "array_empty", data: [3]int{}, hasError: true},
+		{name: "array_empty_pointer", data: &[3]int{}, hasError: true},
+
+		{name: "map", data: map[int]int{1: 1, 2: 2}},
+		{name: "map_pointer", data: &map[int]int{1: 1, 2: 2}},
+		{name: "map_empty", data: map[int]int{}, hasError: true},
+		{name: "map_empty_pointer", data: &map[int]int{}, hasError: true},
+
+		{name: "func", data: func() {}},
+		{name: "channel_empty", data: make(chan int), hasError: true},
+		{name: "nil", data: nil, hasError: true},
 	}
 
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-			require.Equal(tc.expected, Present{}.ValidateValue(reflect.ValueOf(tc.value)))
+			var expected firm.ErrorMap
+			if tc.hasError {
+				expected = Present{}.ErrorMap()
+			}
+			require.Equal(t, expected, Present{}.ValidateValue(reflect.ValueOf(tc.data)))
 		})
 	}
 }
+
+func TestPresent_TypeCheck(t *testing.T) {
+	type anyType struct{}
+
+	tcs := []struct {
+		name         string
+		data         any
+		badCondition string
+	}{
+		{name: "any", data: anyType{}},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			testTypeCheck(t, tc.data, "Present", tc.badCondition, Present{})
+		})
+	}
+}
+
+func TestPresent_ErrorMap(t *testing.T) { testErrorMap(t, Present{}, "Present: value is not present") }

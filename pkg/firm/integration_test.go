@@ -7,45 +7,48 @@ import (
 )
 
 type parent struct {
+	Child
 	Primitive               int
-	Basic                   child
-	Pt                      *child
+	Basic                   Child
+	Pt                      *Child
 	Any                     any
-	Array                   []child
-	ArrayPt                 []*child
+	Array                   []Child
+	ArrayPt                 []*Child
 	PrimitiveEmptyValidates int
-	BasicEmptyValidates     child
-	PtEmptyValidates        *child
+	BasicEmptyValidates     Child
+	PtEmptyValidates        *Child
 	AnyEmptyValidates       any
-	ArrayValidates          []child
-	ArrayPtValidates        []*child
+	ArrayValidates          []Child
+	ArrayPtValidates        []*Child
 	PrimitiveNoValidates    int
-	BasicNoValidates        child
-	PtNoValidates           *child
+	BasicNoValidates        Child
+	PtNoValidates           *Child
 	AnyNoValidates          any
-	ArrayNoValidates        []child
-	ArrayPtNoValidates      []*child
+	ArrayNoValidates        []Child
+	ArrayPtNoValidates      []*Child
 }
 
-type child struct {
+type Child struct {
 	Validates   string
 	NoValidates string
+	private     string //nolint:unused // it's used
 }
 
 func fullParent() parent {
-	fc := func() *child {
-		return &child{Validates: "child validates", NoValidates: "no validates"}
+	fc := func() *Child {
+		return &Child{Validates: "Child validates", NoValidates: "no validates"}
 	}
 	return parent{
-		// validate field + child
+		Child: *fc(),
+		// validate field + Child
 		Primitive: 1, Basic: *fc(), Pt: fc(), Any: *fc(),
-		Array: []child{*fc(), *fc()}, ArrayPt: []*child{fc(), fc()},
-		// validate child
+		Array: []Child{*fc(), *fc()}, ArrayPt: []*Child{fc(), fc()},
+		// validate Child
 		PrimitiveEmptyValidates: 1, BasicEmptyValidates: *fc(), PtEmptyValidates: fc(), AnyEmptyValidates: *fc(),
-		ArrayValidates: []child{*fc(), *fc()}, ArrayPtValidates: []*child{fc(), fc()},
+		ArrayValidates: []Child{*fc(), *fc()}, ArrayPtValidates: []*Child{fc(), fc()},
 		// validate none
 		PrimitiveNoValidates: 1, BasicNoValidates: *fc(), PtNoValidates: fc(), AnyNoValidates: *fc(),
-		ArrayNoValidates: []child{*fc(), *fc()}, ArrayPtNoValidates: []*child{fc(), fc()},
+		ArrayNoValidates: []Child{*fc(), *fc()}, ArrayPtNoValidates: []*Child{fc(), fc()},
 	}
 }
 
@@ -59,30 +62,25 @@ type unregistered struct{}
 var testRegistry = &Registry{}
 
 func init() {
-	testRegistry.RegisterType(
-		NewDefinition(parent{}).
-			Validates(RuleMap{
-				"Primitive":               {testPresent{}},
-				"Basic":                   {testPresent{}},
-				"Pt":                      {testPresent{}},
-				"Any":                     {testPresent{}},
-				"Array":                   {testPresent{}},
-				"ArrayPt":                 {testPresent{}},
-				"PrimitiveEmptyValidates": {},
-				"BasicEmptyValidates":     {},
-				"PtEmptyValidates":        {},
-				"AnyEmptyValidates":       {},
-				"ArrayValidates":          {},
-				"ArrayPtValidates":        {},
-			}))
-	testRegistry.RegisterType(
-		NewDefinition(child{}).
-			Validates(RuleMap{
-				"Validates": {testPresent{}},
-			}))
-	testRegistry.RegisterType(
-		NewDefinition(topLevelValidates{}).
-			ValidatesTopLevel(testPresent{}))
+	testRegistry.MustRegisterType(NewDefinition[parent]().Validates(RuleMap{
+		"Child":                   {presentRule{}},
+		"Primitive":               {presentRule{}},
+		"Basic":                   {presentRule{}},
+		"Pt":                      {presentRule{}},
+		"Any":                     {presentRule{}},
+		"Array":                   {presentRule{}},
+		"ArrayPt":                 {presentRule{}},
+		"PrimitiveEmptyValidates": {},
+		"BasicEmptyValidates":     {},
+		"PtEmptyValidates":        {},
+		"AnyEmptyValidates":       {},
+		"ArrayValidates":          {},
+		"ArrayPtValidates":        {},
+	}))
+	testRegistry.MustRegisterType(NewDefinition[Child]().Validates(RuleMap{
+		"Validates": {presentRule{}},
+	}))
+	testRegistry.MustRegisterType(NewDefinition[topLevelValidates]().ValidatesTopLevel(presentRule{}))
 }
 
 type integrationTestCase struct {
@@ -165,11 +163,11 @@ func TestIntegration(t *testing.T) {
 			require := require.New(t)
 			if tc.f != nil {
 				data := tc.f()
-				require.Equal(tc.isValid, testRegistry.Validate(data).IsValid())
-				require.Equal(tc.isValid, testRegistry.Validate(&data).IsValid())
+				require.Equal(tc.isValid, testRegistry.ValidateAny(data) == nil)
+				require.Equal(tc.isValid, testRegistry.ValidateAny(&data) == nil)
 				return
 			}
-			require.Equal(tc.isValid, testRegistry.Validate(tc.anyF()).IsValid())
+			require.Equal(tc.isValid, testRegistry.ValidateAny(tc.anyF()) == nil)
 		})
 	}
 }

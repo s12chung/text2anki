@@ -6,10 +6,10 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-// Present checks if value is non-Zero and non-Empty
+// Present checks if data is non-Zero, valid, and not of length 0
 type Present struct{}
 
-// ValidateValue returns true if the value is present
+// ValidateValue returns true if the data is valid (assumes TypeCheck is called)
 func (p Present) ValidateValue(value reflect.Value) firm.ErrorMap {
 	if !value.IsValid() || value.IsZero() {
 		return errorMapPresent
@@ -21,14 +21,15 @@ func (p Present) ValidateValue(value reflect.Value) firm.ErrorMap {
 			return errorMapPresent
 		}
 	case reflect.Ptr:
-		elem := value.Type().Elem()
-		if elem.Kind() == reflect.Array {
-			if elem.Len() == 0 {
-				return errorMapPresent
-			}
-		}
+		return p.ValidateValue(value.Elem())
 	}
 	return nil
 }
 
-var errorMapPresent = firm.ErrorMap{"Present": &firm.TemplatedError{Template: "value is not present"}}
+// TypeCheck checks whether the type is valid for the Rule -- allow all types
+func (p Present) TypeCheck(_ reflect.Type) *firm.RuleTypeError { return nil }
+
+// ErrorMap returns the ErrorMap returned from ValidateValue
+func (p Present) ErrorMap() firm.ErrorMap { return errorMapPresent }
+
+var errorMapPresent = firm.ErrorMap{"Present": firm.TemplateError{Template: "is not present"}}

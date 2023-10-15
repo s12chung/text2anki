@@ -9,23 +9,48 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-func TestTrimPresent_ValidateValue(t *testing.T) {
+func TestTrimPresent_ValidateAll(t *testing.T) {
 	tcs := []struct {
 		name     string
-		value    any
-		expected firm.ErrorMap
+		data     string
+		hasError bool
 	}{
-		{name: "valid", value: "\t not space \n", expected: nil},
-		{name: "just space", value: "\t \t\n \n", expected: errorMapNotSpace("value is just spaces or empty")},
-		{name: "empty", value: "", expected: errorMapNotSpace("value is just spaces or empty")},
-		{name: "not string", value: 10, expected: errorMapNotSpace("value is not a string")},
+		{name: "valid", data: "\t not space \n"},
+		{name: "just space", data: "\t \t\n \n", hasError: true},
+		{name: "empty", data: "", hasError: true},
 	}
 
 	for _, tc := range tcs {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			require := require.New(t)
-			require.Equal(tc.expected, TrimPresent{}.ValidateValue(reflect.ValueOf(tc.value)))
+			var expected firm.ErrorMap
+			if tc.hasError {
+				expected = TrimPresent{}.ErrorMap()
+			}
+			require.Equal(t, expected, TrimPresent{}.Validate(tc.data))
+			require.Equal(t, expected, TrimPresent{}.ValidateValue(reflect.ValueOf(tc.data)))
 		})
 	}
+}
+
+func TestTrimPresent_TypeCheck(t *testing.T) {
+	tcs := []struct {
+		name         string
+		data         any
+		badCondition string
+	}{
+		{name: "string", data: ""},
+		{name: "not string", data: 1, badCondition: "is not a String"},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			testTypeCheck(t, tc.data, "TrimPresent", tc.badCondition, TrimPresent{})
+		})
+	}
+}
+
+func TestTrimPresent_ErrorMap(t *testing.T) {
+	testErrorMap(t, TrimPresent{}, "TrimPresent: value is just spaces or empty")
 }
