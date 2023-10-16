@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -14,21 +15,24 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/archive/xz"
 )
 
+// GetLoginFromEnv gets the login from the default ENV var
+func GetLoginFromEnv() string { return os.Getenv("INSTAGRAM_LOGIN") }
+
+// NewFactory returns a new Factory
+func NewFactory(login string) Factory { return Factory{login: login} }
+
 // Factory generates Sources
-type Factory struct{}
+type Factory struct{ login string }
 
 // NewSource returns a new Post
-func (f Factory) NewSource(url string) extractor.Source {
-	return &Post{url: url}
-}
+func (f Factory) NewSource(url string) extractor.Source { return &Post{login: f.login, url: url} }
 
 // Extensions returns the extensions the extractor returns
-func (f Factory) Extensions() []string {
-	return []string{".jpg"}
-}
+func (f Factory) Extensions() []string { return []string{".jpg"} }
 
 // Post represents an instagram post
 type Post struct {
+	login  string
 	url    string
 	verify *bool
 	id     string
@@ -68,7 +72,7 @@ func (s *Post) ExtractToDir(cacheDir string) error {
 	if ok := s.Verify(); !ok {
 		return fmt.Errorf("url is not vertified for instagram: %v", s.url)
 	}
-	cmd := exec.Command("instaloader", "--dirname-pattern", ".", "--", "-"+s.ID()) //nolint:gosec //this is how it works
+	cmd := exec.Command("instaloader", "--login", s.login, "--dirname-pattern", ".", "--", "-"+s.ID()) //nolint:gosec //this is how it works
 	cmd.Dir = cacheDir
 	return cmd.Run()
 }

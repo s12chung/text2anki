@@ -12,13 +12,14 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
+const testLogin = "instalogin"
 const testProtocol = "https://"
 const testHash = "nF1jE8cVT8O"
 const testPath = pathPrefix + testHash + "/"
 const testQueryParams = "?igshid=nF1jE3HOcXWZjiBqjZQayKs"
 const testURL = testProtocol + hostname + testPath + testQueryParams
 
-func NewPost(url string) extractor.Source { return Factory{}.NewSource(url) }
+func NewPost(url string) extractor.Source { return NewFactory(testLogin).NewSource(url) }
 
 func TestSource_Verify(t *testing.T) {
 	testCases := []struct {
