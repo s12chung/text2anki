@@ -216,9 +216,11 @@ func ExtractorMap(extractorMap extractor.Map) extractor.Map {
 	if extractorMap != nil {
 		return extractorMap
 	}
-	return extractor.Map{
-		"instagram": extractor.NewExtractor(filepath.Join(appCacheDir, "instagram"), instagram.Factory{}),
+	extractorMap = extractor.Map{}
+	if login := instagram.GetLoginFromEnv(); login != "" {
+		extractorMap["instagram"] = extractor.NewExtractor(filepath.Join(appCacheDir, "instagram"), instagram.NewFactory(login))
 	}
+	return extractorMap
 }
 
 // Synthesizer returns the default Synthesizer
