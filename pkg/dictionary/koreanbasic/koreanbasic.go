@@ -20,9 +20,7 @@ import (
 const DictionarySource = "Korean Basic Dictionary"
 
 // GetAPIKeyFromEnv gets the API key from the default ENV var
-func GetAPIKeyFromEnv() string {
-	return os.Getenv("KOREAN_BASIC_API_KEY")
-}
+func GetAPIKeyFromEnv() string { return os.Getenv("KOREAN_BASIC_API_KEY") }
 
 // KoreanBasic is a Korean Basic dictionary API wrapper
 type KoreanBasic struct {

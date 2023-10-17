@@ -51,6 +51,7 @@ type translateResponse struct {
 	} `json:"message"`
 }
 
+// Translate translates the string
 func (p *Papago) Translate(ctx context.Context, s string) (string, error) {
 	s = strings.TrimSpace(s)
 	if translation, exists := p.cache[s]; exists {
