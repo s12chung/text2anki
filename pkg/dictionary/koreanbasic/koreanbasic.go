@@ -32,7 +32,7 @@ type KoreanBasic struct {
 }
 
 // New returns a KoreanBasic dictionary
-func New(apiKey string) dictionary.Dictionary {
+func New(apiKey string) *KoreanBasic {
 	transport := &http.Transport{
 		//nolint:gosec // needed
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},

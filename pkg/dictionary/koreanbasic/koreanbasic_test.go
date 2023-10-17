@@ -44,22 +44,25 @@ func TestKoreanBasic_Search(t *testing.T) {
 			}
 
 			dict := New(GetAPIKeyFromEnv())
-			clean := vcr.SetupVCR(t, fixture.JoinTestData(testName, vcrName), dict, func(r *recorder.Recorder) {
-				r.AddHook(func(i *cassette.Interaction) error {
-					i.Request.URL = cleanURL(i.Request.URL)
-					return nil
-				}, recorder.AfterCaptureHook)
-				r.SetMatcher(func(r *http.Request, i cassette.Request) bool {
-					return r.Method == i.Method && cleanURL(r.URL.String()) == i.URL
-				})
-			})
-			t.Cleanup(clean)
+			t.Cleanup(setupVCR(t, fixture.JoinTestData(testName, vcrName), dict))
 
 			terms, err := dict.Search(context.Background(), tc.searchTerm, tc.pos)
 			require.NoError(err)
 			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name)+".json", fixture.JSON(t, terms))
 		})
 	}
+}
+
+func setupVCR(t *testing.T, testName string, hasClient vcr.HasClient) func() {
+	return vcr.SetupVCR(t, testName, hasClient, func(r *recorder.Recorder) {
+		r.AddHook(func(i *cassette.Interaction) error {
+			i.Request.URL = cleanURL(i.Request.URL)
+			return nil
+		}, recorder.AfterCaptureHook)
+		r.SetMatcher(func(r *http.Request, i cassette.Request) bool {
+			return r.Method == i.Method && cleanURL(r.URL.String()) == i.URL
+		})
+	})
 }
 
 func cleanURL(url string) string {

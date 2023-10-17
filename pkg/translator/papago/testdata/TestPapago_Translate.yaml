@@ -1,0 +1,54 @@
+---
+version: 2
+interactions:
+    - id: 0
+      request:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        content_length: 121
+        transfer_encoding: []
+        trailer: {}
+        host: naveropenapi.apigw.ntruss.com
+        remote_addr: ""
+        request_uri: ""
+        body: '{"source":"ko","target":"en","text":"한 송이 꽃을 피우려 작은 두 눈에 얼마나 많은 비가 내렸을까"}'
+        form: {}
+        headers:
+            Content-Type:
+                - application/json
+        url: https://naveropenapi.apigw.ntruss.com/nmt/v1/translation
+        method: POST
+      response:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        transfer_encoding: []
+        trailer: {}
+        content_length: 143
+        uncompressed: false
+        body: '{"message":{"result":{"srcLangType":"ko","tarLangType":"en","translatedText":"How much rain would have fallen in my two small eyes to bloom"}}}'
+        headers:
+            Connection:
+                - keep-alive
+            Content-Length:
+                - "143"
+            Content-Type:
+                - application/json;charset=UTF-8
+            Date:
+                - Tue, 17 Oct 2023 23:09:16 GMT
+            Referrer-Policy:
+                - origin
+            Server:
+                - nginx
+            Vary:
+                - Origin
+                - Access-Control-Request-Method
+                - Access-Control-Request-Headers
+            X-Ncp-Apigw-Response-Origin:
+                - ENDPOINT
+            X-Quota:
+                - "34"
+        status: 200 OK
+        code: 200
+        duration: 1.105291916s

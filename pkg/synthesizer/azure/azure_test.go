@@ -18,8 +18,7 @@ func TestAzure_TextToSpeech(t *testing.T) {
 	t.Parallel()
 
 	synth := New(GetAPIKeyFromEnv(), EastUSRegion)
-	clean := setupVCR(t, "TestAzure_TextToSpeech", synth)
-	defer clean()
+	t.Cleanup(setupVCR(t, "TestAzure_TextToSpeech", synth))
 
 	require := require.New(t)
 	ctx := context.Background()
@@ -35,7 +34,7 @@ func TestAzure_TextToSpeech(t *testing.T) {
 	require.NoError(err)
 }
 
-func setupVCR(t *testing.T, testName string, hasClient any) func() {
+func setupVCR(t *testing.T, testName string, hasClient vcr.HasClient) func() {
 	return vcr.SetupVCR(t, fixture.JoinTestData(testName), hasClient, func(r *recorder.Recorder) {
 		r.AddHook(func(i *cassette.Interaction) error {
 			delete(i.Request.Headers, apiKeyHeader)

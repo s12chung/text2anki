@@ -15,20 +15,15 @@ type HasClient interface {
 }
 
 // SetupVCR setups up the VCR recorder
-func SetupVCR(t *testing.T, cassetteName string, hasClient any, setupRecorder func(r *recorder.Recorder)) func() {
+func SetupVCR(t *testing.T, cassetteName string, hasClient HasClient, setupRecorder func(r *recorder.Recorder)) func() {
 	require := require.New(t)
-	h, ok := hasClient.(HasClient)
-	require.True(ok, "should implement HasClient")
-
 	r, err := recorder.New(cassetteName)
 	require.NoError(err)
 
 	if setupRecorder != nil {
 		setupRecorder(r)
 	}
-	h.SetClient(&http.Client{Transport: r})
+	hasClient.SetClient(&http.Client{Transport: r})
 
-	return func() {
-		require.NoError(r.Stop())
-	}
+	return func() { require.NoError(r.Stop()) }
 }
