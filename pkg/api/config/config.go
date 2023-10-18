@@ -26,6 +26,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/tokenizer"
 	"github.com/s12chung/text2anki/pkg/tokenizer/khaiii"
 	"github.com/s12chung/text2anki/pkg/tokenizer/komoran"
+	"github.com/s12chung/text2anki/pkg/translator"
+	"github.com/s12chung/text2anki/pkg/translator/papago"
 	"github.com/s12chung/text2anki/pkg/util/ioutil"
 	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
 	"github.com/s12chung/text2anki/pkg/util/logg"
@@ -52,6 +54,7 @@ type Config struct {
 	StorageConfig StorageConfig
 
 	TokenizerType
+	Translator translator.Translator
 	DictionaryType
 
 	ExtractorMap extractor.Map
@@ -187,6 +190,14 @@ func Tokenizer(ctx context.Context, tokenizerType TokenizerType, log *slog.Logge
 	default:
 		return khaiii.New(ctx, log)
 	}
+}
+
+// Translator returns the default Translator
+func Translator(t translator.Translator) translator.Translator {
+	if t == nil {
+		t = papago.New(papago.GetClientCredentialsFromEnv())
+	}
+	return t
 }
 
 // DictionaryType is an enum of dictionary types

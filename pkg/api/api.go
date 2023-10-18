@@ -52,6 +52,7 @@ func NewRoutes(ctx context.Context, c config.Config) Routes {
 		TextTokenizer: db.TextTokenizer{
 			Parser:       config.Parser(),
 			Tokenizer:    config.Tokenizer(ctx, c.TokenizerType, c.Log),
+			Translator:   config.Translator(c.Translator),
 			CleanSpeaker: true,
 		},
 		ExtractorMap: config.ExtractorMap(c.ExtractorMap),

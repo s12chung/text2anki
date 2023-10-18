@@ -1,0 +1,219 @@
+[
+  {
+    "text": "저는 오늘 평소보다 조금 더 천천히 말을 할 거예요.",
+    "translation": "Today, I’m going to speak a bit more slowly than usual.",
+    "tokens": [
+      {
+        "text": "저는",
+        "part_of_speech": "Noun",
+        "start_index": 0,
+        "length": 6
+      },
+      {
+        "text": "오늘",
+        "part_of_speech": "Noun",
+        "start_index": 7,
+        "length": 6
+      },
+      {
+        "text": "평소보다",
+        "part_of_speech": "Noun",
+        "start_index": 14,
+        "length": 12
+      },
+      {
+        "text": "조금",
+        "part_of_speech": "Noun",
+        "start_index": 27,
+        "length": 6
+      },
+      {
+        "text": "더",
+        "part_of_speech": "Noun",
+        "start_index": 34,
+        "length": 3
+      },
+      {
+        "text": "천천히",
+        "part_of_speech": "Noun",
+        "start_index": 38,
+        "length": 9
+      },
+      {
+        "text": "말을",
+        "part_of_speech": "Noun",
+        "start_index": 48,
+        "length": 6
+      },
+      {
+        "text": "할",
+        "part_of_speech": "Noun",
+        "start_index": 55,
+        "length": 3
+      },
+      {
+        "text": "거예요.",
+        "part_of_speech": "Noun",
+        "start_index": 59,
+        "length": 10
+      }
+    ]
+  },
+  {
+    "text": "혹시 여러분은 소풍을 가거나, 야외에 나갈 때 어떤 음식을 먹어요?",
+    "translation": "crc-5c595045",
+    "previous_break": true,
+    "tokens": [
+      {
+        "text": "혹시",
+        "part_of_speech": "Noun",
+        "start_index": 0,
+        "length": 6
+      },
+      {
+        "text": "여러분은",
+        "part_of_speech": "Noun",
+        "start_index": 7,
+        "length": 12
+      },
+      {
+        "text": "소풍을",
+        "part_of_speech": "Noun",
+        "start_index": 20,
+        "length": 9
+      },
+      {
+        "text": "가거나,",
+        "part_of_speech": "Noun",
+        "start_index": 30,
+        "length": 10
+      },
+      {
+        "text": "야외에",
+        "part_of_speech": "Noun",
+        "start_index": 41,
+        "length": 9
+      },
+      {
+        "text": "나갈",
+        "part_of_speech": "Noun",
+        "start_index": 51,
+        "length": 6
+      },
+      {
+        "text": "때",
+        "part_of_speech": "Noun",
+        "start_index": 58,
+        "length": 3
+      },
+      {
+        "text": "어떤",
+        "part_of_speech": "Noun",
+        "start_index": 62,
+        "length": 6
+      },
+      {
+        "text": "음식을",
+        "part_of_speech": "Noun",
+        "start_index": 69,
+        "length": 9
+      },
+      {
+        "text": "먹어요?",
+        "part_of_speech": "Noun",
+        "start_index": 79,
+        "length": 10
+      }
+    ]
+  },
+  {
+    "text": "한국에서는 소풍을 가거나, 야외에 나갈 때 꼭 이 음식을 먹어요.",
+    "translation": "In Korea, when people go on a picnic or go outdoors, they always eat this food.",
+    "tokens": [
+      {
+        "text": "한국에서는",
+        "part_of_speech": "Noun",
+        "start_index": 0,
+        "length": 15
+      },
+      {
+        "text": "소풍을",
+        "part_of_speech": "Noun",
+        "start_index": 16,
+        "length": 9
+      },
+      {
+        "text": "가거나,",
+        "part_of_speech": "Noun",
+        "start_index": 26,
+        "length": 10
+      },
+      {
+        "text": "야외에",
+        "part_of_speech": "Noun",
+        "start_index": 37,
+        "length": 9
+      },
+      {
+        "text": "나갈",
+        "part_of_speech": "Noun",
+        "start_index": 47,
+        "length": 6
+      },
+      {
+        "text": "때",
+        "part_of_speech": "Noun",
+        "start_index": 54,
+        "length": 3
+      },
+      {
+        "text": "꼭",
+        "part_of_speech": "Noun",
+        "start_index": 58,
+        "length": 3
+      },
+      {
+        "text": "이",
+        "part_of_speech": "Noun",
+        "start_index": 62,
+        "length": 3
+      },
+      {
+        "text": "음식을",
+        "part_of_speech": "Noun",
+        "start_index": 66,
+        "length": 9
+      },
+      {
+        "text": "먹어요.",
+        "part_of_speech": "Noun",
+        "start_index": 76,
+        "length": 10
+      }
+    ]
+  },
+  {
+    "text": "짜잔!",
+    "translation": "crc-7be3cc60",
+    "tokens": [
+      {
+        "text": "짜잔!",
+        "part_of_speech": "Noun",
+        "start_index": 0,
+        "length": 7
+      }
+    ]
+  },
+  {
+    "text": "김밥입니다.",
+    "translation": "It’s gimbap (rice rolled in seaweed).",
+    "tokens": [
+      {
+        "text": "김밥입니다.",
+        "part_of_speech": "Noun",
+        "start_index": 0,
+        "length": 16
+      }
+    ]
+  }
+]

@@ -60,6 +60,8 @@ var routesConfig = config.Config{
 		UUIDGenerator: UUIDTest{},
 	},
 
+	Translator: crcTranslator{},
+
 	ExtractorMap: extractor.Map{
 		extractorType: extractor.NewExtractor(extractorCacheDir, extractortest.NewFactory("Extractor")),
 	},

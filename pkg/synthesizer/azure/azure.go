@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/s12chung/text2anki/pkg/synthesizer"
+	"github.com/s12chung/text2anki/pkg/util/httputil"
 )
 
 // GetAPIKeyFromEnv gets the API key from the default ENV var
@@ -60,7 +60,7 @@ const (
 )
 
 // New returns a new Azure API struct
-func New(apiKey string, region Region) synthesizer.Synthesizer {
+func New(apiKey string, region Region) *Azure {
 	return &Azure{apiKey: apiKey, region: region, client: http.DefaultClient, cache: map[string][]byte{}}
 }
 
@@ -129,21 +129,7 @@ func (a *Azure) TextToSpeech(ctx context.Context, text string) ([]byte, error) {
 	}
 	a.requestCount++
 
-	resp, err := a.client.Do(request)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close() //nolint:errcheck // failing is ok
-	if resp.StatusCode != http.StatusOK {
-		var body []byte
-		body, err = io.ReadAll(resp.Body)
-		if err != nil {
-			body = nil
-		}
-		return nil, fmt.Errorf("returns a non-200 status code: %v (%v) with body: %v",
-			resp.StatusCode, resp.Status, string(body))
-	}
-	speech, err := io.ReadAll(resp.Body)
+	speech, err := httputil.DoFor200(a.client, request)
 	if err != nil {
 		return nil, err
 	}

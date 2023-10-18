@@ -1,4 +1,4 @@
-// Package dictionary contains dictonary related functions
+// Package dictionary contains dictionary related functions
 package dictionary
 
 import (
