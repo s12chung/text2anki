@@ -15,7 +15,7 @@ export interface IPrePartListShowData {
 }
 
 interface IPrePartListShowProps {
-  data: IPrePartListShowData
+  readonly data: IPrePartListShowData
 }
 
 const PrePartListShow: React.FC<IPrePartListShowProps> = ({ data }) => {
@@ -45,16 +45,16 @@ function useSetPrePartWithKeyboard(preParts: PrePart[]): readonly [number, () =>
       setCurrentIndex(index)
       setImageToClipboard(preParts, index)
     },
-    [currentIndex, preParts]
+    [currentIndex, preParts],
   )
 
   const prev = useCallback(
     () => setCurrentIndexWithClipboard(decrement),
-    [setCurrentIndexWithClipboard]
+    [setCurrentIndexWithClipboard],
   )
   const next = useCallback(
     () => setCurrentIndexWithClipboard(increment),
-    [setCurrentIndexWithClipboard]
+    [setCurrentIndexWithClipboard],
   )
   useKeyDownEffect(
     (e: KeyboardEvent) => {
@@ -70,12 +70,12 @@ function useSetPrePartWithKeyboard(preParts: PrePart[]): readonly [number, () =>
       }
       e.preventDefault()
     },
-    [next, prev]
+    [next, prev],
   )
   return [currentIndex, prev, next] as const
 }
 
-const PrePartsForm: React.FC<{ sourceId: number; prePartList: PrePartList }> = ({
+const PrePartsForm: React.FC<{ readonly sourceId: number; readonly prePartList: PrePartList }> = ({
   sourceId,
   prePartList,
 }) => {
@@ -135,11 +135,11 @@ const PrePartsForm: React.FC<{ sourceId: number; prePartList: PrePartList }> = (
   )
 }
 
-const PrePartLeft: React.FC<{ image: string; prev: () => void; next: () => void }> = ({
-  image,
-  prev,
-  next,
-}) => (
+const PrePartLeft: React.FC<{
+  readonly image: string
+  readonly prev: () => void
+  readonly next: () => void
+}> = ({ image, prev, next }) => (
   <div className="h-screen flex flex-col">
     <div className="m-std">
       <Header />
@@ -157,7 +157,10 @@ const PrePartLeft: React.FC<{ image: string; prev: () => void; next: () => void 
   </div>
 )
 
-const ImageNav: React.FC<{ char: string; changeF: () => void }> = ({ char, changeF }) => {
+const ImageNav: React.FC<{ readonly char: string; readonly changeF: () => void }> = ({
+  char,
+  changeF,
+}) => {
   return (
     <a
       href="#"

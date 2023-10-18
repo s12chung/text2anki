@@ -5,12 +5,12 @@ import { XMarkIcon } from "@heroicons/react/24/outline"
 import React, { Fragment } from "react"
 
 export const SlideOverDialog: React.FC<{
-  show: boolean
-  onClose?: () => void
-  leftNode?: React.ReactNode
-  children: React.ReactNode
+  readonly show: boolean
+  readonly onClose?: () => void
+  readonly leftNode?: React.ReactNode
+  readonly children: React.ReactNode
 }> = ({ show, onClose, leftNode, children }) => {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // eslint-disable-next-line no-empty-function
   if (!onClose) onClose = () => {}
 
   const dialogWidth = "42rem"
@@ -71,9 +71,9 @@ SlideOverDialog.defaultProps = {
 }
 
 export const SlideOverHeader: React.FC<{
-  title: string
-  subtitle?: string
-  onClose?: () => void
+  readonly title: string
+  readonly subtitle?: string
+  readonly onClose?: () => void
 }> = ({ title, subtitle, onClose }) => {
   return (
     <div className="bg-gray-50 px-4 py-6 sm:px-6">

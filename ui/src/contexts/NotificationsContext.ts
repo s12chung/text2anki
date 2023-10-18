@@ -15,8 +15,8 @@ export interface Notification {
 export class Notifier {
   constructor(
     public notifications: Notification[],
-    public setNotifications: Dispatch<SetStateAction<Notification[]>>
-  ) {}
+    public setNotifications: Dispatch<SetStateAction<Notification[]>>,
+  ) {} // eslint-disable-line no-empty-function
 
   private notify(message: string, type: NotificationType) {
     const notification = {
@@ -40,6 +40,6 @@ export class Notifier {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
+// eslint-disable-next-line no-empty-function
 const NotificationsContext = React.createContext<Notifier>(new Notifier([], () => {}))
 export default NotificationsContext

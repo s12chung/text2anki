@@ -34,7 +34,7 @@ class PartsService extends ApplicationService {
   async update(
     sourceId: number | string,
     partIndex: number | string,
-    data: PartData
+    data: PartData,
   ): Promise<Source> {
     return this.fetch(`/${sourceId}/parts/${partIndex}`, SourceEmpty, requestInit(Http.PATCH, data))
   }

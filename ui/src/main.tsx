@@ -12,5 +12,5 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <RouterProvider router={createBrowserRouter([routes])} />
       <Notifications />
     </ContextLayout>
-  </React.StrictMode>
+  </React.StrictMode>,
 )

@@ -40,7 +40,7 @@ const SourceCreate: React.FC = () => {
   )
 }
 
-const PreviewTexts: React.FC<{ texts: Text[] }> = ({ texts }) => {
+const PreviewTexts: React.FC<{ readonly texts: Text[] }> = ({ texts }) => {
   return (
     <div className="grid-std">
       {texts.map((text, index) => (

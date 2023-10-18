@@ -33,7 +33,7 @@ export const update: ActionFunction = async ({ request, params }) => {
   const source = await partsService.update(
     params.sourceId,
     params.id,
-    formData(await request.formData(), PartDataEmpty)
+    formData(await request.formData(), PartDataEmpty),
   )
   return { source }
 }

@@ -36,8 +36,8 @@ const Notifications: React.FC = () => {
 }
 
 const NotificationWrapper: React.FC<{
-  notification: Notification
-  onClose: MouseEventHandler<HTMLAnchorElement>
+  readonly notification: Notification
+  readonly onClose: MouseEventHandler<HTMLAnchorElement>
 }> = ({ notification, onClose }) => {
   return (
     <div
@@ -65,8 +65,8 @@ const NotificationWrapper: React.FC<{
 }
 
 const NotificationContents: React.FC<{
-  notification: Notification
-  onClose: MouseEventHandler<HTMLAnchorElement>
+  readonly notification: Notification
+  readonly onClose: MouseEventHandler<HTMLAnchorElement>
 }> = ({ notification, onClose }) => {
   return (
     <div className="p-4 flex items-start">

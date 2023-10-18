@@ -11,7 +11,7 @@ const maxPageSize = 5
 export function useChangeTermWithKeyboard(
   terms: Term[],
   onEnter: (term: Term) => void,
-  isEntered: () => boolean
+  isEntered: () => boolean,
 ): readonly [number, number, number, number, boolean] {
   const [termFocusIndex, setTermFocusIndex] = useState<number>(0)
   const [pageIndex, setPageIndex] = useState<number>(0)
@@ -34,13 +34,13 @@ export function useChangeTermWithKeyboard(
         case "ArrowUp":
         case "KeyW":
           setTermFocusIndex(
-            decrement(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex))
+            decrement(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex)),
           )
           break
         case "ArrowDown":
         case "KeyS":
           setTermFocusIndex(
-            increment(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex))
+            increment(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex)),
           )
           break
         case "ArrowLeft":
@@ -62,7 +62,7 @@ export function useChangeTermWithKeyboard(
       }
       e.preventDefault()
     },
-    [stopKeyboardEvents, termFocusIndex, terms, pageIndex, pagesLen, onEnter, setShake]
+    [stopKeyboardEvents, termFocusIndex, terms, pageIndex, pagesLen, onEnter, setShake],
   )
   return [termFocusIndex, pageIndex, pagesLen, maxPageSize, shake] as const
 }

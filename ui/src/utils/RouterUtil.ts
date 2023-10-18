@@ -26,7 +26,7 @@ export function route(
   path: string,
   element: ReactNode,
   options?: RouteOptions,
-  children?: RouteObject[]
+  children?: RouteObject[],
 ): RouteObject {
   if (path === "") {
     if (children) throw new Error('route with path "" can not have children')
@@ -76,7 +76,7 @@ export function resources(
   name: string,
   controller: IController,
   elements?: IElementMap,
-  children?: RouteObject[]
+  children?: RouteObject[],
 ): RouteObject {
   if (!elements) elements = {}
 

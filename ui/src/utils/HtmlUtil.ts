@@ -5,7 +5,7 @@ export function joinClasses(...classes: string[]): string {
 export function menuClass(active: boolean): string {
   return joinClasses(
     active ? "bg-gray-std" : "",
-    "block whitespace-nowrap px-std py-half text-left"
+    "block whitespace-nowrap px-std py-half text-left",
   )
 }
 

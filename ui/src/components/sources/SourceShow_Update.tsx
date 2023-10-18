@@ -13,9 +13,9 @@ interface ISourceResponse {
 }
 
 export const SourceDetailMenu: React.FC<{
-  source: Source
-  onAddParts: () => void
-  onEdit: () => void
+  readonly source: Source
+  readonly onAddParts: () => void
+  readonly onEdit: () => void
 }> = ({ source, onAddParts, onEdit }) => {
   return (
     <Form
@@ -54,9 +54,9 @@ export const SourceDetailMenu: React.FC<{
 }
 
 export const PartsCreate: React.FC<{
-  sourceId: number
-  expand: boolean
-  setExpand: (expand: boolean) => void
+  readonly sourceId: number
+  readonly expand: boolean
+  readonly setExpand: (expand: boolean) => void
 }> = ({ sourceId, expand, setExpand }) => {
   return (
     <div className="grid-std pt-std pb-std2">
@@ -73,10 +73,10 @@ export const PartsCreate: React.FC<{
   )
 }
 
-export const PartCreateForm: React.FC<{ sourceId: number; onCancel: () => void }> = ({
-  sourceId,
-  onCancel,
-}) => {
+export const PartCreateForm: React.FC<{
+  readonly sourceId: number
+  readonly onCancel: () => void
+}> = ({ sourceId, onCancel }) => {
   const [text, setText] = useState<string>("")
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   useEffect(() => textAreaRef.current?.focus(), [textAreaRef])
@@ -114,8 +114,8 @@ export const PartCreateForm: React.FC<{ sourceId: number; onCancel: () => void }
 }
 
 export const SourceEditHeader: React.FC<{
-  source: Source
-  onCancel: () => void
+  readonly source: Source
+  readonly onCancel: () => void
 }> = ({ source, onCancel }) => {
   const fetcher = useFetcher<ISourceResponse>()
   const { success } = useContext(NotificationsContext)
@@ -149,9 +149,9 @@ export const SourceEditHeader: React.FC<{
 }
 
 export const SourcePartDetailMenu: React.FC<{
-  sourceId: number
-  partIndex: number
-  onEdit: () => void
+  readonly sourceId: number
+  readonly partIndex: number
+  readonly onEdit: () => void
 }> = ({ sourceId, partIndex, onEdit }) => {
   const fetcher = useFetcher<ISourceResponse>()
   const { success } = useContext(NotificationsContext)
@@ -190,10 +190,10 @@ export const SourcePartDetailMenu: React.FC<{
 }
 
 export const PartUpdateForm: React.FC<{
-  sourceId: number
-  partIndex: number
-  part: SourcePart
-  onCancel: () => void
+  readonly sourceId: number
+  readonly partIndex: number
+  readonly part: SourcePart
+  readonly onCancel: () => void
 }> = ({ sourceId, partIndex, part, onCancel }) => {
   const fetcher = useFetcher<ISourceResponse>()
   const { success } = useContext(NotificationsContext)

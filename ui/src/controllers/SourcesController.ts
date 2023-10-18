@@ -29,7 +29,7 @@ export const update: ActionFunction = async ({ request, params }) => {
   if (!params.id) throw new Response("id not found", Status405) // eslint-disable-line @typescript-eslint/no-throw-literal
   const source = await sourcesService.update(
     params.id,
-    formData(await request.formData(), UpdateSourceDataEmpty)
+    formData(await request.formData(), UpdateSourceDataEmpty),
   )
   return { source }
 }

@@ -8,7 +8,7 @@ export interface ISourceListData {
   sources: Promise<Source[]>
 }
 interface ISourceListProps {
-  data: ISourceListData
+  readonly data: ISourceListData
 }
 
 const SourceList: React.FC<ISourceListProps> = ({ data }) => {
