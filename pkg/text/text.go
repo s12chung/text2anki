@@ -116,13 +116,13 @@ var errExtraTranslationLine = fmt.Errorf("there are more translation lines than 
 // Texts returns an array of Text from the given string
 func (p Parser) Texts(s, translation string) ([]Text, error) {
 	if translation == "" {
-		return p.TextsFromString(s)
+		return p.TextsFromWeaved(s)
 	}
-	return p.TextsFromTranslation(s, translation)
+	return p.TextsFromSplit(s, translation)
 }
 
-// TextsFromString generates a []Text from a string, can have no translations or weaved
-func (p Parser) TextsFromString(s string) ([]Text, error) {
+// TextsFromWeaved generates a []Text from a string, can have no translations or weaved
+func (p Parser) TextsFromWeaved(s string) ([]Text, error) {
 	lines, _ := split(s)
 	detector := lingua.NewLanguageDetectorBuilder().
 		FromLanguages(lingua.Language(p.SourceLanguage), lingua.Language(p.TranslationLanguage)).
@@ -166,8 +166,8 @@ func (p Parser) TextsFromString(s string) ([]Text, error) {
 	return texts, nil
 }
 
-// TextsFromTranslation generates a Text[] from two strings (text and translation) that have the same number of lines
-func (p Parser) TextsFromTranslation(s, translation string) ([]Text, error) {
+// TextsFromSplit generates a Text[] from two strings (text and translation) that have the same number of lines
+func (p Parser) TextsFromSplit(s, translation string) ([]Text, error) {
 	lines, linesLen := split(s)
 	translations := splitClean(translation)
 	if linesLen > len(translations) {

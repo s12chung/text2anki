@@ -1,14 +1,17 @@
 package db
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"strings"
 	"time"
 
 	"github.com/s12chung/text2anki/pkg/text"
 	"github.com/s12chung/text2anki/pkg/tokenizer"
+	"github.com/s12chung/text2anki/pkg/translator"
 	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/stringutil"
 )
@@ -207,6 +210,7 @@ func (s Source) ToSourceStructured() SourceStructured {
 type TextTokenizer struct {
 	Parser       text.Parser
 	Tokenizer    tokenizer.Tokenizer
+	Translator   translator.Translator
 	CleanSpeaker bool
 }
 
@@ -227,6 +231,30 @@ func (t TextTokenizer) TokenizedTexts(ctx context.Context, s, translation string
 	texts, err := t.Parser.Texts(s, translation)
 	if err != nil {
 		return nil, err
+	}
+	if t.Translator != nil {
+		var indexes []int
+		var textBuilder strings.Builder
+		for i, txt := range texts {
+			if txt.Translation != "" {
+				continue
+			}
+			indexes = append(indexes, i)
+			textBuilder.WriteString(txt.Text)
+			textBuilder.WriteRune('\n')
+		}
+		if len(indexes) != 0 {
+			translations, err := t.Translator.Translate(ctx, textBuilder.String()[:textBuilder.Len()-1])
+			if err != nil {
+				return nil, err
+			}
+			i := 0
+			scanner := bufio.NewScanner(strings.NewReader(translations))
+			for scanner.Scan() {
+				texts[indexes[i]].Translation = scanner.Text()
+				i++
+			}
+		}
 	}
 	if t.CleanSpeaker {
 		texts = text.CleanSpeaker(texts)

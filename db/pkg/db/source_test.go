@@ -3,6 +3,8 @@ package db
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"hash/crc32"
 	"path"
 	"reflect"
 	"strconv"
@@ -137,6 +139,16 @@ func TestSource_ToSource_ToSourceStructured(t *testing.T) {
 	reflect.DeepEqual(firstSource(t, txQs), firstSource(t, txQs).ToSourceStructured().ToSource())
 }
 
+type crcTranslator struct{}
+
+func (c crcTranslator) Translate(_ context.Context, s string) (string, error) {
+	lines := strings.Split(s, "\n")
+	for i, line := range lines {
+		lines[i] = fmt.Sprintf("crc-%x", crc32.ChecksumIEEE([]byte(line)))
+	}
+	return strings.Join(lines, "\n"), nil
+}
+
 var textTokenizer = TextTokenizer{
 	Parser:       text.NewParser(text.Korean, text.English),
 	Tokenizer:    tokenizer.NewSplitTokenizer(),
@@ -155,6 +167,9 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 		{name: "weave"},
 		{name: "speaker_split"},
 		{name: "speaker_weave"},
+		{name: "translator"},
+		{name: "translator_weave"},
+		{name: "translator_none"},
 	}
 	for _, tc := range testCases {
 		tc := tc
@@ -162,18 +177,23 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 			require := require.New(t)
 			t.Parallel()
 
-			s := string(fixture.Read(t, path.Join(testName, tc.name+".txt")))
-			split := strings.Split(s, "===")
+			textTokenizerDup := textTokenizer
+			if strings.HasPrefix(tc.name, "translator") {
+				textTokenizerDup.Translator = crcTranslator{}
+			}
+
+			split := strings.Split(string(fixture.Read(t, path.Join(testName, tc.name+".txt"))), "===")
 			if len(split) == 1 {
 				split = append(split, "")
 			}
-			tokenizedTexts, err := textTokenizer.TokenizedTexts(context.Background(), split[0], split[1])
+
+			tokenizedTexts, err := textTokenizerDup.TokenizedTexts(context.Background(), split[0], split[1])
 			require.NoError(err)
 
 			nonSpeaker := strings.TrimPrefix(tc.name, "speaker_")
 			mutex.Lock()
+			t.Cleanup(mutex.Unlock)
 			fixture.CompareReadOrUpdate(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
-			mutex.Unlock()
 		})
 	}
 }

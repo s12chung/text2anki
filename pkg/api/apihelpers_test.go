@@ -1,7 +1,9 @@
 package api
 
 import (
+	"context"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"net/http"
 	"path"
@@ -67,4 +69,14 @@ func (s txServer) WithPathPrefix(prefix string) txServer {
 	dup := s
 	dup.Server = s.Server.WithPathPrefix(prefix, plog)
 	return dup
+}
+
+type crcTranslator struct{}
+
+func (c crcTranslator) Translate(_ context.Context, s string) (string, error) {
+	lines := strings.Split(s, "\n")
+	for i, line := range lines {
+		lines[i] = fmt.Sprintf("crc-%x", crc32.ChecksumIEEE([]byte(line)))
+	}
+	return strings.Join(lines, "\n"), nil
 }

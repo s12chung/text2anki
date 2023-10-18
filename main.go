@@ -24,23 +24,23 @@ const port = "3000"
 var plog = logg.Default() //nolint:forbidigo // main package
 
 func configFromEnv() config.Config {
-	c := config.Config{}
-
-	c.Log = plog
-	c.TxPool = api.TxPool{}
+	c := config.Config{
+		Log:    plog,
+		TxPool: api.TxPool{},
+		StorageConfig: config.StorageConfig{
+			StorageType: config.StorageLocalStore,
+			LocalStoreConfig: config.LocalStoreConfig{
+				Origin:        host + ":" + port,
+				KeyBasePath:   "db/tmp/filestore",
+				EncryptorPath: "db/tmp",
+			},
+		},
+	}
 	if os.Getenv("TOKENIZER") == "komoran" {
 		c.TokenizerType = config.TokenizerKomoran
 	}
 	if os.Getenv("DICTIONARY") == "koreanbasic" {
 		c.DictionaryType = config.DictionaryKoreanBasic
-	}
-	c.StorageConfig = config.StorageConfig{
-		StorageType: config.StorageLocalStore,
-		LocalStoreConfig: config.LocalStoreConfig{
-			Origin:        host + ":" + port,
-			KeyBasePath:   "db/tmp/filestore",
-			EncryptorPath: "db/tmp",
-		},
 	}
 	return c
 }
