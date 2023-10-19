@@ -8,12 +8,12 @@ import { useCallback, useContext, useState } from "react"
 export function useFocusTextWithKeyboard(
   parts: SourcePart[],
   entered: boolean,
-  onEscape: () => void
+  onEscape: () => void,
 ): readonly [
   number,
   number,
   (element: HTMLElement) => void,
-  (partFocusIndex: number, textFocusIndex: number) => void
+  (partFocusIndex: number, textFocusIndex: number) => void,
 ] {
   const [focusElement, focusLastElement] = useFocusElement()
   const [partFocusIndex, textFocusIndex, decrementText, incrementText, setText] =
@@ -51,7 +51,7 @@ export function useFocusTextWithKeyboard(
 
       e.preventDefault()
     },
-    [stopKeyboardEvents, entered, focusLastElement, onEscape, decrementText, incrementText]
+    [stopKeyboardEvents, entered, focusLastElement, onEscape, decrementText, incrementText],
   )
   return [partFocusIndex, textFocusIndex, focusElement, setText] as const
 }
@@ -66,7 +66,7 @@ export function getTermProps(
   source: Source,
   partFocusIndex: number,
   textFocusIndex: number,
-  tokenFocusIndex: number
+  tokenFocusIndex: number,
 ): ITermsComponentProps {
   const tokenizedText = source.parts[partFocusIndex].tokenizedTexts[textFocusIndex]
   return {
@@ -92,13 +92,13 @@ function useFocusElement(): readonly [(element: HTMLElement) => void, () => void
 }
 
 function useChangeFocus(
-  parts: SourcePart[]
+  parts: SourcePart[],
 ): readonly [
   number,
   number,
   () => void,
   () => void,
-  (partFocusIndex: number, textFocusIndex: number) => void
+  (partFocusIndex: number, textFocusIndex: number) => void,
 ] {
   const [partFocusIndex, setPartFocusIndex] = useState<number>(0)
   const [textFocusIndex, setTextFocusIndex] = useState<number>(0)

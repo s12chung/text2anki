@@ -17,10 +17,13 @@ const otherKeys = filterKeys(
   Object.keys(CreateNoteDataEmpty) as (keyof CreateNoteData)[],
   usageKeys,
   termKeys,
-  [commonLevelKey]
+  [commonLevelKey],
 )
 
-const NoteCreate: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ data, onClose }) => {
+const NoteCreate: React.FC<{ readonly data: CreateNoteData; readonly onClose: () => void }> = ({
+  data,
+  onClose,
+}) => {
   const fetcher = useFetcher<INoteFormData>()
   const { error, success } = useContext(NotificationsContext)
   useEffect(() => {
@@ -75,8 +78,8 @@ const NoteCreate: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ d
 }
 
 const TextFormGroup: React.FC<{
-  dataKeys: (keyof CreateNoteData)[]
-  data: CreateNoteData
+  readonly dataKeys: (keyof CreateNoteData)[]
+  readonly data: CreateNoteData
 }> = ({ dataKeys, data }) => (
   <div className="space-y-half">
     {dataKeys.map((key) => (
@@ -85,10 +88,10 @@ const TextFormGroup: React.FC<{
   </div>
 )
 
-const TextFormField: React.FC<{ data: CreateNoteData; dataKey: keyof CreateNoteData }> = ({
-  data,
-  dataKey,
-}) => {
+const TextFormField: React.FC<{
+  readonly data: CreateNoteData
+  readonly dataKey: keyof CreateNoteData
+}> = ({ data, dataKey }) => {
   return (
     <div>
       <label>{camelToTitle(dataKey)}</label>

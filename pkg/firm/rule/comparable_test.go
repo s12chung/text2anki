@@ -9,7 +9,7 @@ import (
 	"github.com/s12chung/text2anki/pkg/firm"
 )
 
-func TestEqual_ValidateValue(t *testing.T) {
+func TestEqual_ValidateAll(t *testing.T) {
 	tcs := []struct {
 		name string
 		to   int
@@ -37,7 +37,7 @@ func TestEqual_ErrorMap(t *testing.T) {
 
 func TestEqual_Name(t *testing.T) { require.Equal(t, equalName, Equal[int]{}.Name()) }
 
-func TestLess_ValidateValue(t *testing.T) {
+func TestLess_ValidateAll(t *testing.T) {
 	require.Equal(t, "Less: value is not less than 99", Less[int]{To: 99}.ErrorMap().Error())
 	require.Equal(t, "LessOrEqual: value is not less than or equal to 99", Less[int]{OrEqual: true, To: 99}.ErrorMap().Error())
 
@@ -73,7 +73,7 @@ func TestLess_ErrorMap(t *testing.T) {
 
 func TestLess_Name(t *testing.T) { require.Equal(t, lessName, Less[int]{}.Name()) }
 
-func TestGreater_ValidateValue(t *testing.T) {
+func TestGreater_ValidateAll(t *testing.T) {
 	require.Equal(t, "Greater: value is not greater than 99", Greater[int]{To: 99}.ErrorMap().Error())
 	require.Equal(t, "GreaterOrEqual: value is not greater than or equal to 99", Greater[int]{OrEqual: true, To: 99}.ErrorMap().Error())
 

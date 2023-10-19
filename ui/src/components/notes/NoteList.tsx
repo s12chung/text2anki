@@ -7,7 +7,7 @@ export interface INoteListData {
   sources: Promise<Note[]>
 }
 interface INoteListProps {
-  data: INoteListData
+  readonly data: INoteListData
 }
 
 const SourceList: React.FC<INoteListProps> = ({ data }) => {

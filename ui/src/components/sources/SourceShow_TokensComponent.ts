@@ -7,12 +7,12 @@ import { useContext, useMemo, useState } from "react"
 export function useFocusTokenWithKeyboard(
   tokens: Token[],
   termsFocused: boolean,
-  onTokenSelect: (tokenFocusIndex: number) => void
+  onTokenSelect: (tokenFocusIndex: number) => void,
 ): readonly [number] {
   const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(0)
   const isAllPunct = useMemo<boolean>(
     () => tokens.every((token) => token.partOfSpeech === PosPunctuation),
-    [tokens]
+    [tokens],
   )
 
   const { stopKeyboardEvents } = useContext(StopKeyboardContext)
@@ -39,7 +39,7 @@ export function useFocusTokenWithKeyboard(
 
       e.preventDefault()
     },
-    [stopKeyboardEvents, termsFocused, isAllPunct, tokens, tokenFocusIndex, onTokenSelect]
+    [stopKeyboardEvents, termsFocused, isAllPunct, tokens, tokenFocusIndex, onTokenSelect],
   )
   return [tokenFocusIndex] as const
 }
@@ -47,7 +47,7 @@ export function useFocusTokenWithKeyboard(
 function skipPunct(
   tokens: Token[],
   index: number,
-  change: (index: number, length: number) => number
+  change: (index: number, length: number) => number,
 ): number {
   index = change(index, tokens.length)
   if (tokens[index].partOfSpeech !== PosPunctuation) return index

@@ -11,7 +11,7 @@ abstract class ApplicationService {
   protected async fetch<T extends EmptyObj>(
     path: string,
     empty: T,
-    init?: RequestInit
+    init?: RequestInit,
   ): Promise<T> {
     const response = await fetch(this.pathUrl(path), init)
     if (!response.ok) {

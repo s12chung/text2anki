@@ -39,7 +39,7 @@ export interface ISourceShowData {
   source: Promise<Source>
 }
 interface ISourceShowProps {
-  data: ISourceShowData
+  readonly data: ISourceShowData
 }
 
 const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
@@ -50,7 +50,7 @@ const SourceShow: React.FC<ISourceShowProps> = ({ data }) => {
   )
 }
 
-const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
+const SourceComponent: React.FC<{ readonly source: Source }> = ({ source }) => {
   const stopKeyboard = useStopKeyboard()
   const [nav, setNav] = useState<boolean>(true)
   const [edit, setEdit] = useState<boolean>(false)
@@ -111,9 +111,9 @@ const SourceComponent: React.FC<{ source: Source }> = ({ source }) => {
 }
 
 const SourceShowHeader: React.FC<{
-  source: Source
-  onAddParts: () => void
-  onEdit: () => void
+  readonly source: Source
+  readonly onAddParts: () => void
+  readonly onEdit: () => void
 }> = ({ source, onAddParts, onEdit }) => {
   return (
     <div className="flex">
@@ -127,10 +127,14 @@ const SourceShowHeader: React.FC<{
 }
 
 const SourcePartsWrapper: React.FC<{
-  sourceId: number
-  parts: SourcePart[]
-  safeSet?: SafeSet
-  children: (tokenizedText: TokenizedText, partIndex: number, textIndex: number) => React.ReactNode
+  readonly sourceId: number
+  readonly parts: SourcePart[]
+  readonly safeSet?: SafeSet
+  readonly children: (
+    tokenizedText: TokenizedText,
+    partIndex: number,
+    textIndex: number,
+  ) => React.ReactNode
 }> = ({ sourceId, parts, safeSet, children }) => {
   return (
     <div className="text-center space-y-std2">
@@ -156,15 +160,19 @@ SourcePartsWrapper.defaultProps = {
 }
 
 const SourcePartWrapper: React.FC<{
-  sourceId: number
-  partIndex: number
-  part: SourcePart
-  safeSet?: SafeSet
-  children: (tokenizedText: TokenizedText, partIndex: number, textIndex: number) => React.ReactNode
+  readonly sourceId: number
+  readonly partIndex: number
+  readonly part: SourcePart
+  readonly safeSet?: SafeSet
+  readonly children: (
+    tokenizedText: TokenizedText,
+    partIndex: number,
+    textIndex: number,
+  ) => React.ReactNode
 }> = ({ sourceId, partIndex, part, safeSet, children }) => {
   const [edit, setEdit] = useState<boolean>(false)
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    // eslint-disable-next-line no-empty-function
     if (!safeSet) return () => {}
     const key = safeSet.addReset(() => setEdit(false))
     return () => safeSet.removeReset(key)
@@ -216,7 +224,7 @@ SourcePartWrapper.defaultProps = {
 const textClassBase = "ko-sans text-2xl"
 const translationClassBase = "text-lg"
 
-const SourceShowComponent: React.FC<{ source: Source }> = ({ source }) => {
+const SourceShowComponent: React.FC<{ readonly source: Source }> = ({ source }) => {
   return (
     <SourcePartsWrapper sourceId={source.id} parts={source.parts}>
       {(tokenizedText) => (
@@ -229,7 +237,7 @@ const SourceShowComponent: React.FC<{ source: Source }> = ({ source }) => {
   )
 }
 
-const SourceNavComponent: React.FC<{ source: Source; safeSet: SafeSet }> = ({
+const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: SafeSet }> = ({
   source,
   safeSet,
 }) => {
@@ -239,7 +247,7 @@ const SourceNavComponent: React.FC<{ source: Source; safeSet: SafeSet }> = ({
   const [partFocusIndex, textFocusIndex, focusElement, setText] = useFocusTextWithKeyboard(
     source.parts,
     termsFocused,
-    () => setTermProps(null)
+    () => setTermProps(null),
   )
 
   const textRefs = useRef<(HTMLDivElement | null)[][]>([])
@@ -292,10 +300,10 @@ const SourceNavComponent: React.FC<{ source: Source; safeSet: SafeSet }> = ({
 }
 
 const TokensComponent: React.FC<{
-  tokens: Token[]
-  termsFocused: boolean
-  onTokenSelect: (tokenFocusIndex: number) => void
-  onTokenChange: (tokenElement: HTMLDivElement) => void
+  readonly tokens: Token[]
+  readonly termsFocused: boolean
+  readonly onTokenSelect: (tokenFocusIndex: number) => void
+  readonly onTokenChange: (tokenElement: HTMLDivElement) => void
 }> = ({ tokens, termsFocused, onTokenSelect, onTokenChange }) => {
   const [tokenFocusIndex] = useFocusTokenWithKeyboard(tokens, termsFocused, onTokenSelect)
 
@@ -323,7 +331,7 @@ const TokensComponent: React.FC<{
               ref={(ref) => (tokenRefs.current[index] = ref)}
               className={joinClasses(
                 index === tokenFocusIndex ? "text-white bg-ink" : "",
-                isPunct ? "text-faded" : ""
+                isPunct ? "text-faded" : "",
               )}
               /* eslint-disable-next-line no-undefined */
               tabIndex={isPunct ? undefined : -1}
@@ -355,7 +363,7 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
   const [termFocusIndex, pageIndex, pagesLen, maxPageSize, shake] = useChangeTermWithKeyboard(
     terms,
     (term: Term) => setCreateNoteData(createNoteDataFromSourceTerm(term, usage)),
-    () => createNoteData !== null
+    () => createNoteData !== null,
   )
 
   const termRefs = useRef<(HTMLDivElement | null)[]>([])
@@ -407,7 +415,10 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
   )
 }
 
-const NoteDialog: React.FC<{ data: CreateNoteData; onClose: () => void }> = ({ data, onClose }) => {
+const NoteDialog: React.FC<{ readonly data: CreateNoteData; readonly onClose: () => void }> = ({
+  data,
+  onClose,
+}) => {
   return (
     <SlideOver.Dialog show onClose={onClose}>
       <SlideOver.Header title="Create Note" onClose={onClose} />

@@ -3,7 +3,7 @@ import { camelToSnake, ConvertKeyFunc, convertKeys, snakeToCamel } from "../util
 
 export function requestInit<T extends { [K in keyof T]: unknown }>(
   method: Http,
-  data?: T
+  data?: T,
 ): RequestInit {
   return {
     method,
@@ -24,7 +24,7 @@ export type EmptyObj = { [K in keyof unknown]: EmptyTypes }
 
 export async function convertResponse<T extends EmptyObj>(
   response: Response,
-  empty: T
+  empty: T,
 ): Promise<T> {
   const data = await response.json()
   if (typeof data !== "object" || data === null) {
@@ -36,7 +36,7 @@ export async function convertResponse<T extends EmptyObj>(
 export function convertData<T extends EmptyObj | EmptyObj[]>(
   data: JSONObj | JSONObj[],
   empty: T,
-  convertKey: ConvertKeyFunc
+  convertKey: ConvertKeyFunc,
 ): T {
   if (Array.isArray(data)) {
     if (!Array.isArray(empty)) throw new Error(`data is array, but empty is not: ${String(empty)}`)
@@ -48,7 +48,7 @@ export function convertData<T extends EmptyObj | EmptyObj[]>(
 export function convertArray<T extends EmptyObj>(
   data: JSONObj[],
   empty: T,
-  convertKey: ConvertKeyFunc
+  convertKey: ConvertKeyFunc,
 ): T[] {
   return data.map((item) => handleValue(item, empty, convertKey))
 }
@@ -56,7 +56,7 @@ export function convertArray<T extends EmptyObj>(
 export function convertObject<T extends EmptyObj>(
   data: JSONObj,
   empty: T,
-  convertKey: ConvertKeyFunc
+  convertKey: ConvertKeyFunc,
 ): T {
   const obj = { ...empty }
   for (const key in data) {
@@ -69,7 +69,7 @@ export function convertObject<T extends EmptyObj>(
     obj[convertedKey] = handleValue(
       data[key as keyof EmptyObj], // always a key
       empty[convertedKey] as JSONTypes, // T = EmptyObj => T[keyof T] => JSONTypes
-      convertKey
+      convertKey,
     ) as T[keyof T] // empty[convertedKey] = T[keyof T]
   }
   return obj
@@ -78,7 +78,7 @@ export function convertObject<T extends EmptyObj>(
 function handleValue<T extends EmptyTypes>(
   data: JSONTypes,
   empty: T,
-  convertKey: ConvertKeyFunc
+  convertKey: ConvertKeyFunc,
 ): T {
   if (data === null) return empty
   if (empty === null) throw new Error("empty is null")

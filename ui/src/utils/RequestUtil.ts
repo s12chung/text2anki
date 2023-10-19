@@ -8,7 +8,7 @@ export function queryString<T extends Record<keyof T, string | string[]>>(queryP
 
 export function queryObject<T extends Record<keyof T, string[] | string | number | boolean>>(
   url: string,
-  empty: T
+  empty: T,
 ) {
   const params = new URL(url).searchParams
 
@@ -30,10 +30,10 @@ type FormTypes = FormDataEntryValue | number | boolean
 
 export function formData<
   T extends { [K in keyof T]: FormTypes | U[] },
-  U extends { [K in keyof U]: FormTypes }
+  U extends { [K in keyof U]: FormTypes },
 >(
   formData: FormData,
-  empty: T
+  empty: T,
 ): {
   -readonly [K in keyof T]: T[K]
 } {
@@ -68,7 +68,7 @@ interface Appendable {
 
 function setAppendAble<T extends Appendable, U extends Record<keyof U, string | string[]>>(
   appendable: T,
-  obj: U
+  obj: U,
 ): T {
   for (const key in obj) {
     if (!Object.hasOwn(obj, key)) continue
@@ -88,7 +88,7 @@ function setAppendAble<T extends Appendable, U extends Record<keyof U, string | 
 function formValue<T extends FormTypes>(
   objValue: T,
   key: string,
-  value: FormDataEntryValue
+  value: FormDataEntryValue,
 ): FormTypes {
   if (objValue instanceof File || value instanceof File) {
     if (!(objValue instanceof File))
@@ -103,7 +103,7 @@ function formValue<T extends FormTypes>(
 // eslint-disable-next-line consistent-return
 function stringParsedValue<T extends string | number | boolean>(
   objValue: T,
-  value: string
+  value: string,
 ): string | number | boolean {
   // never hits default due to typing
   // eslint-disable-next-line default-case
@@ -122,7 +122,7 @@ function objFromArrayKeys<T extends Record<keyof T, FormTypes>>(
   empty: T,
   key: string,
   formKeys: string[],
-  formData: FormData
+  formData: FormData,
 ): T[] {
   const keys = formKeys.filter((key) => key.startsWith(key))
 

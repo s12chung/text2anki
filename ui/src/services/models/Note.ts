@@ -56,7 +56,7 @@ export const NoteEmpty = Object.freeze<Note>({
 export function createNoteDataFromSourceTerm(
   term: Term,
   usage: NoteUsage,
-  translationIndex?: number
+  translationIndex?: number,
 ): CreateNoteData {
   if (!translationIndex) translationIndex = 0
   const translation: Translation = term.translations[translationIndex]

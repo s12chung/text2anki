@@ -2,7 +2,7 @@ import { Menu, Transition } from "@headlessui/react"
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid"
 import React, { Fragment } from "react"
 
-const DetailMenu: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const DetailMenu: React.FC<{ readonly children: React.ReactNode }> = ({ children }) => {
   return (
     // eslint-disable-next-line react/forbid-component-props
     <Menu as="div" className="relative inline-block text-left">

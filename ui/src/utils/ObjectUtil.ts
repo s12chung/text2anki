@@ -9,6 +9,6 @@ export function pick<T extends object, K extends keyof T>(obj: T, ...keys: K[]) 
 // https://stackoverflow.com/a/56592365/1090482
 export function omit<T extends object, K extends keyof T>(obj: T, ...keys: K[]) {
   return Object.fromEntries(
-    Object.entries(obj).filter(([key]) => !keys.includes(key as K))
+    Object.entries(obj).filter(([key]) => !keys.includes(key as K)),
   ) as Omit<T, K>
 }

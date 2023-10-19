@@ -10,7 +10,7 @@ export function preventDefault(f: () => void): ReactEventHandler {
 
 export function useKeyDownEffect(
   keyDownHandler: (e: KeyboardEvent) => unknown,
-  deps: DependencyList
+  deps: DependencyList,
 ) {
   /* eslint-disable react-hooks/exhaustive-deps */
   const wrappedHandler = useCallback(keyDownHandler, deps)
@@ -24,7 +24,7 @@ export function useTimedState(duration: number) {
   const [value, setValue] = useState<boolean>(false)
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    // eslint-disable-next-line no-empty-function
     if (!value) return () => {}
 
     const timer = setTimeout(() => setValue(false), duration)

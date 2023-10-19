@@ -35,15 +35,15 @@ function useDropFiles(onDrop: () => void): readonly [File[], (e: React.DragEvent
       setFiles(Array.from(files).sort((a: File, b: File) => a.name.localeCompare(b.name)))
       onDrop()
     },
-    [onDrop]
+    [onDrop],
   )
   return [files, handleDrop] as const
 }
 
 const PrePartListDragAndDrop: React.FC<{
-  sourceId?: number
-  minHeight: string
-  children: React.ReactNode
+  readonly sourceId?: number
+  readonly minHeight: string
+  readonly children: React.ReactNode
 }> = ({ sourceId, minHeight, children }) => {
   const [dragState, setDragState] = useState<DragState>(DragState.None)
 
@@ -61,7 +61,7 @@ const PrePartListDragAndDrop: React.FC<{
       }
       e.preventDefault()
     },
-    [onClose]
+    [onClose],
   )
 
   return (
@@ -111,8 +111,8 @@ async function uploadFiles(files: File[]): Promise<string> {
           method: imageRequest.method,
           headers: headers(imageRequest.signedHeader),
           body: files[index],
-        })
-      )
+        }),
+      ),
   ).then(() => signedResponse.id)
 }
 
@@ -120,7 +120,10 @@ interface ISourceCreateResponse {
   source: Source
 }
 
-const PrePartListDrop: React.FC<{ sourceId: number; files: File[] }> = ({ sourceId, files }) => {
+const PrePartListDrop: React.FC<{ readonly sourceId: number; readonly files: File[] }> = ({
+  sourceId,
+  files,
+}) => {
   const navigate = useNavigate()
   const fetcher = useFetcher<ISourceCreateResponse>()
 
@@ -147,7 +150,7 @@ const PrePartListDrop: React.FC<{ sourceId: number; files: File[] }> = ({ source
       .then((text) => {
         fetcher.submit(
           { name: removeExtension(file.name), reference: file.name, "parts[0].text": text },
-          { method: "post", action: "/sources" }
+          { method: "post", action: "/sources" },
         )
       })
       .catch((error) => setErrorMessage(printError(error).message))
