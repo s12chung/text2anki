@@ -6,7 +6,7 @@ import { useContext, useMemo, useState } from "react"
 
 export function useFocusTokenWithKeyboard(
   tokens: Token[],
-  termsFocused: boolean,
+  isTokenSelected: boolean,
   onTokenSelect: (tokenFocusIndex: number) => void,
 ): readonly [number] {
   const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(0)
@@ -18,7 +18,7 @@ export function useFocusTokenWithKeyboard(
   const { stopKeyboardEvents } = useContext(StopKeyboardContext)
   useKeyDownEffect(
     (e: KeyboardEvent) => {
-      if (stopKeyboardEvents || termsFocused || isAllPunct) return
+      if (stopKeyboardEvents || isTokenSelected || isAllPunct) return
 
       switch (e.code) {
         case "ArrowLeft":
@@ -39,7 +39,7 @@ export function useFocusTokenWithKeyboard(
 
       e.preventDefault()
     },
-    [stopKeyboardEvents, termsFocused, isAllPunct, tokens, tokenFocusIndex, onTokenSelect],
+    [stopKeyboardEvents, isTokenSelected, isAllPunct, tokens, tokenFocusIndex, onTokenSelect],
   )
   return [tokenFocusIndex] as const
 }

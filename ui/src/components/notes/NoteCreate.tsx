@@ -20,10 +20,11 @@ const otherKeys = filterKeys(
   [commonLevelKey],
 )
 
-const NoteCreate: React.FC<{ readonly data: CreateNoteData; readonly onClose: () => void }> = ({
-  data,
-  onClose,
-}) => {
+const NoteCreate: React.FC<{
+  readonly data: CreateNoteData
+  readonly onCreate: () => void
+  readonly onClose: () => void
+}> = ({ data, onCreate, onClose }) => {
   const fetcher = useFetcher<INoteFormData>()
   const { error, success } = useContext(NotificationsContext)
   useEffect(() => {
@@ -31,8 +32,8 @@ const NoteCreate: React.FC<{ readonly data: CreateNoteData; readonly onClose: ()
     fetcher.data.note
       .then((note) => success(`Created new Note: ${note.text}`))
       .catch(() => error("Failed to create Note"))
-      .finally(() => onClose())
-  }, [fetcher, onClose, success, error])
+      .finally(() => onCreate())
+  }, [fetcher, onClose, success, error, onCreate])
 
   const [submitted, setSubmitted] = useState<boolean>(false)
   const submitButtonRef = useRef<HTMLButtonElement>(null)
