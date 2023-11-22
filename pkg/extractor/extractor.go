@@ -72,18 +72,19 @@ func (e Extractor) Extract(s string) (SourceExtraction, error) {
 
 	hash := source.ID()
 	cacheDir := filepath.Join(e.cacheDir, hash)
-	if err := os.MkdirAll(cacheDir, ioutil.OwnerRWXGroupRX); err != nil {
-		return SourceExtraction{}, err
+	if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(cacheDir, ioutil.OwnerRWXGroupRX); err != nil {
+			return SourceExtraction{}, err
+		}
+		if err := source.ExtractToDir(cacheDir); err != nil {
+			return SourceExtraction{}, err
+		}
 	}
-	if err := source.ExtractToDir(cacheDir); err != nil {
-		return SourceExtraction{}, err
-	}
-
 	entries, err := os.ReadDir(cacheDir)
 	if err != nil {
 		return SourceExtraction{}, err
 	}
-	filenames := filenamesWithExtensions(entries, e.factory.Extensions())
+	filenames := ioutil.FilenamesWithExtensions(entries, e.factory.Extensions())
 	if len(filenames) == 0 {
 		return SourceExtraction{}, fmt.Errorf("no filenames that match extensions extracted: %v", strings.Join(e.factory.Extensions(), ", "))
 	}
@@ -101,22 +102,6 @@ func (e Extractor) Extract(s string) (SourceExtraction, error) {
 		return SourceExtraction{}, err
 	}
 	return SourceExtraction{Info: info, Parts: parts}, nil
-}
-
-func filenamesWithExtensions(entries []os.DirEntry, extensions []string) []string {
-	filenames := make([]string, 0, len(entries))
-	for _, file := range entries {
-		if file.IsDir() {
-			continue
-		}
-		for _, ext := range extensions {
-			if strings.HasSuffix(file.Name(), ext) {
-				filenames = append(filenames, file.Name())
-				break
-			}
-		}
-	}
-	return filenames
 }
 
 // Map is a map of extractor name to Extractor

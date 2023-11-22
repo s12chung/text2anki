@@ -53,28 +53,38 @@ func TestExtractor_Extract(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
-			source, err := NewExtractor(cacheDir, extractortest.NewFactory(testName)).Extract(tc.s)
+			extractor := NewExtractor(cacheDir, extractortest.NewFactory(testName))
+			source, err := extractor.Extract(tc.s)
 			if tc.err != nil {
 				require.Equal(tc.err, err)
 				return
 			}
 			require.NoError(err)
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+"_info.json"), fixture.JSON(t, source.Info))
+			testSource(t, testName, tc.name, source)
 
-			partMap := map[string]string{}
-			for _, part := range source.Parts {
-				require.Nil(part.AudioFile)
-
-				file := part.ImageFile
-				info, err := file.Stat()
-				require.NoError(err)
-				bytes, err := io.ReadAll(file)
-				require.NoError(err)
-				partMap[info.Name()] = string(bytes)
-			}
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+"_parts.json"), fixture.JSON(t, partMap))
+			secondSource, err := extractor.Extract(tc.s)
+			require.NoError(err)
+			testSource(t, testName, tc.name, secondSource)
 		})
 	}
+}
+
+func testSource(t *testing.T, testName, name string, src SourceExtraction) {
+	require := require.New(t)
+	fixture.CompareReadOrUpdate(t, path.Join(testName, name+"_info.json"), fixture.JSON(t, src.Info))
+
+	partMap := map[string]string{}
+	for _, part := range src.Parts {
+		require.Nil(part.AudioFile)
+
+		file := part.ImageFile
+		info, err := file.Stat()
+		require.NoError(err)
+		bytes, err := io.ReadAll(file)
+		require.NoError(err)
+		partMap[info.Name()] = string(bytes)
+	}
+	fixture.CompareReadOrUpdate(t, path.Join(testName, name+"_parts.json"), fixture.JSON(t, partMap))
 }
 
 func TestVerify(t *testing.T) {

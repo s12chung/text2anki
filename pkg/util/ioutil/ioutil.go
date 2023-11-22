@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // OwnerGroupR is the file mode for Owners and Group read
@@ -52,4 +53,21 @@ func CopyFile(dst, src string, perm os.FileMode) error {
 		return err
 	}
 	return os.Rename(tmp.Name(), dst)
+}
+
+// FilenamesWithExtensions returns the file names with the given extensions in the directory (non-recursive)
+func FilenamesWithExtensions(entries []os.DirEntry, extensions []string) []string {
+	filenames := make([]string, 0, len(entries))
+	for _, file := range entries {
+		if file.IsDir() {
+			continue
+		}
+		for _, ext := range extensions {
+			if strings.HasSuffix(file.Name(), ext) {
+				filenames = append(filenames, file.Name())
+				break
+			}
+		}
+	}
+	return filenames
 }
