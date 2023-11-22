@@ -4,9 +4,11 @@ import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { StopKeyboardContext } from "./SourceShow_SourceComponent.ts"
 import { useCallback, useContext, useState } from "react"
 
+// eslint-disable-next-line max-params
 export function useFocusTextWithKeyboard(
   parts: SourcePart[],
   isTokenSelected: boolean,
+  onCreateTextNote: () => void,
   onEscape: () => void,
 ): readonly [
   number,
@@ -43,14 +45,24 @@ export function useFocusTextWithKeyboard(
         case "KeyS":
           incrementText()
           break
-
+        case "KeyN":
+          onCreateTextNote()
+          break
         default:
           return
       }
 
       e.preventDefault()
     },
-    [stopKeyboardEvents, isTokenSelected, focusLastElement, onEscape, decrementText, incrementText],
+    [
+      stopKeyboardEvents,
+      isTokenSelected,
+      focusLastElement,
+      onEscape,
+      decrementText,
+      incrementText,
+      onCreateTextNote,
+    ],
   )
   return [partFocusIndex, textFocusIndex, focusElement, setText] as const
 }

@@ -1,6 +1,10 @@
 /* eslint-disable max-lines */
 import { CommonLevel } from "../../services/models/Lang.ts"
-import { CreateNoteData, createNoteDataFromSourceTerm } from "../../services/models/Note.ts"
+import {
+  CreateNoteData,
+  createNoteDataFromSourceTerm,
+  createNoteDataFromUsage,
+} from "../../services/models/Note.ts"
 import {
   PosPunctuation,
   Source,
@@ -250,6 +254,8 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
   const [partFocusIndex, textFocusIndex, focusElement, setText] = useFocusTextWithKeyboard(
     source.parts,
     isTokenSelected,
+    () =>
+      setCreateNoteData(createNoteDataFromUsage(getUsage(source, partFocusIndex, textFocusIndex))),
     () => setSelectedToken(null),
   )
 
