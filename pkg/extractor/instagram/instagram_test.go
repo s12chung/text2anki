@@ -65,21 +65,19 @@ func TestSource_ID(t *testing.T) {
 	}
 }
 
-var extractToDirSuffixes = []int{0, 1, 2, 9, 10, 11, 99, 100, 101, 110}
-
-const extractToDirPrefix = "2023-11-21_10-42-44_UTC_"
-
 func init() {
+	extractToDirSuffixes := []int{0, 1, 2, 9, 10, 11, 99, 100, 101, 110}
 	args := make([]string, len(extractToDirSuffixes)+1)
 	args[0] = "touch"
 	for i, suffix := range extractToDirSuffixes {
-		args[i+1] = extractToDirPrefix + strconv.Itoa(suffix) + extensions[0]
+		args[i+1] = "2023-11-21_10-42-44_UTC_" + strconv.Itoa(suffix) + extensions[0]
 	}
 
 	extractToDirArgs = func(login, id string) []string { return args }
 }
 
 func TestPost_ExtractToDir(t *testing.T) {
+	testName := "TestPost_ExtractToDir"
 	cacheDir := path.Join(os.TempDir(), test.GenerateName("Instagram"))
 	require.NoError(t, os.MkdirAll(cacheDir, ioutil.OwnerRWXGroupRX))
 
@@ -108,12 +106,7 @@ func TestPost_ExtractToDir(t *testing.T) {
 			for i, entry := range entries {
 				entryNames[i] = entry.Name()
 			}
-
-			filenames := make([]string, len(extractToDirSuffixes))
-			for i, suffix := range extractToDirSuffixes {
-				filenames[i] = extractToDirPrefix + fmt.Sprintf("%03d", suffix) + extensions[0]
-			}
-			require.Equal(filenames, entryNames)
+			fixture.CompareReadOrUpdate(t, filepath.Join(testName, tc.name+".json"), fixture.JSON(t, entryNames))
 		})
 	}
 }
