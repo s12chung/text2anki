@@ -8,12 +8,16 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/pkg/extractor"
 	"github.com/s12chung/text2anki/pkg/util/archive/xz"
+	"github.com/s12chung/text2anki/pkg/util/ioutil"
 )
+
+var extensions = []string{".jpg"}
 
 // GetLoginFromEnv gets the login from the default ENV var
 func GetLoginFromEnv() string { return os.Getenv("INSTAGRAM_LOGIN") }
@@ -28,7 +32,7 @@ type Factory struct{ login string }
 func (f Factory) NewSource(url string) extractor.Source { return &Post{login: f.login, url: url} }
 
 // Extensions returns the extensions the extractor returns
-func (f Factory) Extensions() []string { return []string{".jpg"} }
+func (f Factory) Extensions() []string { return append([]string{}, extensions...) }
 
 // Post represents an instagram post
 type Post struct {
@@ -67,14 +71,48 @@ func (s *Post) ID() string {
 	return s.id
 }
 
+var extractToDirArgs = func(login, id string) []string {
+	return []string{"instaloader", "--login", login, "--dirname-pattern", ".", "--", "-" + id}
+}
+
 // ExtractToDir extracts the post to the directory
 func (s *Post) ExtractToDir(cacheDir string) error {
 	if ok := s.Verify(); !ok {
-		return fmt.Errorf("url is not vertified for instagram: %v", s.url)
+		return fmt.Errorf("url is not verified for instagram: %v", s.url)
 	}
-	cmd := exec.Command("instaloader", "--login", s.login, "--dirname-pattern", ".", "--", "-"+s.ID()) //nolint:gosec //this is how it works
+	args := extractToDirArgs(s.login, s.ID())
+	cmd := exec.Command(args[0], args[1:]...) //nolint:gosec //this is how it works
 	cmd.Dir = cacheDir
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return numberPadFilenames(cacheDir)
+}
+
+func numberPadFilenames(cacheDir string) error {
+	entries, err := os.ReadDir(cacheDir)
+	if err != nil {
+		return err
+	}
+	filenames := ioutil.FilenamesWithExtensions(entries, extensions)
+
+	for _, filename := range filenames {
+		parts := strings.Split(filename, "_")
+		if len(parts) < 2 {
+			return fmt.Errorf("file found with no underscore")
+		}
+		numberPart := strings.Split(parts[len(parts)-1], ".")[0]
+		number, err := strconv.Atoi(numberPart)
+		if err != nil {
+			return err
+		}
+		newFilename := strings.Join(parts[:len(parts)-1], "_") + "_" + fmt.Sprintf("%03d", number) + filepath.Ext(filename)
+
+		if err = os.Rename(filepath.Join(cacheDir, filename), filepath.Join(cacheDir, newFilename)); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 const infoGlob = "*.xz"

@@ -2,6 +2,7 @@
 package extractortest
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -50,7 +51,14 @@ func (t Source) ExtractToDir(cacheDir string) error {
 	if t.s == SkipExtractString {
 		return nil
 	}
-	err := filepath.Walk(t.fixturePath, func(path string, info os.FileInfo, err error) error {
+	items, err := os.ReadDir(cacheDir)
+	if err != nil {
+		return err
+	}
+	if len(items) != 0 {
+		return fmt.Errorf("extracting to non-empty cacheDir")
+	}
+	return filepath.Walk(t.fixturePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -59,7 +67,6 @@ func (t Source) ExtractToDir(cacheDir string) error {
 		}
 		return ioutil.CopyFile(filepath.Join(cacheDir, info.Name()), path, ioutil.OwnerGroupR)
 	})
-	return err
 }
 
 // Info returns the info from the extraction

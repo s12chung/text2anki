@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"os"
 	"path"
 	"testing"
@@ -16,13 +15,16 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/logg"
 	"github.com/s12chung/text2anki/pkg/util/test"
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
+	"github.com/s12chung/text2anki/pkg/util/test/fixture/flog"
 )
+
+var plog = flog.FixtureUpdateNoWrite()
 
 func init() {
 	dir := path.Join(os.TempDir(), test.GenerateName("anki.TestMain"))
 	c := Config{ExportPrefix: "t2a-", NotesCacheDir: dir}
 	if err := os.MkdirAll(dir, ioutil.OwnerRWXGroupRX); err != nil {
-		slog.Error("anki.init()", logg.Err(err)) //nolint:forbidigo // used in init only
+		plog.Error("anki.init()", logg.Err(err)) //nolint:forbidigo // used in init only
 		os.Exit(-1)
 	}
 	SetConfig(c)
