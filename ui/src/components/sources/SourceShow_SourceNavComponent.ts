@@ -1,13 +1,14 @@
-import { NoteUsage } from "../../services/models/Note.ts"
-import { Source, SourcePart, Token } from "../../services/models/Source.ts"
+import { Source, SourcePart } from "../../services/models/Source.ts"
 import { useKeyDownEffect } from "../../utils/JSXUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { StopKeyboardContext } from "./SourceShow_SourceComponent.ts"
 import { useCallback, useContext, useState } from "react"
 
+// eslint-disable-next-line max-params
 export function useFocusTextWithKeyboard(
   parts: SourcePart[],
-  entered: boolean,
+  isTokenSelected: boolean,
+  onCreateTextNote: () => void,
   onEscape: () => void,
 ): readonly [
   number,
@@ -26,14 +27,14 @@ export function useFocusTextWithKeyboard(
 
       switch (e.code) {
         case "Escape":
-          if (!entered) return
+          if (!isTokenSelected) return
           focusLastElement()
           onEscape()
           break
         default:
       }
 
-      if (entered) return
+      if (isTokenSelected) return
 
       switch (e.code) {
         case "ArrowUp":
@@ -44,40 +45,36 @@ export function useFocusTextWithKeyboard(
         case "KeyS":
           incrementText()
           break
-
+        case "KeyN":
+          onCreateTextNote()
+          break
         default:
           return
       }
 
       e.preventDefault()
     },
-    [stopKeyboardEvents, entered, focusLastElement, onEscape, decrementText, incrementText],
+    [
+      stopKeyboardEvents,
+      isTokenSelected,
+      focusLastElement,
+      onEscape,
+      decrementText,
+      incrementText,
+      onCreateTextNote,
+    ],
   )
   return [partFocusIndex, textFocusIndex, focusElement, setText] as const
 }
 
-export interface ITermsComponentProps {
-  token: Token
-  usage: NoteUsage
-}
-
-// eslint-disable-next-line max-params
-export function getTermProps(
-  source: Source,
-  partFocusIndex: number,
-  textFocusIndex: number,
-  tokenFocusIndex: number,
-): ITermsComponentProps {
+export function getUsage(source: Source, partFocusIndex: number, textFocusIndex: number) {
   const tokenizedText = source.parts[partFocusIndex].tokenizedTexts[textFocusIndex]
   return {
-    token: tokenizedText.tokens[tokenFocusIndex],
-    usage: {
-      sourceName: source.name,
-      sourceReference: source.reference,
+    sourceName: source.name,
+    sourceReference: source.reference,
 
-      usage: tokenizedText.text,
-      usageTranslation: tokenizedText.translation,
-    },
+    usage: tokenizedText.text,
+    usageTranslation: tokenizedText.translation,
   }
 }
 

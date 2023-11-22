@@ -1,6 +1,10 @@
 /* eslint-disable max-lines */
 import { CommonLevel } from "../../services/models/Lang.ts"
-import { CreateNoteData, createNoteDataFromSourceTerm } from "../../services/models/Note.ts"
+import {
+  CreateNoteData,
+  createNoteDataFromSourceTerm,
+  createNoteDataFromUsage,
+} from "../../services/models/Note.ts"
 import {
   PosPunctuation,
   Source,
@@ -18,11 +22,7 @@ import AwaitWithFallback from "../AwaitWithFallback.tsx"
 import SlideOver from "../SlideOver.tsx"
 import NoteCreate from "../notes/NoteCreate.tsx"
 import { StopKeyboardContext, useStopKeyboard } from "./SourceShow_SourceComponent.ts"
-import {
-  getTermProps,
-  ITermsComponentProps,
-  useFocusTextWithKeyboard,
-} from "./SourceShow_SourceNavComponent.ts"
+import { getUsage, useFocusTextWithKeyboard } from "./SourceShow_SourceNavComponent.ts"
 import { otherTranslationTexts, useChangeTermWithKeyboard } from "./SourceShow_TermsComponent.ts"
 import { useFocusTokenWithKeyboard } from "./SourceShow_TokensComponent.ts"
 import {
@@ -32,7 +32,7 @@ import {
   SourceEditHeader,
   SourcePartDetailMenu,
 } from "./SourceShow_Update.tsx"
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useFetcher } from "react-router-dom"
 
 export interface ISourceShowData {
@@ -237,22 +237,31 @@ const SourceShowComponent: React.FC<{ readonly source: Source }> = ({ source }) 
   )
 }
 
+// eslint-disable-next-line max-lines-per-function
 const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: SafeSet }> = ({
   source,
   safeSet,
 }) => {
-  const [termProps, setTermProps] = useState<ITermsComponentProps | null>(null)
+  const [createNoteData, setCreateNoteData] = useState<CreateNoteData | null>(null)
+  const { setStopKeyboardEvents } = useContext(StopKeyboardContext)
+  useEffect(
+    () => setStopKeyboardEvents(createNoteData !== null),
+    [createNoteData, setStopKeyboardEvents],
+  )
 
-  const termsFocused = termProps !== null
+  const [selectedToken, setSelectedToken] = useState<Token | null>(null)
+  const isTokenSelected = selectedToken !== null
   const [partFocusIndex, textFocusIndex, focusElement, setText] = useFocusTextWithKeyboard(
     source.parts,
-    termsFocused,
-    () => setTermProps(null),
+    isTokenSelected,
+    () =>
+      setCreateNoteData(createNoteDataFromUsage(getUsage(source, partFocusIndex, textFocusIndex))),
+    () => setSelectedToken(null),
   )
 
   const textRefs = useRef<(HTMLDivElement | null)[][]>([])
   useEffect(() => {
-    setTermProps(null)
+    setSelectedToken(null)
     const textElement = textRefs.current[partFocusIndex][textFocusIndex]
     if (!textElement) return
     focusElement(textElement)
@@ -260,52 +269,74 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
   }, [focusElement, partFocusIndex, textFocusIndex])
 
   return (
-    <SourcePartsWrapper sourceId={source.id} parts={source.parts} safeSet={safeSet}>
-      {(tokenizedText, partIndex, textIndex) => {
-        const textFocused = partIndex === partFocusIndex && textIndex === textFocusIndex
-        return (
-          <div
-            ref={(ref) => {
-              if (!textRefs.current[partIndex]) textRefs.current[partIndex] = []
-              textRefs.current[partIndex][textIndex] = ref
-            }}
-            tabIndex={-1}
-            className={joinClasses(textFocused ? "py-4 bg-gray-std" : "", "group py-2")}
-            onClick={preventDefault(() => setText(partIndex, textIndex))}
-          >
-            <div className={joinClasses(textClassBase, textFocused ? "text-light" : "")}>
-              {tokenizedText.text}
+    <>
+      {createNoteData !== null && (
+        <CreateNoteDialog
+          data={createNoteData}
+          onCreate={() => {
+            setCreateNoteData(null)
+            setSelectedToken(null)
+          }}
+          onClose={() => {
+            setCreateNoteData(null)
+          }}
+        />
+      )}
+      <SourcePartsWrapper sourceId={source.id} parts={source.parts} safeSet={safeSet}>
+        {(tokenizedText, partIndex, textIndex) => {
+          const textFocused = partIndex === partFocusIndex && textIndex === textFocusIndex
+          return (
+            <div
+              ref={(ref) => {
+                if (!textRefs.current[partIndex]) textRefs.current[partIndex] = []
+                textRefs.current[partIndex][textIndex] = ref
+              }}
+              tabIndex={-1}
+              className={joinClasses(textFocused ? "py-4 bg-gray-std" : "", "group py-2")}
+              onClick={preventDefault(() => setText(partIndex, textIndex))}
+            >
+              <div className={joinClasses(textClassBase, textFocused ? "text-light" : "")}>
+                {tokenizedText.text}
+              </div>
+              {textFocused ? (
+                <TokensComponent
+                  tokens={tokenizedText.tokens}
+                  isTokenSelected={isTokenSelected}
+                  onTokenSelect={(tokenIndex) => setSelectedToken(tokenizedText.tokens[tokenIndex])}
+                  onTokenChange={(tokenElement) => focusElement(tokenElement)}
+                />
+              ) : null}
+              <div className={textFocused ? "text-2xl" : translationClassBase}>
+                {tokenizedText.translation}
+              </div>
+              {textFocused && selectedToken ? (
+                <TermsComponent
+                  token={selectedToken}
+                  onTermSelect={(term: Term) => {
+                    setCreateNoteData(
+                      createNoteDataFromSourceTerm(
+                        term,
+                        getUsage(source, partFocusIndex, textFocusIndex),
+                      ),
+                    )
+                  }}
+                />
+              ) : null}
             </div>
-            {textFocused ? (
-              <TokensComponent
-                tokens={tokenizedText.tokens}
-                termsFocused={termsFocused}
-                onTokenSelect={(tokenIndex) =>
-                  setTermProps(getTermProps(source, partFocusIndex, textFocusIndex, tokenIndex))
-                }
-                onTokenChange={(tokenElement) => focusElement(tokenElement)}
-              />
-            ) : null}
-            <div className={textFocused ? "text-2xl" : translationClassBase}>
-              {tokenizedText.translation}
-            </div>
-            {textFocused && termsFocused ? (
-              <TermsComponent token={termProps.token} usage={termProps.usage} />
-            ) : null}
-          </div>
-        )
-      }}
-    </SourcePartsWrapper>
+          )
+        }}
+      </SourcePartsWrapper>
+    </>
   )
 }
 
 const TokensComponent: React.FC<{
   readonly tokens: Token[]
-  readonly termsFocused: boolean
+  readonly isTokenSelected: boolean
   readonly onTokenSelect: (tokenFocusIndex: number) => void
   readonly onTokenChange: (tokenElement: HTMLDivElement) => void
-}> = ({ tokens, termsFocused, onTokenSelect, onTokenChange }) => {
-  const [tokenFocusIndex] = useFocusTokenWithKeyboard(tokens, termsFocused, onTokenSelect)
+}> = ({ tokens, isTokenSelected, onTokenSelect, onTokenChange }) => {
+  const [tokenFocusIndex] = useFocusTokenWithKeyboard(tokens, isTokenSelected, onTokenSelect)
 
   const tokenRefs = useRef<(HTMLDivElement | null)[]>([])
   useEffect(() => {
@@ -351,7 +382,10 @@ interface ITermsShowData {
 
 const termsComponentClass = "grid-std text-left text-lg py-2 space-y-2"
 
-const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
+const TermsComponent: React.FC<{
+  readonly token: Token
+  readonly onTermSelect: (term: Term) => void
+}> = ({ token, onTermSelect }) => {
   const fetcher = useFetcher<ITermsShowData>()
   const terms = useMemo<Term[]>(() => (fetcher.data ? fetcher.data.terms : []), [fetcher.data])
   useEffect(() => {
@@ -359,11 +393,9 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
     fetcher.load(`/terms/search?${queryString({ query: token.text, pos: token.partOfSpeech })}`)
   }, [fetcher, token])
 
-  const [createNoteData, setCreateNoteData] = useState<CreateNoteData | null>(null)
   const [termFocusIndex, pageIndex, pagesLen, maxPageSize, shake] = useChangeTermWithKeyboard(
     terms,
-    (term: Term) => setCreateNoteData(createNoteDataFromSourceTerm(term, usage)),
-    () => createNoteData !== null,
+    onTermSelect,
   )
 
   const termRefs = useRef<(HTMLDivElement | null)[]>([])
@@ -407,22 +439,19 @@ const TermsComponent: React.FC<ITermsComponentProps> = ({ token, usage }) => {
           </div>
         </div>
       )}
-
-      {createNoteData !== null && (
-        <NoteDialog data={createNoteData} onClose={() => setCreateNoteData(null)} />
-      )}
     </div>
   )
 }
 
-const NoteDialog: React.FC<{ readonly data: CreateNoteData; readonly onClose: () => void }> = ({
-  data,
-  onClose,
-}) => {
+const CreateNoteDialog: React.FC<{
+  readonly data: CreateNoteData
+  readonly onCreate: () => void
+  readonly onClose: () => void
+}> = ({ data, onCreate, onClose }) => {
   return (
     <SlideOver.Dialog show onClose={onClose}>
       <SlideOver.Header title="Create Note" onClose={onClose} />
-      <NoteCreate data={data} onClose={onClose} />
+      <NoteCreate data={data} onCreate={onCreate} onClose={onClose} />
     </SlideOver.Dialog>
   )
 }

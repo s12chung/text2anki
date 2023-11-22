@@ -4,23 +4,21 @@ import { pageSize, totalPages } from "../../utils/HtmlUtil.ts"
 import { useKeyDownEffect, useTimedState } from "../../utils/JSXUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { StopKeyboardContext } from "./SourceShow_SourceComponent.ts"
-import { useContext, useEffect, useMemo, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 
 const maxPageSize = 5
 
 export function useChangeTermWithKeyboard(
   terms: Term[],
-  onEnter: (term: Term) => void,
-  isEntered: () => boolean,
+  onTermSelect: (term: Term) => void,
 ): readonly [number, number, number, number, boolean] {
   const [termFocusIndex, setTermFocusIndex] = useState<number>(0)
   const [pageIndex, setPageIndex] = useState<number>(0)
   const pagesLen = useMemo<number>(() => totalPages(terms, maxPageSize), [terms])
   const [shake, setShake] = useTimedState(100)
 
-  const { stopKeyboardEvents, setStopKeyboardEvents } = useContext(StopKeyboardContext)
+  const { stopKeyboardEvents } = useContext(StopKeyboardContext)
 
-  useEffect(() => setStopKeyboardEvents(isEntered()), [isEntered, setStopKeyboardEvents])
   useKeyDownEffect(
     (e: KeyboardEvent) => {
       if (stopKeyboardEvents) return
@@ -55,14 +53,14 @@ export function useChangeTermWithKeyboard(
           break
         case "Enter":
         case "Space":
-          onEnter(terms[termFocusIndex])
+          onTermSelect(terms[termFocusIndex])
           break
         default:
           return
       }
       e.preventDefault()
     },
-    [stopKeyboardEvents, termFocusIndex, terms, pageIndex, pagesLen, onEnter, setShake],
+    [stopKeyboardEvents, termFocusIndex, terms, pageIndex, pagesLen, onTermSelect, setShake],
   )
   return [termFocusIndex, pageIndex, pagesLen, maxPageSize, shake] as const
 }

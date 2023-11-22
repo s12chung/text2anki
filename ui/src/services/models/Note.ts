@@ -52,7 +52,6 @@ export const NoteEmpty = Object.freeze<Note>({
   createdAt: new Date(0),
 })
 
-// eslint-disable-next-line max-params
 export function createNoteDataFromSourceTerm(
   term: Term,
   usage: NoteUsage,
@@ -74,5 +73,21 @@ export function createNoteDataFromSourceTerm(
     sourceReference: usage.sourceReference,
     dictionarySource: term.dictionarySource,
     notes: "",
+  }
+}
+
+export function createNoteDataFromUsage(usage: NoteUsage): CreateNoteData {
+  return {
+    ...CreateNoteDataEmpty,
+
+    partOfSpeech: "Unknown",
+    commonLevel: CommonLevel.Unique,
+
+    usage: usage.usage,
+    usageTranslation: usage.usageTranslation,
+
+    sourceName: usage.sourceName,
+    sourceReference: usage.sourceReference,
+    dictionarySource: "None",
   }
 }

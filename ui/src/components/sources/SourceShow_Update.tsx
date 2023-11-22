@@ -203,13 +203,16 @@ export const PartUpdateForm: React.FC<{
     onCancel()
   }, [fetcher, success, onCancel])
 
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
+  useEffect(() => textAreaRef.current?.focus(), [])
+
   return (
     <fetcher.Form
       action={`/sources/${sourceId}/parts/${partIndex}`}
       method="patch"
       className="grid-std"
     >
-      <textarea name="text" className="h-third" defaultValue={partString(part)} />
+      <textarea ref={textAreaRef} name="text" className="h-third" defaultValue={partString(part)} />
       <div className="mt-half flex justify-end space-x-basic">
         <button type="button" className="btn" onClick={preventDefault(onCancel)}>
           Cancel
