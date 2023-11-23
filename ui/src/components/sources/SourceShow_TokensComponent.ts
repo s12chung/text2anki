@@ -4,10 +4,17 @@ import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { StopKeyboardContext } from "./SourceShow_SourceComponent.ts"
 import { useContext, useMemo, useState } from "react"
 
+export interface SelectedToken {
+  text: string
+  partOfSpeech: string
+}
+
+// eslint-disable-next-line max-params
 export function useFocusTokenWithKeyboard(
   tokens: Token[],
   isTokenSelected: boolean,
-  onTokenSelect: (tokenFocusIndex: number) => void,
+  onTokenSelect: (token: SelectedToken) => void,
+  onCustomToken: (token: SelectedToken | null) => void,
 ): readonly [number] {
   const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(0)
   const isAllPunct = useMemo<boolean>(
@@ -18,7 +25,25 @@ export function useFocusTokenWithKeyboard(
   const { stopKeyboardEvents } = useContext(StopKeyboardContext)
   useKeyDownEffect(
     (e: KeyboardEvent) => {
-      if (stopKeyboardEvents || isTokenSelected || isAllPunct) return
+      switch (e.code) {
+        case "Escape":
+          onCustomToken(null)
+          e.preventDefault()
+          return
+        default:
+      }
+
+      if (stopKeyboardEvents) return
+
+      switch (e.code) {
+        case "KeyC":
+          onCustomToken(tokens[tokenFocusIndex])
+          e.preventDefault()
+          return
+        default:
+      }
+
+      if (isTokenSelected || isAllPunct) return
 
       switch (e.code) {
         case "ArrowLeft":
@@ -31,7 +56,7 @@ export function useFocusTokenWithKeyboard(
           break
         case "Enter":
         case "Space":
-          onTokenSelect(tokenFocusIndex)
+          onTokenSelect(tokens[tokenFocusIndex])
           break
         default:
           return
@@ -39,7 +64,15 @@ export function useFocusTokenWithKeyboard(
 
       e.preventDefault()
     },
-    [stopKeyboardEvents, isTokenSelected, isAllPunct, tokens, tokenFocusIndex, onTokenSelect],
+    [
+      stopKeyboardEvents,
+      isTokenSelected,
+      isAllPunct,
+      tokens,
+      tokenFocusIndex,
+      onTokenSelect,
+      onCustomToken,
+    ],
   )
   return [tokenFocusIndex] as const
 }

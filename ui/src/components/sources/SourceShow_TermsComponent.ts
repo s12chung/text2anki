@@ -4,7 +4,7 @@ import { pageSize, totalPages } from "../../utils/HtmlUtil.ts"
 import { useKeyDownEffect, useTimedState } from "../../utils/JSXUtil.ts"
 import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { StopKeyboardContext } from "./SourceShow_SourceComponent.ts"
-import { useContext, useMemo, useState } from "react"
+import { useCallback, useContext, useMemo, useState } from "react"
 
 const maxPageSize = 5
 
@@ -17,39 +17,52 @@ export function useChangeTermWithKeyboard(
   const pagesLen = useMemo<number>(() => totalPages(terms, maxPageSize), [terms])
   const [shake, setShake] = useTimedState(100)
 
-  const { stopKeyboardEvents } = useContext(StopKeyboardContext)
-
-  useKeyDownEffect(
-    (e: KeyboardEvent) => {
-      if (stopKeyboardEvents) return
+  const changeTermFocusIndex = useCallback(
+    (e: KeyboardEvent, change: (index: number, length: number) => number) => {
       if (terms.length === 1) {
         setShake(true)
         e.preventDefault()
         return
       }
+      setTermFocusIndex(change(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex)))
+    },
+    [pageIndex, setShake, termFocusIndex, terms.length],
+  )
+  const changePage = useCallback(
+    (e: KeyboardEvent, change: (index: number, length: number) => number) => {
+      if (pagesLen === 1) {
+        setShake(true)
+        e.preventDefault()
+        return
+      }
+      setPageIndex(change(pageIndex, pagesLen))
+      setTermFocusIndex(0)
+    },
+    [pageIndex, pagesLen, setShake],
+  )
+
+  const { stopKeyboardEvents } = useContext(StopKeyboardContext)
+
+  useKeyDownEffect(
+    (e: KeyboardEvent) => {
+      if (stopKeyboardEvents) return
 
       switch (e.code) {
         case "ArrowUp":
         case "KeyW":
-          setTermFocusIndex(
-            decrement(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex)),
-          )
+          changeTermFocusIndex(e, decrement)
           break
         case "ArrowDown":
         case "KeyS":
-          setTermFocusIndex(
-            increment(termFocusIndex, pageSize(terms.length, maxPageSize, pageIndex)),
-          )
+          changeTermFocusIndex(e, increment)
           break
         case "ArrowLeft":
         case "KeyA":
-          setPageIndex(decrement(pageIndex, pagesLen))
-          setTermFocusIndex(0)
+          changePage(e, decrement)
           break
         case "ArrowRight":
         case "KeyD":
-          setPageIndex(increment(pageIndex, pagesLen))
-          setTermFocusIndex(0)
+          changePage(e, increment)
           break
         case "Enter":
         case "Space":
@@ -60,7 +73,7 @@ export function useChangeTermWithKeyboard(
       }
       e.preventDefault()
     },
-    [stopKeyboardEvents, termFocusIndex, terms, pageIndex, pagesLen, onTermSelect, setShake],
+    [changePage, changeTermFocusIndex, onTermSelect, stopKeyboardEvents, termFocusIndex, terms],
   )
   return [termFocusIndex, pageIndex, pagesLen, maxPageSize, shake] as const
 }
