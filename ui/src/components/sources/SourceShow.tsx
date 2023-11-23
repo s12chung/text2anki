@@ -24,7 +24,7 @@ import NoteCreate from "../notes/NoteCreate.tsx"
 import { StopKeyboardContext, useStopKeyboard } from "./SourceShow_SourceComponent.ts"
 import { getUsage, useFocusTextWithKeyboard } from "./SourceShow_SourceNavComponent.ts"
 import { otherTranslationTexts, useChangeTermWithKeyboard } from "./SourceShow_TermsComponent.ts"
-import { useFocusTokenWithKeyboard } from "./SourceShow_TokensComponent.ts"
+import { SelectedToken, useFocusTokenWithKeyboard } from "./SourceShow_TokensComponent.ts"
 import {
   PartCreateForm,
   PartUpdateForm,
@@ -249,7 +249,7 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
     [createNoteData, setStopKeyboardEvents],
   )
 
-  const [selectedToken, setSelectedToken] = useState<Token | null>(null)
+  const [selectedToken, setSelectedToken] = useState<SelectedToken | null>(null)
   const isTokenSelected = selectedToken !== null
   const [partFocusIndex, textFocusIndex, focusElement, setText] = useFocusTextWithKeyboard(
     source.parts,
@@ -302,7 +302,7 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
                 <TokensComponent
                   tokens={tokenizedText.tokens}
                   isTokenSelected={isTokenSelected}
-                  onTokenSelect={(tokenIndex) => setSelectedToken(tokenizedText.tokens[tokenIndex])}
+                  onTokenSelect={setSelectedToken}
                   onTokenChange={(tokenElement) => focusElement(tokenElement)}
                 />
               ) : null}
@@ -333,7 +333,7 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
 const TokensComponent: React.FC<{
   readonly tokens: Token[]
   readonly isTokenSelected: boolean
-  readonly onTokenSelect: (tokenFocusIndex: number) => void
+  readonly onTokenSelect: (token: SelectedToken) => void
   readonly onTokenChange: (tokenElement: HTMLDivElement) => void
 }> = ({ tokens, isTokenSelected, onTokenSelect, onTokenChange }) => {
   const [tokenFocusIndex] = useFocusTokenWithKeyboard(tokens, isTokenSelected, onTokenSelect)
@@ -383,7 +383,7 @@ interface ITermsShowData {
 const termsComponentClass = "grid-std text-left text-lg py-2 space-y-2"
 
 const TermsComponent: React.FC<{
-  readonly token: Token
+  readonly token: SelectedToken
   readonly onTermSelect: (term: Term) => void
 }> = ({ token, onTermSelect }) => {
   const fetcher = useFetcher<ITermsShowData>()

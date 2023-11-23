@@ -4,10 +4,15 @@ import { decrement, increment } from "../../utils/NumberUtil.ts"
 import { StopKeyboardContext } from "./SourceShow_SourceComponent.ts"
 import { useContext, useMemo, useState } from "react"
 
+export interface SelectedToken {
+  text: string
+  partOfSpeech: string
+}
+
 export function useFocusTokenWithKeyboard(
   tokens: Token[],
   isTokenSelected: boolean,
-  onTokenSelect: (tokenFocusIndex: number) => void,
+  onTokenSelect: (token: SelectedToken) => void,
 ): readonly [number] {
   const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(0)
   const isAllPunct = useMemo<boolean>(
@@ -31,7 +36,7 @@ export function useFocusTokenWithKeyboard(
           break
         case "Enter":
         case "Space":
-          onTokenSelect(tokenFocusIndex)
+          onTokenSelect(tokens[tokenFocusIndex])
           break
         default:
           return
