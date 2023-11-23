@@ -23,7 +23,8 @@ export function useFocusTextWithKeyboard(
         case "Escape":
           if (!isTokenSelected) return
           onEscape()
-          break
+          e.preventDefault()
+          return
         default:
       }
 

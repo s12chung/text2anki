@@ -28,7 +28,8 @@ export function useFocusTokenWithKeyboard(
       switch (e.code) {
         case "Escape":
           onCustomToken(null)
-          break
+          e.preventDefault()
+          return
         default:
       }
 
@@ -37,7 +38,8 @@ export function useFocusTokenWithKeyboard(
       switch (e.code) {
         case "KeyC":
           onCustomToken(tokens[tokenFocusIndex])
-          break
+          e.preventDefault()
+          return
         default:
       }
 
