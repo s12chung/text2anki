@@ -9,10 +9,12 @@ export interface SelectedToken {
   partOfSpeech: string
 }
 
+// eslint-disable-next-line max-params
 export function useFocusTokenWithKeyboard(
   tokens: Token[],
   isTokenSelected: boolean,
   onTokenSelect: (token: SelectedToken) => void,
+  onCustomToken: (token: SelectedToken | null) => void,
 ): readonly [number] {
   const [tokenFocusIndex, setTokenFocusIndex] = useState<number>(0)
   const isAllPunct = useMemo<boolean>(
@@ -23,7 +25,23 @@ export function useFocusTokenWithKeyboard(
   const { stopKeyboardEvents } = useContext(StopKeyboardContext)
   useKeyDownEffect(
     (e: KeyboardEvent) => {
-      if (stopKeyboardEvents || isTokenSelected || isAllPunct) return
+      switch (e.code) {
+        case "Escape":
+          onCustomToken(null)
+          break
+        default:
+      }
+
+      if (stopKeyboardEvents) return
+
+      switch (e.code) {
+        case "KeyC":
+          onCustomToken(tokens[tokenFocusIndex])
+          break
+        default:
+      }
+
+      if (isTokenSelected || isAllPunct) return
 
       switch (e.code) {
         case "ArrowLeft":
@@ -44,7 +62,15 @@ export function useFocusTokenWithKeyboard(
 
       e.preventDefault()
     },
-    [stopKeyboardEvents, isTokenSelected, isAllPunct, tokens, tokenFocusIndex, onTokenSelect],
+    [
+      stopKeyboardEvents,
+      isTokenSelected,
+      isAllPunct,
+      tokens,
+      tokenFocusIndex,
+      onTokenSelect,
+      onCustomToken,
+    ],
   )
   return [tokenFocusIndex] as const
 }

@@ -32,7 +32,7 @@ import {
   SourceEditHeader,
   SourcePartDetailMenu,
 } from "./SourceShow_Update.tsx"
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
+import React, { SyntheticEvent, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { useFetcher } from "react-router-dom"
 
 export interface ISourceShowData {
@@ -258,6 +258,29 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
       setCreateNoteData(createNoteDataFromUsage(getUsage(source, partFocusIndex, textFocusIndex))),
     () => setSelectedToken(null),
   )
+  const setTextOnClick = (
+    e: SyntheticEvent<HTMLDivElement>,
+    textFocused: boolean,
+    partIndex: number,
+    textIndex: number,
+    // eslint-disable-next-line max-params
+  ) => {
+    if (textFocused) return
+    e.preventDefault()
+    setText(partIndex, textIndex)
+    setCustomToken(null)
+    setSelectedToken(null)
+  }
+
+  const [customToken, setCustomToken] = useState<SelectedToken | null>(null)
+  const onCustomToken = (token: SelectedToken | null) => {
+    setCustomToken(token)
+    setSelectedToken(null)
+  }
+  const onTokenSearch = (token: SelectedToken) => {
+    setCustomToken(null)
+    setSelectedToken(token)
+  }
 
   return (
     <>
@@ -277,7 +300,7 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
           return (
             <div
               className={joinClasses(textFocused ? "py-4 bg-gray-std" : "", "group py-2")}
-              onClick={preventDefault(() => setText(partIndex, textIndex))}
+              onClick={(e) => setTextOnClick(e, textFocused, partIndex, textIndex)}
             >
               <div className={joinClasses(textClassBase, textFocused ? "text-light" : "")}>
                 {tokenizedText.text}
@@ -287,6 +310,7 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
                   tokens={tokenizedText.tokens}
                   isTokenSelected={isTokenSelected}
                   onTokenSelect={setSelectedToken}
+                  onCustomToken={onCustomToken}
                 />
               ) : null}
               <div className={textFocused ? "text-2xl" : translationClassBase}>
@@ -305,6 +329,9 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
                   }}
                 />
               ) : null}
+              {textFocused && customToken ? (
+                <SearchTokensComponent customToken={customToken} onTokenSearch={onTokenSearch} />
+              ) : null}
             </div>
           )
         }}
@@ -317,8 +344,14 @@ const TokensComponent: React.FC<{
   readonly tokens: Token[]
   readonly isTokenSelected: boolean
   readonly onTokenSelect: (token: SelectedToken) => void
-}> = ({ tokens, isTokenSelected, onTokenSelect }) => {
-  const [tokenFocusIndex] = useFocusTokenWithKeyboard(tokens, isTokenSelected, onTokenSelect)
+  readonly onCustomToken: (token: SelectedToken | null) => void
+}> = ({ tokens, isTokenSelected, onTokenSelect, onCustomToken }) => {
+  const [tokenFocusIndex] = useFocusTokenWithKeyboard(
+    tokens,
+    isTokenSelected,
+    onTokenSelect,
+    onCustomToken,
+  )
 
   const tokenRefs = useRef<(HTMLDivElement | null)[]>([])
   useEffect(() => {
@@ -355,6 +388,38 @@ const TokensComponent: React.FC<{
         )
       })}
     </div>
+  )
+}
+
+const SearchTokensComponent: React.FC<{
+  readonly customToken: SelectedToken
+  readonly onTokenSearch: (token: SelectedToken) => void
+}> = ({ customToken, onTokenSearch }) => {
+  useEffect(() => {
+    // keyboard trigger to show component adds a character, so timeout
+    const id = setTimeout(() => textRef.current?.focus(), 50)
+    return () => clearTimeout(id)
+  }, [])
+
+  const { setStopKeyboardEvents } = useContext(StopKeyboardContext)
+  useEffect(() => {
+    setStopKeyboardEvents(true)
+    return () => setStopKeyboardEvents(false)
+  }, [setStopKeyboardEvents])
+
+  const textRef = useRef<HTMLInputElement>(null)
+  return (
+    <form
+      className="mt-std space-x-basic"
+      onSubmit={preventDefault(() =>
+        onTokenSearch({ text: textRef.current?.value || "", partOfSpeech: "" }),
+      )}
+    >
+      <input ref={textRef} defaultValue={customToken.text} />
+      <button type="submit" className="btn-primary">
+        Submit
+      </button>
+    </form>
   )
 }
 
