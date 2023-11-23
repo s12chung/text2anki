@@ -251,22 +251,13 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
 
   const [selectedToken, setSelectedToken] = useState<SelectedToken | null>(null)
   const isTokenSelected = selectedToken !== null
-  const [partFocusIndex, textFocusIndex, focusElement, setText] = useFocusTextWithKeyboard(
+  const [partFocusIndex, textFocusIndex, setText] = useFocusTextWithKeyboard(
     source.parts,
     isTokenSelected,
     () =>
       setCreateNoteData(createNoteDataFromUsage(getUsage(source, partFocusIndex, textFocusIndex))),
     () => setSelectedToken(null),
   )
-
-  const textRefs = useRef<(HTMLDivElement | null)[][]>([])
-  useEffect(() => {
-    setSelectedToken(null)
-    const textElement = textRefs.current[partFocusIndex][textFocusIndex]
-    if (!textElement) return
-    focusElement(textElement)
-    scrollTo(textElement)
-  }, [focusElement, partFocusIndex, textFocusIndex])
 
   return (
     <>
@@ -277,9 +268,7 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
             setCreateNoteData(null)
             setSelectedToken(null)
           }}
-          onClose={() => {
-            setCreateNoteData(null)
-          }}
+          onClose={() => setCreateNoteData(null)}
         />
       )}
       <SourcePartsWrapper sourceId={source.id} parts={source.parts} safeSet={safeSet}>
@@ -287,11 +276,6 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
           const textFocused = partIndex === partFocusIndex && textIndex === textFocusIndex
           return (
             <div
-              ref={(ref) => {
-                if (!textRefs.current[partIndex]) textRefs.current[partIndex] = []
-                textRefs.current[partIndex][textIndex] = ref
-              }}
-              tabIndex={-1}
               className={joinClasses(textFocused ? "py-4 bg-gray-std" : "", "group py-2")}
               onClick={preventDefault(() => setText(partIndex, textIndex))}
             >
@@ -303,7 +287,6 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
                   tokens={tokenizedText.tokens}
                   isTokenSelected={isTokenSelected}
                   onTokenSelect={setSelectedToken}
-                  onTokenChange={(tokenElement) => focusElement(tokenElement)}
                 />
               ) : null}
               <div className={textFocused ? "text-2xl" : translationClassBase}>
@@ -334,15 +317,14 @@ const TokensComponent: React.FC<{
   readonly tokens: Token[]
   readonly isTokenSelected: boolean
   readonly onTokenSelect: (token: SelectedToken) => void
-  readonly onTokenChange: (tokenElement: HTMLDivElement) => void
-}> = ({ tokens, isTokenSelected, onTokenSelect, onTokenChange }) => {
+}> = ({ tokens, isTokenSelected, onTokenSelect }) => {
   const [tokenFocusIndex] = useFocusTokenWithKeyboard(tokens, isTokenSelected, onTokenSelect)
 
   const tokenRefs = useRef<(HTMLDivElement | null)[]>([])
   useEffect(() => {
     const element = tokenRefs.current[tokenFocusIndex]
-    if (element) onTokenChange(element)
-  }, [onTokenChange, tokenFocusIndex])
+    if (element) scrollTo(element)
+  }, [tokenFocusIndex])
 
   return (
     <div className="ko-sans text-4xl justify-center mb-2 child:py-2 flex">
@@ -398,9 +380,6 @@ const TermsComponent: React.FC<{
     onTermSelect,
   )
 
-  const termRefs = useRef<(HTMLDivElement | null)[]>([])
-  useEffect(() => termRefs.current[termFocusIndex]?.focus(), [terms, pageIndex, termFocusIndex])
-
   if (!fetcher.data) return <div className={termsComponentClass}>Loading...</div>
   return (
     <div className={termsComponentClass}>
@@ -411,9 +390,10 @@ const TermsComponent: React.FC<{
           {paginate(terms, maxPageSize, pageIndex).map((term, index) => (
             <div
               key={term.id}
-              ref={(ref) => (termRefs.current[index] = ref)}
-              tabIndex={-1}
-              className={joinClasses(index === termFocusIndex ? "underline" : "", "py-1")}
+              className={joinClasses(
+                index === termFocusIndex ? "underline focus-ring" : "",
+                "py-1",
+              )}
             >
               <div className="text-xl">
                 <span className="font-bold">{term.text}</span>&nbsp;

@@ -10,13 +10,7 @@ export function useFocusTextWithKeyboard(
   isTokenSelected: boolean,
   onCreateTextNote: () => void,
   onEscape: () => void,
-): readonly [
-  number,
-  number,
-  (element: HTMLElement) => void,
-  (partFocusIndex: number, textFocusIndex: number) => void,
-] {
-  const [focusElement, focusLastElement] = useFocusElement()
+): readonly [number, number, (partFocusIndex: number, textFocusIndex: number) => void] {
   const [partFocusIndex, textFocusIndex, decrementText, incrementText, setText] =
     useChangeFocus(parts)
 
@@ -28,7 +22,6 @@ export function useFocusTextWithKeyboard(
       switch (e.code) {
         case "Escape":
           if (!isTokenSelected) return
-          focusLastElement()
           onEscape()
           break
         default:
@@ -54,17 +47,9 @@ export function useFocusTextWithKeyboard(
 
       e.preventDefault()
     },
-    [
-      stopKeyboardEvents,
-      isTokenSelected,
-      focusLastElement,
-      onEscape,
-      decrementText,
-      incrementText,
-      onCreateTextNote,
-    ],
+    [stopKeyboardEvents, isTokenSelected, onEscape, decrementText, incrementText, onCreateTextNote],
   )
-  return [partFocusIndex, textFocusIndex, focusElement, setText] as const
+  return [partFocusIndex, textFocusIndex, setText] as const
 }
 
 export function getUsage(source: Source, partFocusIndex: number, textFocusIndex: number) {
@@ -76,16 +61,6 @@ export function getUsage(source: Source, partFocusIndex: number, textFocusIndex:
     usage: tokenizedText.text,
     usageTranslation: tokenizedText.translation,
   }
-}
-
-function useFocusElement(): readonly [(element: HTMLElement) => void, () => void] {
-  const [lastFocusedElement, setLastFocusedElement] = useState<HTMLElement | null>(null)
-  const focusElement = useCallback((element: HTMLElement) => {
-    setLastFocusedElement(element)
-    element.focus()
-  }, [])
-
-  return [focusElement, () => lastFocusedElement?.focus()] as const
 }
 
 function useChangeFocus(
