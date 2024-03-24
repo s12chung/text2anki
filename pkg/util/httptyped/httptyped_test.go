@@ -144,7 +144,7 @@ func TestStructureMap(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, StructureMap(reflect.TypeOf(tc.str))))
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), StructureMap(reflect.TypeOf(tc.str)))
 		})
 	}
 }
@@ -185,7 +185,7 @@ func TestPrepareModel(t *testing.T) {
 				return
 			}
 			require.NoError(err)
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, tc.model))
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), tc.model)
 		})
 	}
 }

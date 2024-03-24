@@ -73,7 +73,7 @@ func init() {
 		args[i+1] = "2023-11-21_10-42-44_UTC_" + strconv.Itoa(suffix) + extensions[0]
 	}
 
-	extractToDirArgs = func(login, id string) []string { return args }
+	extractToDirArgs = func(_, _ string) []string { return args }
 }
 
 func TestPost_ExtractToDir(t *testing.T) {
@@ -106,7 +106,7 @@ func TestPost_ExtractToDir(t *testing.T) {
 			for i, entry := range entries {
 				entryNames[i] = entry.Name()
 			}
-			fixture.CompareReadOrUpdate(t, filepath.Join(testName, tc.name+".json"), fixture.JSON(t, entryNames))
+			fixture.CompareReadOrUpdateJSON(t, filepath.Join(testName, tc.name), entryNames)
 		})
 	}
 }
@@ -117,5 +117,5 @@ func TestPost_Info(t *testing.T) {
 
 	info, err := NewPost("https://testpostinfo.com").Info(fixture.JoinTestData(testName))
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, filepath.Join(testName, "postInfo.json"), fixture.JSON(t, info))
+	fixture.CompareReadOrUpdateJSON(t, filepath.Join(testName, "postInfo"), info)
 }

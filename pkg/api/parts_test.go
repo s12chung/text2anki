@@ -12,6 +12,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test"
 )
 
+const txtExt = ".txt"
+
 func TestRoutes_PartCreateMulti(t *testing.T) {
 	testName := "TestRoutes_PartCreateMulti"
 	test.CISkip(t, "can't run C environment in CI")
@@ -73,7 +75,7 @@ func TestRoutes_PartCreate(t *testing.T) {
 			txQs := testdb.TxQs(t, db.WriteOpts())
 			created := createdSource(t, txQs)
 
-			body := sourceCreateRequestPartFromFile(t, testName, tc.name+".txt")
+			body := sourceCreateRequestPartFromFile(t, testName, tc.name+txtExt)
 			req := sourcesServer.NewTxRequest(t, txQs, http.MethodPost, joinPath(created.ID, "parts"), bytes.NewReader(test.JSON(t, body)))
 			testSourceResponse(t, req, txQs, testName, tc.name, tc.expectedCode)
 		})
@@ -103,7 +105,7 @@ func TestRoutes_PartUpdate(t *testing.T) {
 			txQs := testdb.TxQs(t, db.WriteOpts())
 			created := createdSource(t, txQs)
 
-			body := sourceCreateRequestPartFromFile(t, testName, tc.name+".txt")
+			body := sourceCreateRequestPartFromFile(t, testName, tc.name+txtExt)
 			req := sourcesServer.NewTxRequest(t, txQs, http.MethodPatch, joinPath(created.ID, "parts", tc.index), bytes.NewReader(test.JSON(t, body)))
 			testSourceResponse(t, req, txQs, testName, tc.name, tc.expectedCode)
 		})

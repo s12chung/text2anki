@@ -112,7 +112,7 @@ func TestTreeFromKeys(t *testing.T) {
 				return
 			}
 			require.NoError(err)
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, tree))
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), tree)
 		})
 	}
 }
@@ -131,7 +131,7 @@ func TestUnmarshallTree(t *testing.T) {
 		return path.Join("testPrefix", key), nil
 	})
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, obj))
+	fixture.CompareReadOrUpdateJSON(t, testName, obj)
 }
 
 func TestMapTree(t *testing.T) {
@@ -144,7 +144,7 @@ func TestMapTree(t *testing.T) {
 
 	tree, err := mapTree(basicTree, keySuffix)
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, tree))
+	fixture.CompareReadOrUpdateJSON(t, testName, tree)
 
 	basicTree = nil
 	tree, err = mapTree(basicTree, keySuffix)

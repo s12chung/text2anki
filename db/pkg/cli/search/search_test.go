@@ -26,7 +26,7 @@ func TestTermsSearchToCSVRows(t *testing.T) {
 	require.NoError(err)
 	rows, err := TermsSearchToCSVRows(terms)
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, rows))
+	fixture.CompareReadOrUpdateJSON(t, testName, rows)
 
 	_, err = txQs.TermsSearchRaw(txQs.Ctx(), testdb.SearchTerm, testdb.SearchPOS, db.TermsSearchConfig{
 		PosWeight:    30,
@@ -46,7 +46,7 @@ var changedTestConfig = Config{
 func TestConfigToCSVRows(t *testing.T) {
 	testName := "TestConfigToCSVRows"
 	rows := ConfigToCSVRows()
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, rows))
+	fixture.CompareReadOrUpdateJSON(t, testName, rows)
 }
 
 func TestGetOrDefaultConfig(t *testing.T) {

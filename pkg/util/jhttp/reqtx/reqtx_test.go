@@ -133,7 +133,7 @@ func TestIntegrator_ResponseWrap(t *testing.T) {
 			}
 			req = integrator.SetTxModeContext(req, tc.mode)
 
-			model, httpErr := integrator.ResponseWrap(func(r *http.Request, tx Tx) (any, *jhttp.HTTPError) {
+			model, httpErr := integrator.ResponseWrap(func(_ *http.Request, _ Tx) (any, *jhttp.HTTPError) {
 				return nil, tc.reqErr
 			})(req)
 

@@ -48,7 +48,7 @@ func TestKoreanBasic_Search(t *testing.T) {
 
 			terms, err := dict.Search(context.Background(), tc.searchTerm, tc.pos)
 			require.NoError(err)
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name)+".json", fixture.JSON(t, terms))
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), terms)
 		})
 	}
 }

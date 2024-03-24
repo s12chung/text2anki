@@ -26,7 +26,7 @@ func TestToDBTerm(t *testing.T) {
 	require.NoError(err)
 	test.EmptyFieldsMatch(t, dbTerm)
 
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, dbTerm))
+	fixture.CompareReadOrUpdateJSON(t, testName, dbTerm)
 }
 
 func TestTerm_DictionaryTerm(t *testing.T) {
@@ -52,7 +52,7 @@ func TestTerm_DictionaryTerm(t *testing.T) {
 			require.NoError(err)
 			test.EmptyFieldsMatch(t, dictTerm)
 
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, dictTerm))
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), dictTerm)
 		})
 	}
 }
@@ -68,7 +68,7 @@ func TestTerm_CreateParams(t *testing.T) {
 
 	createParams := term.CreateParams()
 	test.EmptyFieldsMatch(t, createParams)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
+	fixture.CompareReadOrUpdateJSON(t, testName, createParams)
 }
 
 func TestQueries_TermsSearchRaw(t *testing.T) {

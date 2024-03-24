@@ -23,7 +23,7 @@ func TestKrDict_Search(t *testing.T) {
 	for _, pos := range []lang.PartOfSpeech{lang.PartOfSpeechEmpty, lang.PartOfSpeechOther} {
 		terms, err := dict.Search(context.Background(), "마음", pos)
 		require.NoError(err)
-		fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))
+		fixture.CompareReadOrUpdateJSON(t, testName, terms)
 	}
 }
 
