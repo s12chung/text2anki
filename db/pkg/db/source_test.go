@@ -56,7 +56,7 @@ func TestSourcePartMedia_MarshalJSON(t *testing.T) {
 			if tc.prepareSerialize {
 				source.PrepareSerialize()
 			}
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, source.StaticCopy()))
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), source.StaticCopy())
 		})
 	}
 }
@@ -108,7 +108,7 @@ func TestSourceStructured_UpdateParams(t *testing.T) {
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 	updateParams := firstSource(t, txQs).ToSourceStructured().UpdateParams()
 	test.EmptyFieldsMatch(t, updateParams)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, updateParams))
+	fixture.CompareReadOrUpdateJSON(t, testName, updateParams)
 }
 
 func TestSourceStructured_UpdatePartsParams(t *testing.T) {
@@ -118,7 +118,7 @@ func TestSourceStructured_UpdatePartsParams(t *testing.T) {
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 	updateParams := firstSource(t, txQs).ToSourceStructured().UpdatePartsParams()
 	test.EmptyFieldsMatch(t, updateParams)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, updateParams))
+	fixture.CompareReadOrUpdateJSON(t, testName, updateParams)
 }
 
 func TestSourceStructured_CreateParams(t *testing.T) {
@@ -128,7 +128,7 @@ func TestSourceStructured_CreateParams(t *testing.T) {
 	test.EmptyFieldsMatch(t, firstSource(t, txQs))
 	createParams := firstSource(t, txQs).ToSourceStructured().CreateParams()
 	test.EmptyFieldsMatch(t, createParams)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
+	fixture.CompareReadOrUpdateJSON(t, testName, createParams)
 }
 
 func TestSource_ToSource_ToSourceStructured(t *testing.T) {
@@ -193,7 +193,7 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 			nonSpeaker := strings.TrimPrefix(tc.name, "speaker_")
 			mutex.Lock()
 			t.Cleanup(mutex.Unlock)
-			fixture.CompareReadOrUpdate(t, path.Join(testName, nonSpeaker+".json"), fixture.JSON(t, tokenizedTexts))
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, nonSpeaker), tokenizedTexts)
 		})
 	}
 }

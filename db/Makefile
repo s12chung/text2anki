@@ -35,7 +35,7 @@ test.fixtures: testdb
 	@echo; echo
 	UPDATE_FIXTURES=true make test | $(FIXTURE_CLEAN_OUTPUT)
 
-SQLC_VERSION = 1.21.0
+SQLC_VERSION = 1.25.0
 SQLC_URL := https://github.com/kyleconroy/sqlc/releases/download/v$(SQLC_VERSION)/sqlc_$(SQLC_VERSION)_linux_amd64.tar.gz
 ci.setup:
 	curl -sSL $(SQLC_URL) | tar zxvf - -C ../$(CI_BIN)

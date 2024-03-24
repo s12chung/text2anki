@@ -30,7 +30,7 @@ func TestNote_CreateParams(t *testing.T) {
 
 	createParams := firstNote(t, txQs).CreateParams()
 	test.EmptyFieldsMatch(t, createParams)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParams))
+	fixture.CompareReadOrUpdateJSON(t, testName, createParams)
 }
 
 func TestNote_Anki(t *testing.T) {
@@ -41,7 +41,7 @@ func TestNote_Anki(t *testing.T) {
 	ankiNote, err := firstNote(t, txQs).Anki()
 	require.NoError(err)
 	test.EmptyFieldsMatch(t, ankiNote, "usageSoundSource")
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, ankiNote))
+	fixture.CompareReadOrUpdateJSON(t, testName, ankiNote)
 
 	note := firstNote(t, txQs)
 	note.CommonLevel = -1
@@ -67,7 +67,7 @@ func TestAnkiNotes(t *testing.T) {
 	for _, note := range ankiNotes {
 		test.EmptyFieldsMatch(t, note, "usageSoundSource")
 	}
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, ankiNotes))
+	fixture.CompareReadOrUpdateJSON(t, testName, ankiNotes)
 }
 
 func TestQueries_NoteCreate(t *testing.T) {

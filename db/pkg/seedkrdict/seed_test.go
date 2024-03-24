@@ -13,6 +13,8 @@ import (
 	"github.com/s12chung/text2anki/pkg/util/test/fixture"
 )
 
+const xmlExt = ".xml"
+
 func TestSeed(t *testing.T) {
 	testName := "TestSeed"
 	t.Parallel()
@@ -27,7 +29,7 @@ func TestSeedFile(t *testing.T) {
 	t.Parallel()
 
 	testSeed(t, testName, func(tx db.Tx) error {
-		return SeedFile(tx, fixture.Read(t, testName+".xml"))
+		return SeedFile(tx, fixture.Read(t, testName+xmlExt))
 	})
 }
 
@@ -45,7 +47,7 @@ func testSeed(t *testing.T, testName string, testFunc func(tx db.Tx) error) {
 
 	terms, err := txQs.TermsPopular(txQs.Ctx())
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))
+	fixture.CompareReadOrUpdateJSON(t, testName, terms)
 }
 
 func TestUnmarshallRscPath(t *testing.T) {
@@ -55,7 +57,7 @@ func TestUnmarshallRscPath(t *testing.T) {
 
 	lexes, err := UnmarshallRscPath(fixture.JoinTestData(testName))
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, lexes))
+	fixture.CompareReadOrUpdateJSON(t, testName, lexes)
 }
 
 func TestUnmarshallRscXML(t *testing.T) {
@@ -63,9 +65,9 @@ func TestUnmarshallRscXML(t *testing.T) {
 	testName := "TestUnmarshallRscXML"
 	t.Parallel()
 
-	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
+	lex, err := UnmarshallRscXML(fixture.Read(t, testName+xmlExt))
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, lex))
+	fixture.CompareReadOrUpdateJSON(t, testName, lex)
 }
 
 func TestIsNoTranslationsFoundError(t *testing.T) {
@@ -80,7 +82,7 @@ func TestLexicalEntry_CreateParams(t *testing.T) {
 	testName := "TestLexicalEntry_CreateParams"
 	t.Parallel()
 
-	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
+	lex, err := UnmarshallRscXML(fixture.Read(t, testName+xmlExt))
 	require.NoError(err)
 
 	createParamsArray := []db.TermCreateParams{}
@@ -89,7 +91,7 @@ func TestLexicalEntry_CreateParams(t *testing.T) {
 		require.NoError(err)
 		createParamsArray = append(createParamsArray, createParams)
 	}
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, createParamsArray))
+	fixture.CompareReadOrUpdateJSON(t, testName, createParamsArray)
 }
 
 func TestLexicalEntry_Term(t *testing.T) {
@@ -97,7 +99,7 @@ func TestLexicalEntry_Term(t *testing.T) {
 	testName := "TestLexicalEntry_Term"
 	t.Parallel()
 
-	lex, err := UnmarshallRscXML(fixture.Read(t, testName+".xml"))
+	lex, err := UnmarshallRscXML(fixture.Read(t, testName+xmlExt))
 	require.NoError(err)
 
 	terms := []dictionary.Term{}
@@ -106,7 +108,7 @@ func TestLexicalEntry_Term(t *testing.T) {
 		require.NoError(err)
 		terms = append(terms, term)
 	}
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, terms))
+	fixture.CompareReadOrUpdateJSON(t, testName, terms)
 }
 
 func TestFindGoodExample(t *testing.T) {

@@ -56,7 +56,7 @@ func TestParser_Texts(t *testing.T) {
 			}
 			require.NoError(err)
 
-			fixture.CompareReadOrUpdate(t, testNamePath+tc.name+".json", fixture.JSON(t, texts))
+			fixture.CompareReadOrUpdateJSON(t, testNamePath+tc.name, texts)
 		})
 	}
 }

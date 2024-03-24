@@ -58,7 +58,7 @@ func TestDBStorage_SignPut(t *testing.T) {
 
 	req, err := newTestDBStorage().SignPut("test_table", "test_column", ".txt")
 	require.NoError(err)
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, req))
+	fixture.CompareReadOrUpdateJSON(t, testName, req)
 }
 
 var basicConfig = SignPutConfig{
@@ -119,7 +119,7 @@ func TestDBStorage_SignPutTree(t *testing.T) {
 			}
 			require.NoError(err)
 			require.NotEmpty(resp.ID)
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, resp))
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), resp)
 		})
 	}
 }
@@ -180,8 +180,8 @@ func TestDBStorage_PutTree(t *testing.T) {
 				return
 			}
 			require.NoError(err)
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, keyTree))
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+"_storeMap.json"), fixture.JSON(t, api.storeMap))
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), keyTree)
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name+"_storeMap"), api.storeMap)
 		})
 	}
 }
@@ -249,7 +249,7 @@ func TestDBStorage_KeyTree(t *testing.T) {
 	err := newTestDBStorage().KeyTree("sources", "parts", testUUID, &prePartList)
 	require.NoError(err)
 
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, prePartList))
+	fixture.CompareReadOrUpdateJSON(t, testName, prePartList)
 
 	err = newTestDBStorage().SignGetTree("sources", "parts", "some_bad_id", nil)
 	require.Error(err)
@@ -294,7 +294,7 @@ func TestDBStorage_SignGetTree(t *testing.T) {
 				return
 			}
 			require.NoError(err)
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, prePartList))
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), prePartList)
 		})
 	}
 }
@@ -313,7 +313,7 @@ func TestDBStorage_SignGetTreeFromKeyTree(t *testing.T) {
 	err := newTestDBStorage().SignGetTreeFromKeyTree(media, &signedTree)
 	require.NoError(err)
 
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, signedTree))
+	fixture.CompareReadOrUpdateJSON(t, testName, signedTree)
 
 	err = newTestDBStorage().SignGetTreeFromKeyTree(media, signedTree)
 	require.Equal(fmt.Errorf("signedTree, storage.SourcePartMediaResponse, is not a pointer"), err)
@@ -329,7 +329,7 @@ func TestDBStorage_KeyTreeFromSignGetTree(t *testing.T) {
 	err := newTestDBStorage().KeyTreeFromSignGetTree(signedTree, &media)
 	require.NoError(err)
 
-	fixture.CompareReadOrUpdate(t, testName+".json", fixture.JSON(t, media))
+	fixture.CompareReadOrUpdateJSON(t, testName, media)
 
 	err = newTestDBStorage().KeyTreeFromSignGetTree(signedTree, media)
 	require.Equal(fmt.Errorf("keyTree, storage.SourcePartMedia, is not a pointer"), err)

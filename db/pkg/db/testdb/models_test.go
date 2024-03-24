@@ -49,7 +49,7 @@ func TestSeedList(t *testing.T) {
 				require.True(ok)
 				resultMap[k] = s.seedCount
 			}
-			fixture.CompareReadOrUpdate(t, path.Join(testName, tc.name+".json"), fixture.JSON(t, resultMap))
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), resultMap)
 		})
 	}
 }

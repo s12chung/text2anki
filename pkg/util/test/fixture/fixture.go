@@ -89,6 +89,11 @@ func CompareReadOrUpdate(t *testing.T, fixturePath string, resultBytes []byte) {
 	require.Equal(string(expected), strings.TrimSpace(string(resultBytes)))
 }
 
+// CompareReadOrUpdateJSON calls CompareReadOrUpdate, but adds .json to the fixturePath and calls JSON on the resultBytes
+func CompareReadOrUpdateJSON(t *testing.T, fixturePath string, obj any) {
+	CompareReadOrUpdate(t, fixturePath+".json", JSON(t, obj))
+}
+
 // CompareRead calls Read and compares the result against it
 func CompareRead(t *testing.T, fixturePath string, resultBytes []byte) {
 	require := require.New(t)

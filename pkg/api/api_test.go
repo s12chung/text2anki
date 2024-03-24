@@ -31,6 +31,7 @@ import (
 const testUUID = "123e4567-e89b-12d3-a456-426614174000"
 const extractorType = "testy"
 const sourcePartMediaImageContents = "api_test.init() image"
+const jsonExt = ".json"
 
 type UUIDTest struct{}
 
@@ -119,7 +120,7 @@ func TestHttpTypedRegistry(t *testing.T) {
 
 	fileNames := make([]string, len(httptyped.Types()))
 	for i, typ := range httptyped.Types() {
-		fileName := typ.String() + ".json"
+		fileName := typ.String() + jsonExt
 		fixture.CompareReadOrUpdate(t, path.Join(testName, fileName), fixture.JSON(t, httptyped.StructureMap(typ)))
 		fileNames[i] = fileName
 	}
@@ -143,7 +144,7 @@ func TestRoutes_Router(t *testing.T) {
 	require.NoError(err)
 	resp := test.HTTPDo(t, txPool.SetTx(t, req, txQs, txReadOnly))
 	resp.EqualCode(t, http.StatusOK)
-	fixture.CompareReadOrUpdate(t, testName+".json", test.StaticCopy(t, resp.Body.Bytes(), &db.SourceStructured{}))
+	fixture.CompareReadOrUpdate(t, testName+jsonExt, test.StaticCopy(t, resp.Body.Bytes(), &db.SourceStructured{}))
 
 	req, err = http.NewRequestWithContext(txQs.Ctx(), http.MethodGet, server.URL+"/healthz", nil)
 	require.NoError(err)

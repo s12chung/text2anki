@@ -100,7 +100,7 @@ func TestNote_SetSound(t *testing.T) {
 
 func TestNote_CSV(t *testing.T) {
 	testName := "TestNote_CSV"
-	fixture.CompareReadOrUpdate(t, testName+".json", test.JSON(t, notesFromFixture(t)[0].CSV()))
+	fixture.CompareReadOrUpdateJSON(t, testName, notesFromFixture(t)[0].CSV())
 }
 
 func TestNote_UsageSoundFilename(t *testing.T) {
