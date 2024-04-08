@@ -1,7 +1,7 @@
 package instagram
 
 import (
-	"fmt"
+	"errors"
 	"os"
 	"path"
 	"path/filepath"
@@ -84,7 +84,7 @@ func TestPost_ExtractToDir(t *testing.T) {
 		url  string
 		err  error
 	}{
-		{name: "broken", url: "https://waka.com", err: fmt.Errorf("url is not verified for instagram: https://waka.com")},
+		{name: "broken", url: "https://waka.com", err: errors.New("url is not verified for instagram: https://waka.com")},
 		{name: "fake", url: testURL},
 	}
 	for _, tc := range testCases {

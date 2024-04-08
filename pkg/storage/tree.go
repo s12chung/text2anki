@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"path"
@@ -132,7 +133,7 @@ func putTreeSlice(nameToValidExts SignPutNameToValidExts, srcTree, destTree refl
 	}
 
 	destTree.Set(reflect.MakeSlice(destTree.Type(), srcTree.Len(), srcTree.Len()))
-	for i := 0; i < srcTree.Len(); i++ {
+	for i := range srcTree.Len() {
 		if err := treeFunc(nameToValidExts, srcTree.Index(i), destTree.Index(i), current+"["+strconv.Itoa(i)+"]"); err != nil {
 			return err
 		}
@@ -148,9 +149,9 @@ func putTreeStruct(nameToValidExts SignPutNameToValidExts, srcTree, destTree ref
 	if !destTree.IsValid() || destTree.Kind() != reflect.Struct {
 		return fmt.Errorf("destTree not valid Struct at %v", current)
 	}
-	for i := 0; i < srcTree.NumField(); i++ {
+	for i := range srcTree.NumField() {
 		shortName := srcTree.Type().Field(i).Name
-		requestName := shortName
+		requestName := shortName //nolint:copyloopvar // an actual working copy
 		if strings.HasSuffix(shortName, srcSuffix) {
 			shortName = shortName[:len(shortName)-len(srcSuffix)]
 			requestName = shortName + destSuffix
@@ -353,7 +354,7 @@ func mapTreeFromValue(current reflect.Value, fieldSuffix string) (any, error) {
 		return current.String(), nil
 	case reflect.Slice, reflect.Array:
 		treeObjSlice := make([]any, current.Len())
-		for i := 0; i < current.Len(); i++ {
+		for i := range current.Len() {
 			value, err := mapTreeFromValue(current.Index(i), fieldSuffix)
 			if err != nil {
 				return nil, err
@@ -363,7 +364,7 @@ func mapTreeFromValue(current reflect.Value, fieldSuffix string) (any, error) {
 		return treeObjSlice, nil
 	case reflect.Struct:
 		treeObjMap := map[string]any{}
-		for i := 0; i < current.NumField(); i++ {
+		for i := range current.NumField() {
 			fieldType := current.Type().Field(i)
 			if !fieldType.IsExported() {
 				continue
@@ -469,7 +470,7 @@ const IDFieldName = "ID"
 func setID(id string, obj any) (reflect.Value, error) {
 	value := reflect.ValueOf(obj)
 	if !value.IsValid() {
-		return reflect.Value{}, fmt.Errorf("passed nil as settable obj")
+		return reflect.Value{}, errors.New("passed nil as settable obj")
 	}
 	if value.Kind() != reflect.Pointer {
 		return reflect.Value{}, fmt.Errorf("%v is not a pointer", value.Type().String())

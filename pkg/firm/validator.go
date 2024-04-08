@@ -1,6 +1,7 @@
 package firm
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -21,7 +22,7 @@ func NewStruct[T any](ruleMap RuleMap) (Struct[T], error) {
 // NewStructAny returns a new StructAny
 func NewStructAny(typ reflect.Type, ruleMap RuleMap) (StructAny, error) {
 	if typ == nil {
-		return StructAny{}, fmt.Errorf("type, nil, is not a Struct")
+		return StructAny{}, errors.New("type, nil, is not a Struct")
 	}
 	if typ.Kind() != reflect.Struct {
 		return StructAny{}, fmt.Errorf("type, %v, is not a Struct", typ.String())
@@ -40,9 +41,8 @@ func NewStructAny(typ reflect.Type, ruleMap RuleMap) (StructAny, error) {
 	}
 
 	rm := map[string]*[]Rule{}
-	for k, v := range ruleMap {
-		rules := v
-		rm[k] = &rules
+	for k, rules := range ruleMap {
+		rm[k] = &rules //nolint:exportloopref // want to pass the pointer
 	}
 	return StructAny{typ: typ, ruleMap: rm}, nil
 }
@@ -109,7 +109,7 @@ func NewSlice[T []U, U any](elementRules ...Rule) (Slice[T, U], error) {
 // NewSliceAny returns the Slice validator without generics
 func NewSliceAny(typ reflect.Type, elementRules ...Rule) (SliceAny, error) {
 	if typ == nil {
-		return SliceAny{}, fmt.Errorf("type, nil, is not a Slice or Array")
+		return SliceAny{}, errors.New("type, nil, is not a Slice or Array")
 	}
 	kind := typ.Kind()
 	if kind != reflect.Slice && kind != reflect.Array {
@@ -147,7 +147,7 @@ func (s SliceAny) ValidateValue(value reflect.Value) ErrorMap { return validateV
 
 // ValidateMerge validates the data value, also doing a merge with the errorMap (assumes TypeCheck is called)
 func (s SliceAny) ValidateMerge(value reflect.Value, key string, errorMap ErrorMap) {
-	for i := 0; i < value.Len(); i++ {
+	for i := range value.Len() {
 		// no control over types, so indirect
 		v := indirect(value.Index(i))
 		validateMerge(v, joinKeys(key, "["+strconv.Itoa(i)+"]"), errorMap, s.elementRules)
@@ -177,7 +177,7 @@ func NewValue[T any](rules ...Rule) (Value[T], error) {
 // NewValueAny returns a ValueAny
 func NewValueAny(typ reflect.Type, rules ...Rule) (ValueAny, error) {
 	if typ == nil {
-		return ValueAny{}, fmt.Errorf("type is nil, not recommended")
+		return ValueAny{}, errors.New("type is nil, not recommended")
 	}
 	if typ.Kind() == reflect.Pointer {
 		return ValueAny{}, fmt.Errorf("type, %v, is a Pointer, not recommended", typ.String())

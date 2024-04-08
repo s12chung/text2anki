@@ -49,7 +49,7 @@ func TestNewStructPkg(t *testing.T) {
 
 			validator, err := firm.NewStruct[nonExport](tc.ruleMap)
 			require.NoError(err)
-			require.True(validator.ValidateAny(notEmpty) == nil)
+			require.Nil(validator.ValidateAny(notEmpty))
 			require.Equal(tc.failErr, validator.ValidateAny(nonExport{}))
 		})
 	}

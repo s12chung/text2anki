@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io/fs"
 	"strings"
 	"time"
@@ -265,7 +265,7 @@ func (t TextTokenizer) TokenizedTexts(ctx context.Context, s, translation string
 // TokenizeTexts takes the texts and tokenizes them
 func (t TextTokenizer) TokenizeTexts(ctx context.Context, texts []text.Text) ([]TokenizedText, error) {
 	if !t.Tokenizer.IsSetup() {
-		return nil, fmt.Errorf("TextTokenizer not set up")
+		return nil, errors.New("TextTokenizer not set up")
 	}
 
 	tokenizedTexts := make([]TokenizedText, len(texts))

@@ -28,8 +28,7 @@ func (n Not) ErrorMap() firm.ErrorMap {
 	}
 
 	errorMap := firm.ErrorMap{}
-	for k, v := range original {
-		err := v
+	for k, err := range original {
 		err.Template += "--Not"
 		errorMap["Not"+k] = err
 	}

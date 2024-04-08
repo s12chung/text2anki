@@ -2,7 +2,7 @@ package httptyped
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"path"
 	"reflect"
 	"testing"
@@ -160,7 +160,7 @@ func TestPrepareModel(t *testing.T) {
 	testName := "TestPrepareModel"
 	DefaultRegistry.RegisterType(testObj{})
 	DefaultRegistry.RegisterType(WithSerializedParent{})
-	notRegisteredErr := fmt.Errorf("httptyped.invalidTestObj is not registered to httptyped")
+	notRegisteredErr := errors.New("httptyped.invalidTestObj is not registered to httptyped")
 
 	testCases := []struct {
 		name  string

@@ -25,6 +25,7 @@ typedef struct khaiii_word_t_ {
 import "C"
 
 import (
+	"errors"
 	"fmt"
 	"unsafe"
 )
@@ -70,7 +71,7 @@ func (k *Khaiii) Version() string {
 // Open opens the training resource directory
 func (k *Khaiii) Open(rscDir string) error {
 	if k.openHandle != 0 {
-		return fmt.Errorf("Khaiii.Open() is already open")
+		return errors.New("Khaiii.Open() is already open")
 	}
 	openHandle := open(rscDir, "{}")
 	if openHandle == -1 {
@@ -83,7 +84,7 @@ func (k *Khaiii) Open(rscDir string) error {
 // Analyze analyzes the input string
 func (k *Khaiii) Analyze(input string) ([]Word, error) {
 	if k.openHandle <= 0 {
-		return nil, fmt.Errorf("Khaiii.Open() invalid for Analyze()")
+		return nil, errors.New("Khaiii.Open() invalid for Analyze()")
 	}
 
 	var err error

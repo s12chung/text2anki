@@ -28,8 +28,7 @@ func TestNot_ValidateValue(t *testing.T) {
 			require := require.New(t)
 
 			var expected firm.ErrorMap
-			for k, v := range tc.errorMap {
-				err := v
+			for k, err := range tc.errorMap {
 				if expected == nil {
 					expected = firm.ErrorMap{}
 				}

@@ -3,6 +3,7 @@ package instagram
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -99,7 +100,7 @@ func numberPadFilenames(cacheDir string) error {
 	for _, filename := range filenames {
 		parts := strings.Split(filename, "_")
 		if len(parts) < 2 {
-			return fmt.Errorf("file found with no underscore")
+			return errors.New("file found with no underscore")
 		}
 		numberPart := strings.Split(parts[len(parts)-1], ".")[0]
 		number, err := strconv.Atoi(numberPart)

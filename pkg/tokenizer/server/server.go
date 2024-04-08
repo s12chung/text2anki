@@ -207,7 +207,7 @@ func (s *CmdTokenizerServer) StopAndWait() error {
 		time.Sleep(sleepTime)
 	}
 	if s.isRunning {
-		return fmt.Errorf("CmdServer running after timeout Stop()")
+		return errors.New("CmdServer running after timeout Stop()")
 	}
 	return nil
 }
@@ -215,7 +215,7 @@ func (s *CmdTokenizerServer) StopAndWait() error {
 // ForceStop forces the server to stop via kill
 func (s *CmdTokenizerServer) ForceStop() error {
 	if s.isRunning {
-		return fmt.Errorf("will not ForceStop() while IsRunning()")
+		return errors.New("will not ForceStop() while IsRunning()")
 	}
 	s.cancel()
 	return nil

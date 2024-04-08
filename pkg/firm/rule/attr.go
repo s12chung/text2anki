@@ -48,8 +48,7 @@ func (a Attr) errorMap(original firm.ErrorMap) firm.ErrorMap {
 	}
 
 	errorMap := firm.ErrorMap{}
-	for k, v := range original {
-		err := v
+	for k, err := range original {
 		if err.TemplateFields == nil {
 			err.TemplateFields = map[string]string{}
 		}

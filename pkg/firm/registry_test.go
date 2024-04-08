@@ -1,7 +1,7 @@
 package firm
 
 import (
-	"fmt"
+	"errors"
 	"reflect"
 	"strings"
 	"testing"
@@ -48,7 +48,7 @@ func TestRegistry_RegisterType(t *testing.T) {
 	require.Equal(typeToValidator, registry.typeToValidator)
 	require.Equal(map[reflect.Type][]*[]Rule{}, registry.unregisteredTypeRefs)
 
-	require.Equal(fmt.Errorf("RegisterType() with type firm.registryParent already exists"),
+	require.Equal(errors.New("RegisterType() with type firm.registryParent already exists"),
 		registry.RegisterType(NewDefinition[registryParent]().ValidatesTopLevel(presentRule{})))
 }
 

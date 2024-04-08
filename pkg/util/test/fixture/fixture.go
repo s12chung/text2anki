@@ -49,13 +49,13 @@ func Update(t *testing.T, fixturePath string, resultBytes []byte) {
 	}
 
 	err := os.MkdirAll(path.Join(TestDataDir, filepath.Dir(fixturePath)), os.ModePerm)
-	assert.NoError(err)
+	assert.NoError(err) //nolint:testifylint // requires assert to keep making more fixtures
 
 	err = os.WriteFile(JoinTestData(fixturePath), resultBytes, ioutil.OwnerRWGroupR)
-	assert.NoError(err)
+	assert.NoError(err) //nolint:testifylint // requires assert to keep making more fixtures
 
 	if WillUpdate() {
-		assert.Fail(UpdateFailMessage)
+		assert.Fail(UpdateFailMessage) //nolint:testifylint // requires assert to keep making more fixtures
 	}
 }
 

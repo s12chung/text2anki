@@ -2,7 +2,7 @@ package reqtx
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -22,7 +22,7 @@ type txn struct {
 
 func (t *txn) Finalize() error {
 	if t.mode == finalizeErrorMode {
-		return fmt.Errorf("test: finalizeErrorMode")
+		return errors.New("test: finalizeErrorMode")
 	}
 
 	t.finalizeCount++
@@ -42,7 +42,7 @@ type pool struct{ txn *txn }
 
 func (p *pool) GetTx(r *http.Request, mode txMode) (Tx, error) {
 	if mode != okMode && mode != finalizeErrorMode {
-		return nil, fmt.Errorf("test: !okMode")
+		return nil, errors.New("test: !okMode")
 	}
 	if p.txn == nil {
 		p.txn = &txn{ctx: r.Context(), mode: mode}
@@ -76,7 +76,7 @@ func TestTxMode(t *testing.T) {
 	}{
 		{name: "normal", expectedMode: 1},
 		{name: "nil", mode: nil},
-		{name: "string", mode: "fail", err: jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to reqtx.txMode fail"))},
+		{name: "string", mode: "fail", err: jhttp.Error(http.StatusInternalServerError, errors.New("cast to reqtx.txMode fail"))},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -113,12 +113,12 @@ func TestIntegrator_ResponseWrap(t *testing.T) {
 		errFinalizeErrorCount int
 	}{
 		{name: "normal"},
-		{name: "req_error", reqErr: jhttp.Error(http.StatusBadRequest, fmt.Errorf("test_induced"))},
-		{name: "bad_mode", mode: -9, err: jhttp.Error(http.StatusInternalServerError, fmt.Errorf("test: !okMode"))},
+		{name: "req_error", reqErr: jhttp.Error(http.StatusBadRequest, errors.New("test_induced"))},
+		{name: "bad_mode", mode: -9, err: jhttp.Error(http.StatusInternalServerError, errors.New("test: !okMode"))},
 		{name: "finalize_fail", mode: finalizeErrorMode,
 			errMode:               finalizeErrorMode,
 			errFinalizeErrorCount: 1,
-			err:                   jhttp.Error(http.StatusInternalServerError, fmt.Errorf("test: finalizeErrorMode"))},
+			err:                   jhttp.Error(http.StatusInternalServerError, errors.New("test: finalizeErrorMode"))},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -138,7 +138,7 @@ func TestIntegrator_ResponseWrap(t *testing.T) {
 			tx, err := integrator.GetTx(req, okMode)
 			require.NoError(err)
 
-			require.Equal(nil, model)
+			require.Nil(model)
 			if tc.err != nil {
 				require.Equal(tc.err, httpErr)
 				require.Equal(&txn{ctx: req.Context(), mode: tc.errMode, finalizeErrorCount: tc.errFinalizeErrorCount}, tx)

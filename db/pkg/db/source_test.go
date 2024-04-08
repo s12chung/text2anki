@@ -65,14 +65,14 @@ func setupParts(t *testing.T, part SourcePart, prePartListID string) []SourcePar
 
 	parts := make([]SourcePart, 3)
 	baseKey := storage.BaseKey(SourcesTable, PartsColumn, prePartListID)
-	for i := 0; i < len(parts); i++ {
+	for i := range len(parts) {
 		parts[i] = part
 
 		key := baseKey + ".PreParts[" + strconv.Itoa(i) + "].Image.txt"
 		parts[i].Media = &SourcePartMedia{ImageKey: key}
 		require.NoError(storageAPI.Store(key, bytes.NewReader([]byte("image"+strconv.Itoa(i)))))
 	}
-	for i := 0; i < 1; i++ {
+	for i := range 1 {
 		key := baseKey + ".PreParts[0].Audio.txt"
 		parts[i].Media.AudioKey = key
 		require.NoError(storageAPI.Store(key, bytes.NewReader([]byte("audio"+strconv.Itoa(i)+"!"))))

@@ -27,7 +27,7 @@ func TestParseSubtitles(t *testing.T) {
 				fixture.JoinTestData(testName, tc.name+"_source.vtt"),
 				fixture.JoinTestData(testName, tc.name+"_translation.vtt"),
 			)
-			require.Nil(err)
+			require.NoError(err)
 
 			bytes := fixture.JSON(t, texts)
 			if tc.name == "match" {

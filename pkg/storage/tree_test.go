@@ -2,6 +2,7 @@ package storage
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"path"
 	"reflect"
@@ -88,16 +89,16 @@ func TestTreeFromKeys(t *testing.T) {
 		{name: "complex", keys: complexKeys},
 		{name: "string_vs_struct", keys: stringVSStructKeys,
 			err: fmt.Errorf("at key: column_name.Key1.jpg, %w",
-				fmt.Errorf("unmatched types string and map[string]interface {} at: Key1"))},
+				errors.New("unmatched types string and map[string]interface {} at: Key1"))},
 		{name: "string_vs_alpha_struct", keys: stringVSAlphaStructKeys,
 			err: fmt.Errorf("at key: column_name.Key1.zipToAlphaEndToJpg.jpg, %w",
-				fmt.Errorf("expected Map at: zipToAlphaEndToJpg"))},
+				errors.New("expected Map at: zipToAlphaEndToJpg"))},
 		{name: "string_vs_array", keys: stringVSArrayKeys,
 			err: fmt.Errorf("at key: column_name.Key1[0].jpg, %w",
-				fmt.Errorf("expected Slice at: 0"))},
+				errors.New("expected Slice at: 0"))},
 		{name: "array_vs_struct", keys: arrayVsStructKeys,
 			err: fmt.Errorf("at key: column_name.Key1[0].jpg, %w",
-				fmt.Errorf("expected Slice at: 0"))},
+				errors.New("expected Slice at: 0"))},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

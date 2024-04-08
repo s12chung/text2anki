@@ -2,7 +2,7 @@ package api
 
 import (
 	"bytes"
-	"fmt"
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -168,7 +168,7 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 			}
 
 			_, err := txQs.SourceGet(txQs.Ctx(), created.ID)
-			require.Equal(fmt.Errorf("sql: no rows in result set"), err)
+			require.Equal(errors.New("sql: no rows in result set"), err)
 		})
 	}
 }
@@ -185,7 +185,7 @@ func setupSourceCreateMediaWithInfo(t *testing.T, prePartListID string) {
 func setupSourceCreateMedia(t *testing.T, prePartListID string) {
 	baseKey := storage.BaseKey(db.SourcesTable, db.PartsColumn, prePartListID)
 
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		err := routes.Storage.Storer.Store(baseKey+".PreParts["+strconv.Itoa(i)+"].Image.txt", bytes.NewReader([]byte("image"+strconv.Itoa(i))))
 		require.NoError(t, err)
 	}
@@ -206,11 +206,11 @@ func sourceCreateRequestParts(t *testing.T, caseName, testName string, partCount
 	case "51_parts":
 		partsLen := 51
 		parts = make([]PartCreateMultiRequestPart, partsLen)
-		for i := 0; i < partsLen; i++ {
+		for i := range partsLen {
 			parts[i] = PartCreateMultiRequestPart{}
 		}
 	default:
-		for i := 0; i < partCount; i++ {
+		for i := range partCount {
 			parts[i] = sourceCreateRequestPartFromFile(t, testName, caseName+strconv.Itoa(i)+".txt")
 		}
 	}

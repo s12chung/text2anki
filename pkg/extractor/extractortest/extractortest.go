@@ -2,7 +2,7 @@
 package extractortest
 
 import (
-	"fmt"
+	"errors"
 	"os"
 	"path/filepath"
 
@@ -56,7 +56,7 @@ func (t Source) ExtractToDir(cacheDir string) error {
 		return err
 	}
 	if len(items) != 0 {
-		return fmt.Errorf("extracting to non-empty cacheDir")
+		return errors.New("extracting to non-empty cacheDir")
 	}
 	return filepath.Walk(t.fixturePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {

@@ -114,7 +114,7 @@ func EmptyFields(t *testing.T, s interface{}) []string {
 
 	emptyFields := make([]string, v.NumField())
 	a := 0
-	for i := 0; i < v.NumField(); i++ {
+	for i := range v.NumField() {
 		if v.Field(i).IsZero() {
 			emptyFields[a] = v.Type().Field(i).Name
 			a++

@@ -119,7 +119,7 @@ func TestRoutes_PrePartListGet(t *testing.T) {
 
 func setupPreParts(t *testing.T, id string) {
 	baseKey := storage.BaseKey(db.SourcesTable, db.PartsColumn, id)
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		err := routes.Storage.Storer.Store(baseKey+".PreParts["+strconv.Itoa(i)+"].Image.txt", bytes.NewReader([]byte("image"+strconv.Itoa(i))))
 		require.NoError(t, err)
 	}

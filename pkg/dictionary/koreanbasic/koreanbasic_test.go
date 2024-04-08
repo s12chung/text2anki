@@ -80,7 +80,7 @@ func TestPartOfSpeechToAPIIntMatch(t *testing.T) {
 func TestMergePosMap(t *testing.T) {
 	require := require.New(t)
 
-	require.Equal(lang.PartOfSpeechCount, len(mergePosMap))
+	require.Len(mergePosMap, lang.PartOfSpeechCount)
 
 	uniquePosMapValues := map[lang.PartOfSpeech]bool{}
 	for _, v := range partOfSpeechMap {

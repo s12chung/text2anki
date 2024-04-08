@@ -2,7 +2,7 @@ package extractor_test
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io"
 	"os"
 	"path"
@@ -45,8 +45,8 @@ func TestExtractor_Extract(t *testing.T) {
 		err  error
 	}{
 		{name: "basic", s: extractortest.VerifyString},
-		{name: "skip_extract", s: extractortest.SkipExtractString, err: fmt.Errorf("no filenames that match extensions extracted: .jpg, .png")},
-		{name: "no_verify", s: "fail", err: fmt.Errorf("string does not match factory source: fail")},
+		{name: "skip_extract", s: extractortest.SkipExtractString, err: errors.New("no filenames that match extensions extracted: .jpg, .png")},
+		{name: "no_verify", s: "fail", err: errors.New("string does not match factory source: fail")},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

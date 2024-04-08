@@ -2,7 +2,7 @@
 package chiutil
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -13,7 +13,7 @@ import (
 func ParamID(r *http.Request, key string) (int64, error) {
 	param := chi.URLParam(r, key)
 	if param == "" {
-		return 0, fmt.Errorf(key + " not found")
+		return 0, errors.New(key + " not found")
 	}
 	id, err := strconv.ParseInt(param, 10, 64)
 	if err != nil {

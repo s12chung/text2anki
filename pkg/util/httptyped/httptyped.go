@@ -2,6 +2,7 @@
 package httptyped
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"unicode"
@@ -122,7 +123,7 @@ func structureMap(typ reflect.Type, m map[string]map[string]string, handledTypeM
 	m[typ.String()] = currentTypeMap
 	handledTypeMap[typ] = true
 
-	for i := 0; i < typ.NumField(); i++ {
+	for i := range typ.NumField() {
 		field := typ.Field(i)
 		if unicode.IsLower([]rune(field.Name)[0]) {
 			continue
@@ -148,7 +149,7 @@ type Preparable interface {
 	PrepareSerialize()
 }
 
-var errModelNil = fmt.Errorf("httptyped model is nil")
+var errModelNil = errors.New("httptyped model is nil")
 
 // PrepareModel checks if the type exists and prepares the model for serializing
 func PrepareModel(model any) error {
@@ -165,7 +166,7 @@ func PrepareModel(model any) error {
 	}
 	val := reflect.ValueOf(model)
 	if val.Kind() == reflect.Slice || val.Kind() == reflect.Array {
-		for i := 0; i < val.Len(); i++ {
+		for i := range val.Len() {
 			elem := val.Index(i).Interface()
 			preparable, ok := elem.(Preparable)
 			if !ok {

@@ -100,7 +100,7 @@ type ErrorKey string
 // RootTypeName returns the type name of the key
 func (e ErrorKey) RootTypeName() string {
 	suffix := string(e)
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		index := strings.Index(suffix, keySeparator)
 		if index == -1 {
 			return ""

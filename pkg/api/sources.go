@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net/http"
 	"strings"
 
@@ -180,7 +180,7 @@ func (rs Routes) requestPartsToDBParts(ctx context.Context, reqParts []PartCreat
 		parts = append(parts, sourcePart)
 	}
 	if len(parts) == 0 {
-		return nil, jhttp.Error(http.StatusUnprocessableEntity, fmt.Errorf("no parts found with text set"))
+		return nil, jhttp.Error(http.StatusUnprocessableEntity, errors.New("no parts found with text set"))
 	}
 	return parts, nil
 }
