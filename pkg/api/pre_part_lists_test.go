@@ -83,7 +83,6 @@ func TestRoutes_PrePartListSign(t *testing.T) {
 			expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodPost, "/sign", bytes.NewReader(test.JSON(t, tc.req))))
 			resp.EqualCode(t, tc.expectedCode)
@@ -110,7 +109,6 @@ func TestRoutes_PrePartListGet(t *testing.T) {
 		{name: "none", id: "does_not_exist", expectedCode: http.StatusNotFound},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodGet, "/"+tc.id, nil))
 			resp.EqualCode(t, tc.expectedCode)
@@ -147,7 +145,6 @@ func TestRoutes_PrePartListVerify(t *testing.T) {
 		{name: "not_matched", text: "does not match", expectedType: ""},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			req := PrePartListVerifyRequest{Text: tc.text}
 			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodPost, "/verify", bytes.NewReader(test.JSON(t, req))))
@@ -171,7 +168,6 @@ func TestRoutes_PrePartListCreate(t *testing.T) {
 			expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			resp := test.HTTPDo(t, prePartListServer.NewRequest(t, http.MethodPost, "/", bytes.NewReader(test.JSON(t, tc.req))))

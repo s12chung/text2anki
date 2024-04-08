@@ -100,7 +100,6 @@ func TestTreeFromKeys(t *testing.T) {
 				fmt.Errorf("expected Slice at: 0"))},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			for i, key := range tc.keys {

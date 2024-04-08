@@ -103,7 +103,6 @@ func TestDBStorage_SignPutTree(t *testing.T) {
 		{name: "no_pointer", err: fmt.Errorf("storage.PrePartListSignResponse is not a pointer")},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			resp := PrePartListSignResponse{}
@@ -162,7 +161,6 @@ func TestDBStorage_PutTree(t *testing.T) {
 		{name: "no_pointer", err: fmt.Errorf("storage.PrePartListKeyTree is not a pointer")},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -281,7 +279,6 @@ func TestDBStorage_SignGetTree(t *testing.T) {
 		{name: "bad_id", signedTree: &prePartList, id: "bad_id", err: NotFoundError{ID: "bad_id", IDPath: "sources/parts/bad_id"}},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			id := tc.id
 			if id == "" {

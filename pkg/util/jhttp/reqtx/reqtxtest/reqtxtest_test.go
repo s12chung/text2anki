@@ -35,7 +35,6 @@ func TestPool_SetTxGetTx(t *testing.T) {
 		{name: "diff_mode", mode: -9, err: fmt.Errorf("stored Tx mode (1) is not matching passed mode (-9)")},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 

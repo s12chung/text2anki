@@ -39,7 +39,6 @@ func TestTerm_DictionaryTerm(t *testing.T) {
 		{name: "EmptyVariants", emptyFields: []string{"Variants"}},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 

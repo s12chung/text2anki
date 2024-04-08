@@ -94,7 +94,6 @@ func testValidate[T any](t *testing.T, tcs []validateTC[T], newValidator func() 
 	require.NoError(t, err)
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.result, validator.Validate(tc.data))

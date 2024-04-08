@@ -21,7 +21,6 @@ func TestTrimPresent_ValidateAll(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			var expected firm.ErrorMap
 			if tc.hasError {
@@ -44,7 +43,6 @@ func TestTrimPresent_TypeCheck(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testTypeCheck(t, tc.data, "TrimPresent", tc.badCondition, TrimPresent{})
 		})

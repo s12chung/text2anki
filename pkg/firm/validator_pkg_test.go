@@ -44,7 +44,6 @@ func TestNewStructPkg(t *testing.T) {
 			failErr: errorMap("privateChild", "Present", "is not present")},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 

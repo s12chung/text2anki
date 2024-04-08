@@ -47,7 +47,6 @@ func TestSourcePartMedia_MarshalJSON(t *testing.T) {
 		{name: "prepare_serialize", prepareSerialize: true},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			txQs := TxQsT(t, nil)
 
@@ -172,7 +171,6 @@ func TestTextTokenizer_TokenizedTexts(t *testing.T) {
 		{name: "translator_none"},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			t.Parallel()

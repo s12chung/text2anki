@@ -24,7 +24,6 @@ func TestNot_ValidateValue(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -53,7 +52,6 @@ func TestNot_TypeCheck(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testTypeCheck(t, tc.data, "TrimPresent", tc.badCondition, Not{Rule: TrimPresent{}})
 		})

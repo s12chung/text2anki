@@ -150,7 +150,6 @@ func TestNote_UsageSoundFilename(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.usage, func(t *testing.T) {
 			require := require.New(t)
 			note := Note{Usage: tc.usage}

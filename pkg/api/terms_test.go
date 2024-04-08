@@ -29,7 +29,6 @@ func TestRoutes_TermsSearch(t *testing.T) {
 		{name: "bad_pos", values: map[string][]string{"query": {testdb.SearchTerm}, "pos": {"waka"}}},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			var resp test.Response
 			db.WithTermsSearchConfig(testdb.SearchConfig, func() {

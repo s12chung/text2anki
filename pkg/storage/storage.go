@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 // PreSignedHTTPRequest is the data to do the signed request

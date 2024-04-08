@@ -105,7 +105,6 @@ func TestRegistry_ValidateAll(t *testing.T) {
 		},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -173,7 +172,6 @@ func TestRegistry_Validator(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, registry.Validator(reflect.TypeOf(tc.data)))

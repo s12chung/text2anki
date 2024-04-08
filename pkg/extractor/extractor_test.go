@@ -49,7 +49,6 @@ func TestExtractor_Extract(t *testing.T) {
 		{name: "no_verify", s: "fail", err: fmt.Errorf("string does not match factory source: fail")},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -105,7 +104,6 @@ func TestVerify(t *testing.T) {
 		{name: "no_verify", s: "fail"},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, Verify(tc.s, extractorMap))

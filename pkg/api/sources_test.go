@@ -47,7 +47,6 @@ func TestRoutes_SourceGet(t *testing.T) {
 		{name: "not_a_number", path: "/nan", expectedCode: http.StatusNotFound},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, tc.path, nil))
 			resp.EqualCode(t, tc.expectedCode)
@@ -91,7 +90,6 @@ func TestRoutes_SourceCreate(t *testing.T) {
 		{name: "51_parts", expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			txQs := testdb.TxQs(t, db.WriteOpts())
@@ -125,7 +123,6 @@ func TestRoutes_SourceUpdate(t *testing.T) {
 		{name: "error", expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			txQs := testdb.TxQs(t, db.WriteOpts())
@@ -152,7 +149,6 @@ func TestRoutes_SourceDestroy(t *testing.T) {
 		{name: "not_a_number", path: "/nan", expectedCode: http.StatusNotFound},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			t.Parallel()

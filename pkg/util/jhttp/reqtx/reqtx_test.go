@@ -79,7 +79,6 @@ func TestTxMode(t *testing.T) {
 		{name: "string", mode: "fail", err: jhttp.Error(http.StatusInternalServerError, fmt.Errorf("cast to reqtx.txMode fail"))},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -122,7 +121,6 @@ func TestIntegrator_ResponseWrap(t *testing.T) {
 			err:                   jhttp.Error(http.StatusInternalServerError, fmt.Errorf("test: finalizeErrorMode"))},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 

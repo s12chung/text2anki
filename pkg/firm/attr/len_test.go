@@ -26,7 +26,6 @@ func TestLen_Get(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(reflect.ValueOf(tc.result), Len{}.Get(reflect.ValueOf(tc.data)))
@@ -54,7 +53,6 @@ func TestLen_TypeCheck(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testTypeCheck(t, tc.data, "Len", tc.badCondition, Len{})
 		})

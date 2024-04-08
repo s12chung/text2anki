@@ -22,7 +22,6 @@ func TestTypeName(t *testing.T) {
 		{name: "nil", data: nil, expected: "nil"},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, typeName(reflect.ValueOf(tc.data)))

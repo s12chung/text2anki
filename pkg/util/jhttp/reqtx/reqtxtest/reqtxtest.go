@@ -7,7 +7,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
 	"github.com/s12chung/text2anki/pkg/util/jhttp/reqtx"
