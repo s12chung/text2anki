@@ -143,6 +143,14 @@ func (q *Queries) ClearAll(ctx context.Context) error {
 	return nil
 }
 
+// ClearAllTable clears data from a table
+func (q *Queries) ClearAllTable(ctx context.Context, tableName string) error {
+	if _, err := q.db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %v; ", tableName)); err != nil {
+		return err
+	}
+	return nil
+}
+
 var dbStorage storage.DBStorage
 
 // SetDBStorage sets the storage.DBStorage used in model JSON marshall/unmarshall

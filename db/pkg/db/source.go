@@ -291,6 +291,9 @@ func (q *Queries) SourceStructuredIndex(ctx context.Context) ([]SourceStructured
 		return nil, err
 	}
 
+	if sources == nil {
+		return nil, nil
+	}
 	sourceStructureds := make([]SourceStructured, len(sources))
 	for i, source := range sources {
 		sourceStructureds[i] = source.ToSourceStructured()

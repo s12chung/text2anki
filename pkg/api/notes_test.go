@@ -24,8 +24,7 @@ func init() {
 
 func TestRoutes_NotesIndex(t *testing.T) {
 	testName := "TestRoutes_NotesIndex"
-	resp := test.HTTPDo(t, notesServer.NewRequest(t, http.MethodGet, "", nil))
-	testModelsResponse[db.Note](t, resp, testName, "", nil)
+	testIndex[db.Note](t, notesServer, testName, "notes")
 }
 
 func TestRoutes_NoteCreate(t *testing.T) {

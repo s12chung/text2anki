@@ -234,3 +234,37 @@ func TestQueries_SourceUpdate(t *testing.T) {
 	testRecentTimestamps(t, source.UpdatedAt)
 	require.NotEqual(newSource.UpdatedAt, source.UpdatedAt)
 }
+
+func TestQueries_SourceStructuredIndex(t *testing.T) {
+	testName := "TestQueries_SourceStructuredIndex"
+
+	testCases := []struct {
+		name string
+	}{
+		{name: "basic"},
+		{name: "clear"},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+
+			txQs := TxQsT(t, nil)
+			if tc.name == "clear" {
+				txQs = TxQsT(t, WriteOpts())
+				require.NoError(txQs.ClearAllTable(txQs.Ctx(), "sources"))
+			}
+
+			sourceStructureds, err := txQs.SourceStructuredIndex(txQs.Ctx())
+			require.NoError(err)
+
+			var staticCopy []SourceStructured
+			if len(sourceStructureds) > 0 {
+				staticCopy = make([]SourceStructured, len(sourceStructureds))
+				for i := range sourceStructureds {
+					staticCopy[i] = sourceStructureds[i].StaticCopy()
+				}
+			}
+			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), staticCopy)
+		})
+	}
+}

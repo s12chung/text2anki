@@ -31,8 +31,7 @@ func createdSource(t *testing.T, txQs db.TxQs) db.Source {
 
 func TestRoutes_SourcesIndex(t *testing.T) {
 	testName := "TestRoutes_SourcesIndex"
-	resp := test.HTTPDo(t, sourcesServer.NewRequest(t, http.MethodGet, "", nil))
-	testModelsResponse[db.SourceStructured](t, resp, testName, "", nil)
+	testIndex[db.SourceStructured](t, sourcesServer, testName, "sources")
 }
 
 func TestRoutes_SourceGet(t *testing.T) {

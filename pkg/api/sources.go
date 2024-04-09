@@ -20,7 +20,7 @@ func init() {
 
 // SourcesIndex returns a list of sources
 func (rs Routes) SourcesIndex(_ *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
-	return jhttp.ReturnModelOr500(func() (any, error) {
+	return jhttp.ReturnSliceOr500(func() ([]db.SourceStructured, error) {
 		return txQs.SourceStructuredIndex(txQs.Ctx())
 	})
 }

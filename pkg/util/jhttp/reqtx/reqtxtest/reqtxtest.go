@@ -60,7 +60,7 @@ func (p Pool[T, Mode]) GetTx(r *http.Request, mode Mode) (T, error) {
 		return empty, fmt.Errorf("transaction with id, %v, does not exist", id)
 	}
 	if val.Mode != mode {
-		return empty, fmt.Errorf("stored Tx mode (%v) is not matching passed mode (%v)", val.Mode, mode)
+		return empty, fmt.Errorf("stored Tx mode from request (%v) is not matching mode set by router (%v)", val.Mode, mode)
 	}
 	return val.Tx, nil
 }

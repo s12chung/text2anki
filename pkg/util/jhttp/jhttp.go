@@ -142,3 +142,14 @@ func ReturnModelOr500(modelFunc func() (any, error)) (any, *HTTPError) {
 	}
 	return model, nil
 }
+
+// ReturnSliceOr500 runs the sliceFunc, and returns http.StatusInternalServerError for the error
+func ReturnSliceOr500[T any](sliceFunc func() ([]T, error)) (any, *HTTPError) {
+	return ReturnModelOr500(func() (any, error) {
+		slice, err := sliceFunc()
+		if slice == nil {
+			return make([]T, 0), err
+		}
+		return slice, err
+	})
+}

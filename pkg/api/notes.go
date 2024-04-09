@@ -23,7 +23,7 @@ func init() {
 
 // NotesIndex shows lists all the notes
 func (rs Routes) NotesIndex(_ *http.Request, txQs db.TxQs) (any, *jhttp.HTTPError) {
-	return jhttp.ReturnModelOr500(func() (any, error) {
+	return jhttp.ReturnSliceOr500(func() ([]db.Note, error) {
 		return txQs.NotesIndex(txQs.Ctx())
 	})
 }
