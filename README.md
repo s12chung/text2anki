@@ -1,24 +1,45 @@
 # text2anki
 
-Create Anki word based Flashcards from text. Card format is:
+Create Korean language learning Anki Flashcards from text and other sources.
 
-- Front: Sentence, Text-to-Speech mp3 of sentence
-- Back: Front, Word(s) in sentence, word rarity, definition of word/setnence
+## Preview
 
-Procress:
+Card Front
 
-1. Take a string as text
-1. Tokenize the text into parts of speech tokens
-1. Select token to find definition via. Dictionary API
-1. Auto-fill in flashcard fields with Dictionary selection
-1. Repeat from above, after a CSV for the flashcards and a folder of Text-to-Speech mp3s are generated
+![Card Front](docs/card-front.png)
 
-In the future, `text2anki` will have a UI to select photos and match subtitles with existing audio/video.
+Card Back
 
-## Support
+![Card Back](docs/card-back.png)
 
-Langauages:
+Demo with [Sample Output](docs/text2anki-018ec0ea-3739-76f1-be97-04d424bf6476.zip)
 
-- Korean
+![Demo](docs/demo.gif)
 
-Systems Requirements: macOS with Java
+## Features
+
+- Create sources from:
+  - Text input
+  - Text files
+  - Instagram URLs
+  - (video and subtitles in the future)
+- Takes existing text translations or uses
+  [Papago API](https://api.ncloud-docs.com/docs/en/ai-naver-papagonmt) to generate translations
+
+- Keyboard navigation to create cards:
+  - With tokenized text from [Khaii](https://github.com/kakao/khaiii) (recommended) or [Komoran](https://github.com/shineware/KOMORAN)
+  - With a dictionary of a local copy of the
+    [National Institute of Korean Language's Dictionary](https://krdict.korean.go.kr/) (recommended)
+    or it's [open API](https://krdict.korean.go.kr/openApi/openApiInfo)
+  - Text to Speech using the [Azure API](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/rest-speech-to-text)
+
+- Easily reconfigurable with interfaces and configurations
+
+## Internal Packages
+
+Some internal packages can be re-used for other projects:
+
+- [firm](pkg/firm) - a customizable declarative validation package with no struct tags
+- [jhttp](pkg/util/jhttp) - abstracts `http.HandlerFunc` by returning errors, in standard golang fashion, by assuming json responses
+  - Also includes [reqtx](pkg/util/jhttp/reqtx), which isolates each request to a database transaction
+- Many other packages in [util](pkg/util) that can be used for other web apps
