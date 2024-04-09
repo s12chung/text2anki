@@ -2,7 +2,7 @@ package httptyped
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"path"
 	"reflect"
 	"testing"
@@ -142,7 +142,6 @@ func TestStructureMap(t *testing.T) {
 		{name: "WithSerializedPt", str: WithSerializedParentPt{}},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			fixture.CompareReadOrUpdateJSON(t, path.Join(testName, tc.name), StructureMap(reflect.TypeOf(tc.str)))
 		})
@@ -161,7 +160,7 @@ func TestPrepareModel(t *testing.T) {
 	testName := "TestPrepareModel"
 	DefaultRegistry.RegisterType(testObj{})
 	DefaultRegistry.RegisterType(WithSerializedParent{})
-	notRegisteredErr := fmt.Errorf("httptyped.invalidTestObj is not registered to httptyped")
+	notRegisteredErr := errors.New("httptyped.invalidTestObj is not registered to httptyped")
 
 	testCases := []struct {
 		name  string
@@ -175,7 +174,6 @@ func TestPrepareModel(t *testing.T) {
 		{name: "nil", err: errModelNil},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 

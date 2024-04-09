@@ -10,7 +10,6 @@ linters:
     - govet
     - ineffassign
     - staticcheck
-    - typecheck
     - unused
     # disabled by default
     - asasalint
@@ -19,6 +18,7 @@ linters:
     - bodyclose
     - containedctx
     - contextcheck
+    - copyloopvar
     - cyclop
     # - deadcode [deprecated]
     - decorder
@@ -43,6 +43,7 @@ linters:
     - gocheckcompilerdirectives
     # - gochecknoglobals # globals are ok
     # - gochecknoinits # init() is ok
+    - gochecksumtype
     - gocognit
     - goconst
     - gocritic
@@ -64,8 +65,10 @@ linters:
     - grouper
     # - ifshort [deprecated]
     - importas
+    - inamedparam
     - interfacebloat
     # - interfacer [deprecated]
+    - intrange
     # - ireturn # return interfaces are fine
     - lll
     # - loggercheck # not using these logs
@@ -86,13 +89,17 @@ linters:
     # - nosnakecase [deprecated]
     - nosprintfhostport
     # - paralleltest # not making every test parallel
+    - perfsprint
     - prealloc
     - predeclared
     # - promlinter # not using prometheus
+    - protogetter
     - reassign
     - revive
     - rowserrcheck
     # - scopelint [deprecated]
+    - sloglint
+    - spancheck
     - sqlclosecheck
     # - structcheck [deprecated]
     - stylecheck
@@ -100,6 +107,7 @@ linters:
     - tagliatelle
     - tenv
     # - testableexamples # no output comments are ok
+    - testifylint
     # - testpackage # _test packages are not preferred
     # - thelper # no need to clean up call stack for tests
     - tparallel
@@ -183,3 +191,15 @@ issues:
       path: '(.+)_test\.go'
       linters:
         - forbidigo
+    # Does not apply for go 1.22
+    - text: "G601: Implicit memory aliasing in for loop."
+      linters:
+        - gosec
+    # context is not needed, should be used in the wrapper function
+    - source: 'jhttp\.ReturnModelOr500\(func\(\) \(any, error\)'
+      linters:
+        - contextcheck
+    # context is not needed, should be used in the wrapper function
+    - source: 'rs\.runOr500\(r, func\(r \*http\.Request, tx db\.TxQs\) error'
+      linters:
+        - contextcheck

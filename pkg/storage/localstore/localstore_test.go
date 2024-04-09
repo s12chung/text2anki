@@ -3,7 +3,7 @@ package localstore
 import (
 	"bytes"
 	"encoding/hex"
-	"fmt"
+	"errors"
 	"io"
 	"net/url"
 	"os"
@@ -65,7 +65,7 @@ func TestAPI_SignGet(t *testing.T) {
 
 	api := newAPIWithT(t)
 	u, err := api.SignGet(key)
-	require.Equal(fmt.Errorf("file does not exist"), err)
+	require.Equal(errors.New("file does not exist"), err)
 	require.Empty(u)
 
 	require.NoError(api.Store(key, bytes.NewReader([]byte("test_me"))))
@@ -106,7 +106,7 @@ func TestAPI_ListKeys(t *testing.T) {
 	api := newAPIWithT(t)
 	keys, err := api.ListKeys(prefix)
 	require.NoError(err)
-	require.Len(keys, 0)
+	require.Empty(keys)
 
 	key1 := path.Join(prefix, testKeyFile)
 	key2 := path.Join(prefix, "again_me.txt")

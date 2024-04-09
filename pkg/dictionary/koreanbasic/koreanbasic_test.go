@@ -33,7 +33,6 @@ func TestKoreanBasic_Search(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			t.Parallel()
@@ -81,7 +80,7 @@ func TestPartOfSpeechToAPIIntMatch(t *testing.T) {
 func TestMergePosMap(t *testing.T) {
 	require := require.New(t)
 
-	require.Equal(lang.PartOfSpeechCount, len(mergePosMap))
+	require.Len(mergePosMap, lang.PartOfSpeechCount)
 
 	uniquePosMapValues := map[lang.PartOfSpeech]bool{}
 	for _, v := range partOfSpeechMap {

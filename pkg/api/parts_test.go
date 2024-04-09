@@ -42,7 +42,6 @@ func TestRoutes_PartCreateMulti(t *testing.T) {
 		{name: "51_parts", expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			txQs := testdb.TxQs(t, db.WriteOpts())
@@ -69,7 +68,6 @@ func TestRoutes_PartCreate(t *testing.T) {
 		{name: "empty", expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			txQs := testdb.TxQs(t, db.WriteOpts())
@@ -99,7 +97,6 @@ func TestRoutes_PartUpdate(t *testing.T) {
 		{name: "empty", index: 1, expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			txQs := testdb.TxQs(t, db.WriteOpts())
@@ -129,7 +126,6 @@ func TestRoutes_PartDestroy(t *testing.T) {
 		{name: "index_negative", index: -1, expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			t.Parallel()

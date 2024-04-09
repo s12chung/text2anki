@@ -23,7 +23,6 @@ func TestTrimSpace_Get(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.result, TrimSpace{}.Get(reflect.ValueOf(tc.data)).String())
@@ -44,7 +43,6 @@ func TestTrimSpace_TypeCheck(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testTypeCheck(t, tc.data, "TrimSpace", tc.badCondition, TrimSpace{})
 		})

@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"fmt"
+	"errors"
 	"io/fs"
 	"os"
 	"path"
@@ -100,10 +100,9 @@ func TestDBStorage_SignPutTree(t *testing.T) {
 				Message: "srcTree empty slice or array given at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts"}},
 		{name: "invalid", req: PrePartListSignRequest{PreParts: []PrePartSignRequest{{ImageExt: ".waka"}}},
 			err: InvalidInputError{Message: "invalid extension, .waka, at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image"}},
-		{name: "no_pointer", err: fmt.Errorf("storage.PrePartListSignResponse is not a pointer")},
+		{name: "no_pointer", err: errors.New("storage.PrePartListSignResponse is not a pointer")},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			resp := PrePartListSignResponse{}
@@ -159,10 +158,9 @@ func TestDBStorage_PutTree(t *testing.T) {
 			err: InvalidInputError{Message: "srcTree empty slice or array given at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts"}},
 		{name: "invalid",
 			err: InvalidInputError{Message: "invalid extension, .txt, at sources/parts/123e4567-e89b-12d3-a456-426614174000/parts.PreParts[0].Image"}},
-		{name: "no_pointer", err: fmt.Errorf("storage.PrePartListKeyTree is not a pointer")},
+		{name: "no_pointer", err: errors.New("storage.PrePartListKeyTree is not a pointer")},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -197,7 +195,7 @@ func fileTreeParts(t *testing.T, caseName, testName string, partCount int) []Pre
 	case "empty_parts":
 		parts = []PrePartFileTree{}
 	default:
-		for i := 0; i < partCount; i++ {
+		for i := range partCount {
 			parts[i] = fileTreePartsFromFile(t, testName, caseName+strconv.Itoa(i))
 		}
 	}
@@ -276,12 +274,11 @@ func TestDBStorage_SignGetTree(t *testing.T) {
 		err        error
 	}{
 		{name: "basic", signedTree: &prePartList},
-		{name: "non_pointer", signedTree: prePartList, err: fmt.Errorf("storage.PrePartList is not a pointer")},
-		{name: "nil", signedTree: nil, err: fmt.Errorf("passed nil as settable obj")},
+		{name: "non_pointer", signedTree: prePartList, err: errors.New("storage.PrePartList is not a pointer")},
+		{name: "nil", signedTree: nil, err: errors.New("passed nil as settable obj")},
 		{name: "bad_id", signedTree: &prePartList, id: "bad_id", err: NotFoundError{ID: "bad_id", IDPath: "sources/parts/bad_id"}},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			id := tc.id
 			if id == "" {
@@ -316,7 +313,7 @@ func TestDBStorage_SignGetTreeFromKeyTree(t *testing.T) {
 	fixture.CompareReadOrUpdateJSON(t, testName, signedTree)
 
 	err = newTestDBStorage().SignGetTreeFromKeyTree(media, signedTree)
-	require.Equal(fmt.Errorf("signedTree, storage.SourcePartMediaResponse, is not a pointer"), err)
+	require.Equal(errors.New("signedTree, storage.SourcePartMediaResponse, is not a pointer"), err)
 }
 
 func TestDBStorage_KeyTreeFromSignGetTree(t *testing.T) {
@@ -332,5 +329,5 @@ func TestDBStorage_KeyTreeFromSignGetTree(t *testing.T) {
 	fixture.CompareReadOrUpdateJSON(t, testName, media)
 
 	err = newTestDBStorage().KeyTreeFromSignGetTree(signedTree, media)
-	require.Equal(fmt.Errorf("keyTree, storage.SourcePartMedia, is not a pointer"), err)
+	require.Equal(errors.New("keyTree, storage.SourcePartMedia, is not a pointer"), err)
 }

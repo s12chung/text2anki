@@ -25,7 +25,6 @@ func TestAttr_ValidateValue(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -34,8 +33,7 @@ func TestAttr_ValidateValue(t *testing.T) {
 				attribute = attr.Len{}
 			}
 			var expected firm.ErrorMap
-			for k, v := range tc.errorMap {
-				err := v
+			for k, err := range tc.errorMap {
 				if err.TemplateFields == nil {
 					err.TemplateFields = map[string]string{}
 				}
@@ -71,7 +69,6 @@ func TestAttr_TypeCheck(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 

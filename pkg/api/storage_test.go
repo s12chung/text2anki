@@ -45,7 +45,6 @@ func TestRoutes_StoragePut(t *testing.T) {
 		{name: "bad_query", path: "/testy?" + badQuery, body: []byte("test me"), expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -74,7 +73,6 @@ func TestRoutes_StorageGet(t *testing.T) {
 		{name: "not_exist", key: "/another/dir/hi.txt", body: nil, expectedCode: http.StatusNotFound},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 

@@ -33,7 +33,6 @@ func TestSeedList(t *testing.T) {
 		{name: "mixed", list: map[string]bool{"Notes": true, "Persons": true, "Books": false, "Cups": false}},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 

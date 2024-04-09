@@ -44,13 +44,12 @@ func TestNewStructPkg(t *testing.T) {
 			failErr: errorMap("privateChild", "Present", "is not present")},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
 			validator, err := firm.NewStruct[nonExport](tc.ruleMap)
 			require.NoError(err)
-			require.True(validator.ValidateAny(notEmpty) == nil)
+			require.Nil(validator.ValidateAny(notEmpty))
 			require.Equal(tc.failErr, validator.ValidateAny(nonExport{}))
 		})
 	}

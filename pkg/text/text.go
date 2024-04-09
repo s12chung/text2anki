@@ -2,6 +2,7 @@
 package text
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -110,8 +111,8 @@ const (
 	Unknown
 )
 
-var errExtraTextLine = fmt.Errorf("there are more text lines than translation lines")
-var errExtraTranslationLine = fmt.Errorf("there are more translation lines than text lines")
+var errExtraTextLine = errors.New("there are more text lines than translation lines")
+var errExtraTranslationLine = errors.New("there are more translation lines than text lines")
 
 // Texts returns an array of Text from the given string
 func (p Parser) Texts(s, translation string) ([]Text, error) {
@@ -243,7 +244,7 @@ func splitClean(s string) []string {
 func CleanSpeaker(texts []Text) []Text {
 	cleanedTexts := make([]Text, len(texts))
 	for i, t := range texts {
-		dup := t
+		dup := t //nolint:copyloopvar // want a dupe
 		dup.Text = CleanSpeakerString(t.Text)
 		dup.Translation = CleanSpeakerString(t.Translation)
 		cleanedTexts[i] = dup

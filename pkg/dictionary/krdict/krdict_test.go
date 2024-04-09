@@ -30,7 +30,7 @@ func TestKrDict_Search(t *testing.T) {
 func TestMergePosMap(t *testing.T) {
 	require := require.New(t)
 
-	require.Equal(lang.PartOfSpeechCount, len(mergePosMap))
+	require.Len(mergePosMap, lang.PartOfSpeechCount)
 
 	posMap := seedkrdict.PartOfSpeechMap()
 	uniquePosMapValues := map[lang.PartOfSpeech]bool{}

@@ -174,7 +174,7 @@ func (l *LexicalEntry) textVariants() (string, []string, error) {
 
 	var err error
 	if text == "" {
-		err = fmt.Errorf("LexicalEntry.writtenForm not found")
+		err = errors.New("LexicalEntry.writtenForm not found")
 	}
 	return text, variants, err
 }
@@ -295,7 +295,7 @@ func (s *Sense) translation() (dictionary.Translation, error) {
 		}
 		return translation, nil
 	}
-	return dictionary.Translation{}, fmt.Errorf("not found")
+	return dictionary.Translation{}, errors.New("not found")
 }
 
 // Equivalent represents the translation of the entry given a special language
@@ -318,7 +318,7 @@ func (e *Equivalent) translation() (dictionary.Translation, error) {
 		}
 	}
 	if !isEng {
-		return dictionary.Translation{}, fmt.Errorf("not found")
+		return dictionary.Translation{}, errors.New("not found")
 	}
 
 	text, explanation := "", ""
@@ -333,10 +333,10 @@ func (e *Equivalent) translation() (dictionary.Translation, error) {
 
 	var err error
 	if text == "" {
-		err = fmt.Errorf("text is empty")
+		err = errors.New("text is empty")
 	}
 	if explanation == "" {
-		err = fmt.Errorf("explanation is empty")
+		err = errors.New("explanation is empty")
 	}
 	for k, v := range cleanTranslationMap {
 		explanation = strings.ReplaceAll(explanation, k, v)

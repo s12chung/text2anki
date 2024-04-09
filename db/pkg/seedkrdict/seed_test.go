@@ -1,7 +1,7 @@
 package seedkrdict
 
 import (
-	"fmt"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -74,7 +74,7 @@ func TestIsNoTranslationsFoundError(t *testing.T) {
 	require := require.New(t)
 	t.Parallel()
 	require.True(IsNoTranslationsFoundError(NoTranslationsFoundError{}))
-	require.False(IsNoTranslationsFoundError(fmt.Errorf("test error")))
+	require.False(IsNoTranslationsFoundError(errors.New("test error")))
 }
 
 func TestLexicalEntry_CreateParams(t *testing.T) {

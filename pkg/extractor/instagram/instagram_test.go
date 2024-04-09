@@ -1,7 +1,7 @@
 package instagram
 
 import (
-	"fmt"
+	"errors"
 	"os"
 	"path"
 	"path/filepath"
@@ -38,7 +38,6 @@ func TestSource_Verify(t *testing.T) {
 		{name: "invalid", url: "waka.com/p/abcd", ok: false},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.ok, NewPost(tc.url).Verify())
@@ -57,7 +56,6 @@ func TestSource_ID(t *testing.T) {
 		{name: "broken", url: "https://waka.com"},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.result, NewPost(tc.url).ID())
@@ -86,11 +84,10 @@ func TestPost_ExtractToDir(t *testing.T) {
 		url  string
 		err  error
 	}{
-		{name: "broken", url: "https://waka.com", err: fmt.Errorf("url is not verified for instagram: https://waka.com")},
+		{name: "broken", url: "https://waka.com", err: errors.New("url is not verified for instagram: https://waka.com")},
 		{name: "fake", url: testURL},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			err := NewPost(tc.url).ExtractToDir(cacheDir)

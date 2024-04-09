@@ -40,7 +40,6 @@ func TestRoutes_NoteCreate(t *testing.T) {
 		{name: "invalid", expectedCode: http.StatusUnprocessableEntity},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			txQs := testdb.TxQs(t, db.WriteOpts())

@@ -1,7 +1,7 @@
 package reqtxtest
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -31,11 +31,10 @@ func TestPool_SetTxGetTx(t *testing.T) {
 		err  error
 	}{
 		{name: "normal", mode: mode},
-		{name: "diff_request", req: newRequest(), mode: mode, err: fmt.Errorf("transaction with id, , does not exist")},
-		{name: "diff_mode", mode: -9, err: fmt.Errorf("stored Tx mode (1) is not matching passed mode (-9)")},
+		{name: "diff_request", req: newRequest(), mode: mode, err: errors.New("transaction with id, , does not exist")},
+		{name: "diff_mode", mode: -9, err: errors.New("stored Tx mode (1) is not matching passed mode (-9)")},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 

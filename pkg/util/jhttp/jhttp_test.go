@@ -3,6 +3,7 @@ package jhttp
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -51,11 +52,10 @@ func TestRequestWrap(t *testing.T) {
 		expectedBody string
 	}{
 		{name: "normal", val: "123", status: http.StatusOK, expectedBody: "123"},
-		{name: "err", status: http.StatusUnprocessableEntity, err: fmt.Errorf("unprocessible"),
+		{name: "err", status: http.StatusUnprocessableEntity, err: errors.New("unprocessible"),
 			expectedBody: "{\"error\":\"unprocessible\",\"code\":422,\"status_text\":\"Unprocessable Entity\"}\n"},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			testVal, testStatus, testErr = tc.val, tc.status, tc.err
@@ -79,7 +79,7 @@ func TestRespondJSONWrap(t *testing.T) {
 	var testErr error
 	handlerFunc := ResponseWrap(func(r *http.Request) (any, *HTTPError) {
 		if r.Method != http.MethodGet {
-			return nil, Error(http.StatusInternalServerError, fmt.Errorf("not a GET"))
+			return nil, Error(http.StatusInternalServerError, errors.New("not a GET"))
 		}
 		if testStatus != http.StatusOK {
 			return nil, Error(testStatus, testErr)
@@ -98,11 +98,10 @@ func TestRespondJSONWrap(t *testing.T) {
 		{name: "normal", val: "123", status: http.StatusOK, expectedBody: "{\"val\":\"123\"}\n"},
 		{name: "post", method: http.MethodPost, status: http.StatusInternalServerError,
 			expectedBody: "{\"error\":\"not a GET\",\"code\":500,\"status_text\":\"Internal Server Error\"}\n"},
-		{name: "err", status: http.StatusUnprocessableEntity, err: fmt.Errorf("unprocessible"),
+		{name: "err", status: http.StatusUnprocessableEntity, err: errors.New("unprocessible"),
 			expectedBody: "{\"error\":\"unprocessible\",\"code\":422,\"status_text\":\"Unprocessable Entity\"}\n"},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			testVal, testStatus, testErr = tc.val, tc.status, tc.err
@@ -120,14 +119,14 @@ func TestRespondError(t *testing.T) {
 	require := require.New(t)
 
 	resp := httptest.NewRecorder()
-	httpError := Error(http.StatusInternalServerError, fmt.Errorf("my error"))
+	httpError := Error(http.StatusInternalServerError, errors.New("my error"))
 
 	RespondError(resp, httpError)
 
 	require.Equal(httpError.Code, resp.Code)
 	require.Equal("{\"error\":\"my error\",\"code\":500,\"status_text\":\"Internal Server Error\"}\n", resp.Body.String())
-	require.Equal(resp.Header().Get("Content-Type"), JSONContentType)
-	require.Equal(resp.Header().Get("X-Content-Type-Options"), "nosniff")
+	require.Equal(JSONContentType, resp.Header().Get("Content-Type"))
+	require.Equal("nosniff", resp.Header().Get("X-Content-Type-Options"))
 }
 
 func TestRespondJSON(t *testing.T) {
@@ -139,7 +138,7 @@ func TestRespondJSON(t *testing.T) {
 
 	require.Equal(http.StatusOK, resp.Code)
 	require.Equal("{\"val\":\"my test\"}\n", resp.Body.String())
-	require.Equal(resp.Header().Get("Content-Type"), JSONContentType)
+	require.Equal(JSONContentType, resp.Header().Get("Content-Type"))
 }
 
 func TestExtractJSON(t *testing.T) {
@@ -162,7 +161,6 @@ func TestExtractJSON(t *testing.T) {
 			expectedError: "json: Unmarshal(nil)"},
 	}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			req := httptest.NewRequest("", "/", bytes.NewBuffer(tc.data))
@@ -182,7 +180,7 @@ func TestExtractJSON(t *testing.T) {
 }
 
 func TestReturnModelOr500(t *testing.T) {
-	httpErr := &HTTPError{Code: http.StatusInternalServerError, Cause: fmt.Errorf("waka")}
+	httpErr := &HTTPError{Code: http.StatusInternalServerError, Cause: errors.New("waka")}
 	testCases := []struct {
 		name  string
 		model any
@@ -197,7 +195,6 @@ func TestReturnModelOr500(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			model, err := ReturnModelOr500(func() (any, error) {

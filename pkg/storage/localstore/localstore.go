@@ -57,7 +57,7 @@ func (a API) SignPut(key string) (storage.PreSignedHTTPRequest, error) {
 func (a API) SignGet(key string) (string, error) {
 	p := a.keyPath(key)
 	if _, err := os.Stat(p); errors.Is(err, os.ErrNotExist) {
-		return "", fmt.Errorf("file does not exist")
+		return "", errors.New("file does not exist")
 	}
 	return a.keyURL(key), nil
 }
@@ -191,7 +191,7 @@ func (a AESEncryptor) Decrypt(ciphertext string) (string, error) {
 		return "", err
 	}
 	if len(cipherDecoded) < aes.BlockSize {
-		return "", fmt.Errorf("ciphertext too short")
+		return "", errors.New("ciphertext too short")
 	}
 
 	iv := cipherDecoded[:aes.BlockSize]

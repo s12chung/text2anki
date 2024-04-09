@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -156,7 +157,7 @@ func handleHealthzFunc(w http.ResponseWriter, r *http.Request) {
 
 func (s *ServerImpl) handleTokenize(r *http.Request) (any, *jhttp.HTTPError) {
 	if r.Method != http.MethodPost {
-		return nil, jhttp.Error(http.StatusMethodNotAllowed, fmt.Errorf("405 Method Not Allowed"))
+		return nil, jhttp.Error(http.StatusMethodNotAllowed, errors.New("405 Method Not Allowed"))
 	}
 
 	req := &server.TokenizeRequest{}

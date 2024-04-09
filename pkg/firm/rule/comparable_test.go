@@ -22,7 +22,6 @@ func TestEqual_ValidateAll(t *testing.T) {
 		{name: "above", to: 9, data: 100, hasError: true},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testComparableRule_ValidateAll[int](t, Equal[int]{To: tc.to}, tc.hasError, tc.data)
 		})
@@ -57,7 +56,6 @@ func TestLess_ValidateAll(t *testing.T) {
 		{name: "or_equal_above", orEqual: true, to: 9, data: 100, hasError: true},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testComparableRule_ValidateAll[int](t, Less[int]{OrEqual: tc.orEqual, To: tc.to}, tc.hasError, tc.data)
 		})
@@ -93,7 +91,6 @@ func TestGreater_ValidateAll(t *testing.T) {
 		{name: "or_equal_below", orEqual: true, to: 9, data: -1, hasError: true},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testComparableRule_ValidateAll[int](t, Greater[int]{OrEqual: tc.orEqual, To: tc.to}, tc.hasError, tc.data)
 		})
@@ -136,7 +133,6 @@ func testComparableRule_TypeCheck[T comparableRule[int]](t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			var rule T
 			testTypeCheck(t, tc.data, rule.Name(), tc.badCondition, rule)

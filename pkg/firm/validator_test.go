@@ -1,6 +1,7 @@
 package firm
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
@@ -469,14 +470,13 @@ func TestNewStructAny(t *testing.T) {
 	}{
 		{name: "normal", data: Child{}, ruleMap: RuleMap{"Validates": {presentRule{}}}},
 		{name: "non_exported_field", data: Child{}, ruleMap: RuleMap{"private": {presentRule{}}}},
-		{name: "nil_type", data: nil, err: fmt.Errorf("type, nil, is not a Struct")},
-		{name: "pointer", data: &Child{}, err: fmt.Errorf("type, *firm.Child, is not a Struct")},
-		{name: "non_matching_field", data: Child{}, ruleMap: RuleMap{"No": {presentRule{}}}, err: fmt.Errorf("field, No, not found in type: firm.Child")},
+		{name: "nil_type", data: nil, err: errors.New("type, nil, is not a Struct")},
+		{name: "pointer", data: &Child{}, err: errors.New("type, *firm.Child, is not a Struct")},
+		{name: "non_matching_field", data: Child{}, ruleMap: RuleMap{"No": {presentRule{}}}, err: errors.New("field, No, not found in type: firm.Child")},
 		{name: "no_matching_rule", data: Child{}, ruleMap: RuleMap{"Validates": {noMatchingRule}},
 			err: fmt.Errorf("field, Validates, in firm.Child: %w", noMatchingRule.TypeCheck(reflect.TypeOf("")))},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -520,12 +520,10 @@ func TestStructAny_ValidateAll(t *testing.T) {
 		{name: "invalid", data: nil, result: errInvalidValue},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) { require.Equal(t, tc.result, validator.ValidateAny(tc.data)) })
 	}
 
 	for _, tc := range structValidatorTestCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			rawData := tc.f()
 			errKeySuffixes := make([]string, len(tc.errorKeys))
@@ -555,7 +553,6 @@ func TestStructAny_TypeCheck(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testTypeCheck(t, tc.data, "StructAny", tc.badCondition, func() (Rule, error) {
 				return validator, nil
@@ -609,14 +606,13 @@ func TestNewSliceAny(t *testing.T) {
 		err   error
 	}{
 		{name: "normal", data: []Child{}, rules: []Rule{presentRule{}}},
-		{name: "nil_type", data: nil, err: fmt.Errorf("type, nil, is not a Slice or Array")},
-		{name: "pointer", data: &[]Child{}, err: fmt.Errorf("type, *[]firm.Child, is not a Slice or Array")},
-		{name: "not_slice", data: Child{}, err: fmt.Errorf("type, firm.Child, is not a Slice or Array")},
+		{name: "nil_type", data: nil, err: errors.New("type, nil, is not a Slice or Array")},
+		{name: "pointer", data: &[]Child{}, err: errors.New("type, *[]firm.Child, is not a Slice or Array")},
+		{name: "not_slice", data: Child{}, err: errors.New("type, firm.Child, is not a Slice or Array")},
 		{name: "no_matching_rule", data: []Child{}, rules: []Rule{noMatchingRule},
 			err: fmt.Errorf("element type: %w", noMatchingRule.TypeCheck(reflect.TypeOf(Child{})))},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -655,12 +651,10 @@ func TestSliceAny_ValidateAll(t *testing.T) {
 		{name: "invalid", data: nil, result: errInvalidValue},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) { require.Equal(t, tc.result, validator.ValidateAny(tc.data)) })
 	}
 
 	for _, tc := range sliceValidatorTestCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			rawData := tc.f()
 			errKeySuffixes := make([]string, len(tc.errorKeys))
@@ -689,7 +683,6 @@ func TestSliceAny_TypeCheck(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testTypeCheck(t, tc.data, "SliceAny", tc.badCondition, func() (Rule, error) {
 				return validator, nil
@@ -709,12 +702,11 @@ func TestNewValueAny(t *testing.T) {
 		err   error
 	}{
 		{name: "normal", data: i, rules: []Rule{intRule}},
-		{name: "int_pointer", data: &i, err: fmt.Errorf("type, *int, is a Pointer, not recommended")},
-		{name: "nil_type", data: nil, err: fmt.Errorf("type is nil, not recommended")},
+		{name: "int_pointer", data: &i, err: errors.New("type, *int, is a Pointer, not recommended")},
+		{name: "nil_type", data: nil, err: errors.New("type is nil, not recommended")},
 		{name: "not_int", data: []int{}, rules: []Rule{intRule}, err: intRule.TypeCheck(reflect.TypeOf([]int{}))},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -756,8 +748,6 @@ func TestValueAny_ValidateAll(t *testing.T) {
 		{name: "bad_type_after_new", rule: onlyKindRule{kind: reflect.Bool}, data: 1, typeCheckError: true},
 	}
 	for _, tc := range edgeTcs {
-		tc := tc
-
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -788,7 +778,6 @@ func TestValueAny_ValidateAll(t *testing.T) {
 		{name: "zero", data: 0, err: presentRuleError("")},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testValidateAll(t, validator, tc.data, tc.err, presentRuleKey)
 		})
@@ -810,7 +799,6 @@ func TestValueAny_TypeCheck(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			rules := []Rule{presentRule{}, onlyKindRule{kind: reflect.Int}, presentRule{}}
 			if tc.extraRule != nil {
@@ -835,8 +823,6 @@ func TestRuleValidator_ValidateAll(t *testing.T) {
 		{name: "bad_type", rule: onlyKindRule{kind: reflect.Bool}, data: 1, typeCheckError: true},
 	}
 	for _, tc := range edgeTcs {
-		tc := tc
-
 		t.Run(tc.name, func(t *testing.T) {
 			result := tc.result
 			if result == nil && tc.typeCheckError {
@@ -859,7 +845,6 @@ func TestRuleValidator_ValidateAll(t *testing.T) {
 		{name: "zero", data: 0, err: presentRuleError("")},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			testValidateAll(t, validator, tc.data, tc.err, presentRuleKey)
 			testValidateAll(t, validator, &tc.data, nil)

@@ -47,7 +47,6 @@ func TestErrorMap_ToNil(t *testing.T) {
 		{name: "nil", errorMap: nil, isNil: true},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			expected := tc.errorMap
@@ -82,7 +81,6 @@ func TestErrorMap_Finish(t *testing.T) {
 		{name: "empty", errorMap: ErrorMap{}, expected: nil},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			var expected ErrorMap
@@ -109,7 +107,6 @@ func TestTemplateError_Error(t *testing.T) {
 		{name: "bad_template", template: "{{ a }}", expected: "{{ a }} (bad format)"},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -142,7 +139,6 @@ func TestErrorKey_RootTypeName(t *testing.T) {
 		{name: "empty", errorKey: "", expected: ""},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, tc.errorKey.RootTypeName())
@@ -164,7 +160,6 @@ func TestErrorKey_ValueName(t *testing.T) {
 		{name: "empty", errorKey: "", expected: ""},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, tc.errorKey.ValueName())
@@ -184,7 +179,6 @@ func TestErrorKey_ErrorName(t *testing.T) {
 		{name: "empty", errorKey: "", expected: ""},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, tc.errorKey.ErrorName())

@@ -1,7 +1,7 @@
 package text
 
 import (
-	"fmt"
+	"errors"
 	"strings"
 	"testing"
 
@@ -13,7 +13,7 @@ import (
 
 func TestLanguagesMatch(t *testing.T) {
 	require := require.New(t)
-	require.Equal(int(Zulu)+1, len(lingua.AllLanguages()))
+	require.Len(lingua.AllLanguages(), int(Zulu)+1)
 	require.Equal(int(Unknown), int(lingua.Unknown))
 }
 
@@ -34,12 +34,11 @@ func TestParser_Texts(t *testing.T) {
 		{name: "split_extra_text", err: errExtraTextLine},
 		{name: "split_extra_translation", err: errExtraTranslationLine},
 		{name: "split_1_line_extra_translation", err: errExtraTranslationLine},
-		{name: "weave_extra_translation", err: fmt.Errorf("translation exists for two consecutive non-empty lines at 7: my extra line")},
+		{name: "weave_extra_translation", err: errors.New("translation exists for two consecutive non-empty lines at 7: my extra line")},
 	}
 
 	parser := NewParser(Korean, English)
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 
@@ -88,7 +87,6 @@ func TestCleanSpeakerString(t *testing.T) {
 		{name: "broken", s: ":      You should definitely get one.    ", expected: "You should definitely get one."},
 	}
 	for _, tc := range tcs {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
 			require.Equal(tc.expected, CleanSpeakerString(tc.s))
