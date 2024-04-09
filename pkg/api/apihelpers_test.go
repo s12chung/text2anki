@@ -10,6 +10,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/s12chung/text2anki/db/pkg/db"
 	"github.com/s12chung/text2anki/db/pkg/db/testdb"
 	"github.com/s12chung/text2anki/pkg/api/config"
@@ -20,6 +22,28 @@ import (
 
 func joinPath(elem ...any) string {
 	return fmt.Sprintf(strings.Repeat("/%v", len(elem)), elem...)
+}
+
+func testIndex[T test.StaticCopyable[T]](t *testing.T, s txServer, testName, tableName string) {
+	testCases := []struct {
+		name string
+	}{
+		{name: "basic"},
+		{name: "clear"},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+
+			txQs := testdb.TxQs(t, nil)
+			if tc.name == "clear" {
+				txQs = testdb.TxQs(t, db.WriteOpts())
+				require.NoError(txQs.ClearAllTable(txQs.Ctx(), tableName))
+			}
+			resp := test.HTTPDo(t, s.NewTxRequestWithMode(t, txQs, txReadOnly, http.MethodGet, "", nil))
+			testModelsResponse[T](t, resp, testName, tc.name, nil)
+		})
+	}
 }
 
 func testIndent(t *testing.T, resp test.Response, testName, name string) {
@@ -53,13 +77,12 @@ type txServer struct {
 }
 
 func (s txServer) NewRequest(t *testing.T, method, path string, body io.Reader) *http.Request {
-	return s.newTxRequest(t, testdb.TxQs(t, nil), txReadOnly, method, path, body)
+	return s.NewTxRequestWithMode(t, testdb.TxQs(t, nil), txReadOnly, method, path, body)
 }
 func (s txServer) NewTxRequest(t *testing.T, tx db.TxQs, method, path string, body io.Reader) *http.Request {
-	return s.newTxRequest(t, tx, txWritable, method, path, body)
+	return s.NewTxRequestWithMode(t, tx, txWritable, method, path, body)
 }
-
-func (s txServer) newTxRequest(t *testing.T, tx db.TxQs, mode config.TxMode, method, path string, body io.Reader) *http.Request {
+func (s txServer) NewTxRequestWithMode(t *testing.T, tx db.TxQs, mode config.TxMode, method, path string, body io.Reader) *http.Request {
 	req := s.Server.NewRequest(t, tx.Ctx(), method, path, body)
 	s.pool.SetTx(t, req, tx, mode)
 	return req

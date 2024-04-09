@@ -32,7 +32,7 @@ func TestPool_SetTxGetTx(t *testing.T) {
 	}{
 		{name: "normal", mode: mode},
 		{name: "diff_request", req: newRequest(), mode: mode, err: errors.New("transaction with id, , does not exist")},
-		{name: "diff_mode", mode: -9, err: errors.New("stored Tx mode (1) is not matching passed mode (-9)")},
+		{name: "diff_mode", mode: -9, err: errors.New("stored Tx mode from request (1) is not matching mode set by router (-9)")},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

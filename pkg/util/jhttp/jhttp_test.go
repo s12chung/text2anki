@@ -205,3 +205,28 @@ func TestReturnModelOr500(t *testing.T) {
 		})
 	}
 }
+
+func TestReturnSliceOr500(t *testing.T) {
+	testCases := []struct {
+		name  string
+		model []any
+		err   error
+
+		expectedModel any
+		expectedErr   *HTTPError
+	}{
+		{name: "nil", model: nil, expectedModel: []any{}},
+		{name: "empty", model: []any{}, expectedModel: []any{}},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			model, err := ReturnSliceOr500(func() ([]any, error) {
+				return tc.model, tc.err
+			})
+			require.Equal(tc.expectedModel, model)
+			require.Equal(tc.expectedErr, err)
+		})
+	}
+}

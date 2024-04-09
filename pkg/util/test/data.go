@@ -87,9 +87,12 @@ func StaticCopySlice[T StaticCopyable[T]](t *testing.T, b []byte, models *[]T) [
 	}
 	Unmarshall(t, b, models)
 
-	staticCopies := make([]any, len(*models))
-	for i, model := range *models {
-		staticCopies[i] = model.StaticCopy()
+	var staticCopies []any
+	if *models != nil {
+		staticCopies = make([]any, len(*models))
+		for i, model := range *models {
+			staticCopies[i] = model.StaticCopy()
+		}
 	}
 	return JSON(t, staticCopies)
 }
