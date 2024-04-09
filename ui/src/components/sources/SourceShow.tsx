@@ -86,7 +86,7 @@ const SourceComponent: React.FC<{ readonly source: Source }> = ({ source }) => {
       {nav ? (
         <SourceNavComponent source={source} safeSet={safeSet} />
       ) : (
-        <SourceShowComponent source={source} />
+        <SourceReadComponent source={source} />
       )}
       <div className="grid-std pt-std pb-std2">
         {expandPartsCreate ? (
@@ -222,17 +222,11 @@ SourcePartWrapper.defaultProps = {
 }
 
 const textClassBase = "ko-sans text-2xl"
-const translationClassBase = "text-lg"
 
-const SourceShowComponent: React.FC<{ readonly source: Source }> = ({ source }) => {
+const SourceReadComponent: React.FC<{ readonly source: Source }> = ({ source }) => {
   return (
     <SourcePartsWrapper sourceId={source.id} parts={source.parts}>
-      {(tokenizedText) => (
-        <>
-          <div className={textClassBase}>{tokenizedText.text}</div>
-          <div className={translationClassBase}>{tokenizedText.translation}</div>
-        </>
-      )}
+      {(tokenizedText) => <div className={textClassBase}>{tokenizedText.text}</div>}
     </SourcePartsWrapper>
   )
 }
@@ -313,7 +307,7 @@ const SourceNavComponent: React.FC<{ readonly source: Source; readonly safeSet: 
                   onCustomToken={onCustomToken}
                 />
               ) : null}
-              <div className={textFocused ? "text-2xl" : translationClassBase}>
+              <div className={textFocused ? "text-2xl" : "text-lg"}>
                 {tokenizedText.translation}
               </div>
               {textFocused && selectedToken ? (
