@@ -2,20 +2,6 @@
 
 Create Korean language learning Anki Flashcards from text and other sources.
 
-## Preview
-
-Card Front
-
-![Card Front](docs/card-front.png)
-
-Card Back
-
-![Card Back](docs/card-back.png)
-
-Demo with [Sample Output](docs/text2anki-018ec0ea-3739-76f1-be97-04d424bf6476.zip)
-
-![Demo](docs/demo.gif)
-
 ## Features
 
 - Create sources from:
@@ -34,6 +20,20 @@ Demo with [Sample Output](docs/text2anki-018ec0ea-3739-76f1-be97-04d424bf6476.zi
   - Text to Speech using the [Azure API](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/rest-speech-to-text)
 
 - Easily reconfigurable with interfaces and configurations
+
+## Preview
+
+Card Front
+
+![Card Front](docs/card-front.png)
+
+Card Back
+
+![Card Back](docs/card-back.png)
+
+Demo with [Sample Output](docs/text2anki-018ec0ea-3739-76f1-be97-04d424bf6476.zip)
+
+![Demo](docs/demo.gif)
 
 ## Internal Packages
 
