@@ -37,9 +37,13 @@ Demo with [Sample Output](docs/text2anki-018ec0ea-3739-76f1-be97-04d424bf6476.zi
 
 ## Internal Packages
 
-Some internal packages can be re-used for other projects:
+Some internal Golang packages can be re-used for other projects:
 
 - [firm](pkg/firm) - a customizable declarative validation package with no struct tags
 - [jhttp](pkg/util/jhttp) - abstracts `http.HandlerFunc` by returning errors, in standard golang fashion, by assuming json responses
   - Also includes [reqtx](pkg/util/jhttp/reqtx), which isolates each request to a database transaction
 - Many other packages in [util](pkg/util) that can be used for other web apps
+
+A bunch of utilities can be re-used in TypeScript/React, in particular:
+
+- [RouterUtil](ui/src/utils/RouterUtil.ts) - functions to make the [routes look pretty](ui/src/routes.ts), like with Ruby on Rails
