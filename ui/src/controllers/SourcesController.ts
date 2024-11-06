@@ -38,7 +38,7 @@ export const destroy: ActionFunction = async ({ params }) => {
   if (!params.id) throw new Response("id not found", Status405) // eslint-disable-line @typescript-eslint/no-throw-literal
   await sourcesService.destroy(params.id)
   // eslint-disable-next-line no-warning-comments
-  // TODO: pass notification via. localstorage
+  // TODO: pass notification via. https://github.com/remix-run/react-router/discussions/10830
   return redirect(`/`)
 }
 
